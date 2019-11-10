@@ -1,0 +1,27 @@
+plugins {
+    id 'java'
+}
+
+group 'pro.gravit.launcher'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
+
+jar {
+    manifest.attributes("Module-Main-Class": mainClassName)
+}
+
+repositories {
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly "pro.gravit.launcher:launcher-core:5.1.0-SNAPSHOT"
+    compileOnly "pro.gravit.launcher:launcher-ws-api:5.1.0-SNAPSHOT"
+    compileOnly "pro.gravit.launcher:launcher-client-api:5.1.0-SNAPSHOT"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
