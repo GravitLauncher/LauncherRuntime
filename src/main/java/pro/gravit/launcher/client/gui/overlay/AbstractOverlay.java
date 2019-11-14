@@ -4,11 +4,12 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.client.gui.scene.AbstractScene;
 
 import java.io.IOException;
 
-public abstract class AbstractOverlay {
+public abstract class AbstractOverlay implements AllowDisable {
     protected final JavaFXApplication application;
     protected final String name;
     protected Pane pane;
@@ -42,5 +43,15 @@ public abstract class AbstractOverlay {
 
     public Pane getPane() {
         return pane;
+    }
+
+    @Override
+    public void disable() {
+
+    }
+
+    @Override
+    public void enable() {
+
     }
 }

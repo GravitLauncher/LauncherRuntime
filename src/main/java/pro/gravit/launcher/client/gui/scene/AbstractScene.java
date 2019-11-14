@@ -15,15 +15,14 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.ContextHelper;
+import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.client.gui.overlay.AbstractOverlay;
-import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
-import pro.gravit.utils.helper.LogHelper;
 
 import java.util.function.Consumer;
 
-public abstract class AbstractScene {
+public abstract class AbstractScene implements AllowDisable {
     public final Scene scene;
     public final Stage stage;
     public final JavaFXApplication application;
@@ -63,6 +62,7 @@ public abstract class AbstractScene {
             swapOverlay(0, newOverlay, onFinished);
             return;
         }
+        disable();
         currentOverlayNode = newOverlay;
         Pane root = (Pane) scene.getRoot();
         root.getChildren().get(0).setEffect(new GaussianBlur(10));
@@ -79,6 +79,7 @@ public abstract class AbstractScene {
     {
         if(currentOverlayNode == null)
             return;
+        enable();
         currentOverlay = null;
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
@@ -119,5 +120,14 @@ public abstract class AbstractScene {
 
     public AbstractOverlay getCurrentOverlay() {
         return currentOverlay;
+    }
+    @Override
+    public void disable() {
+
+    }
+
+    @Override
+    public void enable() {
+
     }
 }
