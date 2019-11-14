@@ -45,13 +45,20 @@ public class FXMLProvider {
                 if(LogHelper.isDebugEnabled())
                     LogHelper.debug("FXML %s(%s) loaded in %d ms", name, result.getClass().getName(), finish - start);
                 return result;
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 Object obj = fxmlCache.get(name);
                 if(obj instanceof FutureVirtualObject)
                 {
                     synchronized (obj)
                     {
-                        ((FutureVirtualObject) obj).exception = e;
+                        if(e instanceof IOException)
+                        {
+                            ((FutureVirtualObject) obj).exception = (IOException) e;
+                        }
+                        else
+                        {
+                            ((FutureVirtualObject) obj).exception = new IOException(e);
+                        }
                         obj.notifyAll();
                     }
                 }

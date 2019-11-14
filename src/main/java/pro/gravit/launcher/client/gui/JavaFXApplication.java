@@ -67,7 +67,7 @@ public class JavaFXApplication extends Application {
         // System loading
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
         //
-        queueFxml("dialog/scenes/login/login.fxml");
+        queueFxml("scenes/login/login.fxml");
         //Overlay loading
         overlays = new OverlayContainer();
         overlays.processingOverlay = new ProcessingOverlay(this);
@@ -75,7 +75,7 @@ public class JavaFXApplication extends Application {
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
         mainStage = stage;
-        Scene loginScene = new Scene(fxmlProvider.getFxml("dialog/scenes/login/login.fxml"));
+        Scene loginScene = new Scene(fxmlProvider.getFxml("scenes/login/login.fxml"));
         loginScene.setFill(Color.TRANSPARENT);
         setScene(loginScene);
         LoginScene loginScene1 = new LoginScene(loginScene, stage,  this);
@@ -95,7 +95,7 @@ public class JavaFXApplication extends Application {
     {
         FXMLLoader loader;
         try {
-            loader = new FXMLLoader(IOHelper.getResourceURL("runtime/init.js"));
+            loader = new FXMLLoader(IOHelper.getResourceURL("runtime/".concat(name)));
             loader.setControllerFactory((c) -> {
                 LogHelper.debug("ControllerFactory %s", c.getName());
                 return null;

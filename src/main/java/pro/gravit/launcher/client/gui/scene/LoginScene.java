@@ -38,14 +38,13 @@ public class LoginScene extends AbstractScene {
     @Override
     @SuppressWarnings("unchecked")
     public void init() throws Exception {
-        Node bar = scene.lookup("#bar");
-        ((ButtonBase)bar.lookup("#close") ).setOnAction((e) -> {
+        Node layout = scene.lookup("#loginPane").lookup("#layout").lookup("#authPane");
+        ((ButtonBase)layout.lookup("#close") ).setOnAction((e) -> {
             Platform.exit();
         });
-        ((ButtonBase)bar.lookup("#hide") ).setOnAction((e) -> {
+        ((ButtonBase)layout.lookup("#hide") ).setOnAction((e) -> {
             stage.setIconified(true);
         });
-        Node layout = scene.lookup("#layout");
         TextField loginField = (TextField) layout.lookup("#login");
         if(application.settings.login != null)
         {
@@ -56,7 +55,7 @@ public class LoginScene extends AbstractScene {
             passwordField.getStyleClass().add("hasSaved");
             passwordField.setPromptText("*** Сохранённый ***");
         }
-        ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#authOptions");
+        ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#combologin");
         authList.setConverter(new AuthConverter());
         //Verify Launcher
         {

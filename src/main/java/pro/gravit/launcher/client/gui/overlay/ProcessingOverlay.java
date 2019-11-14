@@ -21,7 +21,7 @@ public class ProcessingOverlay extends AbstractOverlay {
     private Node spinner;
     private Labeled description;
     public ProcessingOverlay(JavaFXApplication application) throws IOException {
-        super("dialog/overlay/processing/processing.fxml", application);
+        super("overlay/processing/processing.fxml", application);
     }
 
     @Override
