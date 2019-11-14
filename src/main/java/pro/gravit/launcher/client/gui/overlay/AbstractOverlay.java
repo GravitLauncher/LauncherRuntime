@@ -26,7 +26,7 @@ public abstract class AbstractOverlay {
     public final void show(AbstractScene scene, EventHandler<ActionEvent> onFinished) throws IOException, InterruptedException {
         if(!isInit)
             init();
-        scene.showOverlay(pane, onFinished);
+        scene.showOverlay(this, onFinished);
     }
     public final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
         if(!isInit)
@@ -38,4 +38,8 @@ public abstract class AbstractOverlay {
     }
     protected abstract void doInit() throws IOException;
     public abstract void reset();
+
+    public Pane getPane() {
+        return pane;
+    }
 }
