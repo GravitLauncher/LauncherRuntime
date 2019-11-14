@@ -35,7 +35,8 @@ public class AsyncRequestHandler implements ClientWebSocketService.EventHandler 
                 if (event instanceof ErrorRequestEvent) {
                     future.completeExceptionally(new RequestException(((ErrorRequestEvent) event).error));
                 } else if (event instanceof ExceptionEvent) {
-                    future.completeExceptionally(new RequestException(((ExceptionEvent) event).message));
+                    future.completeExceptionally(new RequestException(
+                            String.format("LaunchServer internal error: %s %s", ((ExceptionEvent) event).clazz, ((ExceptionEvent) event).message)));
                 } else
                     future.complete(event);
                 futureMap.remove(event.requestUUID);

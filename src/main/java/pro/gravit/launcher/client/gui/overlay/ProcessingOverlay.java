@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.helper.ContextHelper;
 import pro.gravit.launcher.client.gui.scene.AbstractScene;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
@@ -32,6 +33,7 @@ public class ProcessingOverlay extends AbstractOverlay {
 
     @Override
     public void reset() {
+        description.textProperty().unbind();
         description.getStyleClass().remove("error");
         description.setText("...");
     }
@@ -58,6 +60,7 @@ public class ProcessingOverlay extends AbstractOverlay {
                         LogHelper.dev("RequestFuture complete normally");
                         onSuccess.accept(result);
                     }).exceptionally((error) -> {
+                        ContextHelper.runInFxThreadStatic(() -> setError(error.getCause()));
                         hide(2500, scene, onError);
                         return null;
                     });

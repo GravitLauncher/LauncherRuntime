@@ -38,6 +38,16 @@ public class ContextHelper {
             }
         });
     }
+    public static void runInFxThreadStatic(GuiExceptionCallback callback)
+    {
+        Platform.runLater(() -> {
+            try {
+                callback.call();
+            } catch (Exception ex) {
+                LogHelper.error(ex);
+            }
+        });
+    }
     public final void errorHandling(Exception e)
     {
         LogHelper.error(e);

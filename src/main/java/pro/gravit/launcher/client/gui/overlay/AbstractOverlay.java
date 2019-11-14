@@ -33,7 +33,8 @@ public abstract class AbstractOverlay {
             throw new IllegalStateException("Using method hide before init");
         scene.hideOverlay(delay, (e) -> {
             reset();
-            onFinished.handle(e);
+            if(onFinished != null)
+                onFinished.handle(e);
         });
     }
     protected abstract void doInit() throws IOException;
