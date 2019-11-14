@@ -30,6 +30,7 @@ public class JavaFXApplication extends Application {
     public StandartClientWebSocketService service;
     public AsyncRequestHandler requestHandler;
     public OverlayContainer overlays;
+    public RuntimeStateMachine runtimeStateMachine;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
     private Stage mainStage;
@@ -59,6 +60,7 @@ public class JavaFXApplication extends Application {
         requestHandler = new AsyncRequestHandler(service);
         service.registerHandler(requestHandler);
         overlays = new OverlayContainer();
+        runtimeStateMachine = new RuntimeStateMachine();
     }
 
     @Override

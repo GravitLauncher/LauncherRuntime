@@ -10,6 +10,7 @@ import javafx.util.StringConverter;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
+import pro.gravit.launcher.hwid.NoHWID;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
 import pro.gravit.launcher.request.update.LauncherRequest;
@@ -115,9 +116,11 @@ public class LoginScene extends AbstractScene {
     public void login(String login, byte[] password, String auth_id)
     {
         LogHelper.dev("Auth with %s password ***** auth_id %s", login, auth_id);
-        AuthRequest authRequest = new AuthRequest(login, password, null, auth_id);
+        AuthRequest authRequest = new AuthRequest(login, password, new NoHWID(), auth_id);
         processRequest("Auth", authRequest, (result) -> {
-
+            LogHelper.dev("TODO: Auth %s success", result.playerProfile.username);
+            application.runtimeStateMachine.setAuthResult(result);
+            hideOverlay(0, null);
         }, null);
     }
 }
