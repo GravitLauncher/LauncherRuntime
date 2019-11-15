@@ -3,14 +3,13 @@ package pro.gravit.launcher.client.gui;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.NewLauncherSettings;
-import pro.gravit.launcher.client.gui.overlay.OverlayContainer;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
+import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
 import pro.gravit.launcher.client.gui.scene.ServerMenuScene;
 import pro.gravit.launcher.managers.SettingsManager;
@@ -21,6 +20,9 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.lang.reflect.InvocationTargetException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
@@ -30,11 +32,12 @@ public class JavaFXApplication extends Application {
     public NewLauncherSettings settings;
     public StandartClientWebSocketService service;
     public AsyncRequestHandler requestHandler;
-    public OverlayContainer overlays;
+    public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
     private Stage mainStage;
+    private AbstractScene currentScene;
     public ScheduledExecutorService executors = Executors.newScheduledThreadPool(2);
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
@@ -60,7 +63,7 @@ public class JavaFXApplication extends Application {
         service = Request.service;
         requestHandler = new AsyncRequestHandler(service);
         service.registerHandler(requestHandler);
-        overlays = new OverlayContainer();
+        gui = new GuiObjectsContainer();
         runtimeStateMachine = new RuntimeStateMachine();
     }
 
@@ -68,24 +71,18 @@ public class JavaFXApplication extends Application {
     public void start(Stage stage) throws Exception {
         // System loading
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
-        //
-        queueFxml("scenes/login/login.fxml");
-        queueFxml("scenes/servermenu/servermenu.fxml");
         //Overlay loading
-        overlays = new OverlayContainer();
-        overlays.processingOverlay = new ProcessingOverlay(this);
+        gui = new GuiObjectsContainer();
+        gui.processingOverlay = new ProcessingOverlay(this);
         //
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
         mainStage = stage;
-        Scene loginScene = new Scene(fxmlProvider.getFxml("scenes/login/login.fxml"));
-        loginScene.setFill(Color.TRANSPARENT);
-        setScene(loginScene);
-        LoginScene loginScene1 = new LoginScene(loginScene, stage,  this);
-        loginScene1.init();
-        Scene serverMenuScene = new Scene(fxmlProvider.getFxml("scenes/servermenu/servermenu.fxml"));
-        serverMenuScene.setFill(Color.TRANSPARENT);
-        overlays.serverMenuScene = new ServerMenuScene(serverMenuScene, stage, this);
+
+        gui.loginScene = registerScene(LoginScene.class);
+        gui.serverMenuScene = registerScene(ServerMenuScene.class);
+        gui.loginScene.init();
+        setMainScene(gui.loginScene);
     }
 
     @Override
@@ -121,10 +118,33 @@ public class JavaFXApplication extends Application {
     public<T> T getFxml(String name) throws IOException, InterruptedException {
         return fxmlProvider.getFxml(name);
     }
-    public void setScene(Scene scene)
+    private void setScene(Scene scene)
     {
         mainStage.setScene(scene);
         mainStage.sizeToScene();
         mainStage.show();
+    }
+    public void setMainScene(AbstractScene scene) throws Exception
+    {
+        if(scene == null)
+        {
+            throw new NullPointerException("Try set null scene");
+        }
+        if(scene.getScene() == null)
+            scene.init();
+        currentScene = scene;
+        setScene(currentScene.getScene());
+    }
+    @SuppressWarnings("unchecked")
+    public<T extends AbstractScene> T registerScene(Class<T> clazz)
+    {
+        try {
+            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, Stage.class, JavaFXApplication.class)).invoke(mainStage, this);
+            queueFxml(instance.name);
+            return instance;
+        } catch (Throwable e) {
+            LogHelper.error(e);
+            throw new RuntimeException(e);
+        }
     }
 }

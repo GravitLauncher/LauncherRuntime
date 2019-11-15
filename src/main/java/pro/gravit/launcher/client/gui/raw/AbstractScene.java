@@ -1,14 +1,18 @@
 package pro.gravit.launcher.client.gui.raw;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import pro.gravit.launcher.Launcher;
@@ -19,26 +23,38 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
-    public final Scene scene;
+    protected Scene scene;
     public final Stage stage;
     public final JavaFXApplication application;
+    public final String name;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
 
-    protected AbstractScene(Scene scene, Stage stage, JavaFXApplication application) {
-        this.scene = scene;
+    protected AbstractScene(String name, Stage stage, JavaFXApplication application) {
+        this.name = name;
         this.stage = stage;
         this.application = application;
         this.launcherConfig = Launcher.getConfig();
         this.contextHelper = new ContextHelper(this);
     }
 
-    public abstract void init() throws Exception;
+    public void init() throws Exception
+    {
+        if(scene == null)
+        {
+            scene = new Scene(application.getFxml(name));
+            scene.setFill(Color.TRANSPARENT);
+        }
+        doInit();
+    }
+
+    protected abstract void doInit() throws Exception;
 
     void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished)
     {
@@ -121,10 +137,10 @@ public abstract class AbstractScene implements AllowDisable {
         });
     }
     public final<T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        application.overlays.processingOverlay.processRequest(this, message, request, onSuccess, onError);
+        application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
     public final<T extends WebSocketEvent> void processRequest(ObservableValue<String> message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        application.overlays.processingOverlay.processRequest(this, message, request, onSuccess, onError);
+        application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
 
     public AbstractOverlay getCurrentOverlay() {
@@ -142,5 +158,27 @@ public abstract class AbstractScene implements AllowDisable {
 
     ContextHelper getContextHelper() {
         return contextHelper;
+    }
+
+    public Scene getScene() {
+        return scene;
+    }
+    protected void sceneBaseInit(Node node)
+    {
+        ((ButtonBase)node.lookup("#close") ).setOnAction((e) -> {
+            Platform.exit();
+        });
+        ((ButtonBase)node.lookup("#hide") ).setOnAction((e) -> {
+            stage.setIconified(true);
+        });
+        AtomicReference<Point2D> movePoint = new AtomicReference<>();
+        node.setOnMousePressed(event -> { movePoint.set(new Point2D(event.getSceneX(), event.getSceneY())); });
+        node.setOnMouseDragged(event -> {
+        if (movePoint.get() == null) {
+            return;
+        }
+        stage.setX(event.getScreenX() - movePoint.get().getX());
+        stage.setY(event.getScreenY() - movePoint.get().getY());
+    });
     }
 }

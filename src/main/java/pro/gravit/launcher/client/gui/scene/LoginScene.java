@@ -2,11 +2,11 @@ package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.hwid.NoHWID;
@@ -36,20 +36,16 @@ public class LoginScene extends AbstractScene {
             return null;
         }
     }
-    public LoginScene(Scene scene, Stage stage, JavaFXApplication application) {
-        super(scene, stage, application);
+
+    public LoginScene(Stage stage, JavaFXApplication application) {
+        super("scenes/login/login.fxml", stage, application);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public void init() throws Exception {
-        layout = scene.lookup("#loginPane").lookup("#layout").lookup("#authPane");
-        ((ButtonBase)layout.lookup("#close") ).setOnAction((e) -> {
-            Platform.exit();
-        });
-        ((ButtonBase)layout.lookup("#hide") ).setOnAction((e) -> {
-            stage.setIconified(true);
-        });
+    public void doInit() throws Exception {
+        layout = LookupHelper.lookup(scene.getRoot(),  "#layout", "#authPane");
+        sceneBaseInit(layout);
         TextField loginField = (TextField) layout.lookup("#login");
         if(application.settings.login != null)
         {
@@ -128,7 +124,8 @@ public class LoginScene extends AbstractScene {
             }
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
-                application.setScene(application.overlays.serverMenuScene.scene);
+
+                application.setMainScene(application.gui.serverMenuScene);
             });
         }, null);
     }
