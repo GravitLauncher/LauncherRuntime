@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
+import pro.gravit.launcher.client.gui.MessageManager;
 import pro.gravit.launcher.gui.RuntimeProvider;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
@@ -20,6 +21,13 @@ public class JavaRuntimeModule extends LauncherModule {
     }
     public void preGuiPhase(ClientPreGuiPhase phase)
     {
+        try {
+            Class.forName("javafx.application.Application");
+        } catch (ClassNotFoundException e) {
+            MessageManager messageManager = new MessageManager(null);
+            messageManager.noJavaFxAlert();
+            System.exit(0);
+        }
         provider = new StdJavaRuntimeProvider();
         phase.runtimeProvider = provider;
     }
