@@ -12,6 +12,7 @@ import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.gui.overlay.OverlayContainer;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
+import pro.gravit.launcher.client.gui.scene.ServerMenuScene;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.websockets.StandartClientWebSocketService;
@@ -69,6 +70,7 @@ public class JavaFXApplication extends Application {
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
         //
         queueFxml("scenes/login/login.fxml");
+        queueFxml("scenes/servermenu/servermenu.fxml");
         //Overlay loading
         overlays = new OverlayContainer();
         overlays.processingOverlay = new ProcessingOverlay(this);
@@ -81,6 +83,9 @@ public class JavaFXApplication extends Application {
         setScene(loginScene);
         LoginScene loginScene1 = new LoginScene(loginScene, stage,  this);
         loginScene1.init();
+        Scene serverMenuScene = new Scene(fxmlProvider.getFxml("scenes/servermenu/servermenu.fxml"));
+        serverMenuScene.setFill(Color.TRANSPARENT);
+        overlays.serverMenuScene = new ServerMenuScene(serverMenuScene, stage, this);
     }
 
     @Override

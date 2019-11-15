@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.raw;
 
 import javafx.animation.FadeTransition;
 import javafx.beans.value.ObservableValue;
@@ -14,12 +14,11 @@ import javafx.util.Duration;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.helper.ContextHelper;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
-import pro.gravit.launcher.client.gui.overlay.AbstractOverlay;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 
+import java.io.IOException;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
@@ -39,9 +38,9 @@ public abstract class AbstractScene implements AllowDisable {
         this.contextHelper = new ContextHelper(this);
     }
 
-    abstract void init() throws Exception;
+    public abstract void init() throws Exception;
 
-    protected void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished)
+    void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished)
     {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
         if(onFinished != null)
@@ -54,10 +53,19 @@ public abstract class AbstractScene implements AllowDisable {
     public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished)
     {
         currentOverlay = overlay;
+        if(!overlay.isInit) {
+            try {
+                overlay.init();
+            } catch (IOException | InterruptedException e) {
+                contextHelper.errorHandling(e);
+                return;
+            }
+        }
         showOverlay(overlay.getPane(), onFinished);
     }
     private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished)
     {
+        if(newOverlay == null) throw new NullPointerException();
         if(currentOverlayNode != null) {
             swapOverlay(0, newOverlay, onFinished);
             return;
@@ -80,6 +88,7 @@ public abstract class AbstractScene implements AllowDisable {
         if(currentOverlayNode == null)
             return;
         enable();
+        currentOverlay.reset();
         currentOverlay = null;
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
@@ -112,10 +121,10 @@ public abstract class AbstractScene implements AllowDisable {
         });
     }
     public final<T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        application.overlays.processingOverlay.processRequest(message, this, request, onSuccess, onError);
+        application.overlays.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
     public final<T extends WebSocketEvent> void processRequest(ObservableValue<String> message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        application.overlays.processingOverlay.processRequest(message, this, request, onSuccess, onError);
+        application.overlays.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
 
     public AbstractOverlay getCurrentOverlay() {
@@ -129,5 +138,9 @@ public abstract class AbstractScene implements AllowDisable {
     @Override
     public void enable() {
 
+    }
+
+    ContextHelper getContextHelper() {
+        return contextHelper;
     }
 }

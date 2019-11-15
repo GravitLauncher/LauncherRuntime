@@ -1,17 +1,12 @@
-package pro.gravit.launcher.client.gui.helper;
+package pro.gravit.launcher.client.gui.raw;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import pro.gravit.launcher.client.gui.overlay.AbstractOverlay;
-import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
-import pro.gravit.launcher.client.gui.scene.AbstractScene;
 import pro.gravit.utils.helper.LogHelper;
 
 public class ContextHelper {
     private final AbstractScene scene;
 
-    public ContextHelper(AbstractScene scene) {
+    ContextHelper(AbstractScene scene) {
         this.scene = scene;
     }
     public interface GuiExceptionCallback
@@ -48,7 +43,7 @@ public class ContextHelper {
             }
         });
     }
-    public final void errorHandling(Exception e)
+    final void errorHandling(Exception e)
     {
         LogHelper.error(e);
         if(scene != null)
@@ -56,13 +51,8 @@ public class ContextHelper {
             AbstractOverlay currentOverlay = scene.getCurrentOverlay();
             if(currentOverlay != null)
             {
-                if(currentOverlay instanceof ProcessingOverlay)
-                {
-                    ((ProcessingOverlay) currentOverlay).setError(e);
-                    scene.hideOverlay(2000, null);
-                    return;
-                }
-                scene.hideOverlay(100, null);
+                currentOverlay.errorHandle(e);
+                scene.hideOverlay(2000, null);
             }
         }
     }

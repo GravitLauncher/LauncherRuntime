@@ -1,14 +1,13 @@
 package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.hwid.NoHWID;
 import pro.gravit.launcher.request.auth.AuthRequest;
@@ -60,6 +59,7 @@ public class LoginScene extends AbstractScene {
         if (application.settings.rsaPassword != null) {
             passwordField.getStyleClass().add("hasSaved");
             passwordField.setPromptText("*** Сохранённый ***");
+            ((CheckBox)layout.lookup("#savePassword")).setSelected(true);
         }
         ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#combologin");
         authList.setConverter(new AuthConverter());
@@ -108,19 +108,28 @@ public class LoginScene extends AbstractScene {
         }
         ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#combologin");
         String auth_id = authList.getSelectionModel().getSelectedItem().name;
-        login(login, encryptedPassword, auth_id);
+        boolean savePassword = ((CheckBox)layout.lookup("#savePassword")).isSelected();
+        login(login, encryptedPassword, auth_id, savePassword);
     }
     public byte[] encryptPassword(String password) throws Exception {
         return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
-    public void login(String login, byte[] password, String auth_id)
+    public void login(String login, byte[] password, String auth_id, boolean savePassword)
     {
         LogHelper.dev("Auth with %s password ***** auth_id %s", login, auth_id);
         AuthRequest authRequest = new AuthRequest(login, password, new NoHWID(), auth_id);
         processRequest("Auth", authRequest, (result) -> {
             LogHelper.dev("TODO: Auth %s success", result.playerProfile.username);
             application.runtimeStateMachine.setAuthResult(result);
-            hideOverlay(0, null);
+            if(savePassword)
+            {
+                application.settings.login = login;
+                application.settings.rsaPassword = password;
+            }
+            contextHelper.runInFxThread(() -> {
+                hideOverlay(0, null);
+                application.setScene(application.overlays.serverMenuScene.scene);
+            });
         }, null);
     }
 }
