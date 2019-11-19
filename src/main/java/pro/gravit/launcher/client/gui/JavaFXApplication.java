@@ -93,9 +93,9 @@ public class JavaFXApplication extends Application {
 
         gui.loginScene = registerScene(LoginScene.class);
         gui.serverMenuScene = registerScene(ServerMenuScene.class);
-        messageManager.createNotification("Test head", "Test message", true);
         gui.loginScene.init();
         setMainScene(gui.loginScene);
+        messageManager.createNotification("Test head", "Test message", true);
     }
 
     @Override
