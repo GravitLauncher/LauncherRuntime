@@ -2,13 +2,27 @@ package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.utils.helper.LogHelper;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 public class ServerMenuScene extends AbstractScene {
+    public static String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     public Node layout;
     public ServerMenuScene(Stage stage, JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", stage, application);
@@ -18,5 +32,21 @@ public class ServerMenuScene extends AbstractScene {
     public void doInit() throws Exception {
         layout = LookupHelper.lookup(scene.getRoot(),  "#layout", "#serverMenu");
         sceneBaseInit(layout);
+        ((Labeled)layout.lookup("#nickname")).setText(application.runtimeStateMachine.getUsername());
+        Map<ClientProfile, Future<Pane>> futures = new HashMap<>();
+        for(ClientProfile profile : application.runtimeStateMachine.getProfiles())
+        {
+            futures.put(profile, application.getNoCacheFxml(SERVER_BUTTON_FXML));
+        }
+        Pane serverList = (Pane) ((ScrollPane)layout.lookup("#serverlist")).getContent();
+        futures.forEach((profile, future) -> {
+            try {
+                Pane pane = future.get();
+                ((Text)pane.lookup("#nameServer")).setText(profile.getTitle());
+                serverList.getChildren().add(pane);
+            } catch (InterruptedException | ExecutionException e) {
+                LogHelper.error(e);
+            }
+        });
     }
 }

@@ -5,6 +5,7 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.function.Function;
@@ -91,5 +92,21 @@ public class FXMLProvider {
         T result = loaderFactory.apply(name).load(inputStream);
         inputStream.close();
         return result;
+    }
+    public<T> Future<T> queueNoCache(String name, InputStream inputStream)
+    {
+        fxmlCache.put(name, new FutureVirtualObject());
+        return executorService.submit( () -> {
+            try {
+                long start = System.currentTimeMillis();
+                T result = rawLoadFxml(name, inputStream);
+                long finish = System.currentTimeMillis();
+                if(LogHelper.isDebugEnabled())
+                    LogHelper.debug("FXML %s(%s) loaded in %d ms(no cache)", name, result.getClass().getName(), finish - start);
+                return result;
+            } catch (Throwable e) {
+                return null;
+            }
+        });
     }
 }

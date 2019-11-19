@@ -117,6 +117,10 @@ public class JavaFXApplication extends Application {
     public<T> T getFxml(String name) throws IOException, InterruptedException {
         return fxmlProvider.getFxml(name);
     }
+    public<T> Future<T> getNoCacheFxml(String name) throws IOException {
+        InputStream input = getResource(name);
+        return fxmlProvider.queueNoCache(name, input);
+    }
     private void setScene(Scene scene)
     {
         mainStage.setScene(scene);

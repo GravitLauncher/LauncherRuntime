@@ -13,6 +13,7 @@ import pro.gravit.launcher.hwid.NoHWID;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
 import pro.gravit.launcher.request.update.LauncherRequest;
+import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
@@ -122,11 +123,14 @@ public class LoginScene extends AbstractScene {
                 application.settings.login = login;
                 application.settings.rsaPassword = password;
             }
-            contextHelper.runInFxThread(() -> {
-                hideOverlay(0, null);
+            processRequest("Update profiles", new ProfilesRequest(), (profiles) -> {
+                application.runtimeStateMachine.setProfilesResult(profiles);
+                contextHelper.runInFxThread(() -> {
+                    hideOverlay(0, null);
+                    application.setMainScene(application.gui.serverMenuScene);
+                });
+            }, null);
 
-                application.setMainScene(application.gui.serverMenuScene);
-            });
         }, null);
     }
 }
