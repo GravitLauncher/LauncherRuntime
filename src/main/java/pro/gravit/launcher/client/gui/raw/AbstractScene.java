@@ -56,7 +56,7 @@ public abstract class AbstractScene implements AllowDisable {
 
     protected abstract void doInit() throws Exception;
 
-    void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished)
+    static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished)
     {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
         if(onFinished != null)

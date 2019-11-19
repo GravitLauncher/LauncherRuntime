@@ -10,6 +10,7 @@ import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
 import pro.gravit.launcher.client.gui.scene.ServerMenuScene;
 import pro.gravit.launcher.managers.SettingsManager;
@@ -33,6 +34,7 @@ public class JavaFXApplication extends Application {
     public AsyncRequestHandler requestHandler;
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
+    public MessageManager messageManager;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
     private Stage mainStage;
@@ -64,6 +66,7 @@ public class JavaFXApplication extends Application {
         service.registerHandler(requestHandler);
         gui = new GuiObjectsContainer();
         runtimeStateMachine = new RuntimeStateMachine();
+        messageManager = new MessageManager(this);
     }
 
     @Override
@@ -80,6 +83,7 @@ public class JavaFXApplication extends Application {
 
         gui.loginScene = registerScene(LoginScene.class);
         gui.serverMenuScene = registerScene(ServerMenuScene.class);
+        messageManager.createNotification("Test head", "Test message");
         gui.loginScene.init();
         setMainScene(gui.loginScene);
     }
@@ -137,6 +141,13 @@ public class JavaFXApplication extends Application {
             scene.init();
         currentScene = scene;
         setScene(currentScene.getScene());
+    }
+    public Stage newStage()
+    {
+        Stage ret = new Stage();
+        ret.initStyle(StageStyle.TRANSPARENT);
+        ret.setResizable(false);
+        return ret;
     }
     @SuppressWarnings("unchecked")
     public<T extends AbstractScene> T registerScene(Class<T> clazz)

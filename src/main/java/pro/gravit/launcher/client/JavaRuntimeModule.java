@@ -1,7 +1,7 @@
 package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
-import pro.gravit.launcher.client.gui.MessageManager;
+import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.gui.RuntimeProvider;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
