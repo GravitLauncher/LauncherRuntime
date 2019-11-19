@@ -37,8 +37,18 @@ public class JavaFXApplication extends Application {
     public MessageManager messageManager;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
+
+    public Stage getMainStage() {
+        return mainStage;
+    }
+
     private Stage mainStage;
     private AbstractScene currentScene;
+
+    public AbstractScene getCurrentScene() {
+        return currentScene;
+    }
+
     public ScheduledExecutorService executors = Executors.newScheduledThreadPool(2);
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
@@ -83,7 +93,7 @@ public class JavaFXApplication extends Application {
 
         gui.loginScene = registerScene(LoginScene.class);
         gui.serverMenuScene = registerScene(ServerMenuScene.class);
-        messageManager.createNotification("Test head", "Test message");
+        messageManager.createNotification("Test head", "Test message", true);
         gui.loginScene.init();
         setMainScene(gui.loginScene);
     }
@@ -144,8 +154,12 @@ public class JavaFXApplication extends Application {
     }
     public Stage newStage()
     {
+        return newStage(StageStyle.TRANSPARENT);
+    }
+    public Stage newStage(StageStyle style)
+    {
         Stage ret = new Stage();
-        ret.initStyle(StageStyle.TRANSPARENT);
+        ret.initStyle(style);
         ret.setResizable(false);
         return ret;
     }

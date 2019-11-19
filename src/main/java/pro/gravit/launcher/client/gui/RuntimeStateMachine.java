@@ -10,6 +10,7 @@ public class RuntimeStateMachine {
     private AuthRequestEvent rawAuthResult;
 
     private List<ClientProfile> profiles;
+    private ClientProfile profile;
 
     public RuntimeStateMachine setAuthResult(AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
@@ -28,5 +29,13 @@ public class RuntimeStateMachine {
 
     public List<ClientProfile> getProfiles() {
         return profiles;
+    }
+
+    public void setProfile(ClientProfile profile) {
+        this.profile = profile;
+    }
+
+    public ClientProfile getProfile() {
+        return profile;
     }
 }

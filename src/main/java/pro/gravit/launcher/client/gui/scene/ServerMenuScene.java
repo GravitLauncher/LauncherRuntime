@@ -6,6 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -43,10 +44,22 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 Pane pane = future.get();
                 ((Text)pane.lookup("#nameServer")).setText(profile.getTitle());
+                ((Text)pane.lookup("#genreServer")).setText(profile.getVersion().toString());
+                pane.setOnMouseClicked((e) -> {
+                    if(!e.isPrimaryButtonDown()) return;
+                    changeServer(profile);
+                    LogHelper.dev("Selected profile %s", profile.getTitle());
+                });
                 serverList.getChildren().add(pane);
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
             }
         });
+    }
+    public void changeServer(ClientProfile profile)
+    {
+        application.runtimeStateMachine.setProfile(profile);
+        ((Text)layout.lookup("#heading")).setText(profile.getTitle());
+        ((Text)((ScrollPane)layout.lookup("#serverInfo")).getContent().lookup("#servertext")).setText(profile.getInfo());
     }
 }
