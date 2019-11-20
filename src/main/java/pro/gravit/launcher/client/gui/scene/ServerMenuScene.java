@@ -56,6 +56,13 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(e);
             }
         });
+        ((ButtonBase)layout.lookup("#clientSettings")).setOnAction((e) -> {
+            try {
+                application.setMainScene(application.gui.optionsScene);
+            } catch (Exception ex) {
+                LogHelper.error(ex);
+            }
+        });
     }
     public void changeServer(ClientProfile profile)
     {
