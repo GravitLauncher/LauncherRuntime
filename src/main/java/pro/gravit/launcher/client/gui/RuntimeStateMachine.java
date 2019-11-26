@@ -3,6 +3,8 @@ package pro.gravit.launcher.client.gui;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.PlayerProfile;
+import pro.gravit.launcher.request.Request;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ public class RuntimeStateMachine {
 
     public RuntimeStateMachine setAuthResult(AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
+        if(rawAuthResult.session != 0) Request.setSession(rawAuthResult.session);
         return this;
     }
 
@@ -37,5 +40,16 @@ public class RuntimeStateMachine {
 
     public ClientProfile getProfile() {
         return profile;
+    }
+
+    public PlayerProfile getPlayerProfile()
+    {
+        if(rawAuthResult == null) return null;
+        return rawAuthResult.playerProfile;
+    }
+    public String getAccessToken()
+    {
+        if(rawAuthResult == null) return null;
+        return rawAuthResult.accessToken;
     }
 }

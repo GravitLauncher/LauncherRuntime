@@ -33,8 +33,11 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class UpdateOverlay extends AbstractOverlay {
     public ProgressBar progressBar;
@@ -94,7 +97,7 @@ public class UpdateOverlay extends AbstractOverlay {
         }
     }
 
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, ContextHelper.GuiExceptionCallback onSuccess)
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess)
     {
         UpdateRequest request = new UpdateRequest(dirName, dir, matcher, digest);
         try {
@@ -174,7 +177,7 @@ public class UpdateOverlay extends AbstractOverlay {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
                             deleteExtraDir(dir, diff.extra, diff.extra.flag);
-                            onSuccess.call();
+                            onSuccess.accept(hashedDir);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }

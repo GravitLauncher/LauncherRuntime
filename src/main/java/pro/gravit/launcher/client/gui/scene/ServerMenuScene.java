@@ -11,10 +11,12 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import pro.gravit.launcher.client.ClientLauncher;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.LogHelper;
@@ -25,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 public class ServerMenuScene extends AbstractScene {
     public static String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -91,14 +94,23 @@ public class ServerMenuScene extends AbstractScene {
             showOverlay(application.gui.updateOverlay, (e) -> {
                 Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
                 LogHelper.info("Start update to %s", target.toString());
-                application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, () -> {
+                application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
                     Path targetClient = DirBridge.dirUpdates.resolve(profile.getAssetDir());
                     LogHelper.info("Start update to %s", targetClient.toString());
-                    application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, () -> {
+                    application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
                         LogHelper.info("Success update");
+                        doLaunchClient(target, assetHDir, targetClient, clientHDir, profile);
                     });
                 });
             });
         }, null);
+    }
+    public void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile)
+    {
+        ClientLauncher.Params clientParams = new ClientLauncher.Params(null, assetDir, clientDir, application.runtimeStateMachine.getPlayerProfile(), application.runtimeStateMachine.getAccessToken(),
+            false /* TODO */, false /* TODO */, application.settings.ram, 0,0);
+        contextHelper.runCallback(() -> ClientLauncher.launch(assetHDir, clientHDir, profile, clientParams, false).waitFor(10, TimeUnit.SECONDS)).run();
+        Platform.exit();
+
     }
 }

@@ -11,14 +11,14 @@ public class ContextHelper {
     }
     public interface GuiExceptionCallback
     {
-        void call() throws Exception;
+        void call() throws Throwable;
     }
     public final Runnable runCallback(GuiExceptionCallback callback)
     {
         return () -> {
             try {
                 callback.call();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 errorHandling(ex);
             }
         };
@@ -28,7 +28,7 @@ public class ContextHelper {
         Platform.runLater(() -> {
             try {
                 callback.call();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 errorHandling(ex);
             }
         });
@@ -38,12 +38,12 @@ public class ContextHelper {
         Platform.runLater(() -> {
             try {
                 callback.call();
-            } catch (Exception ex) {
+            } catch (Throwable ex) {
                 LogHelper.error(ex);
             }
         });
     }
-    final void errorHandling(Exception e)
+    final void errorHandling(Throwable e)
     {
         LogHelper.error(e);
         if(scene != null)
