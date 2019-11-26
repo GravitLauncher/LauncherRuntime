@@ -93,15 +93,17 @@ public class UpdateOverlay extends AbstractOverlay {
         }
     }
 
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled)
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, ContextHelper.GuiExceptionCallback onSuccess)
     {
         UpdateRequest request = new UpdateRequest(dirName, dir, matcher, digest);
         try {
             application.requestHandler.request(request).thenAccept(updateRequestEvent -> {
+                LogHelper.dev("Start updating %s", dirName);
                 if(optionalsEnabled)
                     profile.pushOptionalFile(updateRequestEvent.hdir, digest);
                 try {
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
+                    if(!IOHelper.exists(dir)) Files.createDirectories(dir);
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Create Diff %s", dirName)));
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
@@ -109,17 +111,18 @@ public class UpdateOverlay extends AbstractOverlay {
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
                         switch (entry.getType())
                         {
-                            case DIR:
+                            case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
                                 adds.add(new ListDownloader.DownloadTask(path, file.size));
                                 break;
-                            case FILE:
+                            case DIR:
                                 Files.createDirectories(dir.resolve(path));
                                 break;
                         }
                         return HashedDir.WalkAction.CONTINUE;
                     });
+                    LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Sorting files %s", dirName)));
                     adds.sort((Comparator.comparingLong((t) -> t.size)));
 
@@ -133,7 +136,7 @@ public class UpdateOverlay extends AbstractOverlay {
                     int currentProcessedTasks = 0;
                     for(ListDownloader.DownloadTask task : adds)
                     {
-                        if(currentProcessedTasks == limitInOneTask && currentNumber != threadNumber-1) currentNumber++;
+                        if(currentProcessedTasks == limitInOneTask && currentNumber != threadNumber-1) { currentNumber++; currentProcessedTasks = 0; }
                         tasks.get(currentNumber).add(task);
                         currentProcessedTasks++;
                     }
@@ -142,24 +145,15 @@ public class UpdateOverlay extends AbstractOverlay {
                         int finalI = i;
                         futures[i] = CompletableFuture.runAsync(() -> {
                             List<ListDownloader.DownloadTask> myTasks = tasks.get(finalI);
-                            URI baseUri;
-                            try {
-                                baseUri = new URI(updateRequestEvent.url);
-                            } catch (URISyntaxException e) {
-                                throw new RuntimeException(e);
-                            }
-                            String scheme = baseUri.getScheme();
-                            String host = baseUri.getHost();
-                            int port = baseUri.getPort();
                             for(ListDownloader.DownloadTask currentTask : myTasks)
                             {
                                 try {
-                                    URL u = new URL(scheme, host, port, updateRequestEvent.url + currentTask.apply);
+                                    URL u = new URL(updateRequestEvent.url + currentTask.apply);
                                     URLConnection connection = u.openConnection();
                                     try(InputStream input = connection.getInputStream())
                                     {
                                         Path filePath = dir.resolve(currentTask.apply);
-                                        LogHelper.dev("Thread %d download file %s", currentTask.apply);
+                                        LogHelper.info("Thread %d download file %s", finalI, currentTask.apply);
                                         transfer(input, filePath, currentTask.apply, currentTask.size);
                                     }
                                 } catch (IOException e) {
@@ -168,13 +162,20 @@ public class UpdateOverlay extends AbstractOverlay {
                             }
                         }, application.executors);
                     }
-                    CompletableFuture.allOf(futures).get();
+                    CompletableFuture.allOf(futures).thenAccept((e) -> {
+                        ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
+                        try {
+                            deleteExtraDir(dir, diff.extra, diff.extra.flag);
+                            onSuccess.call();
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                    }).exceptionally((e) -> {
+                        LogHelper.error(e);
+                        return null;
+                    });
 
-
-                    ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
-                    deleteExtraDir(dir, diff.extra, diff.extra.flag);
-
-                } catch (IOException | InterruptedException | ExecutionException e) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }).exceptionally((error) -> {
@@ -209,6 +210,7 @@ public class UpdateOverlay extends AbstractOverlay {
     }
     public void addLog(String string)
     {
+        LogHelper.dev("Update event %s", string);
         logOutput.setText(logOutput.getText().concat(string).concat("\n"));
     }
 

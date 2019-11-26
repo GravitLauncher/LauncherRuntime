@@ -11,13 +11,16 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -84,8 +87,13 @@ public class ServerMenuScene extends AbstractScene {
     {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if(profile == null) return;
-        showOverlay(application.gui.updateOverlay, (e) -> {
+        processRequest("Set profile", new SetProfileRequest(profile), (result) -> {
+            showOverlay(application.gui.updateOverlay, (e) -> {
+                Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
+                LogHelper.info("Start update to %s", target.toString());
+                application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false);
+            });
+        }, null);
 
-        });
     }
 }
