@@ -8,6 +8,7 @@ import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.NewLauncherSettings;
+import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
 import pro.gravit.launcher.client.gui.overlay.UpdateOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -68,6 +69,10 @@ public class JavaFXApplication extends Application {
         settingsManager = new StdSettingsManager();
         settingsManager.loadConfig();
         settings = settingsManager.getConfig();
+        DirBridge.dir = DirBridge.getLauncherDir(Launcher.getConfig().projectName);
+        DirBridge.defaultUpdatesDir = DirBridge.dir.resolve("updates");
+        if(DirBridge.dirUpdates == null) DirBridge.dirUpdates = settings.updatesDir  != null ? settings.updatesDir :
+                DirBridge.dir;
         try {
             settingsManager.loadHDirStore();
         } catch (Exception e)
