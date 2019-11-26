@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -144,11 +145,18 @@ public class UpdateOverlay extends AbstractOverlay {
                     {
                         int finalI = i;
                         futures[i] = CompletableFuture.runAsync(() -> {
+                            try {
                             List<ListDownloader.DownloadTask> myTasks = tasks.get(finalI);
+                            URI baseUri = new URI(updateRequestEvent.url);
+                            String scheme = baseUri.getScheme();
+                            String host = baseUri.getHost();
+                            int port = baseUri.getPort();
+                            if (port != -1)
+                                host = host + ":" + port;
+                            String path = baseUri.getPath();
                             for(ListDownloader.DownloadTask currentTask : myTasks)
                             {
-                                try {
-                                    URL u = new URL(updateRequestEvent.url + currentTask.apply);
+                                    URL u = new URI(scheme,host,path + currentTask.apply, "", "").toURL();
                                     URLConnection connection = u.openConnection();
                                     try(InputStream input = connection.getInputStream())
                                     {
@@ -156,10 +164,10 @@ public class UpdateOverlay extends AbstractOverlay {
                                         LogHelper.info("Thread %d download file %s", finalI, currentTask.apply);
                                         transfer(input, filePath, currentTask.apply, currentTask.size);
                                     }
-                                } catch (IOException e) {
-                                    throw new RuntimeException(e);
-                                }
                             }
+                            } catch (IOException | URISyntaxException e) {
+                                throw new RuntimeException(e);
+                             }
                         }, application.executors);
                     }
                     CompletableFuture.allOf(futures).thenAccept((e) -> {

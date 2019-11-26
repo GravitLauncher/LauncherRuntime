@@ -91,7 +91,13 @@ public class ServerMenuScene extends AbstractScene {
             showOverlay(application.gui.updateOverlay, (e) -> {
                 Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
                 LogHelper.info("Start update to %s", target.toString());
-                application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false);
+                application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, () -> {
+                    Path targetClient = DirBridge.dirUpdates.resolve(profile.getAssetDir());
+                    LogHelper.info("Start update to %s", targetClient.toString());
+                    application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, () -> {
+                        LogHelper.info("Success update");
+                    });
+                });
             });
         }, null);
 
