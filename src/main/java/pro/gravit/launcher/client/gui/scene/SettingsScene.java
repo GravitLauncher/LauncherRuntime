@@ -7,15 +7,15 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 
-public class OptionsScene extends AbstractScene {
+public class SettingsScene extends AbstractScene {
     public Node layout;
-    public OptionsScene(Stage stage, JavaFXApplication application) {
-        super("scenes/options/options.fxml", stage, application);
+    public SettingsScene(Stage stage, JavaFXApplication application) {
+        super("scenes/settings/settings.fxml", stage, application);
     }
 
     @Override
     protected void doInit() throws Exception {
-        layout = LookupHelper.lookup(scene.getRoot(),  "#optionsPane");
+        layout = LookupHelper.lookup(scene.getRoot(),  "#settingsPane");
         sceneBaseInit(layout);
         ((ButtonBase)layout.lookup("#apply")).setOnAction((e) -> {
             contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run();

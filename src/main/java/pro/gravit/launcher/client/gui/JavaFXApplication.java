@@ -14,6 +14,7 @@ import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
 import pro.gravit.launcher.client.gui.scene.OptionsScene;
 import pro.gravit.launcher.client.gui.scene.ServerMenuScene;
+import pro.gravit.launcher.client.gui.scene.SettingsScene;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.websockets.StandartClientWebSocketService;
@@ -95,6 +96,7 @@ public class JavaFXApplication extends Application {
         gui.loginScene = registerScene(LoginScene.class);
         gui.serverMenuScene = registerScene(ServerMenuScene.class);
         gui.optionsScene = registerScene(OptionsScene.class);
+        gui.settingsScene = registerScene(SettingsScene.class);
         gui.loginScene.init();
         setMainScene(gui.loginScene);
         messageManager.createNotification("Test head", "Test message", true);
