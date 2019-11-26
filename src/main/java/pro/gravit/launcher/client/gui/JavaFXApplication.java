@@ -9,6 +9,7 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
+import pro.gravit.launcher.client.gui.overlay.UpdateOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
@@ -88,6 +89,7 @@ public class JavaFXApplication extends Application {
         //Overlay loading
         gui = new GuiObjectsContainer();
         gui.processingOverlay = new ProcessingOverlay(this);
+        gui.updateOverlay = new UpdateOverlay(this);
         //
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);

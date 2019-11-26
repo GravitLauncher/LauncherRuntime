@@ -70,6 +70,9 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(ex);
             }
         });
+        ((ButtonBase)layout.lookup("#clientLaunch")).setOnAction((e) -> {
+            launchClient();
+        });
     }
     public void changeServer(ClientProfile profile)
     {
@@ -79,6 +82,10 @@ public class ServerMenuScene extends AbstractScene {
     }
     public void launchClient()
     {
+        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        if(profile == null) return;
+        showOverlay(application.gui.updateOverlay, (e) -> {
 
+        });
     }
 }
