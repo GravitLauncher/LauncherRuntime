@@ -169,7 +169,7 @@ public class JavaFXApplication extends Application {
     public<T extends AbstractScene> T registerScene(Class<T> clazz)
     {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, Stage.class, JavaFXApplication.class)).invoke(mainStage, this);
+            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, Stage.class, JavaFXApplication.class)).invokeWithArguments(mainStage, this);
             queueFxml(instance.name);
             return instance;
         } catch (Throwable e) {
