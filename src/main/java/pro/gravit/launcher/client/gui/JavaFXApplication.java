@@ -53,7 +53,7 @@ public class JavaFXApplication extends Application {
         return currentScene;
     }
 
-    public ScheduledExecutorService executors = Executors.newScheduledThreadPool(2);
+    public ScheduledExecutorService executors = Executors.newScheduledThreadPool(5);
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
     @LauncherAPI
