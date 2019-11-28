@@ -7,6 +7,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherAPI;
+import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
@@ -34,6 +35,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     public NewLauncherSettings settings;
+    public LauncherConfig config = Launcher.getConfig();
     public StandartClientWebSocketService service;
     public AsyncRequestHandler requestHandler;
     public GuiObjectsContainer gui;
@@ -91,6 +93,7 @@ public class JavaFXApplication extends Application {
     public void start(Stage stage) throws Exception {
         // System loading
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
+        stage.setTitle(config.projectName.concat(" Launcher"));
         //Overlay loading
         gui = new GuiObjectsContainer();
         gui.processingOverlay = new ProcessingOverlay(this);
