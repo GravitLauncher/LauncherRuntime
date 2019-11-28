@@ -17,6 +17,7 @@ import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
+import java.io.IOException;
 import java.util.List;
 
 public class LoginScene extends AbstractScene {
@@ -65,6 +66,15 @@ public class LoginScene extends AbstractScene {
         {
             LauncherRequest launcherRequest = new LauncherRequest();
             processRequest("Launcher update", launcherRequest, (result) -> {
+                if(result.needUpdate)
+                {
+                    try {
+                        LauncherRequest.update(result);
+                    } catch (IOException e) {
+                        LogHelper.error(e);
+                        Platform.exit();
+                    }
+                }
                 LogHelper.dev("Launcher update processed");
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
                 processRequest("AuthAvailability update", getAvailabilityAuthRequest, (auth) -> {

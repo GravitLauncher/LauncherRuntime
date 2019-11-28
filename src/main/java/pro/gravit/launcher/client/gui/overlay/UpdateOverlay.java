@@ -251,7 +251,7 @@ public class UpdateOverlay extends AbstractOverlay {
     {
         double add = (double)(newValue - oldValue)/(double)totalSize; // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
-        property.set(property.get()+add);
+        property.set(property.get()+add*phaseRatio);
 
     }
     @Override
