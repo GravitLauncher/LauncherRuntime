@@ -28,6 +28,7 @@ public class FXMLProvider {
 
     public<T> Future<T> queue(String name, InputStream inputStream)
     {
+        LogHelper.dev("FXML queue %s", name);
         fxmlCache.put(name, new FutureVirtualObject());
         return executorService.submit( () -> {
             try {

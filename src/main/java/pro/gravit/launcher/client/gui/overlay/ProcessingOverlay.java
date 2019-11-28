@@ -8,6 +8,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -18,7 +19,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.IOException;
 import java.util.function.Consumer;
 
-public class ProcessingOverlay extends AbstractOverlay {
+public class ProcessingOverlay extends AbstractOverlay implements FXMLConsumer {
     private Node spinner;
     private Labeled description;
     public ProcessingOverlay(JavaFXApplication application) throws IOException {
@@ -86,5 +87,10 @@ public class ProcessingOverlay extends AbstractOverlay {
                 hide(2500, scene, onError);
             }
         });
+    }
+
+    @Override
+    public String getFxmlPath() {
+        return name;
     }
 }

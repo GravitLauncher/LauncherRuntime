@@ -30,6 +30,11 @@ public class AsyncRequestHandler implements ClientWebSocketService.EventHandler 
         if(webSocketEvent instanceof RequestEvent)
         {
             RequestEvent event = (RequestEvent) webSocketEvent;
+            if(event.requestUUID == null)
+            {
+                LogHelper.warning("Request event type %s.requestUUID is null", event.getType() == null ? "null" : event.getType());
+                return;
+            }
             CompletableFuture future = futureMap.get(event.requestUUID);
             if(future != null) {
                 if (event instanceof ErrorRequestEvent) {

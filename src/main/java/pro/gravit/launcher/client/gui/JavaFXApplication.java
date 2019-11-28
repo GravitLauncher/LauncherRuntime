@@ -12,6 +12,7 @@ import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
 import pro.gravit.launcher.client.gui.overlay.UpdateOverlay;
+import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
@@ -84,7 +85,6 @@ public class JavaFXApplication extends Application {
         service = Request.service;
         requestHandler = new AsyncRequestHandler(service);
         service.registerHandler(requestHandler);
-        gui = new GuiObjectsContainer();
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
     }
@@ -95,18 +95,12 @@ public class JavaFXApplication extends Application {
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
         stage.setTitle(config.projectName.concat(" Launcher"));
         //Overlay loading
-        gui = new GuiObjectsContainer();
-        gui.processingOverlay = new ProcessingOverlay(this);
-        gui.updateOverlay = new UpdateOverlay(this);
+        gui = new GuiObjectsContainer(this);
+        gui.init();
         //
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
         mainStage = stage;
-
-        gui.loginScene = registerScene(LoginScene.class);
-        gui.serverMenuScene = registerScene(ServerMenuScene.class);
-        gui.optionsScene = registerScene(OptionsScene.class);
-        gui.settingsScene = registerScene(SettingsScene.class);
         gui.loginScene.init();
         setMainScene(gui.loginScene);
         messageManager.createNotification("Test head", "Test message", true);
@@ -182,6 +176,18 @@ public class JavaFXApplication extends Application {
     {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, Stage.class, JavaFXApplication.class)).invokeWithArguments(mainStage, this);
+            queueFxml(instance.name);
+            return instance;
+        } catch (Throwable e) {
+            LogHelper.error(e);
+            throw new RuntimeException(e);
+        }
+    }
+    @SuppressWarnings("unchecked")
+    public<T extends AbstractOverlay> T registerOverlay(Class<T> clazz)
+    {
+        try {
+            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
             queueFxml(instance.name);
             return instance;
         } catch (Throwable e) {

@@ -10,6 +10,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.downloader.ListDownloader;
@@ -38,7 +39,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-public class UpdateOverlay extends AbstractOverlay {
+public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     public ProgressBar progressBar;
     public Circle[] phases;
     public Label speed;
@@ -267,5 +268,10 @@ public class UpdateOverlay extends AbstractOverlay {
     @Override
     public void errorHandle(Throwable e) {
         LogHelper.error(e);
+    }
+
+    @Override
+    public String getFxmlPath() {
+        return name;
     }
 }

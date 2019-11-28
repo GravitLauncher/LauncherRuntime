@@ -11,14 +11,14 @@ import java.io.IOException;
 
 public abstract class AbstractOverlay implements AllowDisable {
     protected final JavaFXApplication application;
-    protected final String name;
+    public final String name;
     protected Pane pane;
     boolean isInit;
     protected AbstractOverlay(String name, JavaFXApplication application) throws IOException {
         this.application = application;
         this.name = name;
-        application.queueFxml(name);
     }
+
     public final void init() throws IOException, InterruptedException {
         pane = application.getFxml(name);
         doInit();
