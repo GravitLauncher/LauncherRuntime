@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.overlay;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -14,7 +13,6 @@ import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.downloader.ListDownloader;
-import pro.gravit.launcher.events.request.UpdateRequestEvent;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
@@ -272,6 +270,6 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     @Override
     public String getFxmlPath() {
-        return name;
+        return fxmlPath;
     }
 }

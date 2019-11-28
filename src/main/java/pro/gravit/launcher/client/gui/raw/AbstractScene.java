@@ -30,14 +30,14 @@ public abstract class AbstractScene implements AllowDisable {
     protected Scene scene;
     public final Stage stage;
     public final JavaFXApplication application;
-    public final String name;
+    public final String fxmlPath;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
 
-    protected AbstractScene(String name, Stage stage, JavaFXApplication application) {
-        this.name = name;
+    protected AbstractScene(String fxmlPath, Stage stage, JavaFXApplication application) {
+        this.fxmlPath = fxmlPath;
         this.stage = stage;
         this.application = application;
         this.launcherConfig = Launcher.getConfig();
@@ -48,7 +48,7 @@ public abstract class AbstractScene implements AllowDisable {
     {
         if(scene == null)
         {
-            scene = new Scene(application.getFxml(name));
+            scene = new Scene(application.getFxml(fxmlPath));
             scene.setFill(Color.TRANSPARENT);
         }
         doInit();

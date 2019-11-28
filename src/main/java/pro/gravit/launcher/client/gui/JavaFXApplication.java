@@ -10,15 +10,9 @@ import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
-import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
-import pro.gravit.launcher.client.gui.overlay.UpdateOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
-import pro.gravit.launcher.client.gui.scene.LoginScene;
-import pro.gravit.launcher.client.gui.scene.OptionsScene;
-import pro.gravit.launcher.client.gui.scene.ServerMenuScene;
-import pro.gravit.launcher.client.gui.scene.SettingsScene;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.websockets.StandartClientWebSocketService;
@@ -94,13 +88,13 @@ public class JavaFXApplication extends Application {
         // System loading
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
         stage.setTitle(config.projectName.concat(" Launcher"));
+        mainStage = stage;
         //Overlay loading
         gui = new GuiObjectsContainer(this);
         gui.init();
         //
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
-        mainStage = stage;
         gui.loginScene.init();
         setMainScene(gui.loginScene);
         messageManager.createNotification("Test head", "Test message", true);
@@ -176,7 +170,7 @@ public class JavaFXApplication extends Application {
     {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, Stage.class, JavaFXApplication.class)).invokeWithArguments(mainStage, this);
-            queueFxml(instance.name);
+            queueFxml(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);
@@ -188,7 +182,7 @@ public class JavaFXApplication extends Application {
     {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            queueFxml(instance.name);
+            queueFxml(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);

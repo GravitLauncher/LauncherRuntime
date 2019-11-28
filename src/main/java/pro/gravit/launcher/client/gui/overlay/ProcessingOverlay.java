@@ -1,7 +1,5 @@
 package pro.gravit.launcher.client.gui.overlay;
 
-import javafx.beans.InvalidationListener;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -91,6 +89,6 @@ public class ProcessingOverlay extends AbstractOverlay implements FXMLConsumer {
 
     @Override
     public String getFxmlPath() {
-        return name;
+        return fxmlPath;
     }
 }

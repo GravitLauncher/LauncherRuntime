@@ -5,22 +5,21 @@ import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
 
 import java.io.IOException;
 
 public abstract class AbstractOverlay implements AllowDisable {
     protected final JavaFXApplication application;
-    public final String name;
+    public final String fxmlPath;
     protected Pane pane;
     boolean isInit;
-    protected AbstractOverlay(String name, JavaFXApplication application) throws IOException {
+    protected AbstractOverlay(String fxmlPath, JavaFXApplication application) throws IOException {
         this.application = application;
-        this.name = name;
+        this.fxmlPath = fxmlPath;
     }
 
     public final void init() throws IOException, InterruptedException {
-        pane = application.getFxml(name);
+        pane = application.getFxml(fxmlPath);
         doInit();
         isInit = true;
     }
