@@ -1,10 +1,12 @@
 package pro.gravit.launcher.client.gui.overlay;
 
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -26,26 +28,29 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class UpdateOverlay extends AbstractOverlay {
     public ProgressBar progressBar;
     public Circle[] phases;
     public Label speed;
-    public Text logOutput;
+    public TextArea logOutput;
+    public Text currentStatus;
 
     public long totalSize;
+    public AtomicLong totalDownloaded = new AtomicLong(0);
+    public int currentPhase = 0;
+    public double phaseOffset;
+    public double progressRatio = 1.0;
+    public double phaseRatio;
     public UpdateOverlay(JavaFXApplication application) throws IOException {
         super("overlay/update/update.fxml", application);
     }
@@ -56,10 +61,16 @@ public class UpdateOverlay extends AbstractOverlay {
         phases = new Circle[5];
         for(int i=1;i<=5;++i)
         {
-            phases[i-1] = (Circle) pane.lookup("#phase".concat(Integer.toString(i)));
+            Circle c = (Circle) pane.lookup("#phase".concat(Integer.toString(i)));
+            //c.getStyleClass().add("phaseactive");
+            phases[i-1] = c;
+            phaseOffset = (c.getRadius()*2.0)/progressBar.getPrefWidth();
+            progressRatio-=phaseOffset;
         }
+        phaseRatio = progressRatio / 4.0;
         speed = (Label) pane.lookup("#speed");
-        logOutput = (Text) pane.lookup("#headingUpdate");
+        logOutput = (TextArea) pane.lookup("#outputUpdate");
+        currentStatus = (Text) pane.lookup("#headingUpdate");
         logOutput.setText("");
         ((ButtonBase)pane.lookup("#close") ).setOnAction((e) -> {
             //TODO
@@ -103,6 +114,7 @@ public class UpdateOverlay extends AbstractOverlay {
         try {
             application.requestHandler.request(request).thenAccept(updateRequestEvent -> {
                 LogHelper.dev("Start updating %s", dirName);
+                totalDownloaded.set(0);
                 if(optionalsEnabled)
                     profile.pushOptionalFile(updateRequestEvent.hdir, digest);
                 try {
@@ -177,7 +189,7 @@ public class UpdateOverlay extends AbstractOverlay {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
                             deleteExtraDir(dir, diff.extra, diff.extra.flag);
-                            onSuccess.accept(hashedDir);
+                            onSuccess.accept(updateRequestEvent.hdir);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
@@ -198,7 +210,7 @@ public class UpdateOverlay extends AbstractOverlay {
             errorHandle(e);
         }
     }
-    public static void transfer(InputStream input, Path file, String filename, long size) throws IOException {
+    public void transfer(InputStream input, Path file, String filename, long size) throws IOException {
         try (OutputStream fileOutput = IOHelper.newOutput(file)) {
             long downloaded = 0L;
 
@@ -216,15 +228,32 @@ public class UpdateOverlay extends AbstractOverlay {
                 // Update state
                 downloaded += length;
                 //totalDownloaded += length;
+                long old = totalDownloaded.getAndAdd(length);
+                updateProgress(old, old+length);
             }
         }
     }
     public void addLog(String string)
     {
         LogHelper.dev("Update event %s", string);
-        logOutput.setText(logOutput.getText().concat(string).concat("\n"));
+        logOutput.appendText(string.concat("\n"));
     }
+    public void initNewPhase(String name)
+    {
+        currentStatus.setText(name);
+        phases[currentPhase].getStyleClass().add("phaseActive");
+        DoubleProperty property = progressBar.progressProperty();
+        property.set((phaseOffset+phaseRatio)*currentPhase);
+        LogHelper.debug("NewPhase %f", progressBar.progressProperty().doubleValue());
+        currentPhase++;
+    }
+    public void updateProgress(long oldValue, long newValue)
+    {
+        double add = (double)(newValue - oldValue)/(double)totalSize; // 0.0 - 1.0
+        DoubleProperty property = progressBar.progressProperty();
+        property.set(property.get()+add);
 
+    }
     @Override
     public void reset() {
 
