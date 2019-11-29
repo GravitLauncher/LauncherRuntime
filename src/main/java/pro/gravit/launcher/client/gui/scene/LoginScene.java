@@ -72,8 +72,11 @@ public class LoginScene extends AbstractScene {
                         LauncherRequest.update(result);
                     } catch (IOException e) {
                         LogHelper.error(e);
-                        Platform.exit();
+                    } catch (Throwable ignored)
+                    {
+
                     }
+                    Platform.exit();
                 }
                 LogHelper.dev("Launcher update processed");
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
