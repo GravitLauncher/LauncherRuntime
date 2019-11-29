@@ -77,7 +77,7 @@ public class JavaFXApplication extends Application {
             LogHelper.error(e);
         }
         service = Request.service;
-        requestHandler = new AsyncRequestHandler(service);
+        requestHandler = new AsyncRequestHandler(service, new GuiEventHandler(this));
         service.registerHandler(requestHandler);
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);

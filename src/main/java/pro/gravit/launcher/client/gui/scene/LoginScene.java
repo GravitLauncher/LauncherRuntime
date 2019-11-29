@@ -136,14 +136,18 @@ public class LoginScene extends AbstractScene {
                 application.settings.login = login;
                 application.settings.rsaPassword = password;
             }
-            processRequest("Update profiles", new ProfilesRequest(), (profiles) -> {
-                application.runtimeStateMachine.setProfilesResult(profiles);
-                contextHelper.runInFxThread(() -> {
-                    hideOverlay(0, null);
-                    application.setMainScene(application.gui.serverMenuScene);
-                });
-            }, null);
+            onGetProfiles();
 
+        }, null);
+    }
+    public void onGetProfiles()
+    {
+        processRequest("Update profiles", new ProfilesRequest(), (profiles) -> {
+            application.runtimeStateMachine.setProfilesResult(profiles);
+            contextHelper.runInFxThread(() -> {
+                hideOverlay(0, null);
+                application.setMainScene(application.gui.serverMenuScene);
+            });
         }, null);
     }
 }
