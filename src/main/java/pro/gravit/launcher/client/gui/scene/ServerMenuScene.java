@@ -1,18 +1,15 @@
 package pro.gravit.launcher.client.gui.scene;
 
-import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import pro.gravit.launcher.client.ClientLauncher;
 import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -27,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerMenuScene extends AbstractScene {
     public static String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -51,6 +48,7 @@ public class ServerMenuScene extends AbstractScene {
         futures.forEach((profile, future) -> {
             try {
                 Pane pane = future.get();
+                AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
                 ((Text)pane.lookup("#nameServer")).setText(profile.getTitle());
                 ((Text)pane.lookup("#genreServer")).setText(profile.getVersion().toString());
                 pane.setOnMouseClicked((e) -> {
@@ -63,7 +61,7 @@ public class ServerMenuScene extends AbstractScene {
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
                     //lastSelectedServerButton.lookup("#nameServer").getStyleClass().add("nameServerActive");
                     lastSelectedServerButton.getStyleClass().forEach((t) -> LogHelper.debug("SClass %s", t));
-                    changeServer(profile);
+                    changeServer(profile, pingerResult.get());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
                 });
                 pane.setOnMouseEntered((e) -> {
@@ -73,6 +71,25 @@ public class ServerMenuScene extends AbstractScene {
                     pane.lookup("#nameServer").getStyleClass().remove("nameServerActive");
                 });
                 serverList.getChildren().add(pane);
+                application.workers.submit(() -> {
+                    ServerPinger pinger = new ServerPinger(profile);
+                    ServerPinger.Result result;
+                    try {
+                        result = pinger.ping();
+                    } catch (IOException e) {
+                        result = new ServerPinger.Result(0,0, "0 / 0");
+                    }
+                    pingerResult.set(result);
+                    ServerPinger.Result finalResult = result;
+                    contextHelper.runInFxThread(() -> {
+                        ((Text)pane.lookup("#online")).setText(String.valueOf(finalResult.onlinePlayers));
+                        if(application.runtimeStateMachine.getProfile() != null &&
+                                application.runtimeStateMachine.getProfile() == profile)
+                        {
+                            ((Text)layout.lookup("#headingOnline")).setText(String.format("%d / %d", finalResult.onlinePlayers, finalResult.maxPlayers));
+                        }
+                    });
+                });
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
             }
@@ -95,11 +112,15 @@ public class ServerMenuScene extends AbstractScene {
             launchClient();
         });
     }
-    public void changeServer(ClientProfile profile)
+    public void changeServer(ClientProfile profile, ServerPinger.Result pingerResult)
     {
         application.runtimeStateMachine.setProfile(profile);
         ((Text)layout.lookup("#heading")).setText(profile.getTitle());
         ((Text)((ScrollPane)layout.lookup("#serverInfo")).getContent().lookup("#servertext")).setText(profile.getInfo());
+        if(pingerResult != null)
+            ((Text)layout.lookup("#headingOnline")).setText(String.format("%d / %d", pingerResult.onlinePlayers, pingerResult.maxPlayers));
+        else
+            ((Text)layout.lookup("#headingOnline")).setText("? / ?");
     }
     public void launchClient()
     {

@@ -182,7 +182,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                             } catch (IOException | URISyntaxException e) {
                                 throw new RuntimeException(e);
                              }
-                        }, application.executors);
+                        }, application.workers);
                     }
                     CompletableFuture.allOf(futures).thenAccept((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));

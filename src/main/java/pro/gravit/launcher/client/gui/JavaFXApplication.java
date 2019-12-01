@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
@@ -12,7 +11,6 @@ import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.launcher.client.gui.raw.AbstractStage;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.managers.SettingsManager;
@@ -25,9 +23,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
@@ -38,6 +36,7 @@ public class JavaFXApplication extends Application {
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
     public MessageManager messageManager;
+    public ResourceBundle resources;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
 
@@ -51,7 +50,8 @@ public class JavaFXApplication extends Application {
         return mainStage;
     }
 
-    public ScheduledExecutorService executors = Executors.newScheduledThreadPool(5);
+    public ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
+    public ExecutorService workers = Executors.newCachedThreadPool();
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
     @LauncherAPI
@@ -87,7 +87,11 @@ public class JavaFXApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // System loading
-        fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
+        try(InputStream input = getResource("runtime_ru.properties"))
+        {
+            resources = new PropertyResourceBundle(input);
+        }
+        fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);
         mainStage = new PrimaryStage(stage, config.projectName.concat(" Launcher"));
         //Overlay loading
         gui = new GuiObjectsContainer(this);
@@ -106,15 +110,15 @@ public class JavaFXApplication extends Application {
     {
         return IOHelper.newInput(Launcher.getResourceURL(name));
     }
-    public static FXMLLoader newFXMLLoader(String name)
+    public FXMLLoader newFXMLLoader(String name)
     {
         FXMLLoader loader;
         try {
             loader = new FXMLLoader(IOHelper.getResourceURL("runtime/".concat(name)));
-            loader.setControllerFactory((c) -> {
-                LogHelper.debug("ControllerFactory %s", c.getName());
-                return null;
-            });
+            if(resources != null)
+            {
+                loader.setResources(resources);
+            }
         } catch (Exception e) {
             LogHelper.error(e);
             return null;
