@@ -55,12 +55,22 @@ public class ServerMenuScene extends AbstractScene {
                 ((Text)pane.lookup("#genreServer")).setText(profile.getVersion().toString());
                 pane.setOnMouseClicked((e) -> {
                     if(!e.getButton().equals(MouseButton.PRIMARY)) return;
-                    if(lastSelectedServerButton != null) lastSelectedServerButton.getStyleClass().remove("nameServerSelected");
-                    lastSelectedServerButton = pane.lookup("#nameServer");
-                    lastSelectedServerButton.getStyleClass().add("nameServerSelected");
+                    if(lastSelectedServerButton != null) {
+                        lastSelectedServerButton.getStyleClass().remove("serverButtonsActive");
+                        //lastSelectedServerButton.lookup("#nameServer").getStyleClass().remove("nameServerActive");
+                    }
+                    lastSelectedServerButton = pane;
+                    lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
+                    //lastSelectedServerButton.lookup("#nameServer").getStyleClass().add("nameServerActive");
                     lastSelectedServerButton.getStyleClass().forEach((t) -> LogHelper.debug("SClass %s", t));
                     changeServer(profile);
                     LogHelper.dev("Selected profile %s", profile.getTitle());
+                });
+                pane.setOnMouseEntered((e) -> {
+                    pane.lookup("#nameServer").getStyleClass().add("nameServerActive");
+                });
+                pane.setOnMouseExited((e) -> {
+                    pane.lookup("#nameServer").getStyleClass().remove("nameServerActive");
                 });
                 serverList.getChildren().add(pane);
             } catch (InterruptedException | ExecutionException e) {
