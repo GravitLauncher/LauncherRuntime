@@ -33,8 +33,8 @@ public class ServerMenuScene extends AbstractScene {
     public static String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     public Node layout;
     private Node lastSelectedServerButton;
-    public ServerMenuScene(Stage stage, JavaFXApplication application) {
-        super("scenes/servermenu/servermenu.fxml", stage, application);
+    public ServerMenuScene(JavaFXApplication application) {
+        super("scenes/servermenu/servermenu.fxml", application);
     }
 
     @Override

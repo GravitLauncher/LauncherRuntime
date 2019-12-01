@@ -39,8 +39,8 @@ public class LoginScene extends AbstractScene {
         }
     }
 
-    public LoginScene(Stage stage, JavaFXApplication application) {
-        super("scenes/login/login.fxml", stage, application);
+    public LoginScene(JavaFXApplication application) {
+        super("scenes/login/login.fxml", application);
     }
 
     @Override

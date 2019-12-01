@@ -28,17 +28,16 @@ import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
     protected Scene scene;
-    public final Stage stage;
     public final JavaFXApplication application;
     public final String fxmlPath;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
+    AbstractStage currentStage;
 
-    protected AbstractScene(String fxmlPath, Stage stage, JavaFXApplication application) {
+    protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         this.fxmlPath = fxmlPath;
-        this.stage = stage;
         this.application = application;
         this.launcherConfig = Launcher.getConfig();
         this.contextHelper = new ContextHelper(this);
@@ -163,22 +162,15 @@ public abstract class AbstractScene implements AllowDisable {
     public Scene getScene() {
         return scene;
     }
+
     protected void sceneBaseInit(Node node)
     {
         ((ButtonBase)node.lookup("#close") ).setOnAction((e) -> {
-            Platform.exit();
+            currentStage.close();
         });
         ((ButtonBase)node.lookup("#hide") ).setOnAction((e) -> {
-            stage.setIconified(true);
+            currentStage.hide();
         });
-        AtomicReference<Point2D> movePoint = new AtomicReference<>();
-        node.setOnMousePressed(event -> { movePoint.set(new Point2D(event.getSceneX(), event.getSceneY())); });
-        node.setOnMouseDragged(event -> {
-        if (movePoint.get() == null) {
-            return;
-        }
-        stage.setX(event.getScreenX() - movePoint.get().getX());
-        stage.setY(event.getScreenY() - movePoint.get().getY());
-    });
+        currentStage.enableMouseDrag(node);
     }
 }

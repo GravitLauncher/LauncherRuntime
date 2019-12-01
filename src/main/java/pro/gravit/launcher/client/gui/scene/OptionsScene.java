@@ -9,8 +9,8 @@ import pro.gravit.launcher.client.gui.raw.AbstractScene;
 
 public class OptionsScene extends AbstractScene {
     public Node layout;
-    public OptionsScene(Stage stage, JavaFXApplication application) {
-        super("scenes/options/options.fxml", stage, application);
+    public OptionsScene(JavaFXApplication application) {
+        super("scenes/options/options.fxml", application);
     }
 
     @Override

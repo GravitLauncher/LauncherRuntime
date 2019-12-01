@@ -11,13 +11,11 @@ import pro.gravit.launcher.client.FunctionalBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.utils.helper.JVMHelper;
-import pro.gravit.utils.helper.LogHelper;
 
 public class SettingsScene extends AbstractScene {
     public Node layout;
-    public SettingsScene(Stage stage, JavaFXApplication application) {
-        super("scenes/settings/settings.fxml", stage, application);
+    public SettingsScene(JavaFXApplication application) {
+        super("scenes/settings/settings.fxml", application);
     }
 
     @Override

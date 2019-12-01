@@ -12,7 +12,9 @@ import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.raw.AbstractStage;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
+import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.websockets.StandartClientWebSocketService;
@@ -39,11 +41,7 @@ public class JavaFXApplication extends Application {
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
 
-    public Stage getMainStage() {
-        return mainStage;
-    }
-
-    private Stage mainStage;
+    private PrimaryStage mainStage;
     private AbstractScene currentScene;
 
     public AbstractScene getCurrentScene() {
@@ -87,16 +85,12 @@ public class JavaFXApplication extends Application {
     public void start(Stage stage) throws Exception {
         // System loading
         fxmlProvider = new FXMLProvider(JavaFXApplication::newFXMLLoader, executors);
-        stage.setTitle(config.projectName.concat(" Launcher"));
-        mainStage = stage;
+        mainStage = new PrimaryStage(stage, config.projectName.concat(" Launcher"));
         //Overlay loading
         gui = new GuiObjectsContainer(this);
         gui.init();
         //
-        stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setResizable(false);
-        gui.loginScene.init();
-        setMainScene(gui.loginScene);
+        mainStage.setScene(gui.loginScene);
         messageManager.createNotification("Test head", "Test message", true);
     }
 
@@ -137,23 +131,11 @@ public class JavaFXApplication extends Application {
         InputStream input = getResource(name);
         return fxmlProvider.queueNoCache(name, input);
     }
-    private void setScene(Scene scene)
-    {
-        mainStage.setScene(scene);
-        mainStage.sizeToScene();
-        mainStage.show();
-    }
     public void setMainScene(AbstractScene scene) throws Exception
     {
-        if(scene == null)
-        {
-            throw new NullPointerException("Try set null scene");
-        }
-        if(scene.getScene() == null)
-            scene.init();
-        currentScene = scene;
-        setScene(currentScene.getScene());
+        mainStage.setScene(scene);
     }
+
     public Stage newStage()
     {
         return newStage(StageStyle.TRANSPARENT);
