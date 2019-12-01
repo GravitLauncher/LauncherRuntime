@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui;
 
+import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
 import pro.gravit.launcher.events.NotificationEvent;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
@@ -23,11 +24,12 @@ public class GuiEventHandler implements Consumer<WebSocketEvent> {
             if(event instanceof NotificationEvent)
             {
                 NotificationEvent e = (NotificationEvent) event;
-                application.messageManager.createNotification(e.head, e.message);
+                ContextHelper.runInFxThreadStatic(() -> application.messageManager.createNotification(e.head, e.message));
             }
-            if(event instanceof AuthRequestEvent)
+            else if(event instanceof AuthRequestEvent)
             {
                 boolean isNextScene = application.getCurrentScene() instanceof LoginScene;
+                LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
                 application.runtimeStateMachine.setAuthResult((AuthRequestEvent) event);
                 if(isNextScene)
                 {
