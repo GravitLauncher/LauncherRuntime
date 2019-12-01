@@ -36,6 +36,10 @@ public abstract class AbstractScene implements AllowDisable {
     private AbstractOverlay currentOverlay;
     AbstractStage currentStage;
 
+    public AbstractStage getCurrentStage() {
+        return currentStage;
+    }
+
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         this.fxmlPath = fxmlPath;
         this.application = application;

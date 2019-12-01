@@ -11,6 +11,7 @@ import pro.gravit.launcher.client.FunctionalBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 
 public class SettingsScene extends AbstractScene {
     public Node layout;
@@ -24,6 +25,13 @@ public class SettingsScene extends AbstractScene {
         sceneBaseInit(layout);
         ((ButtonBase)layout.lookup("#apply")).setOnAction((e) -> {
             contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run();
+        });
+        ((ButtonBase)layout.lookup("#console")).setOnAction((e) -> {
+            contextHelper.runCallback(() -> {
+                if(application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
+                if(application.gui.consoleStage.isNullScene()) application.gui.consoleStage.setScene(application.gui.consoleScene);
+                application.gui.consoleStage.show();
+            }).run();
         });
         Slider ramSlider = (Slider) layout.lookup("#ramSlider");
         Label ramLabel = (Label) layout.lookup("#settingsBackground").lookup("#ramLabel");

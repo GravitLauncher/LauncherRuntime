@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.raw;
 
+import javafx.application.Platform;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -32,7 +33,7 @@ public abstract class AbstractStage {
     }
     public void close()
     {
-
+        stage.hide();
     }
     public void enableMouseDrag(Node node)
     {
@@ -45,5 +46,18 @@ public abstract class AbstractStage {
             stage.setX(event.getScreenX() - movePoint.get().getX());
             stage.setY(event.getScreenY() - movePoint.get().getY());
         });
+    }
+
+    public AbstractScene getScene() {
+        return scene;
+    }
+
+    public final boolean isNullScene()
+    {
+        return scene == null;
+    }
+    public void show()
+    {
+        stage.show();
     }
 }

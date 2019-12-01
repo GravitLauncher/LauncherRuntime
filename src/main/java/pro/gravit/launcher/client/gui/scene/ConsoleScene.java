@@ -7,7 +7,7 @@ import pro.gravit.launcher.client.gui.raw.AbstractScene;
 
 public class ConsoleScene extends AbstractScene {
     public Node layout;
-    protected ConsoleScene(JavaFXApplication application) {
+    public ConsoleScene(JavaFXApplication application) {
         super("scenes/console/console.fxml", application);
     }
 

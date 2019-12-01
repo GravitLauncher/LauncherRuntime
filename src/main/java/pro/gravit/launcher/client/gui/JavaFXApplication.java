@@ -42,10 +42,13 @@ public class JavaFXApplication extends Application {
     private FXMLProvider fxmlProvider;
 
     private PrimaryStage mainStage;
-    private AbstractScene currentScene;
 
     public AbstractScene getCurrentScene() {
-        return currentScene;
+        return mainStage.getScene();
+    }
+
+    public PrimaryStage getMainStage() {
+        return mainStage;
     }
 
     public ScheduledExecutorService executors = Executors.newScheduledThreadPool(5);
@@ -151,7 +154,7 @@ public class JavaFXApplication extends Application {
     public<T extends AbstractScene> T registerScene(Class<T> clazz)
     {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, Stage.class, JavaFXApplication.class)).invokeWithArguments(mainStage, this);
+            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
             queueFxml(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
