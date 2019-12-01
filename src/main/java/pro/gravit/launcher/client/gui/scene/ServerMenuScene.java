@@ -126,7 +126,7 @@ public class ServerMenuScene extends AbstractScene {
     public void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile)
     {
         ClientLauncher.Params clientParams = new ClientLauncher.Params(null, assetDir, clientDir, application.runtimeStateMachine.getPlayerProfile(), application.runtimeStateMachine.getAccessToken(),
-            false /* TODO */, false /* TODO */, application.settings.ram, 0,0);
+            application.settings.autoEnter, application.settings.fullScreen, application.settings.ram, 0,0);
         contextHelper.runCallback(() -> {
             Process process = ClientLauncher.launch(assetHDir, clientHDir, profile, clientParams, true);
             showOverlay(application.gui.debugOverlay, (e) -> {

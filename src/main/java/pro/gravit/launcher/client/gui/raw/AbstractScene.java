@@ -106,6 +106,8 @@ public abstract class AbstractScene implements AllowDisable {
     {
         if(currentOverlayNode == null)
             return;
+        if(currentOverlay == null)
+            return;
         enable();
         currentOverlay.reset();
         currentOverlay = null;
