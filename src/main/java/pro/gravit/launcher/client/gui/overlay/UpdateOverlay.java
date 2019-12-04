@@ -9,6 +9,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.downloader.AsyncDownloader;
+import pro.gravit.launcher.client.downloader.FixUpdateRequest;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
@@ -109,7 +110,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess)
     {
-        UpdateRequest request = new UpdateRequest(dir);
+        FixUpdateRequest request = new FixUpdateRequest(dirName);
         try {
             application.requestHandler.request(request).thenAccept(updateRequestEvent -> {
                 LogHelper.dev("Start updating %s", dirName);

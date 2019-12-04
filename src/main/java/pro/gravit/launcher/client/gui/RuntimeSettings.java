@@ -37,6 +37,7 @@ public class RuntimeSettings extends UserSettings {
     }
     public void apply()
     {
-        updatesDir = Paths.get(updatesDirPath);
+        if(updatesDirPath != null)
+            updatesDir = Paths.get(updatesDirPath);
     }
 }

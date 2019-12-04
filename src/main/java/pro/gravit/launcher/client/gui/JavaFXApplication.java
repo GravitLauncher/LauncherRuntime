@@ -79,6 +79,8 @@ public class JavaFXApplication extends Application {
             LogHelper.error(e);
         }
         runtimeSettings = (RuntimeSettings) settings.userSettings.get("stdruntime");
+        runtimeSettings.apply();
+        DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
         service = Request.service;
         requestHandler = new AsyncRequestHandler(service, new GuiEventHandler(this));
         service.registerHandler(requestHandler);
