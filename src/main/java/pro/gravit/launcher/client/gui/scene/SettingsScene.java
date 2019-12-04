@@ -4,9 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import pro.gravit.launcher.client.DirBridge;
-import pro.gravit.launcher.client.FunctionalBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -38,23 +36,22 @@ public class SettingsScene extends AbstractScene {
         });
         Slider ramSlider = (Slider) layout.lookup("#ramSlider");
         Label ramLabel = (Label) layout.lookup("#settingsBackground").lookup("#ramLabel");
-        ramLabel.setText(Integer.toString(application.settings.ram));
-        ramSlider.setMax(FunctionalBridge.getJVMTotalMemory());
+        ramLabel.setText(Integer.toString(application.runtimeSettings.ram));
+        ramSlider.setMax(2048); //TODO
         ramSlider.setSnapToTicks(true);
         ramSlider.setShowTickMarks(true);
         ramSlider.setShowTickLabels(true);
         ramSlider.setMinorTickCount(3);
         ramSlider.setMajorTickUnit(1024);
         ramSlider.setBlockIncrement(1024);
-        ramSlider.setValue(application.settings.ram);
+        ramSlider.setValue(application.runtimeSettings.ram);
         ramSlider.valueProperty().addListener((o, ov, nv) -> {
-            application.settings.ram = nv.intValue();
-            ramLabel.setText(application.settings.ram <= 0 ? "Auto" : application.settings.ram + " MiB");
+            application.runtimeSettings.ram = nv.intValue();
+            ramLabel.setText(application.runtimeSettings.ram <= 0 ? "Auto" : application.runtimeSettings.ram + " MiB");
         });
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#dirLabel", "#patch");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
-        add("Debug", "debug mode", application.settings.debug, (value) -> application.settings.debug=value);
-        add("Test", "test mode", application.settings.debug, (value) -> application.settings.debug=value);
+        add("Debug", "debug mode", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug=value);
     }
 
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged)

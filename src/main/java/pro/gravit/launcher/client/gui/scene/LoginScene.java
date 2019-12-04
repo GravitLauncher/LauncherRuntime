@@ -51,12 +51,12 @@ public class LoginScene extends AbstractScene {
         layout = LookupHelper.lookup(scene.getRoot(),  "#layout", "#authPane");
         sceneBaseInit(layout);
         TextField loginField = (TextField) layout.lookup("#login");
-        if(application.settings.login != null)
+        if(application.runtimeSettings.login != null)
         {
-            loginField.setText(application.settings.login);
+            loginField.setText(application.runtimeSettings.login);
         }
         TextField passwordField = (TextField) layout.lookup("#password");
-        if (application.settings.rsaPassword != null) {
+        if (application.runtimeSettings.encryptedPassword != null) {
             passwordField.getStyleClass().add("hasSaved");
             passwordField.setPromptText("*** Сохранённый ***");
             ((CheckBox)layout.lookup("#savePassword")).setSelected(true);
@@ -89,7 +89,7 @@ public class LoginScene extends AbstractScene {
                         int i = 0;
                         for(GetAvailabilityAuthRequestEvent.AuthAvailability a : auth.list)
                         {
-                            if(a.name.equals(application.settings.auth)) authIndex = i;
+                            if(a.equals(application.runtimeSettings.lastAuth)) authIndex = i;
                             authList.getItems().add(a);
                             i++;
                         }
@@ -107,7 +107,7 @@ public class LoginScene extends AbstractScene {
         byte[] encryptedPassword;
         if(passwordField.getPromptText().equals("*** Сохранённый ***"))
         {
-            encryptedPassword = application.settings.rsaPassword;
+            encryptedPassword = application.runtimeSettings.encryptedPassword;
         }
         else
         {
@@ -135,8 +135,8 @@ public class LoginScene extends AbstractScene {
             application.runtimeStateMachine.setAuthResult(result);
             if(savePassword)
             {
-                application.settings.login = login;
-                application.settings.rsaPassword = password;
+                application.runtimeSettings.login = login;
+                application.runtimeSettings.encryptedPassword = password;
             }
             onGetProfiles();
 

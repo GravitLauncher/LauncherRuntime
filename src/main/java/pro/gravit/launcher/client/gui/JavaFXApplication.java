@@ -9,6 +9,7 @@ import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.client.UserSettings;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
@@ -30,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     public NewLauncherSettings settings;
+    public RuntimeSettings runtimeSettings;
     public LauncherConfig config = Launcher.getConfig();
     public StandartClientWebSocketService service;
     public AsyncRequestHandler requestHandler;
@@ -65,18 +67,18 @@ public class JavaFXApplication extends Application {
     @Override
     public void init() throws Exception {
         settingsManager = new StdSettingsManager();
+        UserSettings.providers.register("stdruntime", RuntimeSettings.class);
         settingsManager.loadConfig();
         settings = settingsManager.getConfig();
-        DirBridge.dir = DirBridge.getLauncherDir(Launcher.getConfig().projectName);
-        DirBridge.defaultUpdatesDir = DirBridge.dir.resolve("updates");
-        if(DirBridge.dirUpdates == null) DirBridge.dirUpdates = settings.updatesDir  != null ? settings.updatesDir :
-                DirBridge.dir;
+        if(settings.userSettings.get("stdruntime") == null)
+            settings.userSettings.put("stdruntime", RuntimeSettings.getDefault());
         try {
             settingsManager.loadHDirStore();
         } catch (Exception e)
         {
             LogHelper.error(e);
         }
+        runtimeSettings = (RuntimeSettings) settings.userSettings.get("stdruntime");
         service = Request.service;
         requestHandler = new AsyncRequestHandler(service, new GuiEventHandler(this));
         service.registerHandler(requestHandler);

@@ -8,11 +8,7 @@ public class StdSettingsManager extends SettingsManager {
     @Override
     public NewLauncherSettings getDefaultConfig() {
         NewLauncherSettings newLauncherSettings = new NewLauncherSettings();
-        newLauncherSettings.updatesDir = DirBridge.defaultUpdatesDir;
-        newLauncherSettings.autoEnter = false;
-        newLauncherSettings.fullScreen = false;
-        newLauncherSettings.ram = 1024;
-        newLauncherSettings.featureStore = true;
+        newLauncherSettings.userSettings.put("stdruntime", RuntimeSettings.getDefault());
         return newLauncherSettings;
     }
 }

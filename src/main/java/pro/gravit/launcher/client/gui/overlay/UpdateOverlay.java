@@ -8,11 +8,11 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
+import pro.gravit.launcher.client.downloader.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
-import pro.gravit.launcher.downloader.ListDownloader;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
@@ -109,7 +109,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess)
     {
-        UpdateRequest request = new UpdateRequest(dirName, dir, matcher, digest);
+        UpdateRequest request = new UpdateRequest(dir);
         try {
             application.requestHandler.request(request).thenAccept(updateRequestEvent -> {
                 LogHelper.dev("Start updating %s", dirName);
@@ -122,14 +122,14 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Create Diff %s", dirName)));
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
-                    final List<ListDownloader.DownloadTask> adds = new ArrayList<>();
+                    final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
                         switch (entry.getType())
                         {
                             case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
-                                adds.add(new ListDownloader.DownloadTask(path, file.size));
+                                adds.add(new AsyncDownloader.SizedFile(path, file.size));
                                 break;
                             case DIR:
                                 Files.createDirectories(dir.resolve(path));
@@ -144,12 +144,12 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                     int threadNumber = 4;
                     CompletableFuture[] futures = new CompletableFuture[threadNumber];
                     for(int i=0;i<threadNumber;++i) futures[i] = new CompletableFuture();
-                    final List<List<ListDownloader.DownloadTask>> tasks = new ArrayList<>(threadNumber);
+                    final List<List<AsyncDownloader.SizedFile>> tasks = new ArrayList<>(threadNumber);
                     for(int i=0;i<threadNumber;++i) tasks.add(new ArrayList<>());
                     int limitInOneTask = adds.size() / threadNumber;
                     int currentNumber = 0;
                     int currentProcessedTasks = 0;
-                    for(ListDownloader.DownloadTask task : adds)
+                    for(AsyncDownloader.SizedFile task : adds)
                     {
                         if(currentProcessedTasks == limitInOneTask && currentNumber != threadNumber-1) { currentNumber++; currentProcessedTasks = 0; }
                         tasks.get(currentNumber).add(task);
@@ -160,7 +160,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                         int finalI = i;
                         futures[i] = CompletableFuture.runAsync(() -> {
                             try {
-                            List<ListDownloader.DownloadTask> myTasks = tasks.get(finalI);
+                            List<AsyncDownloader.SizedFile> myTasks = tasks.get(finalI);
                             URI baseUri = new URI(updateRequestEvent.url);
                             String scheme = baseUri.getScheme();
                             String host = baseUri.getHost();
@@ -168,15 +168,15 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                             if (port != -1)
                                 host = host + ":" + port;
                             String path = baseUri.getPath();
-                            for(ListDownloader.DownloadTask currentTask : myTasks)
+                            for(AsyncDownloader.SizedFile currentTask : myTasks)
                             {
-                                    URL u = new URI(scheme,host,path + currentTask.apply, "", "").toURL();
+                                    URL u = new URI(scheme,host,path + currentTask.path, "", "").toURL();
                                     URLConnection connection = u.openConnection();
                                     try(InputStream input = connection.getInputStream())
                                     {
-                                        Path filePath = dir.resolve(currentTask.apply);
-                                        LogHelper.info("Thread %d download file %s", finalI, currentTask.apply);
-                                        transfer(input, filePath, currentTask.apply, currentTask.size);
+                                        Path filePath = dir.resolve(currentTask.path);
+                                        LogHelper.info("Thread %d download file %s", finalI, currentTask.path);
+                                        transfer(input, filePath, currentTask.path, currentTask.size);
                                     }
                             }
                             } catch (IOException | URISyntaxException e) {
