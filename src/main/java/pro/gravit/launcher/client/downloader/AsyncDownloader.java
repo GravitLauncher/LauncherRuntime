@@ -11,10 +11,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
@@ -72,6 +69,7 @@ public class AsyncDownloader {
     }
     public List<List<SizedFile>> sortFiles(List<SizedFile> files, int threads)
     {
+        files.sort(Comparator.comparingLong((f) -> -f.size));
         List<List<SizedFile>> result = new ArrayList<>();
         for(int i=0;i<threads;++i) result.add(new LinkedList<>());
         long[] sizes = new long[threads];
@@ -88,7 +86,7 @@ public class AsyncDownloader {
         return result;
     }
 
-    public CompletableFuture[] runDownloadList(List<List<SizedFile>> files, String baseURL, Path targetDir, Executor executor) throws URISyntaxException, IOException {
+    public CompletableFuture[] runDownloadList(List<List<SizedFile>> files, String baseURL, Path targetDir, Executor executor) {
         int threads = files.size();
         CompletableFuture[] futures = new CompletableFuture[threads];
         for(int i=0;i<threads;++i)
