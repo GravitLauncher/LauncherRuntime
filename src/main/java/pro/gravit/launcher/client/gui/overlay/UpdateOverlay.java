@@ -140,51 +140,12 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                     });
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Sorting files %s", dirName)));
-                    adds.sort((Comparator.comparingLong((t) -> t.size)));
-
-                    int threadNumber = 4;
-                    CompletableFuture[] futures = new CompletableFuture[threadNumber];
-                    for(int i=0;i<threadNumber;++i) futures[i] = new CompletableFuture();
-                    final List<List<AsyncDownloader.SizedFile>> tasks = new ArrayList<>(threadNumber);
-                    for(int i=0;i<threadNumber;++i) tasks.add(new ArrayList<>());
-                    int limitInOneTask = adds.size() / threadNumber;
-                    int currentNumber = 0;
-                    int currentProcessedTasks = 0;
-                    for(AsyncDownloader.SizedFile task : adds)
-                    {
-                        if(currentProcessedTasks == limitInOneTask && currentNumber != threadNumber-1) { currentNumber++; currentProcessedTasks = 0; }
-                        tasks.get(currentNumber).add(task);
-                        currentProcessedTasks++;
-                    }
-                    for(int i=0;i<threadNumber;++i)
-                    {
-                        int finalI = i;
-                        futures[i] = CompletableFuture.runAsync(() -> {
-                            try {
-                            List<AsyncDownloader.SizedFile> myTasks = tasks.get(finalI);
-                            URI baseUri = new URI(updateRequestEvent.url);
-                            String scheme = baseUri.getScheme();
-                            String host = baseUri.getHost();
-                            int port = baseUri.getPort();
-                            if (port != -1)
-                                host = host + ":" + port;
-                            String path = baseUri.getPath();
-                            for(AsyncDownloader.SizedFile currentTask : myTasks)
-                            {
-                                    URL u = new URI(scheme,host,path + currentTask.path, "", "").toURL();
-                                    URLConnection connection = u.openConnection();
-                                    try(InputStream input = connection.getInputStream())
-                                    {
-                                        Path filePath = dir.resolve(currentTask.path);
-                                        LogHelper.info("Thread %d download file %s", finalI, currentTask.path);
-                                        transfer(input, filePath, currentTask.path, currentTask.size);
-                                    }
-                            }
-                            } catch (IOException | URISyntaxException e) {
-                                throw new RuntimeException(e);
-                             }
-                        }, application.workers);
-                    }
+                    AsyncDownloader asyncDownloader = new AsyncDownloader((d) -> {
+                        long old = totalDownloaded.getAndAdd(d);
+                        updateProgress(old, old+d);
+                    });
+                    List<List<AsyncDownloader.SizedFile>> tasks = asyncDownloader.sortFiles(adds, 4);
+                    CompletableFuture[] futures = asyncDownloader.runDownloadList(tasks, updateRequestEvent.url, dir, application.workers);
                     CompletableFuture.allOf(futures).thenAccept((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
@@ -198,7 +159,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                         return null;
                     });
 
-                } catch (IOException e) {
+                } catch (IOException | URISyntaxException e) {
                     e.printStackTrace();
                 }
             }).exceptionally((error) -> {
@@ -208,29 +169,6 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
             });
         } catch (IOException e) {
             errorHandle(e);
-        }
-    }
-    public void transfer(InputStream input, Path file, String filename, long size) throws IOException {
-        try (OutputStream fileOutput = IOHelper.newOutput(file)) {
-            long downloaded = 0L;
-
-            // Download with digest update
-            byte[] bytes = IOHelper.newBuffer();
-            while (downloaded < size) {
-                int remaining = (int) Math.min(size - downloaded, bytes.length);
-                int length = input.read(bytes, 0, remaining);
-                if (length < 0)
-                    throw new EOFException(String.format("%d bytes remaining", size - downloaded));
-
-                // Update file
-                fileOutput.write(bytes, 0, length);
-
-                // Update state
-                downloaded += length;
-                //totalDownloaded += length;
-                long old = totalDownloaded.getAndAdd(length);
-                updateProgress(old, old+length);
-            }
         }
     }
     public void addLog(String string)
