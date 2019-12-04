@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui.raw;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
@@ -106,11 +107,15 @@ public class MessageManager {
                 double maxY = root.getHeight();
                 finalPane.setVisible(true);
                 double x = maxX-finalPane.getPrefWidth();
-                double y = finalPane.getPrefHeight()*cnt*1.1;
+                double y = finalPane.getPrefHeight()*cnt*1.1+finalPane.getPrefHeight()*0.6;
                 finalPane.setLayoutX(x);
                 finalPane.setLayoutY(y);
                 LogHelper.dev("Layout %f %f setted %f %f", maxX, maxY, x , y);
             }
+            finalPane.setOnMouseClicked((e) -> {
+                if(!e.getButton().equals(MouseButton.PRIMARY)) return;
+                onClose.run();
+            });
             AbstractScene.fade(finalPane, 2500, 1.0, 0.0, (e) -> {
                 onClose.run();
             });
