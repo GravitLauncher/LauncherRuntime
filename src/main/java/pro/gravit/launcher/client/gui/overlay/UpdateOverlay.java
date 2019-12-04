@@ -155,12 +155,12 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                             ex.printStackTrace();
                         }
                     }).exceptionally((e) -> {
-                        LogHelper.error(e);
+                        ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                         return null;
                     });
 
-                } catch (IOException | URISyntaxException e) {
-                    e.printStackTrace();
+                } catch (IOException e) {
+                    ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                 }
             }).exceptionally((error) -> {
                 ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
@@ -199,11 +199,14 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     @Override
     public void errorHandle(String error) {
+        addLog(String.format("Error: %s" ,error));
         LogHelper.error(error);
     }
 
     @Override
     public void errorHandle(Throwable e) {
+        addLog(String.format("Exception %s: %s", e.getClass(), e.getMessage() == null ? "" : e.getMessage()));
+        phases[currentPhase].getStyleClass().add("phaseError");
         LogHelper.error(e);
     }
 

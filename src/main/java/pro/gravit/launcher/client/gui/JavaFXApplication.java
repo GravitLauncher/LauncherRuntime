@@ -17,7 +17,9 @@ import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.websockets.StandartClientWebSocketService;
+import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -86,6 +88,14 @@ public class JavaFXApplication extends Application {
         service.registerHandler(requestHandler);
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
+        JVMHelper.RUNTIME.addShutdownHook(new Thread(() -> {
+            try {
+                settingsManager.saveConfig();
+                settingsManager.saveHDirStore();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }));
     }
 
     @Override
@@ -107,8 +117,6 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        settingsManager.saveConfig();
-        settingsManager.saveHDirStore();
     }
     public InputStream getResource(String name) throws IOException
     {
