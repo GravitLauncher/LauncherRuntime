@@ -42,11 +42,14 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     public ProgressBar progressBar;
     public Circle[] phases;
     public Label speed;
+    public Label volume;
     public TextArea logOutput;
     public Text currentStatus;
 
     public long totalSize;
     public AtomicLong totalDownloaded = new AtomicLong(0);
+    private AtomicLong lastUpdateTime = new AtomicLong(0);
+    private AtomicLong lastDownloaded = new AtomicLong(0);
     public int currentPhase = 0;
     public double phaseOffset;
     public double progressRatio = 1.0;
@@ -69,6 +72,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         }
         phaseRatio = progressRatio / 4.0;
         speed = (Label) pane.lookup("#speed");
+        volume = (Label) pane.lookup("#volume");
         logOutput = (TextArea) pane.lookup("#outputUpdate");
         currentStatus = (Text) pane.lookup("#headingUpdate");
         logOutput.setText("");
@@ -115,13 +119,15 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
             application.requestHandler.request(request).thenAccept(updateRequestEvent -> {
                 LogHelper.dev("Start updating %s", dirName);
                 totalDownloaded.set(0);
+                lastUpdateTime.set(System.currentTimeMillis());
+                lastDownloaded.set(0);
+                totalSize = 0;
                 if(optionalsEnabled)
                     profile.pushOptionalFile(updateRequestEvent.hdir, digest);
                 try {
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
                     if(!IOHelper.exists(dir)) Files.createDirectories(dir);
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
-                    ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Create Diff %s", dirName)));
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
                     final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
@@ -139,7 +145,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                         return HashedDir.WalkAction.CONTINUE;
                     });
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
-                    ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Sorting files %s", dirName)));
+                    ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
                     AsyncDownloader asyncDownloader = new AsyncDownloader((d) -> {
                         long old = totalDownloaded.getAndAdd(d);
                         updateProgress(old, old+d);
@@ -181,7 +187,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         currentStatus.setText(name);
         phases[currentPhase].getStyleClass().add("phaseActive");
         DoubleProperty property = progressBar.progressProperty();
-        property.set((phaseOffset+phaseRatio)*currentPhase);
+        property.set(phaseOffset+(phaseOffset+phaseRatio)*currentPhase);
         LogHelper.debug("NewPhase %f", progressBar.progressProperty().doubleValue());
         currentPhase++;
     }
@@ -190,6 +196,17 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         double add = (double)(newValue - oldValue)/(double)totalSize; // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
         property.set(property.get()+add*phaseRatio);
+        long rawLastTime = lastUpdateTime.get();
+        long rawThisTime = System.currentTimeMillis();
+        if(rawThisTime - rawLastTime >= 130)
+        {
+            String format = String.format("%.1f MB / %.1f MB", (double)newValue / (1024.0*1024.0), (double)totalSize / (1024.0*1024.0));
+            double bytesSpeed = (double)(newValue - lastDownloaded.get()) / (double)(rawThisTime-rawLastTime) * 1000.0;
+            String speedFormat = String.format("%.2f MiB/s", bytesSpeed*8 / (1000.0*1000.0));
+            ContextHelper.runInFxThreadStatic(() -> { volume.setText(format); speed.setText(speedFormat); });
+            lastUpdateTime.set(rawThisTime);
+            lastDownloaded.set(newValue);
+        }
 
     }
     @Override

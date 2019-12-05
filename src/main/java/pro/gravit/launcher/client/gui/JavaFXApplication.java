@@ -88,14 +88,6 @@ public class JavaFXApplication extends Application {
         service.registerHandler(requestHandler);
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
-        JVMHelper.RUNTIME.addShutdownHook(new Thread(() -> {
-            try {
-                settingsManager.saveConfig();
-                settingsManager.saveHDirStore();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
     }
 
     @Override
@@ -117,6 +109,8 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void stop() throws Exception {
+        settingsManager.saveConfig();
+        settingsManager.saveHDirStore();
     }
     public InputStream getResource(String name) throws IOException
     {
