@@ -1,8 +1,12 @@
 package pro.gravit.launcher.client.gui.scene;
 
+import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -52,19 +56,18 @@ public class SettingsScene extends AbstractScene {
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#dirLabel", "#patch");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
         add("Debug", "debug mode", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug=value);
+        add("Auto enter", "Auto join to server", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter=value);
+        add("Fullscreen", "Show MineCraft client in full screen mode", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen=value);
     }
 
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged)
     {
-        Pane container = new Pane();
-        container.getStyleClass().add("settingsContainer");
+        FlowPane container = new FlowPane();
         CheckBox checkBox = new CheckBox();
         checkBox.setSelected(value);
-        checkBox.getStyleClass().add("settingsCheckbox");
         checkBox.setText(name);
         Text desc = new Text();
         desc.setText(description);
-        desc.getStyleClass().add("settingsDescription");
         container.getChildren().add(checkBox);
         container.getChildren().add(desc);
 
@@ -72,5 +75,9 @@ public class SettingsScene extends AbstractScene {
             onChanged.accept(checkBox.isSelected());
         });
         componentList.getChildren().add(container);
+        container.getStyleClass().add("settingsContainer");
+        checkBox.getStyleClass().add("settingsCheckbox");
+        desc.getStyleClass().add("settingsDescription");
+        VBox.setMargin(desc, new Insets(0,0,0,30));
     }
 }

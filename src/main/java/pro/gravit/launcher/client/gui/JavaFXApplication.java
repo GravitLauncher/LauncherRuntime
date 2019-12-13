@@ -5,7 +5,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherAPI;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
@@ -16,10 +15,9 @@ import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.websockets.StandartClientWebSocketService;
-import pro.gravit.utils.helper.CommonHelper;
+import pro.gravit.launcher.request.auth.AuthRequest;
+import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -35,8 +33,7 @@ public class JavaFXApplication extends Application {
     public NewLauncherSettings settings;
     public RuntimeSettings runtimeSettings;
     public LauncherConfig config = Launcher.getConfig();
-    public StandartClientWebSocketService service;
-    public AsyncRequestHandler requestHandler;
+    public StdWebSocketService service;
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
     public MessageManager messageManager;
@@ -58,7 +55,6 @@ public class JavaFXApplication extends Application {
     public ExecutorService workers = Executors.newCachedThreadPool();
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
-    @LauncherAPI
     public static JavaFXApplication getInstance() {
         return INSTANCE.get();
     }
@@ -84,8 +80,6 @@ public class JavaFXApplication extends Application {
         runtimeSettings.apply();
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
         service = Request.service;
-        requestHandler = new AsyncRequestHandler(service, new GuiEventHandler(this));
-        service.registerHandler(requestHandler);
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
     }
@@ -105,6 +99,8 @@ public class JavaFXApplication extends Application {
         //
         mainStage.setScene(gui.loginScene);
         messageManager.createNotification("Test head", "Test message", true);
+        //
+        AuthRequest.registerProviders();
     }
 
     @Override

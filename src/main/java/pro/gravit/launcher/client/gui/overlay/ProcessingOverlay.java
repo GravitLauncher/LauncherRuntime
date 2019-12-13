@@ -54,7 +54,7 @@ public class ProcessingOverlay extends AbstractOverlay implements FXMLConsumer {
         scene.showOverlay(this, (e) -> {
             try {
                 description.textProperty().bind(message);
-                application.requestHandler.request(request).thenAccept((result) -> {
+                application.service.request(request).thenAccept((result) -> {
                     LogHelper.dev("RequestFuture complete normally");
                     onSuccess.accept(result);
                 }).exceptionally((error) -> {
@@ -72,7 +72,7 @@ public class ProcessingOverlay extends AbstractOverlay implements FXMLConsumer {
         scene.showOverlay(this, (e) -> {
             try {
                 description.setText(message);
-                application.requestHandler.request(request).thenAccept((result) -> {
+                application.service.request(request).thenAccept((result) -> {
                     LogHelper.dev("RequestFuture complete normally");
                     onSuccess.accept(result);
                 }).exceptionally((error) -> {

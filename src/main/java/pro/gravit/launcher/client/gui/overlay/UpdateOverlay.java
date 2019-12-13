@@ -8,8 +8,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextArea;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
-import pro.gravit.launcher.client.downloader.AsyncDownloader;
-import pro.gravit.launcher.client.downloader.FixUpdateRequest;
+import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
@@ -23,15 +22,10 @@ import pro.gravit.launcher.request.update.UpdateRequest;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.EOFException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -114,9 +108,9 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess)
     {
-        FixUpdateRequest request = new FixUpdateRequest(dirName);
+        UpdateRequest request = new UpdateRequest(dirName);
         try {
-            application.requestHandler.request(request).thenAccept(updateRequestEvent -> {
+            application.service.request(request).thenAccept(updateRequestEvent -> {
                 LogHelper.dev("Start updating %s", dirName);
                 totalDownloaded.set(0);
                 lastUpdateTime.set(System.currentTimeMillis());
