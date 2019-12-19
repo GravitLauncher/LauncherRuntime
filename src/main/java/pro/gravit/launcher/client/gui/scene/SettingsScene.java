@@ -88,9 +88,9 @@ public class SettingsScene extends AbstractScene {
             onChanged.accept(checkBox.isSelected());
         });
         componentList.getChildren().add(container);
-        container.getStyleClass().add("settingsContainer");
-        checkBox.getStyleClass().add("settingsCheckbox");
-        desc.getStyleClass().add("settingsDescription");
+        container.getStyleClass().add("optContainer");
+        checkBox.getStyleClass().add("optCheckbox");
+        desc.getStyleClass().add("optDescription");
         VBox.setMargin(desc, new Insets(0,0,0,30));
     }
 }

@@ -51,6 +51,7 @@ public class ServerMenuScene extends AbstractScene {
                 AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
                 ((Text)pane.lookup("#nameServer")).setText(profile.getTitle());
                 ((Text)pane.lookup("#genreServer")).setText(profile.getVersion().toString());
+                profile.updateOptionalGraph();
                 pane.setOnMouseClicked((e) -> {
                     if(!e.getButton().equals(MouseButton.PRIMARY)) return;
                     if(lastSelectedServerButton != null) {
@@ -60,7 +61,6 @@ public class ServerMenuScene extends AbstractScene {
                     lastSelectedServerButton = pane;
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
                     //lastSelectedServerButton.lookup("#nameServer").getStyleClass().add("nameServerActive");
-                    lastSelectedServerButton.getStyleClass().forEach((t) -> LogHelper.debug("SClass %s", t));
                     changeServer(profile, pingerResult.get());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
                 });
@@ -90,13 +90,20 @@ public class ServerMenuScene extends AbstractScene {
                         }
                     });
                 });
+                if(profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))
+                {
+                    changeServer(profile, pingerResult.get());
+                }
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
             }
         });
         ((ButtonBase)layout.lookup("#clientSettings")).setOnAction((e) -> {
             try {
+                if(application.runtimeStateMachine.getProfile() == null) return;
                 application.setMainScene(application.gui.optionsScene);
+                application.gui.optionsScene.reset();
+                application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getProfile());
             } catch (Exception ex) {
                 LogHelper.error(ex);
             }
@@ -115,6 +122,7 @@ public class ServerMenuScene extends AbstractScene {
     public void changeServer(ClientProfile profile, ServerPinger.Result pingerResult)
     {
         application.runtimeStateMachine.setProfile(profile);
+        application.runtimeSettings.lastProfile = profile.getUUID();
         ((Text)layout.lookup("#heading")).setText(profile.getTitle());
         ((Text)((ScrollPane)layout.lookup("#serverInfo")).getContent().lookup("#servertext")).setText(profile.getInfo());
         if(pingerResult != null)

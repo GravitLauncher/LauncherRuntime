@@ -7,6 +7,7 @@ import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 public class RuntimeSettings extends UserSettings {
     public transient Path updatesDir;
@@ -24,6 +25,8 @@ public class RuntimeSettings extends UserSettings {
     public boolean debug;
     @LauncherNetworkAPI
     public boolean autoEnter;
+    @LauncherNetworkAPI
+    public UUID lastProfile;
     @LauncherNetworkAPI
     public int ram;
     public static RuntimeSettings getDefault()
