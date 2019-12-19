@@ -15,6 +15,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.function.Consumer;
 
@@ -42,7 +43,7 @@ public class OptionsScene extends AbstractScene {
     {
         for(OptionalFile e : profile.getOptional())
         {
-            add(e.name, e.info, e.mark, (val) -> {
+            add(e.name, e.info, e.mark, e.subTreeLevel, (val) -> {
                 if(val)
                     profile.markOptional(e);
                 else
@@ -50,7 +51,7 @@ public class OptionsScene extends AbstractScene {
             });
         }
     }
-    public void add(String name, String description, boolean value, Consumer<Boolean> onChanged)
+    public void add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged)
     {
         FlowPane container = new FlowPane();
         CheckBox checkBox = new CheckBox();
@@ -60,7 +61,6 @@ public class OptionsScene extends AbstractScene {
         desc.setText(description);
         container.getChildren().add(checkBox);
         container.getChildren().add(desc);
-
         checkBox.setOnAction((e) -> {
             onChanged.accept(checkBox.isSelected());
         });
@@ -68,6 +68,7 @@ public class OptionsScene extends AbstractScene {
         container.getStyleClass().add("optContainer");
         checkBox.getStyleClass().add("optCheckbox");
         desc.getStyleClass().add("optDescription");
-        VBox.setMargin(desc, new Insets(0,0,0,30));
+        FlowPane.setMargin(desc, new Insets(0,0,0,30));
+        VBox.setMargin(container, new Insets(0, 0,0,50*padding));
     }
 }

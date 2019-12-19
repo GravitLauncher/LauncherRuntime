@@ -100,6 +100,6 @@ public class SettingsScene extends AbstractScene {
         container.getStyleClass().add("optContainer");
         checkBox.getStyleClass().add("optCheckbox");
         desc.getStyleClass().add("optDescription");
-        VBox.setMargin(desc, new Insets(0,0,0,30));
+        FlowPane.setMargin(desc, new Insets(0,0,0,30));
     }
 }
