@@ -11,6 +11,7 @@ import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
@@ -22,11 +23,13 @@ import java.util.function.Consumer;
 public class SettingsScene extends AbstractScene {
     public Node layout;
     public Pane componentList;
+    public ChoiceBox<String> langChoice;
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void doInit() throws Exception {
         layout = LookupHelper.lookup(scene.getRoot(),  "#settingsPane");
         componentList = (Pane) ((ScrollPane)layout.lookup("#settingslist")).getContent();
@@ -40,6 +43,12 @@ public class SettingsScene extends AbstractScene {
                 if(application.gui.consoleStage.isNullScene()) application.gui.consoleStage.setScene(application.gui.consoleScene);
                 application.gui.consoleStage.show();
             }).run();
+        });
+        langChoice = (ChoiceBox) layout.lookup("#langChoice");
+        langChoice.getItems().addAll(RuntimeSettings.LOCALES);
+        langChoice.getSelectionModel().select(application.runtimeSettings.locale);
+        langChoice.setOnAction((e) -> {
+            application.runtimeSettings.locale = langChoice.getSelectionModel().getSelectedItem();
         });
         Slider ramSlider = (Slider) layout.lookup("#ramSlider");
         Label ramLabel = (Label) layout.lookup("#settingsBackground").lookup("#ramLabel");

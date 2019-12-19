@@ -87,7 +87,14 @@ public class JavaFXApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // System loading
-        try(InputStream input = getResource("runtime_ru.properties"))
+        if(runtimeSettings.locale == null ) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
+        boolean correctLocale = false;
+        for(String s : RuntimeSettings.LOCALES)
+        {
+            if(runtimeSettings.locale.equals(s)) { correctLocale = true; break;}
+        }
+        if(!correctLocale) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
+        try(InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale)))
         {
             resources = new PropertyResourceBundle(input);
         }
