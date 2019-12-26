@@ -7,14 +7,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.BufferedInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,6 +24,7 @@ public class DebugOverlay extends AbstractOverlay {
     public Thread readThread;
     public TextArea output;
     public Process currentProcess;
+
     public DebugOverlay(JavaFXApplication application) throws IOException {
         super("overlay/debug/debug.fxml", application);
     }
@@ -34,25 +33,24 @@ public class DebugOverlay extends AbstractOverlay {
     protected void doInit() throws IOException {
         layout = pane;
         output = (TextArea) layout.lookup("#output");
-        ((ButtonBase)layout.lookup("#kill")).setOnAction((e) -> {
-            if(currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
+        ((ButtonBase) layout.lookup("#kill")).setOnAction((e) -> {
+            if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
         });
-        ((ButtonBase)layout.lookup("#copy")).setOnAction((e) -> {
+        ((ButtonBase) layout.lookup("#copy")).setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
         });
-        ((ButtonBase)layout.lookup("#close") ).setOnAction((e) -> {
+        ((ButtonBase) layout.lookup("#close")).setOnAction((e) -> {
             //TODO
             Platform.exit();
         });
-        ((ButtonBase)layout.lookup("#hide") ).setOnAction((e) -> {
+        ((ButtonBase) layout.lookup("#hide")).setOnAction((e) -> {
             //TODO
             //.setIconified(true);
         });
     }
-
 
 
     @Override
@@ -60,17 +58,15 @@ public class DebugOverlay extends AbstractOverlay {
 
     }
 
-    public void onProcess(Process process)
-    {
-        if(readThread != null && readThread.isAlive()) readThread.interrupt();
-        if(currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
+    public void onProcess(Process process) {
+        if (readThread != null && readThread.isAlive()) readThread.interrupt();
+        if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
         readThread = CommonHelper.newThread("Client Process Console Reader", true, () -> {
             InputStream stream = process.getInputStream();
             byte[] buf = IOHelper.newBuffer();
             try {
-                for(int length = stream.read(buf); length >= 0; length = stream.read(buf))
-                {
-                    append(new String(buf, 0 , length));
+                for (int length = stream.read(buf); length >= 0; length = stream.read(buf)) {
+                    append(new String(buf, 0, length));
                 }
                 append(String.format("Process exit code %d", currentProcess.exitValue()));
             } catch (IOException e) {
@@ -80,10 +76,10 @@ public class DebugOverlay extends AbstractOverlay {
         readThread.start();
         currentProcess = process;
     }
-    public void append(String text)
-    {
+
+    public void append(String text) {
         ContextHelper.runInFxThreadStatic(() -> {
-            if(output.lengthProperty().get() > MAX_LENGTH)
+            if (output.lengthProperty().get() > MAX_LENGTH)
                 output.deleteText(0, REMOVE_LENGTH);
             output.appendText(text);
         });
@@ -96,13 +92,12 @@ public class DebugOverlay extends AbstractOverlay {
 
     @Override
     public void errorHandle(Throwable e) {
-        if(!(e instanceof EOFException)) {
+        if (!(e instanceof EOFException)) {
             LogHelper.error(e);
-            if(LogHelper.isDebugEnabled())
+            if (LogHelper.isDebugEnabled())
                 append(e.toString());
         }
-        if(currentProcess != null && !currentProcess.isAlive())
-        {
+        if (currentProcess != null && !currentProcess.isAlive()) {
             append(String.format("Process exit code %d", currentProcess.exitValue()));
         }
     }

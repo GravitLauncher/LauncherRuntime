@@ -5,11 +5,11 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class FXMLProvider {
     private final Function<String, FXMLLoader> loaderFactory;
@@ -21,44 +21,35 @@ public class FXMLProvider {
         this.executorService = executorService;
     }
 
-    private static class FutureVirtualObject
-    {
+    private static class FutureVirtualObject {
         public IOException exception;
     }
 
-    public<T> Future<T> queue(String name, InputStream inputStream)
-    {
+    public <T> Future<T> queue(String name, InputStream inputStream) {
         LogHelper.dev("FXML queue %s", name);
         fxmlCache.put(name, new FutureVirtualObject());
-        return executorService.submit( () -> {
+        return executorService.submit(() -> {
             try {
                 long start = System.currentTimeMillis();
                 T result = rawLoadFxml(name, inputStream);
                 Object obj = fxmlCache.get(name);
                 fxmlCache.put(name, result);
-                if(obj instanceof FutureVirtualObject)
-                {
-                    synchronized (obj)
-                    {
+                if (obj instanceof FutureVirtualObject) {
+                    synchronized (obj) {
                         obj.notifyAll();
                     }
                 }
                 long finish = System.currentTimeMillis();
-                if(LogHelper.isDebugEnabled())
+                if (LogHelper.isDebugEnabled())
                     LogHelper.debug("FXML %s(%s) loaded in %d ms", name, result.getClass().getName(), finish - start);
                 return result;
             } catch (Throwable e) {
                 Object obj = fxmlCache.get(name);
-                if(obj instanceof FutureVirtualObject)
-                {
-                    synchronized (obj)
-                    {
-                        if(e instanceof IOException)
-                        {
+                if (obj instanceof FutureVirtualObject) {
+                    synchronized (obj) {
+                        if (e instanceof IOException) {
                             ((FutureVirtualObject) obj).exception = (IOException) e;
-                        }
-                        else
-                        {
+                        } else {
                             ((FutureVirtualObject) obj).exception = new IOException(e);
                         }
                         obj.notifyAll();
@@ -68,41 +59,38 @@ public class FXMLProvider {
             }
         });
     }
+
     @SuppressWarnings("unchecked cast")
-    public<T> T getFxml(String name) throws InterruptedException, IOException {
+    public <T> T getFxml(String name) throws InterruptedException, IOException {
         Object obj = fxmlCache.get(name);
-        if(obj == null) throw new IllegalStateException(String.format("You must need queue fxml load %s", name));
-        if(obj instanceof FutureVirtualObject)
-        {
-            if(((FutureVirtualObject) obj).exception != null) throw ((FutureVirtualObject) obj).exception;
-            synchronized (obj)
-            {
+        if (obj == null) throw new IllegalStateException(String.format("You must need queue fxml load %s", name));
+        if (obj instanceof FutureVirtualObject) {
+            if (((FutureVirtualObject) obj).exception != null) throw ((FutureVirtualObject) obj).exception;
+            synchronized (obj) {
                 obj.wait();
             }
             obj = fxmlCache.get(name);
-            if(obj instanceof FutureVirtualObject)
-            {
-                if(((FutureVirtualObject) obj).exception != null) throw ((FutureVirtualObject) obj).exception;
+            if (obj instanceof FutureVirtualObject) {
+                if (((FutureVirtualObject) obj).exception != null) throw ((FutureVirtualObject) obj).exception;
             }
         }
         return (T) obj;
     }
 
-    public<T> T rawLoadFxml(String name, InputStream inputStream) throws IOException
-    {
+    public <T> T rawLoadFxml(String name, InputStream inputStream) throws IOException {
         T result = loaderFactory.apply(name).load(inputStream);
         inputStream.close();
         return result;
     }
-    public<T> Future<T> queueNoCache(String name, InputStream inputStream)
-    {
+
+    public <T> Future<T> queueNoCache(String name, InputStream inputStream) {
         fxmlCache.put(name, new FutureVirtualObject());
-        return executorService.submit( () -> {
+        return executorService.submit(() -> {
             try {
                 long start = System.currentTimeMillis();
                 T result = rawLoadFxml(name, inputStream);
                 long finish = System.currentTimeMillis();
-                if(LogHelper.isDebugEnabled())
+                if (LogHelper.isDebugEnabled())
                     LogHelper.debug("FXML %s(%s) loaded in %d ms(no cache)", name, result.getClass().getName(), finish - start);
                 return result;
             } catch (Throwable e) {

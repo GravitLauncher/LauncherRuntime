@@ -1,7 +1,6 @@
 package pro.gravit.launcher.client.gui;
 
 import pro.gravit.launcher.NewLauncherSettings;
-import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.managers.SettingsManager;
 
 public class StdSettingsManager extends SettingsManager {

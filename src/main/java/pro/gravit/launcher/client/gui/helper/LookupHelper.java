@@ -4,40 +4,36 @@ import javafx.scene.Node;
 
 public class LookupHelper {
     @SuppressWarnings("unchecked")
-    public static<T extends Node> T lookup(Node node, String... names)
-    {
+    public static <T extends Node> T lookup(Node node, String... names) {
         Node current = node;
-        if(current == null)
-        {
+        if (current == null) {
             throw new NullPointerException();
         }
-        for(String s : names)
-        {
+        for (String s : names) {
             current = current.lookup(s);
-            if(current == null)
-            {
+            if (current == null) {
                 throw new LookupException(names, s);
             }
         }
         return (T) current;
     }
-    public static class LookupException extends RuntimeException
-    {
+
+    public static class LookupException extends RuntimeException {
         public LookupException() {
         }
 
         public LookupException(String[] stackName, String failName) {
             super(buildStack(stackName, failName));
         }
+
         private static String buildStack(String[] args, String failed) {
             StringBuilder b = new StringBuilder("Lookup failed ");
             boolean f = true;
-            for (String s : args)
-            {
-                if(!f)
+            for (String s : args) {
+                if (!f)
                     b.append("->");
                 b.append(s);
-                if(!s.equals(failed))
+                if (!s.equals(failed))
                     b.append("(E)");
                 f = false;
             }

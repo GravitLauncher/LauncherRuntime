@@ -1,19 +1,16 @@
 package pro.gravit.launcher.client.gui.raw;
 
 import javafx.animation.FadeTransition;
-import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import javafx.util.Duration;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
@@ -23,7 +20,6 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
@@ -47,10 +43,8 @@ public abstract class AbstractScene implements AllowDisable {
         this.contextHelper = new ContextHelper(this);
     }
 
-    public void init() throws Exception
-    {
-        if(scene == null)
-        {
+    public void init() throws Exception {
+        if (scene == null) {
             scene = new Scene(application.getFxml(fxmlPath));
             scene.setFill(Color.TRANSPARENT);
         }
@@ -59,20 +53,19 @@ public abstract class AbstractScene implements AllowDisable {
 
     protected abstract void doInit() throws Exception;
 
-    static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished)
-    {
+    static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
-        if(onFinished != null)
+        if (onFinished != null)
             fadeTransition.setOnFinished(onFinished);
         fadeTransition.setDelay(Duration.millis(delay));
         fadeTransition.setFromValue(from);
         fadeTransition.setToValue(to);
         fadeTransition.play();
     }
-    public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished)
-    {
+
+    public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) {
         currentOverlay = overlay;
-        if(!overlay.isInit) {
+        if (!overlay.isInit) {
             try {
                 overlay.init();
             } catch (IOException | InterruptedException e) {
@@ -82,10 +75,10 @@ public abstract class AbstractScene implements AllowDisable {
         }
         showOverlay(overlay.getPane(), onFinished);
     }
-    private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished)
-    {
-        if(newOverlay == null) throw new NullPointerException();
-        if(currentOverlayNode != null) {
+
+    private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
+        if (newOverlay == null) throw new NullPointerException();
+        if (currentOverlayNode != null) {
             swapOverlay(0, newOverlay, onFinished);
             return;
         }
@@ -102,11 +95,11 @@ public abstract class AbstractScene implements AllowDisable {
             fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
         });
     }
-    public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished)
-    {
-        if(currentOverlayNode == null)
+
+    public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished) {
+        if (currentOverlayNode == null)
             return;
-        if(currentOverlay == null)
+        if (currentOverlay == null)
             return;
         enable();
         currentOverlay.reset();
@@ -122,14 +115,13 @@ public abstract class AbstractScene implements AllowDisable {
             }
         });
     }
-    private void swapOverlay(double delay, Pane newOverlay, EventHandler<ActionEvent> onFinished)
-    {
-        if(currentOverlayNode == null)
+
+    private void swapOverlay(double delay, Pane newOverlay, EventHandler<ActionEvent> onFinished) {
+        if (currentOverlayNode == null)
             throw new IllegalStateException("Try swap null overlay");
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
-            if (currentOverlayNode != newOverlay)
-            {
+            if (currentOverlayNode != newOverlay) {
                 ObservableList<Node> child = root.getChildren();
                 child.set(child.indexOf(currentOverlayNode), newOverlay);
             }
@@ -141,16 +133,19 @@ public abstract class AbstractScene implements AllowDisable {
             fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
         });
     }
-    public final<T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+
+    public final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
-    public final<T extends WebSocketEvent> void processRequest(ObservableValue<String> message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+
+    public final <T extends WebSocketEvent> void processRequest(ObservableValue<String> message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
 
     public AbstractOverlay getCurrentOverlay() {
         return currentOverlay;
     }
+
     @Override
     public void disable() {
 
@@ -169,12 +164,11 @@ public abstract class AbstractScene implements AllowDisable {
         return scene;
     }
 
-    protected void sceneBaseInit(Node node)
-    {
-        ((ButtonBase)node.lookup("#close") ).setOnAction((e) -> {
+    protected void sceneBaseInit(Node node) {
+        ((ButtonBase) node.lookup("#close")).setOnAction((e) -> {
             currentStage.close();
         });
-        ((ButtonBase)node.lookup("#hide") ).setOnAction((e) -> {
+        ((ButtonBase) node.lookup("#hide")).setOnAction((e) -> {
             currentStage.hide();
         });
         currentStage.enableMouseDrag(node);

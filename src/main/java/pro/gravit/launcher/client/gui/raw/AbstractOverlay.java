@@ -13,6 +13,7 @@ public abstract class AbstractOverlay implements AllowDisable {
     public final String fxmlPath;
     protected Pane pane;
     boolean isInit;
+
     protected AbstractOverlay(String fxmlPath, JavaFXApplication application) throws IOException {
         this.application = application;
         this.fxmlPath = fxmlPath;
@@ -23,23 +24,29 @@ public abstract class AbstractOverlay implements AllowDisable {
         doInit();
         isInit = true;
     }
+
     public final void show(AbstractScene scene, EventHandler<ActionEvent> onFinished) throws IOException, InterruptedException {
-        if(!isInit)
+        if (!isInit)
             init();
         scene.showOverlay(this, onFinished);
     }
+
     public final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
-        if(!isInit)
+        if (!isInit)
             throw new IllegalStateException("Using method hide before init");
         scene.hideOverlay(delay, (e) -> {
             reset();
-            if(onFinished != null)
+            if (onFinished != null)
                 onFinished.handle(e);
         });
     }
+
     protected abstract void doInit() throws IOException;
+
     public abstract void reset();
+
     public abstract void errorHandle(String error);
+
     public abstract void errorHandle(Throwable e);
 
     public Pane getPane() {

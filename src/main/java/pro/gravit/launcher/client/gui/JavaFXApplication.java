@@ -30,7 +30,10 @@ import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
@@ -66,18 +69,18 @@ public class JavaFXApplication extends Application {
     public JavaFXApplication() {
         INSTANCE.set(this);
     }
+
     @Override
     public void init() throws Exception {
         settingsManager = new StdSettingsManager();
         UserSettings.providers.register("stdruntime", RuntimeSettings.class);
         settingsManager.loadConfig();
         settings = settingsManager.getConfig();
-        if(settings.userSettings.get("stdruntime") == null)
+        if (settings.userSettings.get("stdruntime") == null)
             settings.userSettings.put("stdruntime", RuntimeSettings.getDefault());
         try {
             settingsManager.loadHDirStore();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             LogHelper.error(e);
         }
         runtimeSettings = (RuntimeSettings) settings.userSettings.get("stdruntime");
@@ -92,15 +95,16 @@ public class JavaFXApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // System loading
-        if(runtimeSettings.locale == null ) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
+        if (runtimeSettings.locale == null) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
         boolean correctLocale = false;
-        for(String s : RuntimeSettings.LOCALES)
-        {
-            if(runtimeSettings.locale.equals(s)) { correctLocale = true; break;}
+        for (String s : RuntimeSettings.LOCALES) {
+            if (runtimeSettings.locale.equals(s)) {
+                correctLocale = true;
+                break;
+            }
         }
-        if(!correctLocale) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
-        try(InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale)))
-        {
+        if (!correctLocale) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
+        try (InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale))) {
             resources = new PropertyResourceBundle(input);
         }
         fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);
@@ -114,8 +118,7 @@ public class JavaFXApplication extends Application {
         AuthRequest.registerProviders();
     }
 
-    private void registerCommands()
-    {
+    private void registerCommands() {
         BaseCommandCategory category = new BaseCommandCategory();
         category.registerCommand("notify", new NotifyCommand(messageManager));
         ConsoleManager.handler.registerCategory(new CommandHandler.Category(category, "runtime"));
@@ -126,17 +129,16 @@ public class JavaFXApplication extends Application {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
     }
-    public InputStream getResource(String name) throws IOException
-    {
+
+    public InputStream getResource(String name) throws IOException {
         return IOHelper.newInput(Launcher.getResourceURL(name));
     }
-    public FXMLLoader newFXMLLoader(String name)
-    {
+
+    public FXMLLoader newFXMLLoader(String name) {
         FXMLLoader loader;
         try {
             loader = new FXMLLoader(IOHelper.getResourceURL("runtime/".concat(name)));
-            if(resources != null)
-            {
+            if (resources != null) {
                 loader.setResources(resources);
             }
         } catch (Exception e) {
@@ -146,37 +148,38 @@ public class JavaFXApplication extends Application {
         loader.setCharset(IOHelper.UNICODE_CHARSET);
         return loader;
     }
-    public<T> Future<T> queueFxml(String name) throws IOException
-    {
+
+    public <T> Future<T> queueFxml(String name) throws IOException {
         InputStream input = getResource(name);
         return fxmlProvider.queue(name, input);
     }
-    public<T> T getFxml(String name) throws IOException, InterruptedException {
+
+    public <T> T getFxml(String name) throws IOException, InterruptedException {
         return fxmlProvider.getFxml(name);
     }
-    public<T> Future<T> getNoCacheFxml(String name) throws IOException {
+
+    public <T> Future<T> getNoCacheFxml(String name) throws IOException {
         InputStream input = getResource(name);
         return fxmlProvider.queueNoCache(name, input);
     }
-    public void setMainScene(AbstractScene scene) throws Exception
-    {
+
+    public void setMainScene(AbstractScene scene) throws Exception {
         mainStage.setScene(scene);
     }
 
-    public Stage newStage()
-    {
+    public Stage newStage() {
         return newStage(StageStyle.TRANSPARENT);
     }
-    public Stage newStage(StageStyle style)
-    {
+
+    public Stage newStage(StageStyle style) {
         Stage ret = new Stage();
         ret.initStyle(style);
         ret.setResizable(false);
         return ret;
     }
+
     @SuppressWarnings("unchecked")
-    public<T extends AbstractScene> T registerScene(Class<T> clazz)
-    {
+    public <T extends AbstractScene> T registerScene(Class<T> clazz) {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
             queueFxml(instance.fxmlPath);
@@ -186,9 +189,9 @@ public class JavaFXApplication extends Application {
             throw new RuntimeException(e);
         }
     }
+
     @SuppressWarnings("unchecked")
-    public<T extends AbstractOverlay> T registerOverlay(Class<T> clazz)
-    {
+    public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
             queueFxml(instance.fxmlPath);

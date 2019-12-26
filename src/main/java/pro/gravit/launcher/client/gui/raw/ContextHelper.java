@@ -9,12 +9,12 @@ public class ContextHelper {
     ContextHelper(AbstractScene scene) {
         this.scene = scene;
     }
-    public interface GuiExceptionCallback
-    {
+
+    public interface GuiExceptionCallback {
         void call() throws Throwable;
     }
-    public final Runnable runCallback(GuiExceptionCallback callback)
-    {
+
+    public final Runnable runCallback(GuiExceptionCallback callback) {
         return () -> {
             try {
                 callback.call();
@@ -23,8 +23,8 @@ public class ContextHelper {
             }
         };
     }
-    public final void runInFxThread(GuiExceptionCallback callback)
-    {
+
+    public final void runInFxThread(GuiExceptionCallback callback) {
         Platform.runLater(() -> {
             try {
                 callback.call();
@@ -33,8 +33,8 @@ public class ContextHelper {
             }
         });
     }
-    public static void runInFxThreadStatic(GuiExceptionCallback callback)
-    {
+
+    public static void runInFxThreadStatic(GuiExceptionCallback callback) {
         Platform.runLater(() -> {
             try {
                 callback.call();
@@ -43,14 +43,12 @@ public class ContextHelper {
             }
         });
     }
-    final void errorHandling(Throwable e)
-    {
+
+    final void errorHandling(Throwable e) {
         LogHelper.error(e);
-        if(scene != null)
-        {
+        if (scene != null) {
             AbstractOverlay currentOverlay = scene.getCurrentOverlay();
-            if(currentOverlay != null)
-            {
+            if (currentOverlay != null) {
                 currentOverlay.errorHandle(e);
                 scene.hideOverlay(2000, null);
             }

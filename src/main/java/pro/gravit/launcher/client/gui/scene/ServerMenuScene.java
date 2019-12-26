@@ -30,31 +30,31 @@ public class ServerMenuScene extends AbstractScene {
     public static String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     public Node layout;
     private Node lastSelectedServerButton;
+
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
     }
 
     @Override
     public void doInit() throws Exception {
-        layout = LookupHelper.lookup(scene.getRoot(),  "#layout", "#serverMenu");
+        layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#serverMenu");
         sceneBaseInit(layout);
-        ((Labeled)layout.lookup("#nickname")).setText(application.runtimeStateMachine.getUsername());
+        ((Labeled) layout.lookup("#nickname")).setText(application.runtimeStateMachine.getUsername());
         Map<ClientProfile, Future<Pane>> futures = new HashMap<>();
-        for(ClientProfile profile : application.runtimeStateMachine.getProfiles())
-        {
+        for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
             futures.put(profile, application.getNoCacheFxml(SERVER_BUTTON_FXML));
         }
-        Pane serverList = (Pane) ((ScrollPane)layout.lookup("#serverlist")).getContent();
+        Pane serverList = (Pane) ((ScrollPane) layout.lookup("#serverlist")).getContent();
         futures.forEach((profile, future) -> {
             try {
                 Pane pane = future.get();
                 AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
-                ((Text)pane.lookup("#nameServer")).setText(profile.getTitle());
-                ((Text)pane.lookup("#genreServer")).setText(profile.getVersion().toString());
+                ((Text) pane.lookup("#nameServer")).setText(profile.getTitle());
+                ((Text) pane.lookup("#genreServer")).setText(profile.getVersion().toString());
                 profile.updateOptionalGraph();
                 pane.setOnMouseClicked((e) -> {
-                    if(!e.getButton().equals(MouseButton.PRIMARY)) return;
-                    if(lastSelectedServerButton != null) {
+                    if (!e.getButton().equals(MouseButton.PRIMARY)) return;
+                    if (lastSelectedServerButton != null) {
                         lastSelectedServerButton.getStyleClass().remove("serverButtonsActive");
                         //lastSelectedServerButton.lookup("#nameServer").getStyleClass().remove("nameServerActive");
                     }
@@ -77,30 +77,28 @@ public class ServerMenuScene extends AbstractScene {
                     try {
                         result = pinger.ping();
                     } catch (IOException e) {
-                        result = new ServerPinger.Result(0,0, "0 / 0");
+                        result = new ServerPinger.Result(0, 0, "0 / 0");
                     }
                     pingerResult.set(result);
                     ServerPinger.Result finalResult = result;
                     contextHelper.runInFxThread(() -> {
-                        ((Text)pane.lookup("#online")).setText(String.valueOf(finalResult.onlinePlayers));
-                        if(application.runtimeStateMachine.getProfile() != null &&
-                                application.runtimeStateMachine.getProfile() == profile)
-                        {
-                            ((Text)layout.lookup("#headingOnline")).setText(String.format("%d / %d", finalResult.onlinePlayers, finalResult.maxPlayers));
+                        ((Text) pane.lookup("#online")).setText(String.valueOf(finalResult.onlinePlayers));
+                        if (application.runtimeStateMachine.getProfile() != null &&
+                                application.runtimeStateMachine.getProfile() == profile) {
+                            ((Text) layout.lookup("#headingOnline")).setText(String.format("%d / %d", finalResult.onlinePlayers, finalResult.maxPlayers));
                         }
                     });
                 });
-                if(profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))
-                {
+                if (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile)) {
                     changeServer(profile, pingerResult.get());
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
             }
         });
-        ((ButtonBase)layout.lookup("#clientSettings")).setOnAction((e) -> {
+        ((ButtonBase) layout.lookup("#clientSettings")).setOnAction((e) -> {
             try {
-                if(application.runtimeStateMachine.getProfile() == null) return;
+                if (application.runtimeStateMachine.getProfile() == null) return;
                 application.setMainScene(application.gui.optionsScene);
                 application.gui.optionsScene.reset();
                 application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getProfile());
@@ -108,32 +106,32 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(ex);
             }
         });
-        ((ButtonBase)layout.lookup("#settings")).setOnAction((e) -> {
+        ((ButtonBase) layout.lookup("#settings")).setOnAction((e) -> {
             try {
                 application.setMainScene(application.gui.settingsScene);
             } catch (Exception ex) {
                 LogHelper.error(ex);
             }
         });
-        ((ButtonBase)layout.lookup("#clientLaunch")).setOnAction((e) -> {
+        ((ButtonBase) layout.lookup("#clientLaunch")).setOnAction((e) -> {
             launchClient();
         });
     }
-    public void changeServer(ClientProfile profile, ServerPinger.Result pingerResult)
-    {
+
+    public void changeServer(ClientProfile profile, ServerPinger.Result pingerResult) {
         application.runtimeStateMachine.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
-        ((Text)layout.lookup("#heading")).setText(profile.getTitle());
-        ((Text)((ScrollPane)layout.lookup("#serverInfo")).getContent().lookup("#servertext")).setText(profile.getInfo());
-        if(pingerResult != null)
-            ((Text)layout.lookup("#headingOnline")).setText(String.format("%d / %d", pingerResult.onlinePlayers, pingerResult.maxPlayers));
+        ((Text) layout.lookup("#heading")).setText(profile.getTitle());
+        ((Text) ((ScrollPane) layout.lookup("#serverInfo")).getContent().lookup("#servertext")).setText(profile.getInfo());
+        if (pingerResult != null)
+            ((Text) layout.lookup("#headingOnline")).setText(String.format("%d / %d", pingerResult.onlinePlayers, pingerResult.maxPlayers));
         else
-            ((Text)layout.lookup("#headingOnline")).setText("? / ?");
+            ((Text) layout.lookup("#headingOnline")).setText("? / ?");
     }
-    public void launchClient()
-    {
+
+    public void launchClient() {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
-        if(profile == null) return;
+        if (profile == null) return;
         processRequest("Set profile", new SetProfileRequest(profile), (result) -> {
             showOverlay(application.gui.updateOverlay, (e) -> {
                 Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
@@ -152,10 +150,10 @@ public class ServerMenuScene extends AbstractScene {
             });
         }, null);
     }
-    public void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile)
-    {
+
+    public void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile) {
         ClientLauncher.Params clientParams = new ClientLauncher.Params(null, assetDir, clientDir, application.runtimeStateMachine.getPlayerProfile(), application.runtimeStateMachine.getAccessToken(),
-            application.runtimeSettings.autoEnter, application.runtimeSettings.fullScreen, application.runtimeSettings.ram, 0,0);
+                application.runtimeSettings.autoEnter, application.runtimeSettings.fullScreen, application.runtimeSettings.ram, 0, 0);
         contextHelper.runCallback(() -> {
             Process process = ClientLauncher.launch(assetHDir, clientHDir, profile, clientParams, true);
             showOverlay(application.gui.debugOverlay, (e) -> {

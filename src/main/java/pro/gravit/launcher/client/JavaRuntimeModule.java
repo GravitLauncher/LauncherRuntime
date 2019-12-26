@@ -10,17 +10,18 @@ import pro.gravit.utils.Version;
 
 public class JavaRuntimeModule extends LauncherModule {
     public RuntimeProvider provider;
+
     public JavaRuntimeModule() {
-        super(new LauncherModuleInfo("StdJavaRuntime", new Version(1,0,0),
-                0, new String[]{}, new String[] {"runtime"}));
+        super(new LauncherModuleInfo("StdJavaRuntime", new Version(1, 0, 0),
+                0, new String[]{}, new String[]{"runtime"}));
     }
 
     @Override
     public void init(LauncherInitContext initContext) {
         registerEvent(this::preGuiPhase, ClientPreGuiPhase.class);
     }
-    public void preGuiPhase(ClientPreGuiPhase phase)
-    {
+
+    public void preGuiPhase(ClientPreGuiPhase phase) {
         try {
             Class.forName("javafx.application.Application");
         } catch (ClassNotFoundException e) {

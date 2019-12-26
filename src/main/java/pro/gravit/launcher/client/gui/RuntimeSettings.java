@@ -33,8 +33,8 @@ public class RuntimeSettings extends UserSettings {
     public String locale;
     @LauncherNetworkAPI
     public int ram;
-    public static RuntimeSettings getDefault()
-    {
+
+    public static RuntimeSettings getDefault() {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
         runtimeSettings.autoEnter = false;
@@ -43,9 +43,9 @@ public class RuntimeSettings extends UserSettings {
         runtimeSettings.locale = DEFAULT_LOCALE;
         return runtimeSettings;
     }
-    public void apply()
-    {
-        if(updatesDirPath != null)
+
+    public void apply() {
+        if (updatesDirPath != null)
             updatesDir = Paths.get(updatesDirPath);
     }
 }

@@ -8,8 +8,6 @@ import pro.gravit.launcher.client.gui.raw.AbstractStage;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.NoSuchFileException;
 
 public class PrimaryStage extends AbstractStage {

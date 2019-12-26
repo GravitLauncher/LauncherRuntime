@@ -27,7 +27,7 @@ public class NotifyCommand extends Command {
         boolean isLauncher = args.length <= 2 || args[2].equals("launcher");
         String header = args[0];
         String message = args[1];
-        if(isDefault)
+        if (isDefault)
             messageManager.createNotification(header, message);
         else
             messageManager.createNotification(header, message, isLauncher);

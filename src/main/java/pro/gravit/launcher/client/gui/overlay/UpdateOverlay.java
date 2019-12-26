@@ -48,6 +48,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     public double phaseOffset;
     public double progressRatio = 1.0;
     public double phaseRatio;
+
     public UpdateOverlay(JavaFXApplication application) throws IOException {
         super("overlay/update/update.fxml", application);
     }
@@ -56,13 +57,12 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     protected void doInit() throws IOException {
         progressBar = (ProgressBar) pane.lookup("#progress");
         phases = new Circle[5];
-        for(int i=1;i<=5;++i)
-        {
+        for (int i = 1; i <= 5; ++i) {
             Circle c = (Circle) pane.lookup("#phase".concat(Integer.toString(i)));
             //c.getStyleClass().add("phaseactive");
-            phases[i-1] = c;
-            phaseOffset = (c.getRadius()*2.0)/progressBar.getPrefWidth();
-            progressRatio-=phaseOffset;
+            phases[i - 1] = c;
+            phaseOffset = (c.getRadius() * 2.0) / progressBar.getPrefWidth();
+            progressRatio -= phaseOffset;
         }
         phaseRatio = progressRatio / 4.0;
         speed = (Label) pane.lookup("#speed");
@@ -70,11 +70,11 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         logOutput = (TextArea) pane.lookup("#outputUpdate");
         currentStatus = (Text) pane.lookup("#headingUpdate");
         logOutput.setText("");
-        ((ButtonBase)pane.lookup("#close") ).setOnAction((e) -> {
+        ((ButtonBase) pane.lookup("#close")).setOnAction((e) -> {
             //TODO
             Platform.exit();
         });
-        ((ButtonBase)pane.lookup("#hide") ).setOnAction((e) -> {
+        ((ButtonBase) pane.lookup("#hide")).setOnAction((e) -> {
             //TODO
             //.setIconified(true);
         });
@@ -106,8 +106,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         }
     }
 
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess)
-    {
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         UpdateRequest request = new UpdateRequest(dirName);
         try {
             application.service.request(request).thenAccept(updateRequestEvent -> {
@@ -116,17 +115,16 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                 lastUpdateTime.set(System.currentTimeMillis());
                 lastDownloaded.set(0);
                 totalSize = 0;
-                if(optionalsEnabled)
+                if (optionalsEnabled)
                     profile.pushOptionalFile(updateRequestEvent.hdir, digest);
                 try {
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
-                    if(!IOHelper.exists(dir)) Files.createDirectories(dir);
+                    if (!IOHelper.exists(dir)) Files.createDirectories(dir);
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
                     final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
-                        switch (entry.getType())
-                        {
+                        switch (entry.getType()) {
                             case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
@@ -142,7 +140,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
                     AsyncDownloader asyncDownloader = new AsyncDownloader((d) -> {
                         long old = totalDownloaded.getAndAdd(d);
-                        updateProgress(old, old+d);
+                        updateProgress(old, old + d);
                     });
                     List<List<AsyncDownloader.SizedFile>> tasks = asyncDownloader.sortFiles(adds, 4);
                     CompletableFuture[] futures = asyncDownloader.runDownloadList(tasks, updateRequestEvent.url, dir, application.workers);
@@ -164,45 +162,48 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                 }
             }).exceptionally((error) -> {
                 ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
-               // hide(2500, scene, onError);
+                // hide(2500, scene, onError);
                 return null;
             });
         } catch (IOException e) {
             errorHandle(e);
         }
     }
-    public void addLog(String string)
-    {
+
+    public void addLog(String string) {
         LogHelper.dev("Update event %s", string);
         logOutput.appendText(string.concat("\n"));
     }
-    public void initNewPhase(String name)
-    {
+
+    public void initNewPhase(String name) {
         currentStatus.setText(name);
         phases[currentPhase].getStyleClass().add("phaseActive");
         DoubleProperty property = progressBar.progressProperty();
-        property.set(phaseOffset+(phaseOffset+phaseRatio)*currentPhase);
+        property.set(phaseOffset + (phaseOffset + phaseRatio) * currentPhase);
         LogHelper.debug("NewPhase %f", progressBar.progressProperty().doubleValue());
         currentPhase++;
     }
-    public void updateProgress(long oldValue, long newValue)
-    {
-        double add = (double)(newValue - oldValue)/(double)totalSize; // 0.0 - 1.0
+
+    public void updateProgress(long oldValue, long newValue) {
+        double add = (double) (newValue - oldValue) / (double) totalSize; // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
-        property.set(property.get()+add*phaseRatio);
+        property.set(property.get() + add * phaseRatio);
         long rawLastTime = lastUpdateTime.get();
         long rawThisTime = System.currentTimeMillis();
-        if(rawThisTime - rawLastTime >= 130)
-        {
-            String format = String.format("%.1f MB / %.1f MB", (double)newValue / (1024.0*1024.0), (double)totalSize / (1024.0*1024.0));
-            double bytesSpeed = (double)(newValue - lastDownloaded.get()) / (double)(rawThisTime-rawLastTime) * 1000.0;
-            String speedFormat = String.format("%.2f MiB/s", bytesSpeed*8 / (1000.0*1000.0));
-            ContextHelper.runInFxThreadStatic(() -> { volume.setText(format); speed.setText(speedFormat); });
+        if (rawThisTime - rawLastTime >= 130) {
+            String format = String.format("%.1f MB / %.1f MB", (double) newValue / (1024.0 * 1024.0), (double) totalSize / (1024.0 * 1024.0));
+            double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (rawThisTime - rawLastTime) * 1000.0;
+            String speedFormat = String.format("%.2f MiB/s", bytesSpeed * 8 / (1000.0 * 1000.0));
+            ContextHelper.runInFxThreadStatic(() -> {
+                volume.setText(format);
+                speed.setText(speedFormat);
+            });
             lastUpdateTime.set(rawThisTime);
             lastDownloaded.set(newValue);
         }
 
     }
+
     @Override
     public void reset() {
 
@@ -210,7 +211,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     @Override
     public void errorHandle(String error) {
-        addLog(String.format("Error: %s" ,error));
+        addLog(String.format("Error: %s", error));
         LogHelper.error(error);
     }
 

@@ -5,7 +5,6 @@ import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
 import pro.gravit.launcher.client.gui.overlay.UpdateOverlay;
 import pro.gravit.launcher.client.gui.scene.*;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
-import pro.gravit.utils.helper.LogHelper;
 
 public class GuiObjectsContainer {
     private final JavaFXApplication application;
@@ -26,8 +25,7 @@ public class GuiObjectsContainer {
         this.application = application;
     }
 
-    public void init()
-    {
+    public void init() {
         loginScene = application.registerScene(LoginScene.class);
         processingOverlay = application.registerOverlay(ProcessingOverlay.class);
 
