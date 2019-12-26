@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<!-- DrLeonardo Design for ShadowsProject-->
+
+<Pane fx:id="consolePane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+   <Pane fx:id="consoleBackground" prefHeight="500.0" prefWidth="900.0" />
+   <Pane layoutX="97.0" prefHeight="102.0" prefWidth="803.0" styleClass="whiteBox" />
+   <TextArea id="output" editable="false" layoutX="97.0" layoutY="102.0" prefHeight="353.0" prefWidth="803.0" />
+   <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="789.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0"
+           textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath content="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="hideTooltip" text="%runtime.scenes.console.console.hideTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0"
+           textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="closeTooltip" text="%runtime.scenes.console.console.closeTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="wiki" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="428.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="30.0" />
+      </font>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <graphic>
+         <SVGPath content="M8.416,3.943l1.12-1.12v9.031c0,0.257,0.208,0.464,0.464,0.464c0.256,0,0.464-0.207,0.464-0.464V2.823l1.12,1.12c0.182,0.182,0.476,0.182,0.656,0c0.182-0.181,0.182-0.475,0-0.656l-1.744-1.745c-0.018-0.081-0.048-0.16-0.112-0.224C10.279,1.214,10.137,1.177,10,1.194c-0.137-0.017-0.279,0.02-0.384,0.125C9.551,1.384,9.518,1.465,9.499,1.548L7.76,3.288c-0.182,0.181-0.182,0.475,0,0.656C7.941,4.125,8.234,4.125,8.416,3.943z M15.569,6.286h-2.32v0.928h2.32c0.512,0,0.928,0.416,0.928,0.928v8.817c0,0.513-0.416,0.929-0.928,0.929H4.432c-0.513,0-0.928-0.416-0.928-0.929V8.142c0-0.513,0.416-0.928,0.928-0.928h2.32V6.286h-2.32c-1.025,0-1.856,0.831-1.856,1.856v8.817c0,1.025,0.832,1.856,1.856,1.856h11.138c1.024,0,1.855-0.831,1.855-1.856V8.142C17.425,7.117,16.594,6.286,15.569,6.286z" fill="WHITE">
+            <rotationAxis>
+               <Point3D />
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="wikiTooltip" text="%runtime.scenes.console.console.wikiTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="send" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="725.0" layoutY="455.0" prefHeight="44.0" prefWidth="175.0" text="%runtime.scenes.console.console.send" textFill="WHITE">
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <graphic>
+         <SVGPath content="M17.218,2.268L2.477,8.388C2.13,8.535,2.164,9.05,2.542,9.134L9.33,10.67l1.535,6.787c0.083,0.377,0.602,0.415,0.745,0.065l6.123-14.74C17.866,2.46,17.539,2.134,17.218,2.268 M3.92,8.641l11.772-4.89L9.535,9.909L3.92,8.641z M11.358,16.078l-1.268-5.613l6.157-6.157L11.358,16.078z" fill="#323232">
+            <rotationAxis>
+               <Point3D />
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="sendTooltip" text="%runtime.scenes.console.console.sendTooltip" />
+      </tooltip>
+   </Button>
+   <Text id="headingConsole" layoutX="118.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.console.console.headingConsole" wrappingWidth="657.7734069824219" />
+   <TextField id="commandInput" layoutX="97.0" layoutY="455.0" prefHeight="45.0" prefWidth="628.0" promptText="%runtime.scenes.console.console.commandInput" styleClass="commandInputClass">
+      <font>
+         <Font size="16.0" />
+      </font>
+   </TextField>
+   <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="289.0" layoutY="39.0" prefHeight="27.0" prefWidth="500.0" text="%runtime.scenes.console.console.version" textFill="#b3b8d5">
+      <font>
+         <Font size="18.0" />
+      </font>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <padding>
+         <Insets right="10.0" />
+      </padding>
+      <cursor>
+         <Cursor fx:constant="TEXT" />
+      </cursor>
+   </Label>
+   <stylesheets>
+      <URL value="@../../global.css" />
+      <URL value="@console.css" />
+   </stylesheets>
+</Pane>

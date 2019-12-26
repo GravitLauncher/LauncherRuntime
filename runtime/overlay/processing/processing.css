@@ -1,0 +1,11 @@
+/*-- DrLeonardo Design for GravitLauncher --*/
+#overlay > #description {
+    -fx-fill: #fff;
+    -fx-font-size: 12px;
+    -fx-effect: dropshadow( three-pass-box, rgba(0, 0, 0, 0.6), 8, 0.0, 0, 0);
+}
+
+#overlay > #description.error {
+    -fx-text-fill: #A23131;
+}
+/*-- DrLeonardo Design for GravitLauncher --*/

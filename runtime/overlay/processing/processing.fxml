@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+
+<!-- DrLeonardo Design for ShadowsProject-->
+
+<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@processing.css"/>
+    </stylesheets>
+    <!-- Description -->
+    <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="248.0" layoutY="306.0" prefHeight="66.0"
+           prefWidth="404.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER"
+           textFill="WHITE"/>
+    <ImageView layoutX="371.0" layoutY="161.0">
+        <Image url="@../../images/preloader/logo.png"/>
+    </ImageView>
+    <ImageView layoutX="635.0" layoutY="298.0">
+        <Image url="@../../images/icons/line.png"/>
+    </ImageView>
+    <ImageView layoutX="715.0" layoutY="71.0">
+        <Image url="@../../images/icons/line.png"/>
+    </ImageView>
+    <ImageView layoutX="582.0" layoutY="31.0">
+        <Image url="@../../images/icons/line.png"/>
+    </ImageView>
+    <ImageView layoutX="196.0" layoutY="321.0">
+        <Image url="@../../images/icons/line.png"/>
+    </ImageView>
+    <ImageView layoutX="222.0" layoutY="45.0">
+        <Image url="@../../images/icons/line.png"/>
+    </ImageView>
+    <ImageView layoutX="58.0" layoutY="111.0">
+        <Image url="@../../images/icons/line.png"/>
+    </ImageView>
+</Pane>

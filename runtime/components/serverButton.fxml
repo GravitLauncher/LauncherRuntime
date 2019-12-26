@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+
+<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+      prefHeight="124.0" prefWidth="280.0" styleClass="serverButtons" stylesheets="@components.css"
+      xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+   <ImageView id="serverLogo" fitHeight="75.0" fitWidth="71.0" layoutX="14.0" layoutY="25.0" pickOnBounds="true"
+              preserveRatio="true">
+      <Image url="@../images/preloader/logo.png"/>
+   </ImageView>
+   <Text id="online" layoutX="14.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"
+         text="%runtime.scenes.components.serverButton.online"/>
+   <Text id="nameServer" layoutX="104.0" layoutY="63.0" strokeType="OUTSIDE" strokeWidth="0.0"
+         styleClass="nameServerPassive" text="%runtime.scenes.components.serverButton.nameServer"
+         wrappingWidth="170.13671875"/>
+   <Text id="genreServer" layoutX="104.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0"
+         text="%runtime.scenes.components.serverButton.genreServer" wrappingWidth="170.13670602440834"/>
+</Pane>

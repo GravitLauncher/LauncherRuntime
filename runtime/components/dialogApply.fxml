@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<Pane fx:id="dialogApplyPane" prefHeight="239.0" prefWidth="462.0" xmlns="http://javafx.com/javafx/8.0.201"
+      xmlns:fx="http://javafx.com/fxml/1">
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+   </padding>
+   <stylesheets>
+      <URL value="@components.css"/>
+      <URL value="@../global.css"/>
+   </stylesheets>
+   <Button id="deny" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="369.0" layoutY="127.0"
+           prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="30.0"/>
+      </font>
+      <opaqueInsets>
+         <Insets/>
+      </opaqueInsets>
+      <graphic>
+         <SVGPath
+                 content="M15.898,4.045c-0.271-0.272-0.713-0.272-0.986,0l-4.71,4.711L5.493,4.045c-0.272-0.272-0.714-0.272-0.986,0s-0.272,0.714,0,0.986l4.709,4.711l-4.71,4.711c-0.272,0.271-0.272,0.713,0,0.986c0.136,0.136,0.314,0.203,0.492,0.203c0.179,0,0.357-0.067,0.493-0.203l4.711-4.711l4.71,4.711c0.137,0.136,0.314,0.203,0.494,0.203c0.178,0,0.355-0.067,0.492-0.203c0.273-0.273,0.273-0.715,0-0.986l-4.711-4.711l4.711-4.711C16.172,4.759,16.172,4.317,15.898,4.045z"
+                 fill="WHITE">
+            <rotationAxis>
+               <Point3D/>
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="rejectTooltip" text="%runtime.scenes.components.dialogApply.rejectTooltip"/>
+      </tooltip>
+   </Button>
+   <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="369.0" layoutY="63.0"
+           prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="30.0"/>
+      </font>
+      <opaqueInsets>
+         <Insets/>
+      </opaqueInsets>
+      <graphic>
+         <SVGPath
+                 content="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z"
+                 fill="WHITE">
+            <rotationAxis>
+               <Point3D/>
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialogApply.applyTooltip"/>
+      </tooltip>
+   </Button>
+   <Text id="headingDialog" layoutX="30.0" layoutY="36.0" strokeType="OUTSIDE" strokeWidth="0.0"
+         text="%runtime.scenes.components.dialogApply.headingDialog" textAlignment="CENTER"
+         wrappingWidth="409.9804992675781"/>
+   <Text id="textDialog" layoutX="28.0" layoutY="76.0" strokeType="OUTSIDE" strokeWidth="0.0"
+         text="%runtime.scenes.components.dialogApply.textDialog"
+         textAlignment="JUSTIFY" wrappingWidth="307.79296875"/>
+   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="412.0" layoutY="11.0" prefHeight="40.0"
+           prefWidth="40.0"
+           textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath
+                 content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z"/>
+      </graphic>
+      <tooltip>
+         <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialogApply.closeTooltip"/>
+      </tooltip>
+   </Button>
+</Pane>

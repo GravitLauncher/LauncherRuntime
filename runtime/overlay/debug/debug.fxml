@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<!-- DrLeonardo Design for ShadowsProject-->
+
+<Pane fx:id="debugPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+   <Pane fx:id="debugBackground" prefHeight="500.0" prefWidth="900.0" />
+   <Pane layoutX="97.0" layoutY="-1.0" prefHeight="105.0" prefWidth="803.0" styleClass="whiteBox" />
+   <TextArea id="output" editable="false" layoutX="97.0" layoutY="104.0" prefHeight="396.0" prefWidth="803.0" />
+   <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="789.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0"
+           textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath content="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="hideTooltip" text="%runtime.overlay.debug.debug.hideTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0"
+           textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="closeTooltip" text="%runtime.overlay.debug.debug.closeTooltip" />
+      </tooltip>
+   </Button>
+   <Text id="headingDebug" layoutX="118.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.overlay.debug.debug.headingDebug" wrappingWidth="657.7734069824219" />
+   <Button id="copy" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="377.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="30.0" />
+      </font>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <graphic>
+         <SVGPath content="M18.378,1.062H3.855c-0.309,0-0.559,0.25-0.559,0.559c0,0.309,0.25,0.559,0.559,0.559h13.964v13.964c0,0.309,0.25,0.559,0.559,0.559c0.31,0,0.56-0.25,0.56-0.559V1.621C18.938,1.312,18.688,1.062,18.378,1.062z M16.144,3.296H1.621c-0.309,0-0.559,0.25-0.559,0.559v14.523c0,0.31,0.25,0.56,0.559,0.56h14.523c0.309,0,0.559-0.25,0.559-0.56V3.855C16.702,3.546,16.452,3.296,16.144,3.296z M15.586,17.262c0,0.31-0.25,0.558-0.56,0.558H2.738c-0.309,0-0.559-0.248-0.559-0.558V4.972c0-0.309,0.25-0.559,0.559-0.559h12.289c0.31,0,0.56,0.25,0.56,0.559V17.262z" fill="WHITE">
+            <rotationAxis>
+               <Point3D />
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="copyTooltip" text="%runtime.overlay.debug.debug.copyTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="kill" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="428.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="30.0" />
+      </font>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <graphic>
+         <SVGPath content="M13.53,2.238c-0.389-0.164-0.844,0.017-1.01,0.41c-0.166,0.391,0.018,0.845,0.411,1.01c2.792,1.181,4.598,3.904,4.6,6.937c0,4.152-3.378,7.529-7.53,7.529c-4.151,0-7.529-3.377-7.529-7.529C2.469,7.591,4.251,4.878,7.01,3.683C7.401,3.515,7.58,3.06,7.412,2.67c-0.17-0.392-0.624-0.571-1.014-0.402c-3.325,1.44-5.472,4.708-5.47,8.327c0,5.002,4.069,9.071,9.071,9.071c5.003,0,9.073-4.07,9.073-9.071C19.07,6.939,16.895,3.659,13.53,2.238z&#10;M9.999,7.616c0.426,0,0.771-0.345,0.771-0.771v-5.74c0-0.426-0.345-0.771-0.771-0.771&#10;&#9;&#9;&#9;&#9;&#9;&#9;&#9;&#9;c-0.427,0-0.771,0.345-0.771,0.771v5.74C9.228,7.271,9.573,7.616,9.999,7.616z" fill="WHITE">
+            <rotationAxis>
+               <Point3D />
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="killTooltip" text="%runtime.overlay.debug.debug.killTooltip" />
+      </tooltip>
+   </Button>
+   <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="349.0" layoutY="39.0" prefHeight="27.0" prefWidth="440.0" text="%runtime.overlay.debug.debug.version" textFill="#b3b8d5">
+      <font>
+         <Font size="18.0" />
+      </font>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <padding>
+         <Insets right="10.0" />
+      </padding>
+      <cursor>
+         <Cursor fx:constant="TEXT" />
+      </cursor>
+   </Label>
+   <stylesheets>
+      <URL value="@debug.css" />
+      <URL value="@../../global.css" />
+   </stylesheets>
+</Pane>

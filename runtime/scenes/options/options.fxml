@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<!-- DrLeonardo Design for ShadowsProject-->
+
+<Pane fx:id="optionsPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201"
+      xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@options.css"/>
+        <URL value="@../../global.css"/>
+    </stylesheets>
+    <Pane fx:id="optionsBackground" prefHeight="500.0" prefWidth="900.0"/>
+    <Pane fx:id="serverImage" layoutX="97.0" prefHeight="500.0" prefWidth="803.0"/>
+    <ScrollPane id="optionslist" layoutX="97.0" layoutY="101.0" prefHeight="399.0" prefWidth="804.0">
+        <VBox fx:id="componentList" prefHeight="394.0" prefWidth="800.0" spacing="10.0">
+            <padding>
+                <Insets bottom="10.0" left="20.0" right="10.0" top="10.0"/>
+            </padding>
+            <opaqueInsets>
+                <Insets/>
+            </opaqueInsets>
+        </VBox>
+    </ScrollPane>
+    <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="789.0" layoutY="32.0" prefHeight="40.0"
+            prefWidth="40.0"
+            textAlignment="CENTER" textFill="#464646">
+        <graphic>
+          <SVGPath
+                  content="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"/>
+        </graphic>
+        <tooltip>
+          <Tooltip id="hideTooltip" text="%runtime.scenes.options.options.hideTooltip"/>
+        </tooltip>
+    </Button>
+    <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="32.0" prefHeight="40.0"
+            prefWidth="40.0"
+            textAlignment="CENTER" textFill="#464646">
+        <graphic>
+          <SVGPath
+                  content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z"/>
+        </graphic>
+        <tooltip>
+          <Tooltip id="closeTooltip" text="%runtime.scenes.options.options.closeTooltip"/>
+        </tooltip>
+    </Button>
+    <Text id="headingOptional" layoutX="118.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0"
+          text="%runtime.scenes.options.options.headingOptional" wrappingWidth="657.7734069824219"/>
+    <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="427.0"
+            prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+        <font>
+          <Font name="System Bold" size="30.0"/>
+        </font>
+        <opaqueInsets>
+          <Insets/>
+        </opaqueInsets>
+        <graphic>
+          <SVGPath
+                  content="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z"
+                  fill="WHITE">
+              <rotationAxis>
+                  <Point3D/>
+              </rotationAxis>
+          </SVGPath>
+        </graphic>
+        <tooltip>
+          <Tooltip id="optionsTooltip" text="%runtime.scenes.options.options.optionsTooltip"/>
+        </tooltip>
+    </Button>
+</Pane>
