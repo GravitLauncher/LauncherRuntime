@@ -49,16 +49,11 @@ public class MessageManager {
     public void createNotification(String head, String message, boolean isLauncher)
     {
         if(isLauncher && application.getCurrentScene() == null) throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
-        Pane pane = fxmls.poll();
-        if(pane == null)
-        {
-            try {
-                Future<Pane> future = application.getNoCacheFxml("components/notification.fxml");
-                pane = future.get();
-            } catch (IOException | InterruptedException | ExecutionException e) {
-                LogHelper.error(e);
-                return;
-            }
+        Pane pane;
+        try {
+            pane = (Pane) application.getNoCacheFxml("components/notification.fxml").get();
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
         }
         Pane finalPane = pane;
         Scene scene = isLauncher ? null : new Scene(finalPane);
@@ -70,9 +65,10 @@ public class MessageManager {
             {
                 Screen screen = Screen.getPrimary();
                 Rectangle2D bounds = screen.getVisualBounds();
-                Stage notificationStage = application == null ? new Stage(StageStyle.TRANSPARENT) : application.newStage(StageStyle.TRANSPARENT);
+                Stage notificationStage = application.newStage(StageStyle.TRANSPARENT);
                 onClose = () -> {
                     notificationStage.hide();
+                    notificationStage.setScene(null);
                     count.getAndDecrement();
                     fxmls.add(finalPane);
                 };

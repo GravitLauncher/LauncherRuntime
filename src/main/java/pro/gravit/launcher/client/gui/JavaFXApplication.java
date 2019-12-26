@@ -9,14 +9,18 @@ import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
+import pro.gravit.launcher.client.gui.commands.NotifyCommand;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
+import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
+import pro.gravit.utils.command.BaseCommandCategory;
+import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -82,6 +86,7 @@ public class JavaFXApplication extends Application {
         service = Request.service;
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
+        registerCommands();
     }
 
     @Override
@@ -105,9 +110,15 @@ public class JavaFXApplication extends Application {
         gui.init();
         //
         mainStage.setScene(gui.loginScene);
-        messageManager.createNotification("Test head", "Test message", true);
         //
         AuthRequest.registerProviders();
+    }
+
+    private void registerCommands()
+    {
+        BaseCommandCategory category = new BaseCommandCategory();
+        category.registerCommand("notify", new NotifyCommand(messageManager));
+        ConsoleManager.handler.registerCategory(new CommandHandler.Category(category, "runtime"));
     }
 
     @Override
