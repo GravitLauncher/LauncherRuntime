@@ -4,7 +4,7 @@ import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.utils.command.Command;
 
 public class NotifyCommand extends Command {
-    private MessageManager messageManager;
+    private final MessageManager messageManager;
 
     public NotifyCommand(MessageManager messageManager) {
         this.messageManager = messageManager;

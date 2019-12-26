@@ -37,9 +37,7 @@ public abstract class AbstractStage {
 
     public void enableMouseDrag(Node node) {
         AtomicReference<Point2D> movePoint = new AtomicReference<>();
-        node.setOnMousePressed(event -> {
-            movePoint.set(new Point2D(event.getSceneX(), event.getSceneY()));
-        });
+        node.setOnMousePressed(event -> movePoint.set(new Point2D(event.getSceneX(), event.getSceneY())));
         node.setOnMouseDragged(event -> {
             if (movePoint.get() == null) {
                 return;

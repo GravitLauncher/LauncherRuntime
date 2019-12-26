@@ -20,9 +20,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class MessageManager {
-    private AtomicInteger count = new AtomicInteger(0);
-    private AtomicInteger localCount = new AtomicInteger(0);
-    private Queue<Pane> fxmls = new ConcurrentLinkedDeque<>();
+    private final AtomicInteger count = new AtomicInteger(0);
+    private final AtomicInteger localCount = new AtomicInteger(0);
     public final JavaFXApplication application;
 
     public MessageManager(JavaFXApplication application) {
@@ -64,7 +63,6 @@ public class MessageManager {
                     notificationStage.hide();
                     notificationStage.setScene(null);
                     count.getAndDecrement();
-                    fxmls.add(finalPane);
                 };
                 finalPane.setOnMouseClicked((e) -> onClose.run());
                 notificationStage.setAlwaysOnTop(true);
@@ -88,7 +86,6 @@ public class MessageManager {
                 onClose = () -> {
                     root.getChildren().remove(finalPane);
                     localCount.getAndDecrement();
-                    fxmls.add(finalPane);
                 };
                 int cnt = localCount.getAndIncrement();
                 double maxX = root.getWidth();
@@ -104,9 +101,7 @@ public class MessageManager {
                 if (!e.getButton().equals(MouseButton.PRIMARY)) return;
                 onClose.run();
             });
-            AbstractScene.fade(finalPane, 2500, 1.0, 0.0, (e) -> {
-                onClose.run();
-            });
+            AbstractScene.fade(finalPane, 2500, 1.0, 0.0, (e) -> onClose.run());
         });
     }
 }

@@ -30,7 +30,7 @@ public class DebugOverlay extends AbstractOverlay {
     }
 
     @Override
-    protected void doInit() throws IOException {
+    protected void doInit() {
         layout = pane;
         output = (TextArea) layout.lookup("#output");
         ((ButtonBase) layout.lookup("#kill")).setOnAction((e) -> {

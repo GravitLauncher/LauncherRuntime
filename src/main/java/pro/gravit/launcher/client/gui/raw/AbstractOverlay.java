@@ -14,7 +14,7 @@ public abstract class AbstractOverlay implements AllowDisable {
     protected Pane pane;
     boolean isInit;
 
-    protected AbstractOverlay(String fxmlPath, JavaFXApplication application) throws IOException {
+    protected AbstractOverlay(String fxmlPath, JavaFXApplication application) {
         this.application = application;
         this.fxmlPath = fxmlPath;
     }
@@ -41,7 +41,7 @@ public abstract class AbstractOverlay implements AllowDisable {
         });
     }
 
-    protected abstract void doInit() throws IOException;
+    protected abstract void doInit();
 
     public abstract void reset();
 

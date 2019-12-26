@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public class JavaFXApplication extends Application {
     public NewLauncherSettings settings;
     public RuntimeSettings runtimeSettings;
-    public LauncherConfig config = Launcher.getConfig();
+    public final LauncherConfig config = Launcher.getConfig();
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
@@ -59,7 +59,7 @@ public class JavaFXApplication extends Application {
     }
 
     public ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
-    public ExecutorService workers = Executors.newCachedThreadPool();
+    public final ExecutorService workers = Executors.newCachedThreadPool();
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
     public static JavaFXApplication getInstance() {
@@ -87,6 +87,7 @@ public class JavaFXApplication extends Application {
         runtimeSettings.apply();
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
         service = Request.service;
+        service.registerEventHandler(new GuiEventHandler(this));
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
         registerCommands();

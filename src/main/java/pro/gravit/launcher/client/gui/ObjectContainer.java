@@ -5,7 +5,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ObjectContainer {
-    private Map<UUID, Object> objects = new ConcurrentHashMap<>();
+    private final Map<UUID, Object> objects = new ConcurrentHashMap<>();
 
     public <T> UUID push(T o) {
         UUID uuid = UUID.randomUUID();

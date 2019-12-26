@@ -14,15 +14,13 @@ public class RuntimeStateMachine {
     private List<ClientProfile> profiles;
     private ClientProfile profile;
 
-    public RuntimeStateMachine setAuthResult(AuthRequestEvent rawAuthResult) {
+    public void setAuthResult(AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
         if (rawAuthResult.session != 0) Request.setSession(rawAuthResult.session);
-        return this;
     }
 
-    public RuntimeStateMachine setProfilesResult(ProfilesRequestEvent rawProfilesResult) {
+    public void setProfilesResult(ProfilesRequestEvent rawProfilesResult) {
         this.profiles = rawProfilesResult.profiles;
-        return this;
     }
 
     public String getUsername() {

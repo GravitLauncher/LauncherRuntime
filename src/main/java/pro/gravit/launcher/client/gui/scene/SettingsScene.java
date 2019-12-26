@@ -28,27 +28,21 @@ public class SettingsScene extends AbstractScene {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected void doInit() throws Exception {
+    protected void doInit() {
         layout = LookupHelper.lookup(scene.getRoot(), "#settingsPane");
         componentList = (Pane) ((ScrollPane) layout.lookup("#settingslist")).getContent();
         sceneBaseInit(layout);
-        ((ButtonBase) layout.lookup("#apply")).setOnAction((e) -> {
-            contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run();
-        });
-        ((ButtonBase) layout.lookup("#console")).setOnAction((e) -> {
-            contextHelper.runCallback(() -> {
-                if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
-                if (application.gui.consoleStage.isNullScene())
-                    application.gui.consoleStage.setScene(application.gui.consoleScene);
-                application.gui.consoleStage.show();
-            }).run();
-        });
+        ((ButtonBase) layout.lookup("#apply")).setOnAction((e) -> contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run());
+        ((ButtonBase) layout.lookup("#console")).setOnAction((e) -> contextHelper.runCallback(() -> {
+            if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
+            if (application.gui.consoleStage.isNullScene())
+                application.gui.consoleStage.setScene(application.gui.consoleScene);
+            application.gui.consoleStage.show();
+        }).run());
         langChoice = (ChoiceBox) layout.lookup("#langChoice");
         langChoice.getItems().addAll(RuntimeSettings.LOCALES);
         langChoice.getSelectionModel().select(application.runtimeSettings.locale);
-        langChoice.setOnAction((e) -> {
-            application.runtimeSettings.locale = langChoice.getSelectionModel().getSelectedItem();
-        });
+        langChoice.setOnAction((e) -> application.runtimeSettings.locale = langChoice.getSelectionModel().getSelectedItem());
         Slider ramSlider = (Slider) layout.lookup("#ramSlider");
         Label ramLabel = (Label) layout.lookup("#settingsBackground").lookup("#ramLabel");
         ramLabel.setText(Integer.toString(application.runtimeSettings.ram));
@@ -91,9 +85,7 @@ public class SettingsScene extends AbstractScene {
         container.getChildren().add(checkBox);
         container.getChildren().add(desc);
 
-        checkBox.setOnAction((e) -> {
-            onChanged.accept(checkBox.isSelected());
-        });
+        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         componentList.getChildren().add(container);
         container.getStyleClass().add("optContainer");
         checkBox.getStyleClass().add("optCheckbox");

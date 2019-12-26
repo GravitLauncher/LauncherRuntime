@@ -27,7 +27,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerMenuScene extends AbstractScene {
-    public static String SERVER_BUTTON_FXML = "components/serverButton.fxml";
+    public static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     public Node layout;
     private Node lastSelectedServerButton;
 
@@ -64,12 +64,8 @@ public class ServerMenuScene extends AbstractScene {
                     changeServer(profile, pingerResult.get());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
                 });
-                pane.setOnMouseEntered((e) -> {
-                    pane.lookup("#nameServer").getStyleClass().add("nameServerActive");
-                });
-                pane.setOnMouseExited((e) -> {
-                    pane.lookup("#nameServer").getStyleClass().remove("nameServerActive");
-                });
+                pane.setOnMouseEntered((e) -> pane.lookup("#nameServer").getStyleClass().add("nameServerActive"));
+                pane.setOnMouseExited((e) -> pane.lookup("#nameServer").getStyleClass().remove("nameServerActive"));
                 serverList.getChildren().add(pane);
                 application.workers.submit(() -> {
                     ServerPinger pinger = new ServerPinger(profile);
@@ -113,9 +109,7 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(ex);
             }
         });
-        ((ButtonBase) layout.lookup("#clientLaunch")).setOnAction((e) -> {
-            launchClient();
-        });
+        ((ButtonBase) layout.lookup("#clientLaunch")).setOnAction((e) -> launchClient());
     }
 
     public void changeServer(ClientProfile profile, ServerPinger.Result pingerResult) {
@@ -132,23 +126,21 @@ public class ServerMenuScene extends AbstractScene {
     public void launchClient() {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if (profile == null) return;
-        processRequest("Set profile", new SetProfileRequest(profile), (result) -> {
-            showOverlay(application.gui.updateOverlay, (e) -> {
-                Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
-                LogHelper.info("Start update to %s", target.toString());
-                application.gui.updateOverlay.initNewPhase("Скачивание файлов ассетов");
-                application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
-                    Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
-                    LogHelper.info("Start update to %s", targetClient.toString());
-                    application.gui.updateOverlay.initNewPhase("Скачивание файлов клиента");
-                    application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
-                        LogHelper.info("Success update");
-                        application.gui.updateOverlay.initNewPhase("Запуск клиента");
-                        doLaunchClient(target, assetHDir, targetClient, clientHDir, profile);
-                    });
+        processRequest("Set profile", new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
+            Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
+            LogHelper.info("Start update to %s", target.toString());
+            application.gui.updateOverlay.initNewPhase("Скачивание файлов ассетов");
+            application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
+                Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
+                LogHelper.info("Start update to %s", targetClient.toString());
+                application.gui.updateOverlay.initNewPhase("Скачивание файлов клиента");
+                application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
+                    LogHelper.info("Success update");
+                    application.gui.updateOverlay.initNewPhase("Запуск клиента");
+                    doLaunchClient(target, assetHDir, targetClient, clientHDir, profile);
                 });
             });
-        }, null);
+        }), null);
     }
 
     public void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile) {
@@ -156,9 +148,7 @@ public class ServerMenuScene extends AbstractScene {
                 application.runtimeSettings.autoEnter, application.runtimeSettings.fullScreen, application.runtimeSettings.ram, 0, 0);
         contextHelper.runCallback(() -> {
             Process process = ClientLauncher.launch(assetHDir, clientHDir, profile, clientParams, true);
-            showOverlay(application.gui.debugOverlay, (e) -> {
-                application.gui.debugOverlay.onProcess(process);
-            });
+            showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(process));
         }).run();
 
     }

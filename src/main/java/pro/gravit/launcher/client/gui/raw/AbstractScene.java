@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
     protected Scene scene;
-    public final JavaFXApplication application;
+    protected final JavaFXApplication application;
     public final String fxmlPath;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
@@ -79,7 +79,7 @@ public abstract class AbstractScene implements AllowDisable {
     private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
         if (newOverlay == null) throw new NullPointerException();
         if (currentOverlayNode != null) {
-            swapOverlay(0, newOverlay, onFinished);
+            swapOverlay(newOverlay, onFinished);
             return;
         }
         disable();
@@ -116,11 +116,11 @@ public abstract class AbstractScene implements AllowDisable {
         });
     }
 
-    private void swapOverlay(double delay, Pane newOverlay, EventHandler<ActionEvent> onFinished) {
+    private void swapOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
         if (currentOverlayNode == null)
             throw new IllegalStateException("Try swap null overlay");
         Pane root = (Pane) scene.getRoot();
-        fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
+        fade(currentOverlayNode, 0, 1.0, 0.0, (e) -> {
             if (currentOverlayNode != newOverlay) {
                 ObservableList<Node> child = root.getChildren();
                 child.set(child.indexOf(currentOverlayNode), newOverlay);
@@ -165,12 +165,8 @@ public abstract class AbstractScene implements AllowDisable {
     }
 
     protected void sceneBaseInit(Node node) {
-        ((ButtonBase) node.lookup("#close")).setOnAction((e) -> {
-            currentStage.close();
-        });
-        ((ButtonBase) node.lookup("#hide")).setOnAction((e) -> {
-            currentStage.hide();
-        });
+        ((ButtonBase) node.lookup("#close")).setOnAction((e) -> currentStage.close());
+        ((ButtonBase) node.lookup("#hide")).setOnAction((e) -> currentStage.hide());
         currentStage.enableMouseDrag(node);
     }
 }

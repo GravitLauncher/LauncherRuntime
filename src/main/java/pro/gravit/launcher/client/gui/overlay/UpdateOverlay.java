@@ -41,9 +41,9 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     public Text currentStatus;
 
     public long totalSize;
-    public AtomicLong totalDownloaded = new AtomicLong(0);
-    private AtomicLong lastUpdateTime = new AtomicLong(0);
-    private AtomicLong lastDownloaded = new AtomicLong(0);
+    public final AtomicLong totalDownloaded = new AtomicLong(0);
+    private final AtomicLong lastUpdateTime = new AtomicLong(0);
+    private final AtomicLong lastDownloaded = new AtomicLong(0);
     public int currentPhase = 0;
     public double phaseOffset;
     public double progressRatio = 1.0;
@@ -54,7 +54,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     }
 
     @Override
-    protected void doInit() throws IOException {
+    protected void doInit() {
         progressBar = (ProgressBar) pane.lookup("#progress");
         phases = new Circle[5];
         for (int i = 1; i <= 5; ++i) {

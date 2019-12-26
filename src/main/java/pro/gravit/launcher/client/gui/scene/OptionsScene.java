@@ -26,12 +26,10 @@ public class OptionsScene extends AbstractScene {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         layout = LookupHelper.lookup(scene.getRoot(), "#optionsPane");
         sceneBaseInit(layout);
-        ((ButtonBase) layout.lookup("#apply")).setOnAction((e) -> {
-            contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run();
-        });
+        ((ButtonBase) layout.lookup("#apply")).setOnAction((e) -> contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run());
         componentList = (Pane) ((ScrollPane) layout.lookup("#optionslist")).getContent();
     }
 
@@ -59,9 +57,7 @@ public class OptionsScene extends AbstractScene {
         desc.setText(description);
         container.getChildren().add(checkBox);
         container.getChildren().add(desc);
-        checkBox.setOnAction((e) -> {
-            onChanged.accept(checkBox.isSelected());
-        });
+        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         componentList.getChildren().add(container);
         container.getStyleClass().add("optContainer");
         checkBox.getStyleClass().add("optCheckbox");

@@ -25,7 +25,7 @@ public class ConsoleScene extends AbstractScene {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         layout = scene.getRoot();
         sceneBaseInit(layout);
         output = (TextArea) layout.lookup("#output");

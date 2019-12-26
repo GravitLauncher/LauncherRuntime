@@ -17,12 +17,12 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
     }
 
     @Override
-    public void run(String[] args) throws Exception {
+    public void run(String[] args) {
         Application.launch(JavaFXApplication.class, args);
     }
 
     @Override
-    public void preLoad() throws Exception {
+    public void preLoad() {
     }
 
     @Override

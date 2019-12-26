@@ -47,7 +47,7 @@ public class LoginScene extends AbstractScene {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void doInit() throws Exception {
+    public void doInit() {
         layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#authPane");
         sceneBaseInit(layout);
         TextField loginField = (TextField) layout.lookup("#login");
@@ -79,26 +79,24 @@ public class LoginScene extends AbstractScene {
                 }
                 LogHelper.dev("Launcher update processed");
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
-                processRequest("AuthAvailability update", getAvailabilityAuthRequest, (auth) -> {
-                    contextHelper.runInFxThread(() -> {
-                        this.auth = auth.list;
-                        int authIndex = 0;
-                        int i = 0;
-                        for (GetAvailabilityAuthRequestEvent.AuthAvailability a : auth.list) {
-                            if (a.equals(application.runtimeSettings.lastAuth)) authIndex = i;
-                            authList.getItems().add(a);
-                            i++;
-                        }
-                        authList.getSelectionModel().select(authIndex);
-                        hideOverlay(0, null);
-                    });
-                }, null);
+                processRequest("AuthAvailability update", getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
+                    this.auth = auth.list;
+                    int authIndex = 0;
+                    int i = 0;
+                    for (GetAvailabilityAuthRequestEvent.AuthAvailability a : auth.list) {
+                        if (a.equals(application.runtimeSettings.lastAuth)) authIndex = i;
+                        authList.getItems().add(a);
+                        i++;
+                    }
+                    authList.getSelectionModel().select(authIndex);
+                    hideOverlay(0, null);
+                }), null);
             }, null);
         }
     }
 
     @SuppressWarnings("unchecked")
-    public void loginWithGui() throws Exception {
+    public void loginWithGui() {
         String login = ((TextField) layout.lookup("#login")).getText();
         TextField passwordField = ((TextField) layout.lookup("#password"));
         byte[] encryptedPassword;

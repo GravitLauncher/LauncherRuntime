@@ -26,8 +26,8 @@ public class ProcessingOverlay extends AbstractOverlay implements FXMLConsumer {
     }
 
     @Override
-    protected void doInit() throws IOException {
-        spinner = pane.lookup("#spinner");
+    protected void doInit() {
+        spinner = pane.lookup("#spinner"); //TODO: DrLeonardo?
         description = (Labeled) pane.lookup("#description");
     }
 

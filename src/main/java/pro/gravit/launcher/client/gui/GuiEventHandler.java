@@ -5,11 +5,10 @@ import pro.gravit.launcher.client.gui.scene.LoginScene;
 import pro.gravit.launcher.events.NotificationEvent;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.request.WebSocketEvent;
+import pro.gravit.launcher.request.websockets.ClientWebSocketService;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.util.function.Consumer;
-
-public class GuiEventHandler implements Consumer<WebSocketEvent> {
+public class GuiEventHandler implements ClientWebSocketService.EventHandler {
     private final JavaFXApplication application;
 
     public GuiEventHandler(JavaFXApplication application) {
@@ -17,7 +16,7 @@ public class GuiEventHandler implements Consumer<WebSocketEvent> {
     }
 
     @Override
-    public void accept(WebSocketEvent event) {
+    public <T extends WebSocketEvent> boolean eventHandle(T event) {
         LogHelper.dev("Processing event %s", event.getType());
         try {
             if (event instanceof NotificationEvent) {
@@ -35,5 +34,6 @@ public class GuiEventHandler implements Consumer<WebSocketEvent> {
         } catch (Throwable e) {
             LogHelper.error(e);
         }
+        return false;
     }
 }
