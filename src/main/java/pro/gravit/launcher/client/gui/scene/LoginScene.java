@@ -57,7 +57,7 @@ public class LoginScene extends AbstractScene {
         TextField passwordField = (TextField) layout.lookup("#password");
         if (application.runtimeSettings.encryptedPassword != null) {
             passwordField.getStyleClass().add("hasSaved");
-            passwordField.setPromptText("*** Сохранённый ***");
+            passwordField.setPromptText(application.getLangResource("runtime.scenes.login.login.password.saved"));
             ((CheckBox) layout.lookup("#savePassword")).setSelected(true);
         }
         ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#combologin");
@@ -66,7 +66,7 @@ public class LoginScene extends AbstractScene {
         //Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
-            processRequest("Launcher update", launcherRequest, (result) -> {
+            processRequest(application.getLangResource("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if (result.needUpdate) {
                     try {
                         LauncherRequest.update(result);
@@ -79,7 +79,7 @@ public class LoginScene extends AbstractScene {
                 }
                 LogHelper.dev("Launcher update processed");
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
-                processRequest("AuthAvailability update", getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
+                processRequest(application.getLangResource("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
                     this.auth = auth.list;
                     int authIndex = 0;
                     int i = 0;
@@ -100,7 +100,7 @@ public class LoginScene extends AbstractScene {
         String login = ((TextField) layout.lookup("#login")).getText();
         TextField passwordField = ((TextField) layout.lookup("#password"));
         byte[] encryptedPassword;
-        if (passwordField.getPromptText().equals("*** Сохранённый ***")) {
+        if (passwordField.getPromptText().equals(application.getLangResource("runtime.scenes.login.login.password.saved"))) {
             encryptedPassword = application.runtimeSettings.encryptedPassword;
         } else {
             String password = passwordField.getText();
@@ -123,8 +123,7 @@ public class LoginScene extends AbstractScene {
     public void login(String login, byte[] password, String auth_id, boolean savePassword) {
         LogHelper.dev("Auth with %s password ***** auth_id %s", login, auth_id);
         AuthRequest authRequest = new AuthRequest(login, password, new NoHWID(), auth_id);
-        processRequest("Auth", authRequest, (result) -> {
-            LogHelper.dev("TODO: Auth %s success", result.playerProfile.username);
+        processRequest(application.getLangResource("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
@@ -136,7 +135,7 @@ public class LoginScene extends AbstractScene {
     }
 
     public void onGetProfiles() {
-        processRequest("Update profiles", new ProfilesRequest(), (profiles) -> {
+        processRequest(application.getLangResource("runtime.overlay.processing.text.profiles"), new ProfilesRequest(), (profiles) -> {
             application.runtimeStateMachine.setProfilesResult(profiles);
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);

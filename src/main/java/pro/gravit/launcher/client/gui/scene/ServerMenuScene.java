@@ -126,17 +126,17 @@ public class ServerMenuScene extends AbstractScene {
     public void launchClient() {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if (profile == null) return;
-        processRequest("Set profile", new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
+        processRequest(application.getLangResource("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
             Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
             LogHelper.info("Start update to %s", target.toString());
-            application.gui.updateOverlay.initNewPhase("Скачивание файлов ассетов");
+            application.gui.updateOverlay.initNewPhase(application.getLangResource("runtime.overlay.update.phase.assets"));
             application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
                 Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
                 LogHelper.info("Start update to %s", targetClient.toString());
-                application.gui.updateOverlay.initNewPhase("Скачивание файлов клиента");
+                application.gui.updateOverlay.initNewPhase(application.getLangResource("runtime.overlay.update.phase.client"));
                 application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
                     LogHelper.info("Success update");
-                    application.gui.updateOverlay.initNewPhase("Запуск клиента");
+                    application.gui.updateOverlay.initNewPhase(application.getLangResource("runtime.overlay.update.phase.launch"));
                     doLaunchClient(target, assetHDir, targetClient, clientHDir, profile);
                 });
             });

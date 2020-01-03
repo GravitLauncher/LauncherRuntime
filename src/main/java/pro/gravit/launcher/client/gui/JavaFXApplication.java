@@ -178,6 +178,14 @@ public class JavaFXApplication extends Application {
         ret.setResizable(false);
         return ret;
     }
+    public final String getLangResource(String name)
+    {
+        return resources.getString(name);
+    }
+    public final String getLangString(String name, Object... args)
+    {
+        return String.format(resources.getString(name), args);
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
