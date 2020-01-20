@@ -9,6 +9,7 @@ import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
+import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -114,6 +115,7 @@ public class JavaFXApplication extends Application {
     private void registerCommands() {
         BaseCommandCategory category = new BaseCommandCategory();
         category.registerCommand("notify", new NotifyCommand(messageManager));
+        category.registerCommand("dialog", new DialogCommand(messageManager));
         ConsoleManager.handler.registerCategory(new CommandHandler.Category(category, "runtime"));
     }
 

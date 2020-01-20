@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.raw;
 
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -102,6 +103,45 @@ public class MessageManager {
                 onClose.run();
             });
             AbstractScene.fade(finalPane, 2500, 1.0, 0.0, (e) -> onClose.run());
+        });
+    }
+    public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback, boolean isLauncher)
+    {
+        Pane pane;
+        try {
+            pane = (Pane) application.getNoCacheFxml("components/dialog.fxml").get();
+        } catch (IOException | InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        Pane finalPane = pane;
+        Scene scene = isLauncher ? null : new Scene(finalPane);
+        ContextHelper.runInFxThreadStatic(() -> {
+            ((Text) finalPane.lookup("#headingDialog")).setText(header);
+            ((Text) finalPane.lookup("#textDialog")).setText(text);
+            Runnable onClose;
+            if(isLauncher)
+            {
+                AbstractScene currentScene = application.getCurrentScene();
+                Pane root = (Pane) currentScene.getScene().getRoot();
+                root.getChildren().add(finalPane);
+                onClose = () -> {
+                    root.getChildren().remove(finalPane);
+                };
+                root.setLayoutX((currentScene.getScene().getWidth()-root.getPrefWidth())/2);
+                root.setLayoutY((currentScene.getScene().getHeight()-root.getPrefHeight())/2);
+            }
+            else
+            {
+                onClose = null;
+            }
+            ((Button)finalPane.lookup("#close")).setOnAction((e) -> {
+                onClose.run();
+                onCloseCallback.run();
+            });
+            ((Button)finalPane.lookup("#applyComponents")).setOnAction((e) -> {
+                onClose.run();
+                onApplyCallback.run();
+            });
         });
     }
 }
