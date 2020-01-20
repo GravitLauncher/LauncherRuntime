@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scene;
 
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
@@ -14,13 +15,13 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 
+import java.io.File;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
 public class SettingsScene extends AbstractScene {
     public Node layout;
     public Pane componentList;
-    public ChoiceBox<String> langChoice;
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -39,12 +40,27 @@ public class SettingsScene extends AbstractScene {
                 application.gui.consoleStage.setScene(application.gui.consoleScene);
             application.gui.consoleStage.show();
         }).run());
-        langChoice = (ChoiceBox) layout.lookup("#langChoice");
-        langChoice.getItems().addAll(RuntimeSettings.LOCALES);
-        langChoice.getSelectionModel().select(application.runtimeSettings.locale);
-        langChoice.setOnAction((e) -> application.runtimeSettings.locale = langChoice.getSelectionModel().getSelectedItem());
+        {
+            Button langButton = (Button) layout.lookup("#lang");
+            ContextMenu langChoice = langButton.getContextMenu();
+            RuntimeSettings.LAUNCHER_LOCALE[] locales = RuntimeSettings.LAUNCHER_LOCALE.values();
+            MenuItem[] items = new MenuItem[locales.length];
+            for(int i=0;i<locales.length;++i)
+            {
+                items[i] = new MenuItem(locales[i].displayName);
+                int finalI = i;
+                items[i].setOnAction((e) -> {
+                    application.runtimeSettings.locale = locales[finalI];
+                });
+            }
+            langChoice.getItems().addAll(items);
+            langButton.setOnMousePressed((e) -> {
+                if(!e.isPrimaryButtonDown()) return;
+                langChoice.show(langButton, e.getScreenX() ,e.getScreenY());
+            });
+        }
         Slider ramSlider = (Slider) layout.lookup("#ramSlider");
-        Label ramLabel = (Label) layout.lookup("#settingsBackground").lookup("#ramLabel");
+        Label ramLabel = (Label) layout.lookup("#serverImage").lookup("#ramLabel");
         ramLabel.setText(Integer.toString(application.runtimeSettings.ram));
         ramSlider.setMax(2048); //TODO
         ramSlider.setSnapToTicks(true);
@@ -64,7 +80,9 @@ public class SettingsScene extends AbstractScene {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Сменить директорию загрузок");
             directoryChooser.setInitialDirectory(DirBridge.dir.toFile());
-            Path newDir = directoryChooser.showDialog(application.getMainStage().stage).toPath().toAbsolutePath();
+            File choose = directoryChooser.showDialog(application.getMainStage().stage);
+            if(choose == null) return;
+            Path newDir = choose.toPath().toAbsolutePath();
             DirBridge.dirUpdates = newDir;
             application.runtimeSettings.updatesDirPath = newDir.toString();
             application.runtimeSettings.updatesDir = newDir;

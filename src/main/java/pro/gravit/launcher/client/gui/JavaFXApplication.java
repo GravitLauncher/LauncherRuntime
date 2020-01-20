@@ -97,15 +97,7 @@ public class JavaFXApplication extends Application {
     public void start(Stage stage) throws Exception {
         // System loading
         if (runtimeSettings.locale == null) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
-        boolean correctLocale = false;
-        for (String s : RuntimeSettings.LOCALES) {
-            if (runtimeSettings.locale.equals(s)) {
-                correctLocale = true;
-                break;
-            }
-        }
-        if (!correctLocale) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
-        try (InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale))) {
+        try (InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale.name))) {
             resources = new PropertyResourceBundle(input);
         }
         fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);

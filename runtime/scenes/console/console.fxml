@@ -16,28 +16,10 @@
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="consolePane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="consolePane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
    <Pane fx:id="consoleBackground" prefHeight="500.0" prefWidth="900.0" />
    <Pane layoutX="97.0" prefHeight="102.0" prefWidth="803.0" styleClass="whiteBox" />
-   <TextArea id="output" editable="false" layoutX="97.0" layoutY="102.0" prefHeight="353.0" prefWidth="803.0" />
-   <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="789.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0"
-           textAlignment="CENTER" textFill="#464646">
-      <graphic>
-         <SVGPath content="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10" />
-      </graphic>
-      <tooltip>
-         <Tooltip id="hideTooltip" text="%runtime.scenes.console.console.hideTooltip" />
-      </tooltip>
-   </Button>
-   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0"
-           textAlignment="CENTER" textFill="#464646">
-      <graphic>
-         <SVGPath content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z" />
-      </graphic>
-      <tooltip>
-         <Tooltip id="closeTooltip" text="%runtime.scenes.console.console.closeTooltip" />
-      </tooltip>
-   </Button>
+   <TextArea id="output" editable="false" layoutX="97.0" layoutY="102.0" prefHeight="353.0" prefWidth="803.0" wrapText="true" />
    <Button id="wiki" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="428.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
       <font>
          <Font name="System Bold" size="30.0" />
@@ -46,7 +28,7 @@
          <Insets />
       </opaqueInsets>
       <graphic>
-         <SVGPath content="M8.416,3.943l1.12-1.12v9.031c0,0.257,0.208,0.464,0.464,0.464c0.256,0,0.464-0.207,0.464-0.464V2.823l1.12,1.12c0.182,0.182,0.476,0.182,0.656,0c0.182-0.181,0.182-0.475,0-0.656l-1.744-1.745c-0.018-0.081-0.048-0.16-0.112-0.224C10.279,1.214,10.137,1.177,10,1.194c-0.137-0.017-0.279,0.02-0.384,0.125C9.551,1.384,9.518,1.465,9.499,1.548L7.76,3.288c-0.182,0.181-0.182,0.475,0,0.656C7.941,4.125,8.234,4.125,8.416,3.943z M15.569,6.286h-2.32v0.928h2.32c0.512,0,0.928,0.416,0.928,0.928v8.817c0,0.513-0.416,0.929-0.928,0.929H4.432c-0.513,0-0.928-0.416-0.928-0.929V8.142c0-0.513,0.416-0.928,0.928-0.928h2.32V6.286h-2.32c-1.025,0-1.856,0.831-1.856,1.856v8.817c0,1.025,0.832,1.856,1.856,1.856h11.138c1.024,0,1.855-0.831,1.855-1.856V8.142C17.425,7.117,16.594,6.286,15.569,6.286z" fill="WHITE">
+         <SVGPath content="M28 1.21484C28 1.38672 27.8633 1.52344 27.6875 1.52344H26.0078L18.3906 17.7383C18.3398 17.8477 18.2305 17.918 18.1133 17.918C18.1094 17.918 18.1094 17.918 18.1094 17.918C17.9883 17.918 17.8828 17.8516 17.8281 17.7461L14.2148 10.5781L10.3125 17.7578C10.2578 17.8594 10.1562 17.918 10.0312 17.918C9.91406 17.9141 9.80859 17.8477 9.75781 17.7422L2.05469 1.52344H0.3125C0.140625 1.52344 0 1.38672 0 1.21484V0.390625C0 0.21875 0.140625 0.0820312 0.3125 0.0820312H6.52344C6.69531 0.0820312 6.83594 0.21875 6.83594 0.390625V1.21484C6.83594 1.38672 6.69531 1.52344 6.52344 1.52344H5.1875L10.5039 13.7852L13.2695 8.61719L9.76172 1.52734H8.91797C8.74609 1.52734 8.60547 1.38672 8.60547 1.21484V0.394531C8.60547 0.222656 8.74609 0.0820312 8.91797 0.0820312H13.5156C13.6875 0.0820312 13.8242 0.222656 13.8242 0.394531V1.21484C13.8242 1.38672 13.6875 1.52344 13.5156 1.52344H12.7031L14.7227 5.9375L17.125 1.52344H15.6523C15.4766 1.52344 15.3398 1.38672 15.3398 1.21484V0.394531C15.3398 0.222656 15.4766 0.0820312 15.6523 0.0820312H20.1172C20.2891 0.0820312 20.4258 0.222656 20.4258 0.394531V1.21484C20.4258 1.38672 20.2891 1.52344 20.1172 1.52344H19.1367L15.6328 7.89453L18.4883 13.7695L24 1.52344H22.2539C22.082 1.52344 21.9414 1.38672 21.9414 1.21484V0.394531C21.9414 0.222656 22.082 0.0820312 22.2539 0.0820312H27.6875C27.8633 0.0820312 28 0.222656 28 0.394531V1.21484Z&#10;" fill="WHITE">
             <rotationAxis>
                <Point3D />
             </rotationAxis>
@@ -56,12 +38,28 @@
          <Tooltip id="wikiTooltip" text="%runtime.scenes.console.console.wikiTooltip" />
       </tooltip>
    </Button>
-   <Button id="send" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="725.0" layoutY="455.0" prefHeight="44.0" prefWidth="175.0" text="%runtime.scenes.console.console.send" textFill="WHITE">
+   <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="786.0" layoutY="31.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#c6c6c6">
+      <graphic>
+         <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="hideTooltip" text="%runtime.scenes.console.console.hideTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="830.0" layoutY="31.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="closeTooltip" text="%runtime.scenes.console.console.closeTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="send" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="647.0" layoutY="455.0" prefHeight="44.0" prefWidth="253.0" text="%runtime.scenes.console.console.send" textFill="WHITE">
       <opaqueInsets>
          <Insets />
       </opaqueInsets>
       <graphic>
-         <SVGPath content="M17.218,2.268L2.477,8.388C2.13,8.535,2.164,9.05,2.542,9.134L9.33,10.67l1.535,6.787c0.083,0.377,0.602,0.415,0.745,0.065l6.123-14.74C17.866,2.46,17.539,2.134,17.218,2.268 M3.92,8.641l11.772-4.89L9.535,9.909L3.92,8.641z M11.358,16.078l-1.268-5.613l6.157-6.157L11.358,16.078z" fill="#323232">
+         <SVGPath content="M0.876191 0L0 0.92L6.26667 7.5L0 14.08L0.876191 15L7.58095 7.96L8 7.5L7.58095 7.04L0.876191 0Z" fill="#323232">
             <rotationAxis>
                <Point3D />
             </rotationAxis>
@@ -71,13 +69,13 @@
          <Tooltip id="sendTooltip" text="%runtime.scenes.console.console.sendTooltip" />
       </tooltip>
    </Button>
-   <Text id="headingConsole" layoutX="118.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.console.console.headingConsole" wrappingWidth="657.7734069824219" />
-   <TextField id="commandInput" layoutX="97.0" layoutY="455.0" prefHeight="45.0" prefWidth="628.0" promptText="%runtime.scenes.console.console.commandInput" styleClass="commandInputClass">
+   <Text id="headingConsole" layoutX="118.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.console.console.headingConsole" wrappingWidth="445.7734069824219" />
+   <TextField id="commandInput" layoutX="97.0" layoutY="455.0" prefHeight="45.0" prefWidth="551.0" promptText="%runtime.scenes.console.console.commandInput" styleClass="commandInputClass">
       <font>
          <Font size="16.0" />
       </font>
    </TextField>
-   <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="289.0" layoutY="39.0" prefHeight="27.0" prefWidth="500.0" text="%runtime.scenes.console.console.version" textFill="#b3b8d5">
+   <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" focusTraversable="false" layoutX="289.0" layoutY="38.0" prefHeight="27.0" prefWidth="500.0" text="Launcher 5.1.0.0 Java: 1.8 u231 x64" textFill="#b3b8d5">
       <font>
          <Font size="18.0" />
       </font>

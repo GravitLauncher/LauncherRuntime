@@ -7,22 +7,21 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/8.0.201"
-      xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ImageView id="notificationIco" fitHeight="66.0" fitWidth="56.0" layoutX="13.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../images/icons/logo.png" />
+         </image>
+      </ImageView>
+      <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="86.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ПОЗДРАВЛЯЕМ!" wrappingWidth="219.79297161102295" />
+      <Text id="notificationText" fontSmoothingType="LCD" layoutX="87.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Вас забанили!" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
+   </children>
    <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <stylesheets>
-      <URL value="@components.css"/>
-      <URL value="@../global.css"/>
+      <URL value="@components.css" />
+      <URL value="@../global.css" />
    </stylesheets>
-   <ImageView id="notificationIco" fitHeight="66.0" fitWidth="56.0" layoutX="13.0" layoutY="11.0" pickOnBounds="true"
-              preserveRatio="true">
-      <Image url="@../images/icons/logo.png"/>
-   </ImageView>
-   <Text id="notificationHeading" layoutX="86.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="%runtime.scenes.components.notification.notificationHeading" wrappingWidth="219.79297161102295"/>
-   <Text id="notificationText" layoutX="87.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="%runtime.scenes.components.notification.notificationText" textAlignment="JUSTIFY"
-         wrappingWidth="219.79296875"/>
 </Pane>

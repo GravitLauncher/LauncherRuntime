@@ -114,7 +114,7 @@ RadioButton {
     -fx-background-color: rgba(0, 0, 0, 0.19);
 }
 
-.choice-box .context-menu { -fx-background-color: #fff; }
+.choice-box .context-menu { -fx-background-color: #fff; -fx-pref-width: 137px;}
 .choice-box .menu-item:focused { -fx-background-color: #7C4DFF; }
 .choice-box .menu-item > .label { -fx-text-fill: #323232; }
 .choice-box .menu-item:focused > .label { -fx-text-fill: #fff; }
@@ -135,13 +135,11 @@ RadioButton {
 #settings:hover,
 #exit:hover,
 #console:hover {
-    -fx-opacity: 0.6;
+    -fx-opacity: 0.8;
 }
 
 #apply {
     -fx-background-radius: 0;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
     -fx-background-color: #7C4DFF;
     -fx-background-size: cover;
     -fx-font-size: 13pt;
@@ -149,8 +147,6 @@ RadioButton {
 
 #deny {
     -fx-background-radius: 0;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
     -fx-background-color: #A23131;
     -fx-background-size: cover;
     -fx-font-size: 13pt;
@@ -187,6 +183,10 @@ RadioButton {
     -fx-label-padding: 0 0 0 5px;
     -fx-padding: 3 0 0 0px;
     -fx-pref-width: 750px;
+}
+
+#icons {
+    -fx-fill: #323232;
 }
 
 /*-- DrLeonardo Design for GravitLauncher --*/

@@ -5,37 +5,27 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201"
-      xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+        <!-- Description -->
+        <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="248.0" layoutY="315.0" prefHeight="66.0" prefWidth="404.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" textFill="WHITE" />
+      <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="72.0" layoutY="29.0" />
+      <ImageView layoutX="371.0" layoutY="161.0">
+         <image>
+            <Image url="@../../images/preloader/logo.png" />
+         </image>
+      </ImageView>
+      <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="700.0" layoutY="81.0" />
+      <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="102.0" layoutY="285.0" />
+      <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="347.0" layoutY="62.0" />
+      <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="689.0" layoutY="315.0" />
+      <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="346.0" layoutY="381.0" />
+    </children>
     <stylesheets>
-        <URL value="@processing.css"/>
+        <URL value="@processing.css" />
     </stylesheets>
-    <!-- Description -->
-    <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="248.0" layoutY="306.0" prefHeight="66.0"
-           prefWidth="404.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER"
-           textFill="WHITE"/>
-    <ImageView layoutX="371.0" layoutY="161.0">
-        <Image url="@../../images/preloader/logo.png"/>
-    </ImageView>
-    <ImageView layoutX="635.0" layoutY="298.0">
-        <Image url="@../../images/icons/line.png"/>
-    </ImageView>
-    <ImageView layoutX="715.0" layoutY="71.0">
-        <Image url="@../../images/icons/line.png"/>
-    </ImageView>
-    <ImageView layoutX="582.0" layoutY="31.0">
-        <Image url="@../../images/icons/line.png"/>
-    </ImageView>
-    <ImageView layoutX="196.0" layoutY="321.0">
-        <Image url="@../../images/icons/line.png"/>
-    </ImageView>
-    <ImageView layoutX="222.0" layoutY="45.0">
-        <Image url="@../../images/icons/line.png"/>
-    </ImageView>
-    <ImageView layoutX="58.0" layoutY="111.0">
-        <Image url="@../../images/icons/line.png"/>
-    </ImageView>
 </Pane>

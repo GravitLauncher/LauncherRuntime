@@ -1,10 +1,13 @@
 package pro.gravit.launcher.client.gui.scene;
 
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.ClientLauncher;
@@ -49,10 +52,10 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 Pane pane = future.get();
                 AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
-                ((Text) pane.lookup("#nameServer")).setText(profile.getTitle());
+                ((Hyperlink) pane.lookup("#nameServer")).setText(profile.getTitle());
                 ((Text) pane.lookup("#genreServer")).setText(profile.getVersion().toString());
                 profile.updateOptionalGraph();
-                pane.setOnMouseClicked((e) -> {
+                EventHandler<? super MouseEvent> handle = (e) -> {
                     if (!e.getButton().equals(MouseButton.PRIMARY)) return;
                     if (lastSelectedServerButton != null) {
                         lastSelectedServerButton.getStyleClass().remove("serverButtonsActive");
@@ -63,7 +66,9 @@ public class ServerMenuScene extends AbstractScene {
                     //lastSelectedServerButton.lookup("#nameServer").getStyleClass().add("nameServerActive");
                     changeServer(profile, pingerResult.get());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
-                });
+                };
+                pane.setOnMouseClicked(handle);
+                pane.lookup("#nameServer").setOnMouseClicked(handle);
                 pane.setOnMouseEntered((e) -> pane.lookup("#nameServer").getStyleClass().add("nameServerActive"));
                 pane.setOnMouseExited((e) -> pane.lookup("#nameServer").getStyleClass().remove("nameServerActive"));
                 serverList.getChildren().add(pane);

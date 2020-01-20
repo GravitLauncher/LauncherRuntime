@@ -71,8 +71,6 @@
 
 #clientLaunch {
     -fx-background-radius: 0;
-    -fx-pref-width: 210px;
-    -fx-pref-height: 50px;
     -fx-background-color: #7C4DFF;
     -fx-background-size: cover;
     -fx-text-fill: #fff;
@@ -80,8 +78,6 @@
 
 #clientSettings {
     -fx-background-radius: 0;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
     -fx-background-color: #7C4DFF;
     -fx-background-size: cover;
     -fx-font-size: 13pt;

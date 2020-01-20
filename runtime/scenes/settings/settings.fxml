@@ -3,10 +3,12 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Point3D?>
+<?import javafx.scene.Cursor?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tooltip?>
@@ -18,146 +20,140 @@
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="settingsPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201"
-      xmlns:fx="http://javafx.com/fxml/1">
-    <stylesheets>
-        <URL value="@../../global.css"/>
-        <URL value="@settings.css"/>
-    </stylesheets>
-    <Pane fx:id="settingsBackground" prefHeight="500.0" prefWidth="900.0">
-        <Label id="ramLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="1.0" layoutY="115.0"
-               prefHeight="30.0" prefWidth="94.0" text="%runtime.scenes.settings.settings.ramLabel" textAlignment="CENTER"/>
-    </Pane>
-    <Pane fx:id="serverImage" layoutX="97.0" prefHeight="500.0" prefWidth="803.0"/>
-    <ScrollPane id="settingslist" layoutX="98.0" layoutY="135.0" prefHeight="366.0" prefWidth="803.0">
-        <VBox fx:id="componentList" prefHeight="363.0" prefWidth="797.0" spacing="10.0">
-            <padding>
-                <Insets bottom="10.0" left="20.0" right="10.0" top="10.0"/>
-            </padding>
-            <opaqueInsets>
-                <Insets/>
-            </opaqueInsets>
-        </VBox>
-    </ScrollPane>
-    <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="789.0" layoutY="32.0" prefHeight="40.0"
-            prefWidth="40.0"
-            textAlignment="CENTER" textFill="#464646">
-        <graphic>
-          <SVGPath
-                  content="M14.776,10c0,0.239-0.195,0.434-0.435,0.434H5.658c-0.239,0-0.434-0.195-0.434-0.434s0.195-0.434,0.434-0.434h8.684C14.581,9.566,14.776,9.762,14.776,10 M18.25,10c0,4.558-3.693,8.25-8.25,8.25c-4.557,0-8.25-3.691-8.25-8.25c0-4.557,3.693-8.25,8.25-8.25C14.557,1.75,18.25,5.443,18.25,10 M17.382,10c0-4.071-3.312-7.381-7.382-7.381C5.929,2.619,2.619,5.93,2.619,10c0,4.07,3.311,7.382,7.381,7.382C14.07,17.383,17.382,14.07,17.382,10"/>
-        </graphic>
-        <tooltip>
-          <Tooltip id="hideTooltip" text="%runtime.scenes.settings.settings.hideTooltip"/>
-        </tooltip>
-    </Button>
-    <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="32.0" prefHeight="40.0"
-            prefWidth="40.0"
-            textAlignment="CENTER" textFill="#464646">
-        <graphic>
-          <SVGPath
-                  content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z"/>
-        </graphic>
-        <tooltip>
-          <Tooltip id="closeTooltip" text="%runtime.scenes.settings.settings.closeTooltip"/>
-        </tooltip>
-    </Button>
-    <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="427.0"
-            prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
-        <font>
-          <Font name="System Bold" size="30.0"/>
-        </font>
-        <opaqueInsets>
-          <Insets/>
-        </opaqueInsets>
-        <graphic>
-          <SVGPath id="svgIcon"
-                   content="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z"
-                   fill="WHITE">
-              <rotationAxis>
-                  <Point3D/>
-              </rotationAxis>
-          </SVGPath>
-        </graphic>
-    </Button>
-    <ChoiceBox id="langChoice" layoutX="651.0" layoutY="37.0" prefHeight="31.0" prefWidth="137.0">
-        <tooltip>
-          <Tooltip id="langTooltip" text="%runtime.scenes.settings.settings.langTooltip"/>
-        </tooltip>
-    </ChoiceBox>
-    <Slider id="ramSlider" layoutX="121.0" layoutY="121.0" prefHeight="17.0" prefWidth="742.0"/>
-    <SVGPath
-            content="M10,4.784C7.12,4.784,4.784,7.12,4.784,10c0,2.881,2.335,5.216,5.216,5.216c2.881,0,5.216-2.335,5.216-5.216C15.216,7.12,12.881,4.784,10,4.784 M10,5.653c1.034,0,1.983,0.362,2.729,0.966c-0.705,0.566-1.475,1.056-2.303,1.442C9.94,7.257,9.356,6.52,8.702,5.852C9.111,5.723,9.548,5.653,10,5.653 M7.837,6.233c0.672,0.649,1.271,1.375,1.767,2.173c-1.205,0.451-2.503,0.709-3.863,0.72C5.994,7.888,6.775,6.844,7.837,6.233 M5.653,10c1.549,0,3.03-0.292,4.392-0.821c0.146,0.282,0.283,0.568,0.405,0.863c-1.5,0.563-2.761,1.603-3.616,2.93C6.104,12.194,5.653,11.151,5.653,10 M10,14.347c-0.934,0-1.796-0.298-2.504-0.798c0.753-1.221,1.892-2.179,3.253-2.691c0.338,1.04,0.527,2.145,0.547,3.292C10.887,14.277,10.452,14.347,10,14.347 M12.147,13.776c-0.051-1.102-0.238-2.166-0.562-3.172c0.47-0.107,0.956-0.169,1.458-0.169c0.434,0,0.852,0.059,1.261,0.141C14.122,11.949,13.302,13.118,12.147,13.776 M13.043,9.565c-0.606,0-1.193,0.082-1.757,0.22c-0.131-0.324-0.276-0.64-0.434-0.95c0.903-0.427,1.74-0.969,2.505-1.595c0.558,0.677,0.909,1.527,0.974,2.456C13.912,9.62,13.485,9.565,13.043,9.565 M10,0.438c-5.281,0-9.562,4.281-9.562,9.562S4.719,19.562,10,19.562c5.281,0,9.562-4.281,9.562-9.562S15.281,0.438,10,0.438 M10,18.693c-4.801,0-8.693-3.892-8.693-8.693c0-4.801,3.892-8.693,8.693-8.693c4.802,0,8.693,3.892,8.693,8.693C18.693,14.802,14.802,18.693,10,18.693"
-            layoutX="763.0" layoutY="43.0"/>
-    <Text id="headingSettings" layoutX="118.0" layoutY="61.0" strokeType="OUTSIDE" strokeWidth="0.0"
-          text="%runtime.scenes.settings.settings.headingSettings" wrappingWidth="532.7734069824219"/>
-    <Button id="deleteDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="828.0" layoutY="428.0"
-            prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
-        <font>
-          <Font name="System Bold" size="30.0"/>
-        </font>
-        <opaqueInsets>
-          <Insets/>
-        </opaqueInsets>
-        <graphic>
-          <SVGPath
-                  content="M17.114,3.923h-4.589V2.427c0-0.252-0.207-0.459-0.46-0.459H7.935c-0.252,0-0.459,0.207-0.459,0.459v1.496h-4.59c-0.252,0-0.459,0.205-0.459,0.459c0,0.252,0.207,0.459,0.459,0.459h1.51v12.732c0,0.252,0.207,0.459,0.459,0.459h10.29c0.254,0,0.459-0.207,0.459-0.459V4.841h1.511c0.252,0,0.459-0.207,0.459-0.459C17.573,4.127,17.366,3.923,17.114,3.923M8.394,2.886h3.214v0.918H8.394V2.886z M14.686,17.114H5.314V4.841h9.372V17.114z M12.525,7.306v7.344c0,0.252-0.207,0.459-0.46,0.459s-0.458-0.207-0.458-0.459V7.306c0-0.254,0.205-0.459,0.458-0.459S12.525,7.051,12.525,7.306M8.394,7.306v7.344c0,0.252-0.207,0.459-0.459,0.459s-0.459-0.207-0.459-0.459V7.306c0-0.254,0.207-0.459,0.459-0.459S8.394,7.051,8.394,7.306"
-                  fill="#a23131">
-              <rotationAxis>
-                  <Point3D/>
-              </rotationAxis>
-          </SVGPath>
-        </graphic>
-        <tooltip>
-          <Tooltip id="deletedirTooltip" text="%runtime.scenes.settings.settings.deletedirTooltip"/>
-        </tooltip>
-    </Button>
-    <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="778.0" layoutY="428.0"
-            prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
-        <font>
-          <Font name="System Bold" size="30.0"/>
-        </font>
-        <opaqueInsets>
-          <Insets/>
-        </opaqueInsets>
-        <graphic>
-          <SVGPath
-                  content="M18.303,4.742l-1.454-1.455c-0.171-0.171-0.475-0.171-0.646,0l-3.061,3.064H2.019c-0.251,0-0.457,0.205-0.457,0.456v9.578c0,0.251,0.206,0.456,0.457,0.456h13.683c0.252,0,0.457-0.205,0.457-0.456V7.533l2.144-2.146C18.481,5.208,18.483,4.917,18.303,4.742 M15.258,15.929H2.476V7.263h9.754L9.695,9.792c-0.057,0.057-0.101,0.13-0.119,0.212L9.18,11.36h-3.98c-0.251,0-0.457,0.205-0.457,0.456c0,0.253,0.205,0.456,0.457,0.456h4.336c0.023,0,0.899,0.02,1.498-0.127c0.312-0.077,0.55-0.137,0.55-0.137c0.08-0.018,0.155-0.059,0.212-0.118l3.463-3.443V15.929z M11.241,11.156l-1.078,0.267l0.267-1.076l6.097-6.091l0.808,0.808L11.241,11.156z"
-                  fill="#45b686">
-              <rotationAxis>
-                  <Point3D/>
-              </rotationAxis>
-          </SVGPath>
-        </graphic>
-        <tooltip>
-          <Tooltip id="changedirTooltip" text="%runtime.scenes.settings.settings.changedirTooltip"/>
-        </tooltip>
-    </Button>
-    <Pane id="dirLabel" layoutX="120.0" layoutY="428.0" prefHeight="51.0" prefWidth="658.0">
-        <Hyperlink id="patch" disable="true" prefHeight="50.0" prefWidth="658.0" text="%runtime.scenes.settings.settings.path">
-            <padding>
-                <Insets left="10.0" right="10.0"/>
-            </padding>
-        </Hyperlink>
-    </Pane>
-    <Button id="console" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="357.0"
-            prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
-        <font>
-          <Font name="System Bold" size="30.0"/>
-        </font>
-        <opaqueInsets>
-          <Insets/>
-        </opaqueInsets>
-        <graphic>
-          <SVGPath
-                  content="M3.015,4.779h1.164V3.615H3.015V4.779z M18.73,1.869H1.269c-0.322,0-0.582,0.26-0.582,0.582v15.133c0,0.322,0.26,0.582,0.582,0.582H18.73c0.321,0,0.582-0.26,0.582-0.582V2.451C19.312,2.129,19.052,1.869,18.73,1.869z M18.148,16.42c0,0.322-0.261,0.582-0.582,0.582H2.433c-0.322,0-0.582-0.26-0.582-0.582V6.525h16.297V16.42z M18.148,5.361H1.851V3.615c0-0.322,0.26-0.582,0.582-0.582h15.133c0.321,0,0.582,0.26,0.582,0.582V5.361z M7.671,4.779h1.165V3.615H7.671V4.779z M5.344,4.779h1.164V3.615H5.344V4.779z"
-                  fill="WHITE">
-              <rotationAxis>
-                  <Point3D/>
-              </rotationAxis>
-          </SVGPath>
-        </graphic>
-        <tooltip>
-          <Tooltip id="consoleTooltip" text="%runtime.scenes.settings.settings.consoleTooltip"/>
-        </tooltip>
-    </Button>
+<Pane fx:id="settingsPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+    <children>
+      <Pane fx:id="settingsBackground" prefHeight="500.0" prefWidth="900.0" />
+      <Pane fx:id="serverImage" layoutX="97.0" prefHeight="500.0" prefWidth="803.0">
+         <children>
+            <Slider id="ramSlider" layoutX="31.0" layoutY="124.0" prefHeight="17.0" prefWidth="742.0" />
+            <Label id="ramLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" focusTraversable="false" layoutX="631.0" layoutY="96.0" prefHeight="30.0" prefWidth="137.0" text="44444">
+               <cursor>
+                  <Cursor fx:constant="DEFAULT" />
+               </cursor></Label>
+            <Text id="headingSettings" layoutX="30.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.settings.settings.headingSettings" wrappingWidth="532.7734069824219" />
+            <Text id="textLabel" layoutX="30.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.settings.settings.textLabel" />
+            <Button id="lang" alignment="CENTER" contentDisplay="CENTER" layoutX="645.0" layoutY="33.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#c6c6c6">
+               <tooltip>
+                  <Tooltip id="langTooltip" text="%runtime.scenes.settings.settings.langTooltip" />
+               </tooltip>
+               <graphic>
+                  <SVGPath id="icons" content="M0 0V18H6V24H24V6H18V0H0ZM2 2H16V6.5625L6.5625 16H2V2ZM7 4V5H4V7H8.9375C8.80859 8.14844 8.45703 9.05469 7.875 9.6875C7.53125 9.57422 7.22266 9.43359 6.96875 9.28125C6.26562 8.86328 6 8.41797 6 8H4C4 9.19141 4.73438 10.1836 5.71875 10.8438C5.22656 10.9492 4.65625 11 4 11V13C5.77344 13 7.25 12.5938 8.375 11.8438C8.89844 11.9336 9.42969 12 10 12V10.125C10.543 9.21484 10.832 8.15234 10.9375 7H12V5H9V4H7ZM17.4375 8H22V22H8V17.4375L17.4375 8ZM16 9.84375L15.0625 12.6875L13.0625 18.6875L13 18.8438V20H15V19.125L15.0312 19H16.9688L17 19.125V20H19V18.8438L18.9375 18.6875L16.9375 12.6875L16 9.84375ZM16 16.125L16.2812 17H15.7188L16 16.125Z&#10;" />
+               </graphic>
+               <contextMenu>
+                  <ContextMenu id="langChoice">
+                  </ContextMenu>
+               </contextMenu>
+            </Button>
+         </children></Pane>
+          <ScrollPane id="settingslist" layoutX="98.0" layoutY="164.0" prefHeight="337.0" prefWidth="803.0">
+              <content>
+                  <VBox fx:id="componentList" prefHeight="240.0" prefWidth="780.0" spacing="10.0">
+                      <padding>
+                          <Insets bottom="10.0" left="30.0" right="10.0" top="10.0" />
+                      </padding>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+                  </VBox>
+              </content>
+          </ScrollPane>
+      <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="427.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <graphic>
+            <SVGPath id="svgIcon" content="M26.2812 0.28125L9 17.5625L1.71875 10.2812L0.28125 11.7188L8.28125 19.7188L9 20.4062L9.71875 19.7188L27.7188 1.71875L26.2812 0.28125Z&#10;" fill="WHITE">
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+            </SVGPath>
+         </graphic>
+      </Button>
+      <Button id="deleteDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="828.0" layoutY="428.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <graphic>
+            <SVGPath content="M8 0C6.841 0 6 0.841 6 2V3H0V5H1V21C1 22.654 2.346 24 4 24H13.7715L15.7715 22H4C3.449 22 3 21.552 3 21V5H17V14.6719L19 16.6719V5H20V3H14V2C14 0.841 13.159 0 12 0H8ZM8 2H12V3H8V2ZM5 8V19H7V8H5ZM9 8V19H11V8H9ZM13 8V15.4727L15 13.4727V8H13ZM15.4004 15.9004L14 17.3008L18.6504 21.9492L14 26.5996L15.4004 28L20.0508 23.3496L24.5996 27.9004L26 26.5L21.4492 21.9492L26 17.4004L24.5996 16L20.0508 20.5508L15.4004 15.9004Z&#10;" fill="#a4a4a4">
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+            </SVGPath>
+         </graphic>
+         <tooltip>
+            <Tooltip id="deletedirTooltip" text="%runtime.scenes.settings.settings.deletedirTooltip" />
+         </tooltip>
+      </Button>
+      <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="778.0" layoutY="428.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <graphic>
+            <SVGPath content="M0 0V26H12.7812C14.25 27.8281 16.4805 29 19 29C23.4062 29 27 25.4062 27 21C27 16.9336 23.9336 13.5625 20 13.0625V10.4375L21.7188 8.71875L22 8.40625V0H0ZM2 2H16V8.40625L16.2812 8.71875L18 10.4375V13.0625C14.0664 13.5625 11 16.9336 11 21C11 22.0664 11.2109 23.0703 11.5938 24H2V2ZM18 2H20V7.5625L19 8.5625L18 7.5625V2ZM19 15C22.3242 15 25 17.6758 25 21C25 24.3242 22.3242 27 19 27C15.6758 27 13 24.3242 13 21C13 17.6758 15.6758 15 19 15ZM18 17V20H15V22H18V25H20V22H23V20H20V17H18Z&#10;" fill="#b5b5b5">
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+            </SVGPath>
+         </graphic>
+         <tooltip>
+            <Tooltip id="changedirTooltip" text="%runtime.scenes.settings.settings.changedirTooltip" />
+         </tooltip>
+      </Button>
+      <Pane id="dirLabel" layoutX="120.0" layoutY="428.0" prefHeight="51.0" prefWidth="658.0">
+         <children>
+            <Hyperlink id="patch" disable="true" focusTraversable="false" prefHeight="50.0" prefWidth="658.0" text="C:/Users">
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </Hyperlink>
+         </children>
+      </Pane>
+      <Button id="console" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="23.0" layoutY="376.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <graphic>
+            <SVGPath content="M4 5V27H28V5H4ZM6 7H26V9H6V7ZM6 11H26V25H6V11ZM11.2188 13.7812L9.78125 15.2188L12.5625 18L9.78125 20.7812L11.2188 22.2188L14.7188 18.7188L15.4062 18L14.7188 17.2812L11.2188 13.7812ZM16 20V22H22V20H16Z" fill="WHITE">
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+            </SVGPath>
+         </graphic>
+         <tooltip>
+            <Tooltip id="consoleTooltip" text="%runtime.scenes.settings.settings.consoleTooltip" />
+         </tooltip>
+      </Button>
+      <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="788.0" layoutY="33.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#c6c6c6">
+         <graphic>
+            <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;" />
+         </graphic>
+         <tooltip>
+            <Tooltip id="hideTooltip" text="%runtime.scenes.settings.settings.hideTooltip" />
+         </tooltip>
+      </Button>
+      <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="832.0" layoutY="33.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#464646">
+         <graphic>
+            <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+         </graphic>
+         <tooltip>
+            <Tooltip id="closeTooltip" text="%runtime.scenes.settings.settings.closeTooltip" />
+         </tooltip>
+      </Button>
+    </children>
+   <stylesheets>
+      <URL value="@../../global.css" />
+      <URL value="@settings.css" />
+   </stylesheets>
 </Pane>

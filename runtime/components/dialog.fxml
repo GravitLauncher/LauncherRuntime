@@ -6,54 +6,48 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="dialogPane" prefHeight="224.0" prefWidth="462.0" xmlns="http://javafx.com/javafx/8.0.201"
-      xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="dialogPane" prefHeight="240.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Text id="headingDialog" layoutX="30.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialog.headingDialog" textAlignment="CENTER" wrappingWidth="309.7929631473962" />
+      <Text id="textDialog" layoutX="29.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum" textAlignment="JUSTIFY" wrappingWidth="309.79296875" />
+      <Line id="line" endY="163.0" layoutX="367.0" layoutY="58.0" startY="-41.0" stroke="#dddddd" />
+      <Button id="applyComponents" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="391.0" layoutY="106.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+         <font>
+            <Font name="System Bold" size="30.0" />
+         </font>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <graphic>
+            <SVGPath id="icoApply" content="M13 0C5.83203 0 0 5.83203 0 13C0 20.168 5.83203 26 13 26C20.168 26 26 20.168 26 13C26 5.83203 20.168 0 13 0ZM13 2C19.0859 2 24 6.91406 24 13C24 19.0859 19.0859 24 13 24C6.91406 24 2 19.0859 2 13C2 6.91406 6.91406 2 13 2ZM19.2812 8.28125L12 15.5625L7.71875 11.2812L6.28125 12.7188L11.2812 17.7188L12 18.4062L12.7188 17.7188L20.7188 9.71875L19.2812 8.28125Z&#10;" fill="WHITE">
+               <rotationAxis>
+                  <Point3D />
+               </rotationAxis>
+            </SVGPath>
+         </graphic>
+         <tooltip>
+            <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialog.applyTooltip" />
+         </tooltip>
+      </Button>
+      <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="396.0" layoutY="21.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#464646">
+         <graphic>
+            <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+         </graphic>
+         <tooltip>
+            <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialog.closeTooltip" />
+         </tooltip>
+      </Button>
+   </children>
    <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
    <stylesheets>
-      <URL value="@components.css"/>
-      <URL value="@../global.css"/>
+      <URL value="@components.css" />
+      <URL value="@../global.css" />
    </stylesheets>
-   <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="378.0" layoutY="94.0"
-           prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
-      <font>
-         <Font name="System Bold" size="30.0"/>
-      </font>
-      <opaqueInsets>
-         <Insets/>
-      </opaqueInsets>
-      <graphic>
-         <SVGPath
-                 content="M7.629,14.566c0.125,0.125,0.291,0.188,0.456,0.188c0.164,0,0.329-0.062,0.456-0.188l8.219-8.221c0.252-0.252,0.252-0.659,0-0.911c-0.252-0.252-0.659-0.252-0.911,0l-7.764,7.763L4.152,9.267c-0.252-0.251-0.66-0.251-0.911,0c-0.252,0.252-0.252,0.66,0,0.911L7.629,14.566z"
-                 fill="WHITE">
-            <rotationAxis>
-               <Point3D/>
-            </rotationAxis>
-         </SVGPath>
-      </graphic>
-      <tooltip>
-         <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialog.applyTooltip"/>
-      </tooltip>
-   </Button>
-   <Text id="headingDialog" layoutX="125.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="%runtime.scenes.components.dialog.headingDialog" textAlignment="CENTER"/>
-   <Text id="textDialog" layoutX="35.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="%runtime.scenes.components.dialog.textDialog"
-         textAlignment="JUSTIFY" wrappingWidth="309.79296875"/>
-   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="411.0" layoutY="11.0" prefHeight="40.0"
-           prefWidth="40.0"
-           textAlignment="CENTER" textFill="#464646">
-      <graphic>
-         <SVGPath
-                 content="M10.185,1.417c-4.741,0-8.583,3.842-8.583,8.583c0,4.74,3.842,8.582,8.583,8.582S18.768,14.74,18.768,10C18.768,5.259,14.926,1.417,10.185,1.417 M10.185,17.68c-4.235,0-7.679-3.445-7.679-7.68c0-4.235,3.444-7.679,7.679-7.679S17.864,5.765,17.864,10C17.864,14.234,14.42,17.68,10.185,17.68 M10.824,10l2.842-2.844c0.178-0.176,0.178-0.46,0-0.637c-0.177-0.178-0.461-0.178-0.637,0l-2.844,2.841L7.341,6.52c-0.176-0.178-0.46-0.178-0.637,0c-0.178,0.176-0.178,0.461,0,0.637L9.546,10l-2.841,2.844c-0.178,0.176-0.178,0.461,0,0.637c0.178,0.178,0.459,0.178,0.637,0l2.844-2.841l2.844,2.841c0.178,0.178,0.459,0.178,0.637,0c0.178-0.176,0.178-0.461,0-0.637L10.824,10z"/>
-      </graphic>
-      <tooltip>
-         <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialog.closeTooltip"/>
-      </tooltip>
-   </Button>
 </Pane>

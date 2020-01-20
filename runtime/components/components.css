@@ -30,12 +30,14 @@
 #serverLogo {
     -fx-background-position: center;
     -fx-background-color: transparent;
-    -fx-background-image: url('../images/icons/logo.png');
+    -fx-background-image: url('../images/preloader/logo.png');
 }
 
 .nameServerPassive {
     -fx-fill: #2C2C2C;
+    -fx-text-fill: #2C2C2C;
     -fx-font-size: 20px;
+    -fx-wrap-text: false;
     -fx-font-weight: bold;
 }
 
@@ -43,6 +45,7 @@
     -fx-fill: #7C4DFF;
     -fx-font-size: 20px;
     -fx-font-weight: bold;
+    -fx-wrap-text: false;
 }
 
 #genreServer {
@@ -89,5 +92,46 @@
     -fx-text-fill: #A9A9A9;
 }
 
+#line {
+    -fx-stroke: #C7C7C7;
+}
+
+/*Icons*/
+
+#icoApply {
+    -fx-fill: #7C4DFF;
+    -fx-font-size: 23pt;
+}
+
+#icoDeny {
+    -fx-fill: #A23131;
+    -fx-font-size: 23pt;
+}
+
+#applyComponents {
+    -fx-background-radius: 0;
+    -fx-fill: #7C4DFF;
+    -fx-background-color: transparent;
+    -fx-font-size: 13pt;
+}
+
+#denyComponents {
+    -fx-background-radius: 0;
+    -fx-fill: #A23131;
+    -fx-background-color: transparent;
+    -fx-font-size: 13pt;
+}
+
+#applyComponents:hover,
+#applyComponents:pressed {
+    -fx-background-color: #6B36FF;
+    -fx-fill: #fff;
+}
+
+#denyComponents:hover,
+#denyComponents:pressed {
+    -fx-background-color: #AB2727;
+    -fx-fill: #fff;
+}
 
 /*-- DrLeonardo Design for GravitLauncher --*/

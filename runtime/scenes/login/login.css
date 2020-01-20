@@ -1,8 +1,6 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
 
-
 /* Backgrounds */
-
 #layout {
     -fx-background-color: transparent;
     -fx-background-size: cover;
@@ -19,22 +17,17 @@
     -fx-background-radius: 0;
 }
 
-.auth_off {
+.auth {
     -fx-background-color: transparent;
     -fx-background-repeat: no-repeat;
-    -fx-background-image: url('../../images/icons/auth_off.png');
-    -fx-text-fill: #606060;
+    -fx-background-image: url('../../images/icons/auth.png');
+    -fx-text-fill: #fff;
     -fx-font-weight: bold;
     -fx-font-size: 11pt;
 }
 
-.auth_on {
-    -fx-background-color: transparent;
-    -fx-background-repeat: no-repeat;
-    -fx-background-image: url('../../images/icons/auth_on.png');
-    -fx-text-fill: #fff;
-    -fx-font-weight: bold;
-    -fx-font-size: 11pt;
+#logo {
+    -fx-fill: #323232;
 }
 
 #auth_on:hover,
@@ -133,5 +126,8 @@
     -fx-text-fill: -fx-text-inner-color;
 }
 
+#iconsLogin {
+    -fx-fill: #fff;
+}
 
 /*-- DrLeonardo Design for GravitLauncher --*/

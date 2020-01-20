@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class DebugOverlay extends AbstractOverlay {
-    public static final long MAX_LENGTH = 16384;
+    public static final long MAX_LENGTH = 163840;
     public static final int REMOVE_LENGTH = 1024;
     public Node layout;
     public Thread readThread;

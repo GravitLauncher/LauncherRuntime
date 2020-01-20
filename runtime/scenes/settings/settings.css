@@ -35,7 +35,12 @@
 #ramLabel {
     -fx-font-weight: bold;
     -fx-font-size: 15px;
-    -fx-text-fill: #E7E7E7;
+    -fx-text-fill: #323232;
+}
+
+#textLabel {
+    -fx-font-size: 15px;
+    -fx-text-fill: #323232;
 }
 
 
@@ -83,8 +88,6 @@
 #changeDir,
 #deleteDir {
     -fx-background-radius: 0;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
     -fx-background-color: #fff;
     -fx-background-size: cover;
     -fx-font-size: 13pt;
@@ -99,8 +102,6 @@
 
 #console {
     -fx-background-radius: 0;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
     -fx-background-color: transparent;
     -fx-background-size: cover;
     -fx-font-size: 13pt;
@@ -109,6 +110,16 @@
 #console:hover,
 #console:pressed {
     -fx-background-color: rgba(254, 254, 255, 0.1);
+}
+
+#lang {
+    -fx-background-position: center;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+#lang:hover {
+    -fx-opacity: 0.8;
 }
 
 

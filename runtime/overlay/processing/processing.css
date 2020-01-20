@@ -1,7 +1,7 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
 #overlay > #description {
     -fx-fill: #fff;
-    -fx-font-size: 12px;
+    -fx-font-size: 16px;
     -fx-effect: dropshadow( three-pass-box, rgba(0, 0, 0, 0.6), 8, 0.0, 0, 0);
 }
 
