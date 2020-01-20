@@ -16,7 +16,7 @@ before_script:
 
 build:
   stage: build
-  script: ./gradlew --build-cache assemble
+  script: ./gradlew -Dorg.gradle.daemon=false --build-cache assemble
   after_script:
    - apt-get -y update
    - apt-get -y install zip
