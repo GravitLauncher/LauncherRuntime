@@ -91,7 +91,9 @@ public class LoginScene extends AbstractScene {
                     authList.getSelectionModel().select(authIndex);
                     hideOverlay(0, null);
                 }), null);
-            }, null);
+            }, (e) -> {
+                System.exit(0);
+            });
         }
     }
 

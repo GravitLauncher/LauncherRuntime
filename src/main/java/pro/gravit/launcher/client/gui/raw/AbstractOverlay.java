@@ -35,7 +35,6 @@ public abstract class AbstractOverlay implements AllowDisable {
         if (!isInit)
             throw new IllegalStateException("Using method hide before init");
         scene.hideOverlay(delay, (e) -> {
-            reset();
             if (onFinished != null)
                 onFinished.handle(e);
         });
