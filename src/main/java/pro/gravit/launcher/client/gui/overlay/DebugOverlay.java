@@ -68,8 +68,9 @@ public class DebugOverlay extends AbstractOverlay {
                 for (int length = stream.read(buf); length >= 0; length = stream.read(buf)) {
                     append(new String(buf, 0, length));
                 }
+                if(currentProcess.isAlive()) currentProcess.waitFor();
                 append(String.format("Process exit code %d", currentProcess.exitValue()));
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 errorHandle(e);
             }
         });
