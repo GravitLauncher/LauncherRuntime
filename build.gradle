@@ -1,7 +1,15 @@
 plugins {
+    id 'org.openjfx.javafxplugin' version '0.0.5'
+}
+plugins {
     id 'java'
 }
-
+javafx {
+    version = "12"
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
 version '1.0-SNAPSHOT'
 
