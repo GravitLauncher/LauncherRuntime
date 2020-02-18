@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.geometry.Point3D?>
@@ -12,9 +19,9 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="dialogPane" prefHeight="200.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="dialogPane" prefHeight="200.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="365.0" layoutY="100.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+      <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="365.0" layoutY="85.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
@@ -33,7 +40,7 @@
          </tooltip>
       </Button>
       <Text id="headingDialog" layoutX="84.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialogTextInput.headingDialog" textAlignment="CENTER" wrappingWidth="302.99999821186066" />
-      <TextField id="dialogInput" layoutX="62.0" layoutY="100.0" prefHeight="51.0" prefWidth="303.0" promptText="%runtime.scenes.components.dialogTextInput.2fa">
+      <TextField id="dialogInput" layoutX="62.0" layoutY="85.0" prefHeight="51.0" prefWidth="303.0" promptText="%runtime.scenes.components.dialogTextInput.2fa">
          <font>
             <Font size="16.0" />
          </font>
