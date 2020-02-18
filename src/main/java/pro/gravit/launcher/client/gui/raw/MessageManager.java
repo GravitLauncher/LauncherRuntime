@@ -19,6 +19,9 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class MessageManager {
     private final AtomicInteger count = new AtomicInteger(0);
@@ -107,17 +110,56 @@ public class MessageManager {
     }
     public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback, boolean isLauncher)
     {
+        showAbstractDialog("components/dialog.fxml", header, (pane) -> {
+            ((Text) pane.lookup("#headingDialog")).setText(header);
+            ((Text) pane.lookup("#textDialog")).setText(text);
+        }, (pane, onClose) -> {
+            ((Button)pane.lookup("#close")).setOnAction((e) -> {
+                onClose.run();
+                onCloseCallback.run();
+            });
+            ((Button)pane.lookup("#apply")).setOnAction((e) -> {
+                onClose.run();
+                onApplyCallback.run();
+            });
+        }, isLauncher);
+    }
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, boolean isLauncher)
+    {
+        showApplyDialog(header, text, onApplyCallback, onDenyCallback, onDenyCallback, isLauncher);
+    }
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback, boolean isLauncher)
+    {
+        showAbstractDialog("components/dialogApply.fxml", header, (pane) -> {
+            ((Text) pane.lookup("#headingDialog")).setText(header);
+            ((Text) pane.lookup("#textDialog")).setText(text);
+        }, (pane, onClose) -> {
+            ((Button)pane.lookup("#close")).setOnAction((e) -> {
+                onClose.run();
+                onCloseCallback.run();
+            });
+            ((Button)pane.lookup("#apply")).setOnAction((e) -> {
+                onClose.run();
+                onApplyCallback.run();
+            });
+            ((Button)pane.lookup("#deny")).setOnAction((e) -> {
+                onClose.run();
+                onDenyCallback.run();
+            });
+        }, isLauncher);
+    }
+    public void showAbstractDialog(String componentName, String nativeHeader, Consumer<Pane> initPane, BiConsumer<Pane, Runnable> bindPane, boolean isLauncher)
+    {
         Pane pane;
         try {
-            pane = (Pane) application.getNoCacheFxml("components/dialog.fxml").get();
+            pane = (Pane) application.getNoCacheFxml(componentName).get();
         } catch (IOException | InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
         Pane finalPane = pane;
         Scene scene = isLauncher ? null : new Scene(finalPane);
         ContextHelper.runInFxThreadStatic(() -> {
-            ((Text) finalPane.lookup("#headingDialog")).setText(header);
-            ((Text) finalPane.lookup("#textDialog")).setText(text);
+            initPane.accept(finalPane);
             Runnable onClose;
             if(isLauncher)
             {
@@ -145,21 +187,14 @@ public class MessageManager {
                 notificationStage.setScene(scene);
                 notificationStage.sizeToScene();
                 notificationStage.setResizable(false);
-                notificationStage.setTitle(header);
+                notificationStage.setTitle(nativeHeader);
                 notificationStage.show();
                 double x = (bounds.getMaxX()-pane.getPrefWidth())/2.0;
                 double y = (bounds.getMaxY()-pane.getPrefHeight())/2.0;
                 notificationStage.setX(x);
                 notificationStage.setY(y);
             }
-            ((Button)finalPane.lookup("#close")).setOnAction((e) -> {
-                onClose.run();
-                onCloseCallback.run();
-            });
-            ((Button)finalPane.lookup("#applyComponents")).setOnAction((e) -> {
-                onClose.run();
-                onApplyCallback.run();
-            });
+            bindPane.accept(finalPane, onClose);
         });
     }
 }

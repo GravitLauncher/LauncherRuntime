@@ -16,7 +16,7 @@
       <Text id="headingDialog" layoutX="30.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialog.headingDialog" textAlignment="CENTER" wrappingWidth="309.7929631473962" />
       <Text id="textDialog" layoutX="29.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum" textAlignment="JUSTIFY" wrappingWidth="309.79296875" />
       <Line id="line" endY="163.0" layoutX="367.0" layoutY="58.0" startY="-41.0" stroke="#dddddd" />
-      <Button id="applyComponents" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="391.0" layoutY="106.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+      <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="391.0" layoutY="106.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>

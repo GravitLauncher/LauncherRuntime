@@ -13,7 +13,7 @@
 
 <Pane fx:id="dialogPane" prefHeight="240.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <Button id="denyComponents" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="394.0" layoutY="157.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+      <Button id="deny" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="394.0" layoutY="157.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
@@ -31,7 +31,7 @@
             <Tooltip id="rejectTooltip" text="%runtime.scenes.components.dialogApply.rejectTooltip" />
          </tooltip>
       </Button>
-      <Button id="applyComponents" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="394.0" layoutY="97.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+      <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="394.0" layoutY="97.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
@@ -57,7 +57,7 @@
             <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
          </graphic>
          <tooltip>
-            <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialogApply..closeTooltip" />
+            <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialogApply.closeTooltip" />
          </tooltip>
       </Button>
    </children>

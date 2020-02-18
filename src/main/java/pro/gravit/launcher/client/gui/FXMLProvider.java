@@ -94,6 +94,7 @@ public class FXMLProvider {
                     LogHelper.debug("FXML %s(%s) loaded in %d ms(no cache)", name, result.getClass().getName(), finish - start);
                 return result;
             } catch (Throwable e) {
+                LogHelper.error(e);
                 return null;
             }
         });
