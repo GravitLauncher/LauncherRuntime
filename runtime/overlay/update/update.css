@@ -15,7 +15,7 @@
 #outputUpdate {
     -fx-background-radius: 0;
     -fx-font-family: monospace;
-    -fx-font-weight: regular;
+    -fx-font-weight: 400;
     -fx-fill: #323232;
     -fx-font-size: 12pt;
 }

@@ -190,3 +190,11 @@ RadioButton {
 }
 
 /*-- DrLeonardo Design for GravitLauncher --*/
+
+/*-- JCat Fixes --*/
+
+.hyperlink:focused {
+    -fx-border-width: 0;
+}
+
+/*-- End JCat Fixes --*/
