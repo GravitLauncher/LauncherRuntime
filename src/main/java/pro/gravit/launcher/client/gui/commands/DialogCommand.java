@@ -13,7 +13,7 @@ public class DialogCommand extends Command {
 
     @Override
     public String getArgsDescription() {
-        return "[header] [message] (dialog/dialogApply) (launcher/native/default)";
+        return "[header] [message] (dialog/dialogApply/dialogTextInput) (launcher/native/default)";
     }
 
     @Override
@@ -45,6 +45,14 @@ public class DialogCommand extends Command {
                 LogHelper.info("Dialog deny callback");
             }, () -> {
                 LogHelper.info("Dialog close callback");
+            }, isLauncher);
+        }
+        else if(dialogType.equals("dialogTextInput"))
+        {
+            messageManager.showTextDialog(header, (text) -> {
+                LogHelper.info("Dialog apply callback: %s", text);
+            }, () -> {
+                LogHelper.info("Dialog cancel callback");
             }, isLauncher);
         }
     }

@@ -3,6 +3,9 @@ package pro.gravit.launcher.client.gui.raw;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Hyperlink;
+import javafx.scene.control.Labeled;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -145,6 +148,23 @@ public class MessageManager {
             ((Button)pane.lookup("#deny")).setOnAction((e) -> {
                 onClose.run();
                 onDenyCallback.run();
+            });
+        }, isLauncher);
+    }
+    public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback, boolean isLauncher)
+    {
+        showAbstractDialog("components/dialogTextInput.fxml", header, (pane) -> {
+            ((Text) pane.lookup("#headingDialog")).setText(header);
+        }, (pane, onClose) -> {
+            ((Button)pane.lookup("#close")).setOnAction((e) -> {
+                onClose.run();
+                onCloseCallback.run();
+            });
+            TextField a =( (TextField) pane.lookup("#dialogInput"));
+            ((Button)pane.lookup("#apply")).setOnAction((e) -> {
+                onClose.run();
+                //
+                onApplyCallback.accept(a.getText());
             });
         }, isLauncher);
     }
