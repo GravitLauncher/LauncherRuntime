@@ -11,7 +11,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="dialogApplyPane" prefHeight="240.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="dialogPane" prefHeight="240.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <Button id="denyComponents" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="394.0" layoutY="157.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
          <font>

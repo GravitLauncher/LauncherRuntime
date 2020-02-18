@@ -127,12 +127,30 @@ public class MessageManager {
                 onClose = () -> {
                     root.getChildren().remove(finalPane);
                 };
-                root.setLayoutX((currentScene.getScene().getWidth()-root.getPrefWidth())/2);
-                root.setLayoutY((currentScene.getScene().getHeight()-root.getPrefHeight())/2);
+                pane.setLayoutX((root.getPrefWidth()-pane.getPrefWidth())/2.0);
+                pane.setLayoutY((root.getPrefHeight()-pane.getPrefHeight())/2.0);
+                LogHelper.debug("Layout: X: %f, Y: %f", pane.getLayoutX(), pane.getLayoutY());
             }
             else
             {
-                onClose = null;
+                Screen screen = Screen.getPrimary();
+                Rectangle2D bounds = screen.getVisualBounds();
+                Stage notificationStage = application.newStage(StageStyle.TRANSPARENT);
+                onClose = () -> {
+                    notificationStage.hide();
+                    notificationStage.setScene(null);
+                };
+                finalPane.setOnMouseClicked((e) -> onClose.run());
+                notificationStage.setAlwaysOnTop(true);
+                notificationStage.setScene(scene);
+                notificationStage.sizeToScene();
+                notificationStage.setResizable(false);
+                notificationStage.setTitle(header);
+                notificationStage.show();
+                double x = (bounds.getMaxX()-pane.getPrefWidth())/2.0;
+                double y = (bounds.getMaxY()-pane.getPrefHeight())/2.0;
+                notificationStage.setX(x);
+                notificationStage.setY(y);
             }
             ((Button)finalPane.lookup("#close")).setOnAction((e) -> {
                 onClose.run();
