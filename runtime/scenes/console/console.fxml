@@ -16,7 +16,7 @@
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="consolePane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.241" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="consolePane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <Pane fx:id="consoleBackground" prefHeight="500.0" prefWidth="900.0" />
    <Pane layoutX="97.0" prefHeight="102.0" prefWidth="803.0" styleClass="whiteBox" />
    <TextArea id="output" editable="false" layoutX="97.0" layoutY="102.0" prefHeight="353.0" prefWidth="803.0" wrapText="true" />
@@ -38,7 +38,7 @@
          <Tooltip id="wikiTooltip" text="%runtime.scenes.console.console.wikiTooltip" />
       </tooltip>
    </Button>
-   <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="786.0" layoutY="31.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#c6c6c6">
+   <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="786.0" layoutY="31.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
       <graphic>
          <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;" />
       </graphic>
@@ -46,7 +46,7 @@
          <Tooltip id="hideTooltip" text="%runtime.scenes.console.console.hideTooltip" />
       </tooltip>
    </Button>
-   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="830.0" layoutY="31.0" prefHeight="40.0" prefWidth="40.0" text="" textAlignment="CENTER" textFill="#464646">
+   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="830.0" layoutY="31.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
       <graphic>
          <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
       </graphic>
@@ -75,7 +75,7 @@
          <Font size="16.0" />
       </font>
    </TextField>
-   <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" focusTraversable="false" layoutX="289.0" layoutY="38.0" prefHeight="27.0" prefWidth="500.0" text="Launcher 5.1.0.0 Java: 1.8 u231 x64" textFill="#b3b8d5">
+   <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="289.0" layoutY="38.0" prefHeight="27.0" prefWidth="500.0" textFill="#b3b8d5">
       <font>
          <Font size="18.0" />
       </font>
