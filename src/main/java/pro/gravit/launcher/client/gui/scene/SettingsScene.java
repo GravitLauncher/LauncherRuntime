@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import oshi.SystemInfo;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.RuntimeSettings;
@@ -62,7 +63,14 @@ public class SettingsScene extends AbstractScene {
         Slider ramSlider = (Slider) layout.lookup("#ramSlider");
         Label ramLabel = (Label) layout.lookup("#serverImage").lookup("#ramLabel");
         ramLabel.setText(Integer.toString(application.runtimeSettings.ram));
-        ramSlider.setMax(2048); //TODO
+        try {
+            SystemInfo systemInfo = new SystemInfo();
+            ramSlider.setMax(systemInfo.getHardware().getMemory().getTotal() >> 20);
+        } catch (Throwable e)
+        {
+            ramSlider.setMax(2048);
+        }
+
         ramSlider.setSnapToTicks(true);
         ramSlider.setShowTickMarks(true);
         ramSlider.setShowTickLabels(true);

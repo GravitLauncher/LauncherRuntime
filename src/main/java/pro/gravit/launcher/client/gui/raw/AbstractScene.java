@@ -73,6 +73,7 @@ public abstract class AbstractScene implements AllowDisable {
                 return;
             }
         }
+        currentStage.enableMouseDrag(overlay.pane);
         showOverlay(overlay.getPane(), onFinished);
     }
 
