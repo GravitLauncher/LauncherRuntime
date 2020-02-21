@@ -10,9 +10,14 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
 version '1.0.0'
-
-sourceCompatibility = 1.8
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
+    options.annotationProcessorPath = configurations.aptOnly
+    options.incremental = true // one flag, and things will get MUCH faster    
+}
 
 jar {
     manifest.attributes("Module-Main-Class": mainClassName)
