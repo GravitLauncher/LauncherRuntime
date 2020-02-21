@@ -15,7 +15,6 @@ def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
     options.compilerArgs << "-Xlint:unchecked" << "-Xlint:deprecation"
-    options.annotationProcessorPath = configurations.aptOnly
     options.incremental = true // one flag, and things will get MUCH faster    
 }
 
