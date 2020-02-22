@@ -1,6 +1,8 @@
 plugins {
     id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'java-library'
+    id 'idea'
+    id 'eclipse'
 }
 javafx {
     version = "12"
