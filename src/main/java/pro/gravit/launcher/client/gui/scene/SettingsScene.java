@@ -53,6 +53,7 @@ public class SettingsScene extends AbstractScene {
                 int finalI = i;
                 items[i].setOnAction((e) -> {
                     application.runtimeSettings.locale = locales[finalI];
+                    application.messageManager.createNotification( application.getLangResource("runtime.scenes.settings.langChanged.head"), application.getLangResource("runtime.scenes.settings.langChanged.description"));
                 });
             }
             langChoice.getItems().addAll(items);
