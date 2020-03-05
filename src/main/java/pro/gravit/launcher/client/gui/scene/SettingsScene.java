@@ -15,6 +15,7 @@ import pro.gravit.launcher.client.gui.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -96,11 +97,14 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDir = newDir;
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
-        add("Debug", "debug mode", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
-        add("Auto enter", "Auto join to server", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
-        add("Fullscreen", "Show MineCraft client in full screen mode", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);
+        add("Debug", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
+        add("AutoEnter", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
+        add("Fullscreen", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);
     }
-
+    public void add(String langName, boolean value, Consumer<Boolean> onChanged) {
+        String langBase = "runtime.scenes.settings.properties.".concat(langName.toLowerCase()).concat(".");
+        add(application.getLangString(langBase.concat("name"), langName), application.getLangString(langBase.concat("description"), langName), value, onChanged);
+    }
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
         FlowPane container = new FlowPane();
         CheckBox checkBox = new CheckBox();

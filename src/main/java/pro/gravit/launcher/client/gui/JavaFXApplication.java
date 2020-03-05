@@ -180,6 +180,15 @@ public class JavaFXApplication extends Application {
     {
         return String.format(resources.getString(name), args);
     }
+    public final String getLangString(String key, String defaultValue)
+    {
+        try {
+            return resources.getString(key);
+        } catch (Throwable e)
+        {
+            return defaultValue;
+        }
+    }
 
     @SuppressWarnings("unchecked")
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
