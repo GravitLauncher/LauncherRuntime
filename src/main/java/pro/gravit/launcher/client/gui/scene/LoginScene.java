@@ -7,7 +7,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.api.SystemService;
+import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -93,7 +93,7 @@ public class LoginScene extends AbstractScene {
                     hideOverlay(0, null);
                 }), null);
             }, (e) -> {
-                SystemService.exit(0);
+                LauncherEngine.exitLauncher(0);
             });
         }
     }
