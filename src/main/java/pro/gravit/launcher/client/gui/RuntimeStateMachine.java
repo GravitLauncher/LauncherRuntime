@@ -21,6 +21,7 @@ public class RuntimeStateMachine {
 
     public void setProfilesResult(ProfilesRequestEvent rawProfilesResult) {
         this.profiles = rawProfilesResult.profiles;
+        this.profiles.sort(ClientProfile::compareTo);
     }
 
     public String getUsername() {

@@ -44,9 +44,16 @@ public class ServerMenuScene extends AbstractScene {
         sceneBaseInit(layout);
         ((Labeled) layout.lookup("#nickname")).setText(application.runtimeStateMachine.getUsername());
         Map<ClientProfile, Future<Pane>> futures = new HashMap<>();
-        for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
-            futures.put(profile, application.getNoCacheFxml(SERVER_BUTTON_FXML));
+        Map<ClientProfile, Integer> positionMap = new HashMap<>();
+        {
+            int pos = 0;
+            for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
+                futures.put(profile, application.getNoCacheFxml(SERVER_BUTTON_FXML));
+                positionMap.put(profile, pos);
+                pos++;
+            }
         }
+
         Pane serverList = (Pane) ((ScrollPane) layout.lookup("#serverlist")).getContent();
         futures.forEach((profile, future) -> {
             try {
@@ -71,7 +78,11 @@ public class ServerMenuScene extends AbstractScene {
                 pane.lookup("#nameServer").setOnMouseClicked(handle);
                 pane.setOnMouseEntered((e) -> pane.lookup("#nameServer").getStyleClass().add("nameServerActive"));
                 pane.setOnMouseExited((e) -> pane.lookup("#nameServer").getStyleClass().remove("nameServerActive"));
-                serverList.getChildren().add(pane);
+                ///////////
+                int gettedPos = positionMap.get(profile);
+                if(gettedPos >= serverList.getChildren().size()) gettedPos = serverList.getChildren().size();
+                serverList.getChildren().add(gettedPos, pane);
+                ///////////
                 application.workers.submit(() -> {
                     ServerPinger pinger = new ServerPinger(profile);
                     ServerPinger.Result result;
