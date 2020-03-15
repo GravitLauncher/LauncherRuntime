@@ -103,7 +103,7 @@ public class LoginScene extends AbstractScene {
         String login = ((TextField) layout.lookup("#login")).getText();
         TextField passwordField = ((TextField) layout.lookup("#password"));
         byte[] encryptedPassword;
-        if (passwordField.getPromptText().equals(application.getLangResource("runtime.scenes.login.login.password.saved"))) {
+        if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(application.getLangResource("runtime.scenes.login.login.password.saved"))) {
             encryptedPassword = application.runtimeSettings.encryptedPassword;
         } else {
             String password = passwordField.getText();
