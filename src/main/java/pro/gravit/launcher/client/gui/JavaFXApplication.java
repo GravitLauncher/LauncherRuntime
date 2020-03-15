@@ -215,4 +215,9 @@ public class JavaFXApplication extends Application {
             throw new RuntimeException(e);
         }
     }
+    public void saveSettings() throws IOException
+    {
+        settingsManager.saveConfig();
+        settingsManager.saveHDirStore();
+    }
 }

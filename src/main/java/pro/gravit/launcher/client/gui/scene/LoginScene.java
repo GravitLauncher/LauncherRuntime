@@ -146,4 +146,15 @@ public class LoginScene extends AbstractScene {
             });
         }, null);
     }
+
+    public void clearPassword()
+    {
+        application.runtimeSettings.encryptedPassword = null;
+        application.runtimeSettings.login = null;
+        TextField loginField = (TextField) layout.lookup("#login");
+        TextField passwordField = (TextField) layout.lookup("#password");
+        passwordField.getStyleClass().removeAll("hasSaved");
+        passwordField.setText("");
+        loginField.setText("");
+    }
 }

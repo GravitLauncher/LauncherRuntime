@@ -16,8 +16,10 @@ import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -124,6 +126,29 @@ public class ServerMenuScene extends AbstractScene {
             } catch (Exception ex) {
                 LogHelper.error(ex);
             }
+        });
+        ((ButtonBase) layout.lookup("#exit")).setOnAction((e) -> {
+            application.messageManager.showApplyDialog(application.getLangResource("runtime.scenes.settings.exitDialog.header"),
+                    application.getLangResource("runtime.scenes.settings.exitDialog.description"), () -> {
+                        LogHelper.debug("Try exit");
+                        processRequest(application.getLangResource("runtime.scenes.settings.exitDialog.processing"),
+                                new ExitRequest(), (event) -> {
+                                    //Exit to main menu
+                                    ContextHelper.runInFxThreadStatic(() -> {
+                                        hideOverlay(0, null);
+                                        application.gui.loginScene.clearPassword();
+                                        try {
+                                            application.saveSettings();
+                                            application.runtimeStateMachine.exit();
+                                            getCurrentStage().setScene(application.gui.loginScene);
+                                        } catch (Exception ex) {
+                                            LogHelper.error(ex);
+                                        }
+                                    });
+                                }, (ev) -> {
+
+                                });
+                    }, () -> {}, true);
         });
         ((ButtonBase) layout.lookup("#clientLaunch")).setOnAction((e) -> launchClient());
     }

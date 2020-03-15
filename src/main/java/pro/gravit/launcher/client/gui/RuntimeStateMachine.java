@@ -50,4 +50,10 @@ public class RuntimeStateMachine {
         if (rawAuthResult == null) return null;
         return rawAuthResult.accessToken;
     }
+
+    public void exit()
+    {
+        rawAuthResult = null;
+        profile = null;
+    }
 }
