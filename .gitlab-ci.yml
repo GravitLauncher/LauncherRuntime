@@ -13,10 +13,15 @@ variables:
 
 before_script:
   - export GRADLE_USER_HOME=`pwd`/.gradle
-
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | base64 -d | ssh-add - > /dev/null
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config
 build:
   stage: build
-  script: ./gradlew -Dorg.gradle.daemon=false --build-cache assemble
+  script: gradle -Dorg.gradle.daemon=false --build-cache assemble
   after_script:
    - apt-get -y update
    - apt-get -y install zip
@@ -38,7 +43,19 @@ build:
 
 test:
   stage: test
-  script: ./gradlew check
+  script: gradle check
+  cache:
+    key: "$CI_COMMIT_REF_NAME"
+    policy: pull
+    paths:
+      - build
+      - .gradle
+
+deploy-demo:
+  stage: deploy
+  script:
+    - gradle build
+    - eval $(ssh $SSH_USER@$SSH_HOST 'cd $SSH_DIR && cat deploy-runtime.sh')
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: pull
