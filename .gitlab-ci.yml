@@ -53,6 +53,7 @@ test:
 
 deploy-demo:
   stage: deploy
+  only: [master]
   script:
     - gradle build
     - eval $(ssh $SSH_USER@$SSH_HOST 'cd $SSH_DIR && cat deploy-runtime.sh')
