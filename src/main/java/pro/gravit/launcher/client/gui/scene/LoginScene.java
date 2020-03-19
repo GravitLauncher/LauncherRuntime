@@ -125,7 +125,7 @@ public class LoginScene extends AbstractScene {
 
     public void login(String login, byte[] password, String auth_id, boolean savePassword) {
         LogHelper.dev("Auth with %s password ***** auth_id %s", login, auth_id);
-        AuthRequest authRequest = new AuthRequest(login, password, new NoHWID(), auth_id);
+        AuthRequest authRequest = new AuthRequest(login, password, null, auth_id); //Deprecated
         processRequest(application.getLangResource("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
