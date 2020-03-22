@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.LauncherEngine;
+import pro.gravit.launcher.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.gui.RuntimeProvider;
@@ -14,6 +15,7 @@ import javax.swing.*;
 
 public class JavaRuntimeModule extends LauncherModule {
     public RuntimeProvider provider;
+    static LauncherEngine engine;
 
     public JavaRuntimeModule() {
         super(new LauncherModuleInfo("StdJavaRuntime", new Version(1, 0, 0),
@@ -29,6 +31,7 @@ public class JavaRuntimeModule extends LauncherModule {
     @Override
     public void init(LauncherInitContext initContext) {
         registerEvent(this::preGuiPhase, ClientPreGuiPhase.class);
+        registerEvent(this::engineInitPhase, ClientEngineInitPhase.class);
     }
 
     public void preGuiPhase(ClientPreGuiPhase phase) {
@@ -40,5 +43,9 @@ public class JavaRuntimeModule extends LauncherModule {
         }
         provider = new StdJavaRuntimeProvider();
         phase.runtimeProvider = provider;
+    }
+    public void engineInitPhase(ClientEngineInitPhase initPhase)
+    {
+        JavaRuntimeModule.engine = initPhase.engine;
     }
 }

@@ -8,6 +8,7 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.client.RuntimeSecurityService;
 import pro.gravit.launcher.client.UserSettings;
 import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
@@ -47,6 +48,7 @@ public class JavaFXApplication extends Application {
     public RuntimeStateMachine runtimeStateMachine;
     public MessageManager messageManager;
     public ResourceBundle resources;
+    public RuntimeSecurityService securityService;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
 
@@ -92,6 +94,7 @@ public class JavaFXApplication extends Application {
         service.registerEventHandler(new GuiEventHandler(this));
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
+        securityService = new RuntimeSecurityService(this);
         registerCommands();
     }
 

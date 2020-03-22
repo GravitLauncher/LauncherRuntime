@@ -25,6 +25,7 @@ import java.util.List;
 public class LoginScene extends AbstractScene {
     public List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
     public Node layout;
+    public boolean isStartedLogin;
 
     private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
 
@@ -60,7 +61,7 @@ public class LoginScene extends AbstractScene {
             passwordField.setPromptText(application.getLangResource("runtime.scenes.login.login.password.saved"));
             ((CheckBox) layout.lookup("#savePassword")).setSelected(true);
         }
-        ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#combologin");
+        ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability>) layout.lookup("#combologin");
         authList.setConverter(new AuthConverter());
         ((ButtonBase) layout.lookup("#goAuth")).setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
         //Verify Launcher
@@ -123,6 +124,7 @@ public class LoginScene extends AbstractScene {
     }
 
     public void login(String login, byte[] password, String auth_id, boolean savePassword) {
+        isStartedLogin = true;
         LogHelper.dev("Auth with %s password ***** auth_id %s", login, auth_id);
         AuthRequest authRequest = new AuthRequest(login, password, auth_id);
         processRequest(application.getLangResource("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
@@ -141,6 +143,11 @@ public class LoginScene extends AbstractScene {
             application.runtimeStateMachine.setProfilesResult(profiles);
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
+                application.securityService.startRequest();
+                if(application.getCurrentScene() instanceof LoginScene)
+                {
+                    ((LoginScene) application.getCurrentScene()).isStartedLogin = false;
+                }
                 application.setMainScene(application.gui.serverMenuScene);
             });
         }, null);
