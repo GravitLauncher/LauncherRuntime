@@ -144,6 +144,15 @@ public class LoginScene extends AbstractScene {
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();
+                if(application.gui.optionsScene != null)
+                {
+                    try {
+                        application.gui.optionsScene.loadAll();
+                    } catch (Throwable ex)
+                    {
+                        LogHelper.error(ex);
+                    }
+                }
                 if(application.getCurrentScene() instanceof LoginScene)
                 {
                     ((LoginScene) application.getCurrentScene()).isStartedLogin = false;

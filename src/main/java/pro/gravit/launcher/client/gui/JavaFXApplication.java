@@ -128,6 +128,15 @@ public class JavaFXApplication extends Application {
     public void stop() throws Exception {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
+        if(gui != null && gui.optionsScene != null)
+        {
+            try {
+                gui.optionsScene.saveAll();
+            } catch (Throwable ex)
+            {
+                LogHelper.error(ex);
+            }
+        }
     }
 
     public InputStream getResource(String name) throws IOException {
