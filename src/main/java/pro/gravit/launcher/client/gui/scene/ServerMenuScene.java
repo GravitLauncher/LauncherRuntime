@@ -10,20 +10,26 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+import pro.gravit.launcher.Launcher;
+import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.ClientLauncher;
+import pro.gravit.launcher.client.ClientLauncherProcess;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.overlay.DebugOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
+import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -185,11 +191,42 @@ public class ServerMenuScene extends AbstractScene {
     }
 
     public void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile) {
-        ClientLauncher.Params clientParams = new ClientLauncher.Params(null, assetDir, clientDir, application.runtimeStateMachine.getPlayerProfile(), application.runtimeStateMachine.getAccessToken(),
-                application.runtimeSettings.autoEnter, application.runtimeSettings.fullScreen, application.runtimeSettings.ram, 0, 0);
+        //ClientLauncher.Params clientParams = new ClientLauncher.Params(null, assetDir, clientDir, application.runtimeStateMachine.getPlayerProfile(), application.runtimeStateMachine.getAccessToken(),
+        //        application.runtimeSettings.autoEnter, application.runtimeSettings.fullScreen, application.runtimeSettings.ram, 0, 0);
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, profile, application.runtimeStateMachine.getPlayerProfile(),
+                application.runtimeStateMachine.getAccessToken(), clientHDir, assetHDir, assetHDir/* Replace to jvmHDir */);
+        clientLauncherProcess.params.ram = application.runtimeSettings.ram;
+        if (clientLauncherProcess.params.ram > 0) {
+            clientLauncherProcess.jvmArgs.add("-Xms" + clientLauncherProcess.params.ram + 'M');
+            clientLauncherProcess.jvmArgs.add("-Xmx" + clientLauncherProcess.params.ram + 'M');
+        }
+        clientLauncherProcess.params.fullScreen = application.runtimeSettings.fullScreen;
+        clientLauncherProcess.params.autoEnter = application.runtimeSettings.autoEnter;
         contextHelper.runCallback(() -> {
-            Process process = ClientLauncher.launch(assetHDir, clientHDir, profile, clientParams, true);
-            showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(process));
+            Thread writerThread = CommonHelper.newThread("Client Params Writer Thread", true, () -> {
+                try {
+                    clientLauncherProcess.runWriteParams(new InetSocketAddress("127.0.0.1", Launcher.getConfig().clientPort));
+                    if(!application.runtimeSettings.debug)
+                    {
+                        LogHelper.debug("Params writted successful. Exit...");
+                        LauncherEngine.exitLauncher(0);
+                    }
+                } catch (Throwable e) {
+                    LogHelper.error(e);
+                    if(getCurrentOverlay() instanceof DebugOverlay)
+                    {
+                        DebugOverlay debugOverlay = (DebugOverlay) getCurrentOverlay();
+                        debugOverlay.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
+                        if(debugOverlay.currentProcess != null && debugOverlay.currentProcess.isAlive())
+                        {
+                            debugOverlay.currentProcess.destroy();
+                        }
+                    }
+                }
+            });
+            writerThread.start();
+            clientLauncherProcess.start(true);
+            showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(clientLauncherProcess.getProcess()));
         }).run();
 
     }
