@@ -52,6 +52,7 @@ public class OptionsScene extends AbstractScene {
 
     public void addProfileOptionals(ClientProfile profile) {
         for (OptionalFile e : profile.getOptional()) {
+            if(!e.visible) continue;
             add(e.name, e.info, e.mark, e.subTreeLevel, (val) -> {
                 if (val)
                     profile.markOptional(e);
@@ -82,10 +83,12 @@ public class OptionsScene extends AbstractScene {
     {
         public OptionalType type;
         public String name;
+        public boolean mark;
 
         public OptionalListEntryPair(OptionalFile f) {
             type = f.type;
             name = f.name;
+            mark = f.mark;
         }
     }
     public static class OptionalListEntry
@@ -107,13 +110,6 @@ public class OptionsScene extends AbstractScene {
         public int hashCode() {
             return Objects.hash(name, profileUUID);
         }
-        public void apply(ClientProfile profile)
-        {
-            for(OptionalListEntryPair s : enabled)
-            {
-                profile.markOptional(s.name, s.type);
-            }
-        }
     }
     public void saveAll() throws IOException
     {
@@ -128,7 +124,7 @@ public class OptionsScene extends AbstractScene {
             entry.profileUUID = p.getUUID();
             for(OptionalFile f : p.getOptional())
             {
-                if(f.mark)
+                if(f.visible)
                     entry.enabled.add(new OptionalListEntryPair(f));
             }
             list.add(entry);
@@ -165,7 +161,14 @@ public class OptionsScene extends AbstractScene {
                 for(OptionalListEntryPair f : e.enabled)
                 {
                     try {
-                        profile.markOptional(f.name, f.type);
+                        OptionalFile file = profile.getOptionalFile(f.name, f.type);
+                        if(file.visible)
+                        {
+                            if(f.mark)
+                                profile.markOptional(file);
+                            else
+                                profile.unmarkOptional(file);
+                        }
                     } catch (Exception exc)
                     {
                         LogHelper.warning("Optional: in profile %s markOptional mod %s failed", profile.getTitle(), f.name);

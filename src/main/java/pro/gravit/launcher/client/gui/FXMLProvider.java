@@ -60,7 +60,7 @@ public class FXMLProvider {
         });
     }
 
-    @SuppressWarnings("unchecked cast")
+    @SuppressWarnings("unchecked")
     public <T> T getFxml(String name) throws InterruptedException, IOException {
         Object obj = fxmlCache.get(name);
         if (obj == null) throw new IllegalStateException(String.format("You must need queue fxml load %s", name));
