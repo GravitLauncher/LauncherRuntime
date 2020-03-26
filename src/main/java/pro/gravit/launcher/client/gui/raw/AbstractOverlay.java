@@ -10,6 +10,7 @@ import java.io.IOException;
 
 public abstract class AbstractOverlay implements AllowDisable {
     protected final JavaFXApplication application;
+    protected AbstractStage currentStage;
     public final String fxmlPath;
     protected Pane pane;
     boolean isInit;
@@ -61,4 +62,5 @@ public abstract class AbstractOverlay implements AllowDisable {
     public void enable() {
 
     }
+
 }

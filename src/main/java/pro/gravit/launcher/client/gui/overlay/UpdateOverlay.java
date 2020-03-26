@@ -76,7 +76,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         });
         ((ButtonBase) pane.lookup("#hide")).setOnAction((e) -> {
             //TODO
-            //.setIconified(true);
+            if(this.currentStage != null) this.currentStage.hide();
         });
     }
 

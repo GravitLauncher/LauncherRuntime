@@ -48,7 +48,7 @@ public class DebugOverlay extends AbstractOverlay {
         });
         ((ButtonBase) layout.lookup("#hide")).setOnAction((e) -> {
             //TODO
-            //.setIconified(true);
+            if(this.currentStage != null) this.currentStage.hide();
         });
     }
 
