@@ -15,9 +15,12 @@ import pro.gravit.launcher.client.gui.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
+import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
@@ -97,6 +100,20 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDirPath = newDir.toString();
             application.runtimeSettings.updatesDir = newDir;
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
+        });
+        ((ButtonBase) layout.lookup("#deleteDir")).setOnAction((e) -> {
+            application.messageManager.showApplyDialog(application.getLangString("runtime.scenes.settings.deletedir.header"),
+                                                application.getLangResource("runtime.scenes.settings.deletedir.description"),
+                    () -> {
+                        LogHelper.debug("Delete dir: %s", DirBridge.dirUpdates);
+                        try {
+                            IOHelper.deleteDir(DirBridge.dirUpdates, false);
+                        } catch (IOException ex) {
+                            LogHelper.error(ex);
+                            application.messageManager.createNotification(application.getLangResource("runtime.scenes.settings.deletedir.fail.header"),
+                                    application.getLangResource("runtime.scenes.settings.deletedir.fail.description"));
+                        }
+                    }, () -> {}, true);
         });
         add("Debug", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
         add("AutoEnter", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
