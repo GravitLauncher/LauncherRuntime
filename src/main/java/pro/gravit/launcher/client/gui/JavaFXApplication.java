@@ -31,6 +31,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -142,6 +144,16 @@ public class JavaFXApplication extends Application {
     public InputStream getResource(String name) throws IOException {
         return IOHelper.newInput(Launcher.getResourceURL(name));
     }
+    public URL tryResource(String name)
+    {
+        try {
+            return Launcher.getResourceURL(name);
+        } catch (IOException e)
+        {
+            return null;
+        }
+
+    }
 
     public FXMLLoader newFXMLLoader(String name) {
         FXMLLoader loader;
@@ -169,6 +181,9 @@ public class JavaFXApplication extends Application {
 
     public <T> Future<T> getNoCacheFxml(String name) throws IOException {
         InputStream input = getResource(name);
+        return fxmlProvider.queueNoCache(name, input);
+    }
+    public <T> Future<T> getNoCacheFxml(String name, InputStream input) throws IOException {
         return fxmlProvider.queueNoCache(name, input);
     }
 

@@ -26,10 +26,12 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.CommonHelper;
+import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.URL;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerMenuScene extends AbstractScene {
     public static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
+    public static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton_%s.fxml";
     public Node layout;
     private Node lastSelectedServerButton;
 
@@ -56,7 +59,16 @@ public class ServerMenuScene extends AbstractScene {
         {
             int pos = 0;
             for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
-                futures.put(profile, application.getNoCacheFxml(SERVER_BUTTON_FXML));
+                String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profile.getTitle());
+                URL customFxml = application.tryResource(customFxmlName);
+                if(customFxml != null)
+                {
+                    futures.put(profile, application.getNoCacheFxml(customFxmlName, IOHelper.newInput(customFxml)));
+                }
+                else
+                {
+                    futures.put(profile, application.getNoCacheFxml(SERVER_BUTTON_FXML));
+                }
                 positionMap.put(profile, pos);
                 pos++;
             }
