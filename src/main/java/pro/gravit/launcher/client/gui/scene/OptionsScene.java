@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class OptionsScene extends AbstractScene {
     public Node layout;
@@ -52,17 +53,19 @@ public class OptionsScene extends AbstractScene {
 
     public void addProfileOptionals(ClientProfile profile) {
         for (OptionalFile e : profile.getOptional()) {
+            e.clearAllWatchers();
             if(!e.visible) continue;
-            add(e.name, e.info, e.mark, e.subTreeLevel, (val) -> {
+            Consumer<Boolean> setCheckBox = add(e.name, e.info, e.mark, e.subTreeLevel, (val) -> {
                 if (val)
                     profile.markOptional(e);
                 else
                     profile.unmarkOptional(e);
             });
+            e.registerWatcher((o, b) -> setCheckBox.accept(b));
         }
     }
 
-    public void add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
+    public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
         FlowPane container = new FlowPane();
         CheckBox checkBox = new CheckBox();
         checkBox.setSelected(value);
@@ -78,6 +81,8 @@ public class OptionsScene extends AbstractScene {
         desc.getStyleClass().add("optDescription");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
         VBox.setMargin(container, new Insets(0, 0, 0, 50 * padding));
+        Consumer<Boolean> callback = checkBox::setSelected;
+        return callback;
     }
     public static class OptionalListEntryPair
     {
