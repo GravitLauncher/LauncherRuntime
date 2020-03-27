@@ -62,6 +62,7 @@ public class OptionsScene extends AbstractScene {
                     profile.unmarkOptional(e);
             });
             e.registerWatcher((o, b) -> setCheckBox.accept(b));
+
         }
     }
 
