@@ -41,7 +41,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerMenuScene extends AbstractScene {
     public static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
-    public static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton_%s.fxml";
+    public static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     public Node layout;
     private Node lastSelectedServerButton;
 
