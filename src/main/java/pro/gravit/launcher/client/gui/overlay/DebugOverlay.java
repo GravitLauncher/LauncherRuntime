@@ -3,12 +3,14 @@ package pro.gravit.launcher.client.gui.overlay;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
+import pro.gravit.launcher.client.gui.scene.ConsoleScene;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -36,6 +38,8 @@ public class DebugOverlay extends AbstractOverlay {
         ((ButtonBase) layout.lookup("#kill")).setOnAction((e) -> {
             if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
         });
+
+        ((Label) layout.lookup("#version")).setText(ConsoleScene.getMiniLauncherInfo());
         ((ButtonBase) layout.lookup("#copy")).setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
