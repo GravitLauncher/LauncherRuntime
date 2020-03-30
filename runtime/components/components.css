@@ -75,15 +75,14 @@
     -fx-font-size: 12px;
 }
 
+.dialogInput {
+    -fx-background-color: #eee;
+}
+
 #dialogPane,
 #dialogApplyPane,
 #dialogTextInput {
     -fx-background-color: #fff;
-    -fx-border-color: #C7C7C7;
-}
-
-#2fa {
-    -fx-background-radius: 0;
     -fx-border-color: #C7C7C7;
 }
 
@@ -95,6 +94,7 @@
 #line {
     -fx-stroke: #C7C7C7;
 }
+
 
 /*Icons*/
 
@@ -133,5 +133,6 @@
     -fx-background-color: #AB2727;
     -fx-fill: #fff;
 }
+
 
 /*-- DrLeonardo Design for GravitLauncher --*/

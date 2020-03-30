@@ -14,7 +14,7 @@ RadioButton {
 }
 
 .whiteBox {
-    -fx-background-color: #fff;
+    -fx-background-color: #ffffff;
 }
 
 .check-box {
@@ -23,7 +23,7 @@ RadioButton {
     -fx-background-image: url('images/icons/uncheck.png');
     -fx-background-repeat: no-repeat;
     -fx-label-padding: 0 0 0 10px;
-    -fx-padding : 0 0 0 0px;
+    -fx-padding: 0 0 0 0px;
 }
 
 .check-box .mark {
@@ -64,7 +64,9 @@ RadioButton {
     -fx-text-fill: #AB2727;
 }
 
+
 /* Scrolls */
+
 #scroll-pane {
     -fx-background-color: transparent;
 }
@@ -73,11 +75,11 @@ RadioButton {
     -fx-background-color: transparent;
 }
 
-.scroll-pane .viewport{
+.scroll-pane .viewport {
     -fx-background-color: transparent;
 }
 
-.scroll-pane .content{
+.scroll-pane .content {
     -fx-background-color: transparent;
 }
 
@@ -114,17 +116,38 @@ RadioButton {
     -fx-background-color: rgba(0, 0, 0, 0.19);
 }
 
-.choice-box .context-menu { -fx-background-color: #fff; -fx-pref-width: 137px;}
-.choice-box .menu-item:focused { -fx-background-color: #7C4DFF; }
-.choice-box .menu-item > .label { -fx-text-fill: #323232; }
-.choice-box .menu-item:focused > .label { -fx-text-fill: #fff; }
+.choice-box .context-menu {
+    -fx-background-color: #fff;
+    -fx-pref-width: 137px;
+}
+
+.choice-box .menu-item:focused {
+    -fx-background-color: #7C4DFF;
+}
+
+.choice-box .menu-item>.label {
+    -fx-text-fill: #323232;
+}
+
+.choice-box .menu-item:focused>.label {
+    -fx-text-fill: #fff;
+}
+
 .choice-box {
     -fx-background-color: #fff;
     -fx-mark-color: #fff;
 }
-.choice-box > .label { -fx-text-fill: white; }
 
-#close, #hide, #settings, #console, #exit {
+.choice-box>.label {
+    -fx-text-fill: white;
+}
+
+#close,
+#hide,
+#settings,
+#console,
+#exit,
+#back {
     -fx-background-position: center;
     -fx-background-radius: 0;
     -fx-background-color: transparent;
@@ -134,7 +157,7 @@ RadioButton {
 #hide:hover,
 #settings:hover,
 #exit:hover,
-#console:hover {
+#console:hover #back:hover {
     -fx-opacity: 0.8;
 }
 
@@ -189,12 +212,15 @@ RadioButton {
     -fx-fill: #323232;
 }
 
+
 /*-- DrLeonardo Design for GravitLauncher --*/
+
 
 /*-- JCat Fixes --*/
 
 .hyperlink:focused {
     -fx-border-width: 0;
 }
+
 
 /*-- End JCat Fixes --*/

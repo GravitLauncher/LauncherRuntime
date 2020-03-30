@@ -6,17 +6,11 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
-      prefHeight="124.0" prefWidth="280.0" styleClass="serverButtons" stylesheets="@components.css"
-      xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-   <ImageView id="serverLogo" fitHeight="75.0" fitWidth="71.0" layoutX="14.0" layoutY="25.0" pickOnBounds="true"
-              preserveRatio="true">
-      <Image url="@../images/preloader/logo.png"/>
+<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="280.0" styleClass="serverButtons" stylesheets="@components.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <ImageView id="serverLogo" fitHeight="75.0" fitWidth="71.0" layoutX="14.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
+      <Image url="@../images/preloader/logo.png" />
    </ImageView>
-   <Text id="online" fontSmoothingType="LCD" layoutX="14.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="24"/>
-   <Text id="genreServer" fontSmoothingType="LCD" layoutX="104.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0"
-         text="TechnoMagic" wrappingWidth="169.115234375"/>
-   <Hyperlink id="nameServer" layoutX="98.0" layoutY="35.0" prefHeight="40.0" prefWidth="169.0"
-              styleClass="nameServerPassive" text="SERVER"/>
+   <Text id="online" fontSmoothingType="LCD" layoutX="14.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="24" />
+   <Text id="genreServer" fontSmoothingType="LCD" layoutX="107.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TechnoMagic" wrappingWidth="169.115234375" />
+   <Hyperlink id="nameServer" layoutX="101.0" layoutY="35.0" prefHeight="40.0" prefWidth="169.0" styleClass="nameServerPassive" text="SERVER" />
 </Pane>

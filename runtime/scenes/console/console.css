@@ -1,4 +1,5 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
+
 #consoleBackground {
     -fx-background-color: transparent;
     -fx-background-size: cover;
@@ -15,7 +16,9 @@
     -fx-font-size: 14pt;
 }
 
+
 /* Outputs */
+
 #output {
     -fx-background-color: #FAFAFA;
     -fx-background-radius: 0;
@@ -32,7 +35,7 @@
 
 #send {
     -fx-font-size: 13pt;
-    -fx-background-color: white;
+    -fx-background-color: #eee;
     -fx-text-fill: #323232;
 }
 
@@ -57,6 +60,8 @@
 
 .commandInputClass {
     -fx-background-radius: 0;
-    -fx-background-color: white;
+    -fx-background-color: #eee;
 }
+
+
 /*-- DrLeonardo Design for GravitLauncher --*/

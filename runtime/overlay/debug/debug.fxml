@@ -15,7 +15,7 @@
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="debugPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="debugPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <Pane fx:id="debugBackground" prefHeight="500.0" prefWidth="900.0" />
    <Pane layoutX="97.0" layoutY="-1.0" prefHeight="105.0" prefWidth="803.0" styleClass="whiteBox" />
    <TextArea id="output" editable="false" layoutX="97.0" layoutY="104.0" prefHeight="396.0" prefWidth="803.0" wrapText="true" />
@@ -84,6 +84,24 @@
       </graphic>
       <tooltip>
          <Tooltip id="closeTooltip" text="%runtime.overlay.debug.debug.closeTooltip" />
+      </tooltip>
+   </Button>
+   <Button id="back" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="25.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+      <font>
+         <Font name="System Bold" size="30.0" />
+      </font>
+      <opaqueInsets>
+         <Insets />
+      </opaqueInsets>
+      <graphic>
+         <SVGPath content="M22 5.12921L20.8819 4L9 16L20.8819 28L22 26.8708L11.2362 16L22 5.12921Z" fill="WHITE">
+            <rotationAxis>
+               <Point3D />
+            </rotationAxis>
+         </SVGPath>
+      </graphic>
+      <tooltip>
+         <Tooltip id="copyTooltip" text="%runtime.overlay.debug.debug.backTooltip" />
       </tooltip>
    </Button>
    <stylesheets>
