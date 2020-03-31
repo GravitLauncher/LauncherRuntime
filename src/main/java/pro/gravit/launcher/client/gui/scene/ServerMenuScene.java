@@ -237,6 +237,7 @@ public class ServerMenuScene extends AbstractScene {
                 }
             });
             writerThread.start();
+            application.gui.debugOverlay.writeParamsThread = writerThread;
             clientLauncherProcess.start(true);
             showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(clientLauncherProcess.getProcess()));
         }).run();

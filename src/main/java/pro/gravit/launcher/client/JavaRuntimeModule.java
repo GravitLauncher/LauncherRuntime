@@ -2,6 +2,7 @@ package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientEngineInitPhase;
+import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.gui.RuntimeProvider;
@@ -10,8 +11,10 @@ import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.JVMHelper;
+import pro.gravit.utils.helper.LogHelper;
 
 import javax.swing.*;
+import java.io.IOException;
 
 public class JavaRuntimeModule extends LauncherModule {
     public RuntimeProvider provider;
@@ -32,6 +35,7 @@ public class JavaRuntimeModule extends LauncherModule {
     public void init(LauncherInitContext initContext) {
         registerEvent(this::preGuiPhase, ClientPreGuiPhase.class);
         registerEvent(this::engineInitPhase, ClientEngineInitPhase.class);
+        registerEvent(this::exitPhase, ClientExitPhase.class);
     }
 
     public void preGuiPhase(ClientPreGuiPhase phase) {
@@ -47,5 +51,16 @@ public class JavaRuntimeModule extends LauncherModule {
     public void engineInitPhase(ClientEngineInitPhase initPhase)
     {
         JavaRuntimeModule.engine = initPhase.engine;
+    }
+    public void exitPhase(ClientExitPhase exitPhase)
+    {
+        if(provider != null && provider instanceof  StdJavaRuntimeProvider)
+        {
+            try {
+                ((StdJavaRuntimeProvider) provider).getApplication().saveSettings();
+            } catch (Throwable e) {
+                LogHelper.error(e);
+            }
+        }
     }
 }

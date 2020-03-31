@@ -71,11 +71,9 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         currentStatus = (Text) pane.lookup("#headingUpdate");
         logOutput.setText("");
         ((ButtonBase) pane.lookup("#close")).setOnAction((e) -> {
-            //TODO
             Platform.exit();
         });
         ((ButtonBase) pane.lookup("#hide")).setOnAction((e) -> {
-            //TODO
             if(this.currentStage != null) this.currentStage.hide();
         });
     }

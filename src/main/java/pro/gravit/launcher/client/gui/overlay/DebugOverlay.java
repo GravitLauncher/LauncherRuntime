@@ -26,6 +26,7 @@ public class DebugOverlay extends AbstractOverlay {
     public Thread readThread;
     public TextArea output;
     public Process currentProcess;
+    public Thread writeParamsThread;
 
     public DebugOverlay(JavaFXApplication application) throws IOException {
         super("overlay/debug/debug.fxml", application);
@@ -50,6 +51,29 @@ public class DebugOverlay extends AbstractOverlay {
             //TODO
             Platform.exit();
         });
+        ((ButtonBase) layout.lookup("#back")).setOnAction((e) -> {
+            if(writeParamsThread == null || writeParamsThread.isAlive()) return;
+            if(currentProcess != null && currentProcess.isAlive())
+            {
+                Process process = currentProcess;
+                currentProcess = null;
+                readThread.interrupt();
+                writeParamsThread = null;
+                readThread = null;
+                try {
+                    process.getErrorStream().close();
+                    process.getInputStream().close();
+                    process.getOutputStream().close();
+                } catch (IOException ex) {
+                    errorHandle(ex);
+                }
+            }
+            try {
+                application.setMainScene(application.gui.serverMenuScene);
+            } catch (Exception ex) {
+                errorHandle(ex);
+            }
+        });
         ((ButtonBase) layout.lookup("#hide")).setOnAction((e) -> {
             //TODO
             if(this.currentStage != null) this.currentStage.hide();
@@ -59,7 +83,7 @@ public class DebugOverlay extends AbstractOverlay {
 
     @Override
     public void reset() {
-
+        output.clear();
     }
 
     public void onProcess(Process process) {
@@ -73,9 +97,12 @@ public class DebugOverlay extends AbstractOverlay {
                     append(new String(buf, 0, length));
                 }
                 if(currentProcess.isAlive()) currentProcess.waitFor();
-                append(String.format("Process exit code %d", currentProcess.exitValue()));
-            } catch (IOException | InterruptedException e) {
+                onProcessExit(currentProcess.exitValue());
+            } catch (IOException e) {
                 errorHandle(e);
+            } catch (InterruptedException ignored)
+            {
+
             }
         });
         readThread.start();
@@ -103,7 +130,12 @@ public class DebugOverlay extends AbstractOverlay {
                 append(e.toString());
         }
         if (currentProcess != null && !currentProcess.isAlive()) {
-            append(String.format("Process exit code %d", currentProcess.exitValue()));
+            onProcessExit(currentProcess.exitValue());
         }
+    }
+    public void onProcessExit(int code)
+    {
+        append(String.format("Process exit code %d", code));
+        if(writeParamsThread != null) writeParamsThread.interrupt();
     }
 }
