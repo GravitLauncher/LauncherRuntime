@@ -52,7 +52,7 @@ public class DebugOverlay extends AbstractOverlay {
             Platform.exit();
         });
         ((ButtonBase) layout.lookup("#back")).setOnAction((e) -> {
-            if(writeParamsThread == null || writeParamsThread.isAlive()) return;
+            if(writeParamsThread != null && writeParamsThread.isAlive()) return;
             if(currentProcess != null && currentProcess.isAlive())
             {
                 Process process = currentProcess;
@@ -69,7 +69,10 @@ public class DebugOverlay extends AbstractOverlay {
                 }
             }
             try {
-                application.setMainScene(application.gui.serverMenuScene);
+                if(currentStage != null) {
+                    currentStage.getScene().hideOverlay(0, ex -> {});
+                    application.gui.updateOverlay.reset();
+                }
             } catch (Exception ex) {
                 errorHandle(ex);
             }

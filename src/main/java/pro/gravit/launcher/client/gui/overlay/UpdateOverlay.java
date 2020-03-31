@@ -53,6 +53,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         super("overlay/update/update.fxml", application);
     }
 
+
     @Override
     protected void doInit() {
         progressBar = (ProgressBar) pane.lookup("#progress");
@@ -204,7 +205,16 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
 
     @Override
     public void reset() {
-
+        progressBar.progressProperty().setValue(0);
+        logOutput.clear();
+        volume.setText("");
+        speed.setText("");
+        for(Circle circle : phases)
+        {
+            circle.getStyleClass().removeAll("phaseActive");
+            circle.getStyleClass().removeAll("phaseError");
+        }
+        currentPhase = 0;
     }
 
     @Override
