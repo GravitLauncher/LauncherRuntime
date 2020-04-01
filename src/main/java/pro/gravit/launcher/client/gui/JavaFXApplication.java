@@ -6,10 +6,12 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
+import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.RuntimeSecurityService;
 import pro.gravit.launcher.client.UserSettings;
+import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
 import pro.gravit.launcher.client.gui.commands.VersionCommand;
@@ -19,6 +21,7 @@ import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
+import pro.gravit.launcher.modules.events.ClosePhase;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
@@ -128,17 +131,7 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        settingsManager.saveConfig();
-        settingsManager.saveHDirStore();
-        if(gui != null && gui.optionsScene != null)
-        {
-            try {
-                gui.optionsScene.saveAll();
-            } catch (Throwable ex)
-            {
-                LogHelper.error(ex);
-            }
-        }
+        LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
     }
 
     public InputStream getResource(String name) throws IOException {
@@ -246,5 +239,14 @@ public class JavaFXApplication extends Application {
     {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
+        if(gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null)
+        {
+            try {
+                gui.optionsScene.saveAll();
+            } catch (Throwable ex)
+            {
+                LogHelper.error(ex);
+            }
+        }
     }
 }
