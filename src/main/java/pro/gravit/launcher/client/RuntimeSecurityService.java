@@ -1,13 +1,24 @@
 package pro.gravit.launcher.client;
 
+import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
+import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RuntimeSecurityService {
     private final JavaFXApplication application;
@@ -62,6 +73,56 @@ public class RuntimeSecurityService {
                 waitObject.wait(3000);
             return waitObject[0];
         }
+    }
+    public static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
+    public static final Path C_BINARY_PATH = BINARY_PATH.getParent().resolve(IOHelper.getFileName(BINARY_PATH) + ".tmp");
+
+    public void update(LauncherRequestEvent result) throws IOException {
+        List<String> args = new ArrayList<>(8);
+        args.add(IOHelper.resolveJavaBin(null).toString());
+        if (LogHelper.isDebugEnabled())
+            args.add(JVMHelper.jvmProperty(LogHelper.DEBUG_PROPERTY, Boolean.toString(LogHelper.isDebugEnabled())));
+        args.add("-jar");
+        args.add(BINARY_PATH.toString());
+        ProcessBuilder builder = new ProcessBuilder(args.toArray(new String[0]));
+        builder.inheritIO();
+
+        // Rewrite and start new instance
+        if (result.binary != null)
+            IOHelper.write(BINARY_PATH, result.binary);
+        else {
+            /*URLConnection connection = IOHelper.newConnection(new URL(result.url));
+            connection.setDoOutput(true);
+            connection.connect();
+            try (OutputStream stream = connection.getOutputStream()) {
+                IOHelper.transfer(BINARY_PATH, stream);
+            }*/
+            try {
+                Files.deleteIfExists(C_BINARY_PATH);
+                URL url = new URL(result.url);
+                URLConnection connection = url.openConnection();
+                try(InputStream in = connection.getInputStream())
+                {
+                    IOHelper.transfer(in, C_BINARY_PATH);
+                }
+                try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
+                    IOHelper.transfer(in, BINARY_PATH);
+                }
+                Files.deleteIfExists(C_BINARY_PATH);
+            } catch (Throwable e) {
+                LogHelper.error(e);
+            }
+        }
+        builder.start();
+
+        // Kill current instance
+        try {
+            LauncherEngine.exitLauncher(0);
+        } catch (Throwable e)
+        {
+            System.exit(0);
+        }
+        throw new AssertionError("Why Launcher wasn't restarted?!");
     }
     public byte[] sign(byte[] data)
     {

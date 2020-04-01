@@ -70,13 +70,18 @@ public class LoginScene extends AbstractScene {
             processRequest(application.getLangResource("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if (result.needUpdate) {
                     try {
-                        LauncherRequest.update(result);
+                        application.securityService.update(result);
                     } catch (IOException e) {
                         LogHelper.error(e);
                     } catch (Throwable ignored) {
 
                     }
-                    Platform.exit();
+                    try {
+                        LauncherEngine.exitLauncher(0);
+                    } catch (Throwable e)
+                    {
+                        Platform.exit();
+                    }
                 }
                 LogHelper.dev("Launcher update processed");
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
