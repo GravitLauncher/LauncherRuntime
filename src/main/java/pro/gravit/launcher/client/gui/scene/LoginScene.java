@@ -2,10 +2,7 @@ package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonBase;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -60,6 +57,18 @@ public class LoginScene extends AbstractScene {
             passwordField.getStyleClass().add("hasSaved");
             passwordField.setPromptText(application.getLangResource("runtime.scenes.login.login.password.saved"));
             ((CheckBox) layout.lookup("#savePassword")).setSelected(true);
+        }
+        if(application.guiModuleConfig.createAccountURL != null)
+        {
+            ((Hyperlink)layout.lookup("#createAccount")).setOnAction((e) -> {
+                application.openURL(application.guiModuleConfig.createAccountURL);
+            });
+        }
+        if(application.guiModuleConfig.forgotPassURL != null)
+        {
+            ((Hyperlink)layout.lookup("#forgotPass")).setOnAction((e) -> {
+                application.openURL(application.guiModuleConfig.forgotPassURL);
+            });
         }
         ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability>) layout.lookup("#combologin");
         authList.setConverter(new AuthConverter());

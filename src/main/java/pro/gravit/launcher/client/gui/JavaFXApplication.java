@@ -9,6 +9,7 @@ import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.client.GUIModuleConfig;
 import pro.gravit.launcher.client.RuntimeSecurityService;
 import pro.gravit.launcher.client.UserSettings;
 import pro.gravit.launcher.client.events.ClientExitPhase;
@@ -51,6 +52,7 @@ public class JavaFXApplication extends Application {
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
+    public GUIModuleConfig guiModuleConfig;
     public MessageManager messageManager;
     public ResourceBundle resources;
     public RuntimeSecurityService securityService;
@@ -81,6 +83,7 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void init() throws Exception {
+        guiModuleConfig = new GUIModuleConfig();
         settingsManager = new StdSettingsManager();
         UserSettings.providers.register("stdruntime", RuntimeSettings.class);
         settingsManager.loadConfig();
@@ -221,6 +224,17 @@ public class JavaFXApplication extends Application {
         } catch (Throwable e) {
             LogHelper.error(e);
             throw new RuntimeException(e);
+        }
+    }
+    public boolean openURL(String url)
+    {
+        try {
+            getHostServices().showDocument(url);
+            return true;
+        } catch (Throwable e)
+        {
+            LogHelper.error(e);
+            return false;
         }
     }
 

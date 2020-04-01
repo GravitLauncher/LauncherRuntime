@@ -21,7 +21,9 @@ tasks.withType(JavaCompile) {
 }
 
 jar {
-    manifest.attributes("Module-Main-Class": mainClassName)
+    manifest.attributes("Module-Main-Class": mainClassName,
+                        "Module-Config-Class": "pro.gravit.launcher.client.GUIModuleConfig",
+                        "Module-Config-Name": "JavaRuntime")
 }
 
 repositories {
