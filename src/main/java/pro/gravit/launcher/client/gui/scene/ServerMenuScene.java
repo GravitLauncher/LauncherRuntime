@@ -1,11 +1,16 @@
 package pro.gravit.launcher.client.gui.scene;
 
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -23,12 +28,16 @@ import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.PlayerProfile;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -43,6 +52,7 @@ public class ServerMenuScene extends AbstractScene {
     public static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     public static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     public Node layout;
+    public ImageView avatar;
     private Node lastSelectedServerButton;
 
     public ServerMenuScene(JavaFXApplication application) {
@@ -54,6 +64,7 @@ public class ServerMenuScene extends AbstractScene {
         layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#serverMenu");
         sceneBaseInit(layout);
         ((Labeled) layout.lookup("#nickname")).setText(application.runtimeStateMachine.getUsername());
+        avatar = (ImageView) layout.lookup("#avatar");
         Map<ClientProfile, Future<Pane>> futures = new HashMap<>();
         Map<ClientProfile, Integer> positionMap = new HashMap<>();
         {
@@ -169,6 +180,59 @@ public class ServerMenuScene extends AbstractScene {
                     }, () -> {}, true);
         });
         ((ButtonBase) layout.lookup("#clientLaunch")).setOnAction((e) -> launchClient());
+        CommonHelper.newThread("SkinHead Downloader Thread", true, () -> {
+            try {
+                updateSkinHead();
+            } catch (Throwable e) {
+                LogHelper.error(e);
+            }
+        });
+    }
+    public void updateSkinHead() throws IOException
+    {
+        PlayerProfile playerProfile = application.runtimeStateMachine.getPlayerProfile();
+        if(playerProfile == null || playerProfile.skin == null || playerProfile.skin.url == null) return;
+        String url = playerProfile.skin.url;
+        BufferedImage image = downloadSkinHead(url);
+        avatar.setImage(convertToFxImage(image));
+    }
+    public static Image convertToFxImage(BufferedImage image)
+    {
+        if(JVMHelper.JVM_VERSION >= 9)
+        {
+            return SwingFXUtils.toFXImage(image, null);
+        }
+        else
+        {
+            return convertToFxImageJava8(image);
+        }
+    }
+    private static Image convertToFxImageJava8(BufferedImage image) { //Very slow!
+        WritableImage wr = null;
+        if (image != null) {
+            wr = new WritableImage(image.getWidth(), image.getHeight());
+            PixelWriter pw = wr.getPixelWriter();
+            for (int x = 0; x < image.getWidth(); x++) {
+                for (int y = 0; y < image.getHeight(); y++) {
+                    pw.setArgb(x, y, image.getRGB(x, y));
+                }
+            }
+        }
+
+        return new ImageView(wr).getImage();
+    }
+    public BufferedImage downloadSkinHead(String url) throws IOException
+    {
+        BufferedImage image = ImageIO.read(new URL(url));
+        int height = image.getHeight();
+        int width = image.getWidth();
+        int renderScale = width / 64;
+        if(height == width)
+        {
+            height /= 2; // slim skin
+        }
+        int offset = 4*renderScale;
+        return image.getSubimage(offset, offset, offset, offset);
     }
 
     public void changeServer(ClientProfile profile, ServerPinger.Result pingerResult) {
