@@ -66,7 +66,7 @@
           <Tooltip id="closeTooltip" text="%runtime.scenes.options.options.closeTooltip" />
         </tooltip>
     </Button>
-   <Button id="back" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="20.0" layoutY="24.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
+   <Button id="back" alignment="BASELINE_CENTER" contentDisplay="CENTER" visible="false" layoutX="20.0" layoutY="24.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">
       <font>
          <Font name="System Bold" size="30.0" />
       </font>
