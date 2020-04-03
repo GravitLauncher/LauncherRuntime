@@ -22,7 +22,7 @@ tasks.withType(JavaCompile) {
 
 jar {
     manifest.attributes("Module-Main-Class": mainClassName,
-                        "Module-Config-Class": "pro.gravit.launcher.client.GUIModuleConfig",
+                        "Module-Config-Class": "pro.gravit.launcher.client.GuiModuleConfig",
                         "Module-Config-Name": "JavaRuntime")
 }
 
