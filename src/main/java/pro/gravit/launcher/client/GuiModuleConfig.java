@@ -8,7 +8,7 @@ public class GuiModuleConfig {
     @LauncherInject(value = "modules.javaruntime.forgotpassurl")
     public String forgotPassURL;
 
-    public static GuiModuleConfig getDefault() {
+    public static Object getDefault() {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravit.pro/createAccount.php";
         config.forgotPassURL = "https://gravit.pro/fogotPass.php";
