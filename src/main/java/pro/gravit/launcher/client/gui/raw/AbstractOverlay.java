@@ -26,13 +26,7 @@ public abstract class AbstractOverlay implements AllowDisable {
         isInit = true;
     }
 
-    public final void show(AbstractScene scene, EventHandler<ActionEvent> onFinished) throws IOException, InterruptedException {
-        if (!isInit)
-            init();
-        scene.showOverlay(this, onFinished);
-    }
-
-    public final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
+    protected final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
         if (!isInit)
             throw new IllegalStateException("Using method hide before init");
         scene.hideOverlay(delay, (e) -> {
@@ -45,8 +39,6 @@ public abstract class AbstractOverlay implements AllowDisable {
 
     public abstract void reset();
 
-    public abstract void errorHandle(String error);
-
     public abstract void errorHandle(Throwable e);
 
     public Pane getPane() {
@@ -55,12 +47,9 @@ public abstract class AbstractOverlay implements AllowDisable {
 
     @Override
     public void disable() {
-
     }
 
     @Override
     public void enable() {
-
     }
-
 }

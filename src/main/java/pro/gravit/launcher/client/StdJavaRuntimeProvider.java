@@ -6,14 +6,8 @@ import pro.gravit.launcher.gui.RuntimeProvider;
 
 public class StdJavaRuntimeProvider implements RuntimeProvider {
 
-    private boolean clientInstance;
-
     public JavaFXApplication getApplication() {
         return JavaFXApplication.getInstance();
-    }
-
-    public boolean isClientInstance() {
-        return clientInstance;
     }
 
     @Override
@@ -27,6 +21,5 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
 
     @Override
     public void init(boolean clientInstance) {
-        this.clientInstance = clientInstance;
     }
 }

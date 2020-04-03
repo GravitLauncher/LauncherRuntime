@@ -10,7 +10,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.interfaces.FXMLConsumer;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.FileNameMatcher;
@@ -32,54 +32,51 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
-    public ProgressBar progressBar;
-    public Circle[] phases;
-    public Label speed;
-    public Label volume;
-    public TextArea logOutput;
-    public Text currentStatus;
+public class UpdateOverlay extends AbstractOverlay {
+    private ProgressBar progressBar;
+    private Circle[] phases;
+    private Label speed;
+    private Label volume;
+    private TextArea logOutput;
+    private Text currentStatus;
 
-    public long totalSize;
-    public final AtomicLong totalDownloaded = new AtomicLong(0);
+    private long totalSize;
+    private final AtomicLong totalDownloaded = new AtomicLong(0);
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
-    public int currentPhase = 0;
-    public double phaseOffset;
-    public double progressRatio = 1.0;
-    public double phaseRatio;
+    private int currentPhase = 0;
+    private double phaseOffset;
+    private double progressRatio = 1.0;
+    private double phaseRatio;
 
-    public UpdateOverlay(JavaFXApplication application) throws IOException {
+    public UpdateOverlay(JavaFXApplication application) {
         super("overlay/update/update.fxml", application);
     }
 
-
     @Override
     protected void doInit() {
-        progressBar = (ProgressBar) pane.lookup("#progress");
+        progressBar = LookupHelper.lookup(pane, "#progress");
         phases = new Circle[5];
         for (int i = 1; i <= 5; ++i) {
-            Circle c = (Circle) pane.lookup("#phase".concat(Integer.toString(i)));
-            //c.getStyleClass().add("phaseactive");
-            phases[i - 1] = c;
-            phaseOffset = (c.getRadius() * 2.0) / progressBar.getPrefWidth();
+            Circle circle = LookupHelper.lookup(pane, String.format("#phase%d", i));
+            phases[i - 1] = circle;
+            phaseOffset = (circle.getRadius() * 2.0) / progressBar.getPrefWidth();
             progressRatio -= phaseOffset;
         }
         phaseRatio = progressRatio / 4.0;
-        speed = (Label) pane.lookup("#speed");
-        volume = (Label) pane.lookup("#volume");
-        logOutput = (TextArea) pane.lookup("#outputUpdate");
-        currentStatus = (Text) pane.lookup("#headingUpdate");
+        speed = LookupHelper.lookup(pane, "#speed");
+        volume = LookupHelper.lookup(pane, "#volume");
+        logOutput = LookupHelper.lookup(pane, "#outputUpdate");
+        currentStatus = LookupHelper.lookup(pane, "#headingUpdate");
         logOutput.setText("");
-        ((ButtonBase) pane.lookup("#close")).setOnAction((e) -> {
-            Platform.exit();
-        });
-        ((ButtonBase) pane.lookup("#hide")).setOnAction((e) -> {
-            if(this.currentStage != null) this.currentStage.hide();
+        LookupHelper.<ButtonBase>lookup(pane, "#close").setOnAction(
+                (e) -> Platform.exit());
+        LookupHelper.<ButtonBase>lookup(pane, "#hide").setOnAction((e) -> {
+            if (this.currentStage != null) this.currentStage.hide();
         });
     }
 
-    private void deleteExtraDir(Path subDir, HashedDir subHDir, boolean flag) throws IOException {
+    private void deleteExtraDir(Path subDir, HashedDir subHDir, boolean deleteDir) throws IOException {
         for (Map.Entry<String, HashedEntry> mapEntry : subHDir.map().entrySet()) {
             String name = mapEntry.getKey();
             Path path = subDir.resolve(name);
@@ -92,7 +89,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                     Files.delete(path);
                     break;
                 case DIR:
-                    deleteExtraDir(path, (HashedDir) entry, flag || entry.flag);
+                    deleteExtraDir(path, (HashedDir) entry, deleteDir || entry.flag);
                     break;
                 default:
                     throw new AssertionError("Unsupported hashed entry type: " + entryType.name());
@@ -100,7 +97,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         }
 
         // Delete!
-        if (flag) {
+        if (deleteDir) {
             Files.delete(subDir);
         }
     }
@@ -118,7 +115,8 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
                     profile.pushOptionalFile(updateRequestEvent.hdir, digest);
                 try {
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
-                    if (!IOHelper.exists(dir)) Files.createDirectories(dir);
+                    if (!IOHelper.exists(dir))
+                        Files.createDirectories(dir);
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
                     final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
@@ -169,7 +167,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         }
     }
 
-    public void addLog(String string) {
+    private void addLog(String string) {
         LogHelper.dev("Update event %s", string);
         logOutput.appendText(string.concat("\n"));
     }
@@ -183,21 +181,21 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         currentPhase++;
     }
 
-    public void updateProgress(long oldValue, long newValue) {
+    private void updateProgress(long oldValue, long newValue) {
         double add = (double) (newValue - oldValue) / (double) totalSize; // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
         property.set(property.get() + add * phaseRatio);
-        long rawLastTime = lastUpdateTime.get();
-        long rawThisTime = System.currentTimeMillis();
-        if (rawThisTime - rawLastTime >= 130) {
+        long lastTime = lastUpdateTime.get();
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastTime >= 130) {
             String format = String.format("%.1f MB / %.1f MB", (double) newValue / (1024.0 * 1024.0), (double) totalSize / (1024.0 * 1024.0));
-            double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (rawThisTime - rawLastTime) * 1000.0;
+            double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (currentTime - lastTime) * 1000.0;
             String speedFormat = String.format("%.2f MiB/s", bytesSpeed * 8 / (1000.0 * 1000.0));
             ContextHelper.runInFxThreadStatic(() -> {
                 volume.setText(format);
                 speed.setText(speedFormat);
             });
-            lastUpdateTime.set(rawThisTime);
+            lastUpdateTime.set(currentTime);
             lastDownloaded.set(newValue);
         }
 
@@ -209,8 +207,7 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
         logOutput.clear();
         volume.setText("");
         speed.setText("");
-        for(Circle circle : phases)
-        {
+        for (Circle circle : phases) {
             circle.getStyleClass().removeAll("phaseActive");
             circle.getStyleClass().removeAll("phaseError");
         }
@@ -218,20 +215,9 @@ public class UpdateOverlay extends AbstractOverlay implements FXMLConsumer {
     }
 
     @Override
-    public void errorHandle(String error) {
-        addLog(String.format("Error: %s", error));
-        LogHelper.error(error);
-    }
-
-    @Override
     public void errorHandle(Throwable e) {
         addLog(String.format("Exception %s: %s", e.getClass(), e.getMessage() == null ? "" : e.getMessage()));
         phases[currentPhase].getStyleClass().add("phaseError");
         LogHelper.error(e);
-    }
-
-    @Override
-    public String getFxmlPath() {
-        return fxmlPath;
     }
 }

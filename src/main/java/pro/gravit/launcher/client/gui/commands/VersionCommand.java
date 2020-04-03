@@ -18,7 +18,7 @@ public class VersionCommand extends Command {
     }
 
     @Override
-    public void invoke(String... args) throws Exception {
+    public void invoke(String... args) {
         LogHelper.info(ConsoleScene.getLauncherInfo());
         LogHelper.info("JDK Path: %s", System.getProperty("java.home", "UNKNOWN"));
     }

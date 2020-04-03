@@ -7,6 +7,7 @@ import javafx.scene.control.Labeled;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.utils.Version;
@@ -14,11 +15,10 @@ import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 public class ConsoleScene extends AbstractScene {
-    public static final long MAX_LENGTH = 16384;
-    public static final int REMOVE_LENGTH = 1024;
-    public Node layout;
-    public TextField commandLine;
-    public TextArea output;
+    private static final long MAX_LENGTH = 16384;
+    private static final int REMOVE_LENGTH = 1024;
+    private TextField commandLine;
+    private TextArea output;
 
     public ConsoleScene(JavaFXApplication application) {
         super("scenes/console/console.fxml", application);
@@ -26,17 +26,17 @@ public class ConsoleScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        layout = scene.getRoot();
+        Node layout = scene.getRoot();
         sceneBaseInit(layout);
-        output = (TextArea) layout.lookup("#output");
-        commandLine = (TextField) layout.lookup("#commandInput");
+        output = LookupHelper.lookup(layout, "#output");
+        commandLine = LookupHelper.lookup(layout, "#commandInput");
         LogHelper.addOutput(this::append, LogHelper.OutputTypes.PLAIN);
         commandLine.setOnAction(this::send);
-        ((ButtonBase) layout.lookup("#send")).setOnAction(this::send);
-        ((Labeled) layout.lookup("#version")).setText(getMiniLauncherInfo());
+        LookupHelper.<ButtonBase>lookup(layout, "#send").setOnAction(this::send);
+        LookupHelper.<Labeled>lookup(layout, "#version").setText(getMiniLauncherInfo());
     }
 
-    public void send(ActionEvent ignored) {
+    private void send(ActionEvent ignored) {
         String command = commandLine.getText();
         commandLine.clear();
         try {
@@ -48,7 +48,7 @@ public class ConsoleScene extends AbstractScene {
         }
     }
 
-    public void append(String text) {
+    private void append(String text) {
         contextHelper.runInFxThread(() -> {
             if (output.lengthProperty().get() > MAX_LENGTH)
                 output.deleteText(0, REMOVE_LENGTH);

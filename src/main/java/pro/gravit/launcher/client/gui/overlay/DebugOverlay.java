@@ -2,12 +2,14 @@ package pro.gravit.launcher.client.gui.overlay;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.client.gui.scene.ConsoleScene;
@@ -20,45 +22,45 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class DebugOverlay extends AbstractOverlay {
-    public static final long MAX_LENGTH = 163840;
-    public static final int REMOVE_LENGTH = 1024;
-    public Node layout;
-    public Thread readThread;
-    public TextArea output;
+    private static final long MAX_LENGTH = 163840;
+    private static final int REMOVE_LENGTH = 1024;
+    private Thread readThread;
+    private TextArea output;
     public Process currentProcess;
-    public Thread writeParamsThread;
+    public Thread writeParametersThread;
 
-    public DebugOverlay(JavaFXApplication application) throws IOException {
+    public DebugOverlay(JavaFXApplication application) {
         super("overlay/debug/debug.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        layout = pane;
-        output = (TextArea) layout.lookup("#output");
-        ((ButtonBase) layout.lookup("#kill")).setOnAction((e) -> {
-            if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
+        Node layout = pane;
+        output = LookupHelper.lookup(layout, "#output");
+        LookupHelper.<ButtonBase>lookup(layout, "#kill").setOnAction((e) -> {
+            if (currentProcess != null && currentProcess.isAlive())
+                currentProcess.destroyForcibly();
         });
 
-        ((Label) layout.lookup("#version")).setText(ConsoleScene.getMiniLauncherInfo());
-        ((ButtonBase) layout.lookup("#copy")).setOnAction((e) -> {
+        LookupHelper.<Label>lookup(layout, "#version").setText(ConsoleScene.getMiniLauncherInfo());
+        LookupHelper.<ButtonBase>lookup(layout, "#copy").setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
         });
-        ((ButtonBase) layout.lookup("#close")).setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction((e) -> {
             //TODO
             Platform.exit();
         });
-        ((ButtonBase) layout.lookup("#back")).setOnAction((e) -> {
-            if(writeParamsThread != null && writeParamsThread.isAlive()) return;
-            if(currentProcess != null && currentProcess.isAlive())
-            {
+        LookupHelper.<ButtonBase>lookup(layout, "#back").setOnAction((e) -> {
+            if (writeParametersThread != null && writeParametersThread.isAlive())
+                return;
+            if (currentProcess != null && currentProcess.isAlive()) {
                 Process process = currentProcess;
                 currentProcess = null;
                 readThread.interrupt();
-                writeParamsThread = null;
+                writeParametersThread = null;
                 readThread = null;
                 try {
                     process.getErrorStream().close();
@@ -69,17 +71,19 @@ public class DebugOverlay extends AbstractOverlay {
                 }
             }
             try {
-                if(currentStage != null) {
-                    currentStage.getScene().hideOverlay(0, ex -> {});
+                if (currentStage != null) {
+                    currentStage.getScene().hideOverlay(0, ex -> {
+                    });
                     application.gui.updateOverlay.reset();
                 }
             } catch (Exception ex) {
                 errorHandle(ex);
             }
         });
-        ((ButtonBase) layout.lookup("#hide")).setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(layout, "#hide").setOnAction((e) -> {
             //TODO
-            if(this.currentStage != null) this.currentStage.hide();
+            if (this.currentStage != null)
+                this.currentStage.hide();
         });
     }
 
@@ -90,8 +94,10 @@ public class DebugOverlay extends AbstractOverlay {
     }
 
     public void onProcess(Process process) {
-        if (readThread != null && readThread.isAlive()) readThread.interrupt();
-        if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
+        if (readThread != null && readThread.isAlive())
+            readThread.interrupt();
+        if (currentProcess != null && currentProcess.isAlive())
+            currentProcess.destroyForcibly();
         readThread = CommonHelper.newThread("Client Process Console Reader", true, () -> {
             InputStream stream = process.getInputStream();
             byte[] buf = IOHelper.newBuffer();
@@ -99,12 +105,11 @@ public class DebugOverlay extends AbstractOverlay {
                 for (int length = stream.read(buf); length >= 0; length = stream.read(buf)) {
                     append(new String(buf, 0, length));
                 }
-                if(currentProcess.isAlive()) currentProcess.waitFor();
+                if (currentProcess.isAlive()) currentProcess.waitFor();
                 onProcessExit(currentProcess.exitValue());
             } catch (IOException e) {
                 errorHandle(e);
-            } catch (InterruptedException ignored)
-            {
+            } catch (InterruptedException ignored) {
 
             }
         });
@@ -121,11 +126,6 @@ public class DebugOverlay extends AbstractOverlay {
     }
 
     @Override
-    public void errorHandle(String error) {
-
-    }
-
-    @Override
     public void errorHandle(Throwable e) {
         if (!(e instanceof EOFException)) {
             LogHelper.error(e);
@@ -136,9 +136,9 @@ public class DebugOverlay extends AbstractOverlay {
             onProcessExit(currentProcess.exitValue());
         }
     }
-    public void onProcessExit(int code)
-    {
+
+    private void onProcessExit(int code) {
         append(String.format("Process exit code %d", code));
-        if(writeParamsThread != null) writeParamsThread.interrupt();
+        if (writeParametersThread != null) writeParametersThread.interrupt();
     }
 }

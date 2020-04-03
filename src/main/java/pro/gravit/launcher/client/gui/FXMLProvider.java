@@ -32,11 +32,11 @@ public class FXMLProvider {
             try {
                 long start = System.currentTimeMillis();
                 T result = rawLoadFxml(name, inputStream);
-                Object obj = fxmlCache.get(name);
+                Object cacheEntry = fxmlCache.get(name);
                 fxmlCache.put(name, result);
-                if (obj instanceof FutureVirtualObject) {
-                    synchronized (obj) {
-                        obj.notifyAll();
+                if (cacheEntry instanceof FutureVirtualObject) {
+                    synchronized (cacheEntry) {
+                        cacheEntry.notifyAll();
                     }
                 }
                 long finish = System.currentTimeMillis();
@@ -44,15 +44,15 @@ public class FXMLProvider {
                     LogHelper.debug("FXML %s(%s) loaded in %d ms", name, result.getClass().getName(), finish - start);
                 return result;
             } catch (Throwable e) {
-                Object obj = fxmlCache.get(name);
-                if (obj instanceof FutureVirtualObject) {
-                    synchronized (obj) {
+                Object cacheEntry = fxmlCache.get(name);
+                if (cacheEntry instanceof FutureVirtualObject) {
+                    synchronized (cacheEntry) {
                         if (e instanceof IOException) {
-                            ((FutureVirtualObject) obj).exception = (IOException) e;
+                            ((FutureVirtualObject) cacheEntry).exception = (IOException) e;
                         } else {
-                            ((FutureVirtualObject) obj).exception = new IOException(e);
+                            ((FutureVirtualObject) cacheEntry).exception = new IOException(e);
                         }
-                        obj.notifyAll();
+                        cacheEntry.notifyAll();
                     }
                 }
                 return null;
@@ -62,22 +62,25 @@ public class FXMLProvider {
 
     @SuppressWarnings("unchecked")
     public <T> T getFxml(String name) throws InterruptedException, IOException {
-        Object obj = fxmlCache.get(name);
-        if (obj == null) throw new IllegalStateException(String.format("You must need queue fxml load %s", name));
-        if (obj instanceof FutureVirtualObject) {
-            if (((FutureVirtualObject) obj).exception != null) throw ((FutureVirtualObject) obj).exception;
-            synchronized (obj) {
-                obj.wait();
+        Object cacheEntry = fxmlCache.get(name);
+        if (cacheEntry == null)
+            throw new IllegalStateException(String.format("You must need queue fxml load %s", name));
+        if (cacheEntry instanceof FutureVirtualObject) {
+            if (((FutureVirtualObject) cacheEntry).exception != null)
+                throw ((FutureVirtualObject) cacheEntry).exception;
+            synchronized (cacheEntry) {
+                cacheEntry.wait();
             }
-            obj = fxmlCache.get(name);
-            if (obj instanceof FutureVirtualObject) {
-                if (((FutureVirtualObject) obj).exception != null) throw ((FutureVirtualObject) obj).exception;
+            cacheEntry = fxmlCache.get(name);
+            if (cacheEntry instanceof FutureVirtualObject) {
+                if (((FutureVirtualObject) cacheEntry).exception != null)
+                    throw ((FutureVirtualObject) cacheEntry).exception;
             }
         }
-        return (T) obj;
+        return (T) cacheEntry;
     }
 
-    public <T> T rawLoadFxml(String name, InputStream inputStream) throws IOException {
+    private <T> T rawLoadFxml(String name, InputStream inputStream) throws IOException {
         T result = loaderFactory.apply(name).load(inputStream);
         inputStream.close();
         return result;

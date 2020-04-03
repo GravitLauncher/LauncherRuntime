@@ -1,7 +1,6 @@
 package pro.gravit.launcher.client.gui.raw;
 
 import javafx.animation.FadeTransition;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,6 +14,7 @@ import javafx.util.Duration;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
@@ -32,7 +32,7 @@ public abstract class AbstractScene implements AllowDisable {
     private AbstractOverlay currentOverlay;
     AbstractStage currentStage;
 
-    public AbstractStage getCurrentStage() {
+    protected AbstractStage getCurrentStage() {
         return currentStage;
     }
 
@@ -53,7 +53,7 @@ public abstract class AbstractScene implements AllowDisable {
 
     protected abstract void doInit() throws Exception;
 
-    static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
+    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
         if (onFinished != null)
             fadeTransition.setOnFinished(onFinished);
@@ -110,8 +110,8 @@ public abstract class AbstractScene implements AllowDisable {
             root.requestFocus();
             root.getChildren().get(0).setEffect(new GaussianBlur(0));
             currentOverlayNode = null;
-            if(currentOverlay != null) currentOverlay.currentStage = null;
-            if(currentOverlay != null) currentOverlay.reset();
+            if (currentOverlay != null) currentOverlay.currentStage = null;
+            if (currentOverlay != null) currentOverlay.reset();
             currentOverlay = null;
             if (onFinished != null) {
                 onFinished.handle(e);
@@ -137,11 +137,7 @@ public abstract class AbstractScene implements AllowDisable {
         });
     }
 
-    public final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
-    }
-
-    public final <T extends WebSocketEvent> void processRequest(ObservableValue<String> message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+    protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
 
@@ -151,16 +147,10 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void disable() {
-
     }
 
     @Override
     public void enable() {
-
-    }
-
-    ContextHelper getContextHelper() {
-        return contextHelper;
     }
 
     public Scene getScene() {
@@ -168,8 +158,8 @@ public abstract class AbstractScene implements AllowDisable {
     }
 
     protected void sceneBaseInit(Node node) {
-        ((ButtonBase) node.lookup("#close")).setOnAction((e) -> currentStage.close());
-        ((ButtonBase) node.lookup("#hide")).setOnAction((e) -> currentStage.hide());
+        LookupHelper.<ButtonBase>lookup(node, "#close").setOnAction((e) -> currentStage.close());
+        LookupHelper.<ButtonBase>lookup(node, "#hide").setOnAction((e) -> currentStage.hide());
         currentStage.enableMouseDrag(node);
     }
 }

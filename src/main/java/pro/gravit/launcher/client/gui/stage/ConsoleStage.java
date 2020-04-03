@@ -6,7 +6,7 @@ import pro.gravit.launcher.client.gui.raw.AbstractStage;
 public class ConsoleStage extends AbstractStage {
     public ConsoleStage(JavaFXApplication application) {
         super(application.newStage());
-        stage.setTitle(application.config.projectName.concat(" Launcher Console"));
+        stage.setTitle(String.format("%s Launcher Console", application.config.projectName));
         stage.setResizable(false);
     }
 }
