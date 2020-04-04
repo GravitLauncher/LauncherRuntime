@@ -187,8 +187,13 @@ public class ServerMenuScene extends AbstractScene {
 
     private void updateSkinHead() throws IOException {
         PlayerProfile playerProfile = application.runtimeStateMachine.getPlayerProfile();
-        if (playerProfile == null || playerProfile.skin == null || playerProfile.skin.url == null)
+        if (playerProfile == null)
             return;
+        if(playerProfile.skin == null || playerProfile.skin.url == null)
+        {
+            LogHelper.debug("Skin not found");
+            return;
+        }
         String url = playerProfile.skin.url;
         BufferedImage image = downloadSkinHead(url);
         avatar.setImage(convertToFxImage(image));

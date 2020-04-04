@@ -92,15 +92,14 @@ public class LoginScene extends AbstractScene {
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
                 processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
                     this.auth = auth.list;
-                    int authIndex = 0;
-                    int i = 0;
+                    GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth = null;
                     for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
                         if (authAvailability.equals(application.runtimeSettings.lastAuth))
-                            authIndex = i;
+                            lastAuth = authAvailability;
                         authList.getItems().add(authAvailability);
-                        i++;
                     }
-                    authList.getSelectionModel().select(authIndex);
+                    if(lastAuth != null) authList.getSelectionModel().select(lastAuth);
+                    else authList.getSelectionModel().selectFirst();
                     hideOverlay(0, null);
                 }), null);
             }, (e) -> LauncherEngine.exitLauncher(0));
