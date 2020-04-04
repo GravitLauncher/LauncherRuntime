@@ -25,6 +25,7 @@ public class LoginScene extends AbstractScene {
     private TextField loginField;
     private TextField passwordField;
     private CheckBox savePasswordCheckBox;
+    private CheckBox autoenter;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
@@ -61,6 +62,11 @@ public class LoginScene extends AbstractScene {
             passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
             LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
         }
+        autoenter = ((CheckBox) layout.lookup("#autoenter"));
+        autoenter.setSelected(application.runtimeSettings.autoAuth);
+        autoenter.setOnAction((e) -> {
+            application.runtimeSettings.autoAuth = autoenter.isSelected();
+        });
         if (application.guiModuleConfig.createAccountURL != null)
             LookupHelper.<Hyperlink>lookup(layout, "#createAccount").setOnAction((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
@@ -100,7 +106,11 @@ public class LoginScene extends AbstractScene {
                     }
                     if(lastAuth != null) authList.getSelectionModel().select(lastAuth);
                     else authList.getSelectionModel().selectFirst();
-                    hideOverlay(0, null);
+
+                    hideOverlay(0, (e) -> {
+                        if(application.runtimeSettings.encryptedPassword != null && application.runtimeSettings.autoAuth)
+                            contextHelper.runCallback(this::loginWithGui).run();
+                    });
                 }), null);
             }, (e) -> LauncherEngine.exitLauncher(0));
         }

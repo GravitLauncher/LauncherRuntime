@@ -35,6 +35,9 @@ public class RuntimeSettings extends UserSettings {
     public byte[] encryptedPassword;
 
     @LauncherNetworkAPI
+    public boolean autoAuth;
+
+    @LauncherNetworkAPI
     public GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth;
 
     @LauncherNetworkAPI
@@ -60,6 +63,7 @@ public class RuntimeSettings extends UserSettings {
 
     public static RuntimeSettings getDefault() {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
+        runtimeSettings.autoAuth = false;
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
         runtimeSettings.autoEnter = false;
         runtimeSettings.fullScreen = false;
