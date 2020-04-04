@@ -22,7 +22,7 @@ public class JavaRuntimeModule extends LauncherModule {
     static LauncherEngine engine;
 
     public JavaRuntimeModule() {
-        super(new LauncherModuleInfo("StdJavaRuntime", new Version(1, 0, 0),
+        super(new LauncherModuleInfo("StdJavaRuntime", new Version(1, 0, 0,1, Version.Type.STABLE),
                 0, new String[]{}, new String[]{"runtime"}));
     }
 
