@@ -121,7 +121,7 @@ public class LoginScene extends AbstractScene {
                 throw new RuntimeException(e);
             }
         }
-        String authId = authList.getSelectionModel().getSelectedItem().name;
+        GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
         boolean savePassword = savePasswordCheckBox.isSelected();
         login(login, encryptedPassword, authId, savePassword);
     }
@@ -130,15 +130,16 @@ public class LoginScene extends AbstractScene {
         return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
 
-    private void login(String login, byte[] password, String authId, boolean savePassword) {
+    private void login(String login, byte[] password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, boolean savePassword) {
         isLoginStarted = true;
         LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
-        AuthRequest authRequest = new AuthRequest(login, password, authId);
+        AuthRequest authRequest = new AuthRequest(login, password, authId.name);
         processRequest(application.getTranslation("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
                 application.runtimeSettings.encryptedPassword = password;
+                application.runtimeSettings.lastAuth = authId;
             }
             onGetProfiles();
 

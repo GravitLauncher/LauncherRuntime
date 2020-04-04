@@ -182,7 +182,7 @@ public class ServerMenuScene extends AbstractScene {
             } catch (Throwable e) {
                 LogHelper.error(e);
             }
-        });
+        }).start();
     }
 
     private void updateSkinHead() throws IOException {
