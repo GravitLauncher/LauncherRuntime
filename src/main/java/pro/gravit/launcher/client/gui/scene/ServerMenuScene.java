@@ -239,7 +239,8 @@ public class ServerMenuScene extends AbstractScene {
         BufferedImage image = ImageIO.read(new URL(url));
         int width = image.getWidth();
         int renderScale = width / 64;
-        int offset = 4 * renderScale;
+        int offset = 8 * renderScale;
+        LogHelper.debug("ShinHead debug: W: %d Scale: %d Offset: %d", width, renderScale, offset);
         return image.getSubimage(offset, offset, offset, offset);
     }
 
