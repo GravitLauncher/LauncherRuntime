@@ -28,11 +28,9 @@ public class RuntimeSecurityService {
         this.application = application;
     }
 
-    public void startRequest() throws IOException
-    {
+    public void startRequest() throws IOException {
         application.service.request(new GetSecureLevelInfoRequest()).thenAccept((event) -> {
-            if(!event.enabled || event.verifySecureKey == null)
-            {
+            if (!event.enabled || event.verifySecureKey == null) {
                 LogHelper.info("Advanced security level disabled");
                 notifyWaitObject(false);
                 return;
@@ -40,10 +38,10 @@ public class RuntimeSecurityService {
             byte[] signature = sign(event.verifySecureKey);
             try {
                 application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
-                .thenAccept((event1) -> {
-                    LogHelper.info("Advanced security level success completed");
-                    notifyWaitObject(true);
-                }).exceptionally((e) -> {
+                        .thenAccept((event1) -> {
+                            LogHelper.info("Advanced security level success completed");
+                            notifyWaitObject(true);
+                        }).exceptionally((e) -> {
                     LogHelper.error(e);
                     notifyWaitObject(false);
                     return null;
@@ -58,24 +56,24 @@ public class RuntimeSecurityService {
             return null;
         });
     }
-    private void notifyWaitObject(boolean state)
-    {
-        synchronized (waitObject)
-        {
+
+    private void notifyWaitObject(boolean state) {
+        synchronized (waitObject) {
             waitObject[0] = state;
             waitObject.notifyAll();
         }
     }
+
     public boolean getSecurityState() throws InterruptedException {
-        synchronized (waitObject)
-        {
-            if(waitObject[0] == null)
+        synchronized (waitObject) {
+            if (waitObject[0] == null)
                 waitObject.wait(3000);
             return waitObject[0];
         }
     }
-    public static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
-    public static final Path C_BINARY_PATH = BINARY_PATH.getParent().resolve(IOHelper.getFileName(BINARY_PATH) + ".tmp");
+
+    private static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
+    private static final Path C_BINARY_PATH = BINARY_PATH.getParent().resolve(IOHelper.getFileName(BINARY_PATH) + ".tmp");
 
     public void update(LauncherRequestEvent result) throws IOException {
         List<String> args = new ArrayList<>(8);
@@ -101,8 +99,7 @@ public class RuntimeSecurityService {
                 Files.deleteIfExists(C_BINARY_PATH);
                 URL url = new URL(result.url);
                 URLConnection connection = url.openConnection();
-                try(InputStream in = connection.getInputStream())
-                {
+                try (InputStream in = connection.getInputStream()) {
                     IOHelper.transfer(in, C_BINARY_PATH);
                 }
                 try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
@@ -118,14 +115,13 @@ public class RuntimeSecurityService {
         // Kill current instance
         try {
             LauncherEngine.exitLauncher(0);
-        } catch (Throwable e)
-        {
+        } catch (Throwable e) {
             System.exit(0);
         }
         throw new AssertionError("Why Launcher wasn't restarted?!");
     }
-    public byte[] sign(byte[] data)
-    {
+
+    public byte[] sign(byte[] data) {
         return SecurityHelper.sign(data, JavaRuntimeModule.engine.privateKey);
     }
 }

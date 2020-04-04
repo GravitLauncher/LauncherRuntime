@@ -8,10 +8,7 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.NewLauncherSettings;
-import pro.gravit.launcher.client.DirBridge;
-import pro.gravit.launcher.client.GUIModuleConfig;
-import pro.gravit.launcher.client.RuntimeSecurityService;
-import pro.gravit.launcher.client.UserSettings;
+import pro.gravit.launcher.client.*;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
@@ -22,7 +19,6 @@ import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
-import pro.gravit.launcher.modules.events.ClosePhase;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
@@ -36,25 +32,22 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.net.URL;
-import java.nio.file.NoSuchFileException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
-    public NewLauncherSettings settings;
     public RuntimeSettings runtimeSettings;
     public final LauncherConfig config = Launcher.getConfig();
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
-    public GUIModuleConfig guiModuleConfig;
+    public GuiModuleConfig guiModuleConfig;
     public MessageManager messageManager;
-    public ResourceBundle resources;
+    private ResourceBundle resources;
     public RuntimeSecurityService securityService;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
@@ -69,7 +62,6 @@ public class JavaFXApplication extends Application {
         return mainStage;
     }
 
-    public ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(2);
     public final ExecutorService workers = Executors.newCachedThreadPool();
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
 
@@ -83,19 +75,19 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        guiModuleConfig = new GUIModuleConfig();
+        guiModuleConfig = new GuiModuleConfig();
         settingsManager = new StdSettingsManager();
-        UserSettings.providers.register("stdruntime", RuntimeSettings.class);
+        UserSettings.providers.register(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.class);
         settingsManager.loadConfig();
-        settings = settingsManager.getConfig();
-        if (settings.userSettings.get("stdruntime") == null)
-            settings.userSettings.put("stdruntime", RuntimeSettings.getDefault());
+        NewLauncherSettings settings = settingsManager.getConfig();
+        if (settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME) == null)
+            settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault());
         try {
             settingsManager.loadHDirStore();
         } catch (Exception e) {
             LogHelper.error(e);
         }
-        runtimeSettings = (RuntimeSettings) settings.userSettings.get("stdruntime");
+        runtimeSettings = (RuntimeSettings) settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME);
         runtimeSettings.apply();
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
         service = Request.service;
@@ -109,13 +101,14 @@ public class JavaFXApplication extends Application {
     @Override
     public void start(Stage stage) throws Exception {
         // System loading
-        if (runtimeSettings.locale == null) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
+        if (runtimeSettings.locale == null)
+            runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
         try (InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale.name))) {
             resources = new PropertyResourceBundle(input);
         }
         fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);
-        mainStage = new PrimaryStage(stage, config.projectName.concat(" Launcher"));
-        //Overlay loading
+        mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
+        // Overlay loading
         gui = new GuiObjectsContainer(this);
         gui.init();
         //
@@ -133,28 +126,27 @@ public class JavaFXApplication extends Application {
     }
 
     @Override
-    public void stop() throws Exception {
+    public void stop() {
         LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
     }
 
-    public InputStream getResource(String name) throws IOException {
+    private InputStream getResource(String name) throws IOException {
         return IOHelper.newInput(Launcher.getResourceURL(name));
     }
-    public URL tryResource(String name)
-    {
+
+    public URL tryResource(String name) {
         try {
             return Launcher.getResourceURL(name);
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             return null;
         }
 
     }
 
-    public FXMLLoader newFXMLLoader(String name) {
+    private FXMLLoader newFXMLLoader(String name) {
         FXMLLoader loader;
         try {
-            loader = new FXMLLoader(IOHelper.getResourceURL("runtime/".concat(name)));
+            loader = new FXMLLoader(IOHelper.getResourceURL(String.format("runtime/%s", name)));
             if (resources != null) {
                 loader.setResources(resources);
             }
@@ -166,7 +158,7 @@ public class JavaFXApplication extends Application {
         return loader;
     }
 
-    public <T> Future<T> queueFxml(String name) throws IOException {
+    private <T> Future<T> getFxmlAsync(String name) throws IOException {
         InputStream input = getResource(name);
         return fxmlProvider.queue(name, input);
     }
@@ -175,11 +167,12 @@ public class JavaFXApplication extends Application {
         return fxmlProvider.getFxml(name);
     }
 
-    public <T> Future<T> getNoCacheFxml(String name) throws IOException {
+    public <T> Future<T> getNonCachedFxmlAsync(String name) throws IOException {
         InputStream input = getResource(name);
         return fxmlProvider.queueNoCache(name, input);
     }
-    public <T> Future<T> getNoCacheFxml(String name, InputStream input) throws IOException {
+
+    public <T> Future<T> getNonCachedFxmlAsync(String name, InputStream input) throws IOException {
         return fxmlProvider.queueNoCache(name, input);
     }
 
@@ -197,20 +190,15 @@ public class JavaFXApplication extends Application {
         ret.setResizable(false);
         return ret;
     }
-    public final String getLangResource(String name)
-    {
-        return resources.getString(name);
+
+    public final String getTranslation(String name) {
+        return getTranslation(name, String.format("'%s'", name));
     }
-    public final String getLangString(String name, Object... args)
-    {
-        return String.format(resources.getString(name), args);
-    }
-    public final String getLangString(String key, String defaultValue)
-    {
+
+    public final String getTranslation(String key, String defaultValue) {
         try {
             return resources.getString(key);
-        } catch (Throwable e)
-        {
+        } catch (Throwable e) {
             return defaultValue;
         }
     }
@@ -219,20 +207,19 @@ public class JavaFXApplication extends Application {
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            queueFxml(instance.fxmlPath);
+            getFxmlAsync(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);
             throw new RuntimeException(e);
         }
     }
-    public boolean openURL(String url)
-    {
+
+    public boolean openURL(String url) {
         try {
             getHostServices().showDocument(url);
             return true;
-        } catch (Throwable e)
-        {
+        } catch (Throwable e) {
             LogHelper.error(e);
             return false;
         }
@@ -242,23 +229,21 @@ public class JavaFXApplication extends Application {
     public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            queueFxml(instance.fxmlPath);
+            getFxmlAsync(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);
             throw new RuntimeException(e);
         }
     }
-    public void saveSettings() throws IOException
-    {
+
+    public void saveSettings() throws IOException {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
-        if(gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null)
-        {
+        if (gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
             try {
                 gui.optionsScene.saveAll();
-            } catch (Throwable ex)
-            {
+            } catch (Throwable ex) {
                 LogHelper.error(ex);
             }
         }

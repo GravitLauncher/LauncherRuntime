@@ -9,51 +9,33 @@ public class LookupHelper {
         if (current == null) {
             throw new NullPointerException();
         }
-        for (String s : names) {
-            current = current.lookup(s);
+        for (String name : names) {
+            current = current.lookup(name);
             if (current == null) {
-                throw new LookupException(names, s);
+                throw new LookupException(names, name);
             }
         }
         return (T) current;
     }
 
     public static class LookupException extends RuntimeException {
-        public LookupException() {
-        }
 
         public LookupException(String[] stackName, String failName) {
             super(buildStack(stackName, failName));
         }
 
         private static String buildStack(String[] args, String failed) {
-            StringBuilder b = new StringBuilder("Lookup failed ");
-            boolean f = true;
-            for (String s : args) {
-                if (!f)
-                    b.append("->");
-                b.append(s);
-                if (!s.equals(failed))
-                    b.append("(E)");
-                f = false;
+            StringBuilder stringBuilder = new StringBuilder("Lookup failed ");
+            boolean first = true;
+            for (String argument : args) {
+                if (!first)
+                    stringBuilder.append("->");
+                stringBuilder.append(argument);
+                if (!argument.equals(failed))
+                    stringBuilder.append("(E)");
+                first = false;
             }
-            return b.toString();
-        }
-
-        public LookupException(String message) {
-            super(message);
-        }
-
-        public LookupException(String message, Throwable cause) {
-            super(message, cause);
-        }
-
-        public LookupException(Throwable cause) {
-            super(cause);
-        }
-
-        public LookupException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-            super(message, cause, enableSuppression, writableStackTrace);
+            return stringBuilder.toString();
         }
     }
 }

@@ -24,36 +24,27 @@ public class DialogCommand extends Command {
     @Override
     public void invoke(String... args) throws Exception {
         verifyArgs(args, 3);
-        boolean isDefault = args.length <= 3 || args[3].equals("default");
         boolean isLauncher = args.length <= 3 || args[3].equals("launcher");
         String header = args[0];
         String message = args[1];
         String dialogType = args[2];
-        if(dialogType.equals("dialog"))
-        {
-            messageManager.showDialog(header, message, () -> {
-                LogHelper.info("Dialog apply callback");
-            }, () -> {
-                LogHelper.info("Dialog cancel callback");
-            }, isLauncher);
-        }
-        else if(dialogType.equals("dialogApply"))
-        {
-            messageManager.showApplyDialog(header, message, () -> {
-                LogHelper.info("Dialog apply callback");
-            }, () -> {
-                LogHelper.info("Dialog deny callback");
-            }, () -> {
-                LogHelper.info("Dialog close callback");
-            }, isLauncher);
-        }
-        else if(dialogType.equals("dialogTextInput"))
-        {
-            messageManager.showTextDialog(header, (text) -> {
-                LogHelper.info("Dialog apply callback: %s", text);
-            }, () -> {
-                LogHelper.info("Dialog cancel callback");
-            }, isLauncher);
+        switch (dialogType) {
+            case "dialog":
+                messageManager.showDialog(header, message,
+                        () -> LogHelper.info("Dialog apply callback"),
+                        () -> LogHelper.info("Dialog cancel callback"), isLauncher);
+                break;
+            case "dialogApply":
+                messageManager.showApplyDialog(header, message,
+                        () -> LogHelper.info("Dialog apply callback"),
+                        () -> LogHelper.info("Dialog deny callback"),
+                        () -> LogHelper.info("Dialog close callback"), isLauncher);
+                break;
+            case "dialogTextInput":
+                messageManager.showTextDialog(header,
+                        (text) -> LogHelper.info("Dialog apply callback: %s", text),
+                        () -> LogHelper.info("Dialog cancel callback"), isLauncher);
+                break;
         }
     }
 }

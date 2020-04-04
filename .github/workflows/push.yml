@@ -6,7 +6,7 @@ on:
       - v*
 jobs:
   launcher:
-    name: Launcher
+    name: LauncherRuntime
     runs-on: ubuntu-latest
     steps:
     - name: Checkout

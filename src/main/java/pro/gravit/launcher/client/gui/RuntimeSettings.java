@@ -10,8 +10,7 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 public class RuntimeSettings extends UserSettings {
-    public enum LAUNCHER_LOCALE
-    {
+    public enum LAUNCHER_LOCALE {
         @LauncherNetworkAPI
         RUSSIAN("ru", "Русский"),
         @LauncherNetworkAPI
@@ -24,26 +23,38 @@ public class RuntimeSettings extends UserSettings {
             this.displayName = displayName;
         }
     }
+
     public static final LAUNCHER_LOCALE DEFAULT_LOCALE = LAUNCHER_LOCALE.RUSSIAN;
+
     public transient Path updatesDir;
+
     @LauncherNetworkAPI
     public String login;
+
     @LauncherNetworkAPI
     public byte[] encryptedPassword;
+
     @LauncherNetworkAPI
     public GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth;
+
     @LauncherNetworkAPI
     public String updatesDirPath;
+
     @LauncherNetworkAPI
     public boolean fullScreen;
+
     @LauncherNetworkAPI
     public boolean debug;
+
     @LauncherNetworkAPI
     public boolean autoEnter;
+
     @LauncherNetworkAPI
     public UUID lastProfile;
+
     @LauncherNetworkAPI
     public LAUNCHER_LOCALE locale;
+
     @LauncherNetworkAPI
     public int ram;
 

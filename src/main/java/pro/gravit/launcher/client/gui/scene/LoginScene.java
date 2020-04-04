@@ -20,9 +20,12 @@ import java.io.IOException;
 import java.util.List;
 
 public class LoginScene extends AbstractScene {
-    public List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
-    public Node layout;
-    public boolean isStartedLogin;
+    private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
+    public boolean isLoginStarted;
+    private TextField loginField;
+    private TextField passwordField;
+    private CheckBox savePasswordCheckBox;
+    private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
 
@@ -33,8 +36,9 @@ public class LoginScene extends AbstractScene {
 
         @Override
         public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String s) {
-            for (GetAvailabilityAuthRequestEvent.AuthAvailability a : auth)
-                if (a.displayName.equals(s)) return a;
+            for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth)
+                if (authAvailability.displayName.equals(s))
+                    return authAvailability;
             return null;
         }
     }
@@ -44,39 +48,32 @@ public class LoginScene extends AbstractScene {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public void doInit() {
-        layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#authPane");
+        Node layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#authPane");
         sceneBaseInit(layout);
-        TextField loginField = (TextField) layout.lookup("#login");
-        if (application.runtimeSettings.login != null) {
+        loginField = LookupHelper.lookup(layout, "#login");
+        if (application.runtimeSettings.login != null)
             loginField.setText(application.runtimeSettings.login);
-        }
-        TextField passwordField = (TextField) layout.lookup("#password");
+        passwordField = LookupHelper.lookup(layout, "#password");
+        savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
         if (application.runtimeSettings.encryptedPassword != null) {
             passwordField.getStyleClass().add("hasSaved");
-            passwordField.setPromptText(application.getLangResource("runtime.scenes.login.login.password.saved"));
-            ((CheckBox) layout.lookup("#savePassword")).setSelected(true);
+            passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
+            LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
         }
-        if(application.guiModuleConfig.createAccountURL != null)
-        {
-            ((Hyperlink)layout.lookup("#createAccount")).setOnAction((e) -> {
-                application.openURL(application.guiModuleConfig.createAccountURL);
-            });
-        }
-        if(application.guiModuleConfig.forgotPassURL != null)
-        {
-            ((Hyperlink)layout.lookup("#forgotPass")).setOnAction((e) -> {
-                application.openURL(application.guiModuleConfig.forgotPassURL);
-            });
-        }
-        ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability>) layout.lookup("#combologin");
+        if (application.guiModuleConfig.createAccountURL != null)
+            LookupHelper.<Hyperlink>lookup(layout, "#createAccount").setOnAction((e) ->
+                    application.openURL(application.guiModuleConfig.createAccountURL));
+        if (application.guiModuleConfig.forgotPassURL != null)
+            LookupHelper.<Hyperlink>lookup(layout, "#forgotPass").setOnAction((e) ->
+                    application.openURL(application.guiModuleConfig.forgotPassURL));
+        authList = LookupHelper.lookup(layout, "#combologin");
         authList.setConverter(new AuthConverter());
-        ((ButtonBase) layout.lookup("#goAuth")).setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
-        //Verify Launcher
+        LookupHelper.<ButtonBase>lookup(layout, "#goAuth").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
+        // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
-            processRequest(application.getLangResource("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
+            processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if (result.needUpdate) {
                     try {
                         application.securityService.update(result);
@@ -87,37 +84,33 @@ public class LoginScene extends AbstractScene {
                     }
                     try {
                         LauncherEngine.exitLauncher(0);
-                    } catch (Throwable e)
-                    {
+                    } catch (Throwable e) {
                         Platform.exit();
                     }
                 }
                 LogHelper.dev("Launcher update processed");
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
-                processRequest(application.getLangResource("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
+                processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
                     this.auth = auth.list;
-                    int authIndex = 0;
-                    int i = 0;
-                    for (GetAvailabilityAuthRequestEvent.AuthAvailability a : auth.list) {
-                        if (a.equals(application.runtimeSettings.lastAuth)) authIndex = i;
-                        authList.getItems().add(a);
-                        i++;
+                    GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth = null;
+                    for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
+                        if (authAvailability.equals(application.runtimeSettings.lastAuth))
+                            lastAuth = authAvailability;
+                        authList.getItems().add(authAvailability);
                     }
-                    authList.getSelectionModel().select(authIndex);
+                    if(lastAuth != null) authList.getSelectionModel().select(lastAuth);
+                    else authList.getSelectionModel().selectFirst();
                     hideOverlay(0, null);
                 }), null);
-            }, (e) -> {
-                LauncherEngine.exitLauncher(0);
-            });
+            }, (e) -> LauncherEngine.exitLauncher(0));
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public void loginWithGui() {
-        String login = ((TextField) layout.lookup("#login")).getText();
-        TextField passwordField = ((TextField) layout.lookup("#password"));
+    private void loginWithGui() {
+        String login = loginField.getText();
         byte[] encryptedPassword;
-        if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(application.getLangResource("runtime.scenes.login.login.password.saved"))) {
+        if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
+                application.getTranslation("runtime.scenes.login.login.password.saved"))) {
             encryptedPassword = application.runtimeSettings.encryptedPassword;
         } else {
             String password = passwordField.getText();
@@ -127,25 +120,25 @@ public class LoginScene extends AbstractScene {
                 throw new RuntimeException(e);
             }
         }
-        ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList = (ComboBox) layout.lookup("#combologin");
-        String auth_id = authList.getSelectionModel().getSelectedItem().name;
-        boolean savePassword = ((CheckBox) layout.lookup("#savePassword")).isSelected();
-        login(login, encryptedPassword, auth_id, savePassword);
+        GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
+        boolean savePassword = savePasswordCheckBox.isSelected();
+        login(login, encryptedPassword, authId, savePassword);
     }
 
-    public byte[] encryptPassword(String password) throws Exception {
+    private byte[] encryptPassword(String password) throws Exception {
         return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
 
-    public void login(String login, byte[] password, String auth_id, boolean savePassword) {
-        isStartedLogin = true;
-        LogHelper.dev("Auth with %s password ***** auth_id %s", login, auth_id);
-        AuthRequest authRequest = new AuthRequest(login, password, auth_id);
-        processRequest(application.getLangResource("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
+    private void login(String login, byte[] password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, boolean savePassword) {
+        isLoginStarted = true;
+        LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
+        AuthRequest authRequest = new AuthRequest(login, password, authId.name);
+        processRequest(application.getTranslation("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
                 application.runtimeSettings.encryptedPassword = password;
+                application.runtimeSettings.lastAuth = authId;
             }
             onGetProfiles();
 
@@ -153,35 +146,29 @@ public class LoginScene extends AbstractScene {
     }
 
     public void onGetProfiles() {
-        processRequest(application.getLangResource("runtime.overlay.processing.text.profiles"), new ProfilesRequest(), (profiles) -> {
+        processRequest(application.getTranslation("runtime.overlay.processing.text.profiles"), new ProfilesRequest(), (profiles) -> {
             application.runtimeStateMachine.setProfilesResult(profiles);
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();
-                if(application.gui.optionsScene != null)
-                {
+                if (application.gui.optionsScene != null) {
                     try {
                         application.gui.optionsScene.loadAll();
-                    } catch (Throwable ex)
-                    {
+                    } catch (Throwable ex) {
                         LogHelper.error(ex);
                     }
                 }
-                if(application.getCurrentScene() instanceof LoginScene)
-                {
-                    ((LoginScene) application.getCurrentScene()).isStartedLogin = false;
+                if (application.getCurrentScene() instanceof LoginScene) {
+                    ((LoginScene) application.getCurrentScene()).isLoginStarted = false;
                 }
                 application.setMainScene(application.gui.serverMenuScene);
             });
         }, null);
     }
 
-    public void clearPassword()
-    {
+    public void clearPassword() {
         application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.login = null;
-        TextField loginField = (TextField) layout.lookup("#login");
-        TextField passwordField = (TextField) layout.lookup("#password");
         passwordField.getStyleClass().removeAll("hasSaved");
         passwordField.setText("");
         loginField.setText("");

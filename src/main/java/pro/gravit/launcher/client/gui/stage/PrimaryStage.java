@@ -16,7 +16,7 @@ public class PrimaryStage extends AbstractStage {
         primaryStage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
-        //Icons
+        // Icons
         try {
             Image icon = new Image(IOHelper.getResourceURL("runtime/favicon.png").toString());
             stage.getIcons().add(icon);

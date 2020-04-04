@@ -19,7 +19,6 @@ public class GuiObjectsContainer {
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
-    public final ObjectContainer objects = new ObjectContainer();
 
     public GuiObjectsContainer(JavaFXApplication application) {
         this.application = application;

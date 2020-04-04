@@ -29,11 +29,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class OptionsScene extends AbstractScene {
-    public Node layout;
-    public Pane componentList;
+    private Pane componentList;
 
     public OptionsScene(JavaFXApplication application) {
         super("scenes/options/options.fxml", application);
@@ -41,10 +39,10 @@ public class OptionsScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        layout = LookupHelper.lookup(scene.getRoot(), "#optionsPane");
+        Node layout = LookupHelper.lookup(scene.getRoot(), "#optionsPane");
         sceneBaseInit(layout);
-        ((ButtonBase) layout.lookup("#apply")).setOnAction((e) -> contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run());
-        componentList = (Pane) ((ScrollPane) layout.lookup("#optionslist")).getContent();
+        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run());
+        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
     }
 
     public void reset() {
@@ -52,16 +50,18 @@ public class OptionsScene extends AbstractScene {
     }
 
     public void addProfileOptionals(ClientProfile profile) {
-        for (OptionalFile e : profile.getOptional()) {
-            e.clearAllWatchers();
-            if(!e.visible) continue;
-            Consumer<Boolean> setCheckBox = add(e.name, e.info, e.mark, e.subTreeLevel, (val) -> {
-                if (val)
-                    profile.markOptional(e);
-                else
-                    profile.unmarkOptional(e);
-            });
-            e.registerWatcher((o, b) -> setCheckBox.accept(b));
+        for (OptionalFile optionalFile : profile.getOptional()) {
+            optionalFile.clearAllWatchers();
+            if (!optionalFile.visible)
+                continue;
+            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, optionalFile.mark,
+                    optionalFile.subTreeLevel, (isSelected) -> {
+                        if (isSelected)
+                            profile.markOptional(optionalFile);
+                        else
+                            profile.unmarkOptional(optionalFile);
+                    });
+            optionalFile.registerWatcher((o, isSelected) -> setCheckBox.accept(isSelected));
 
         }
     }
@@ -82,23 +82,22 @@ public class OptionsScene extends AbstractScene {
         desc.getStyleClass().add("optDescription");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
         VBox.setMargin(container, new Insets(0, 0, 0, 50 * padding));
-        Consumer<Boolean> callback = checkBox::setSelected;
-        return callback;
+        return checkBox::setSelected;
     }
-    public static class OptionalListEntryPair
-    {
+
+    public static class OptionalListEntryPair {
         public OptionalType type;
         public String name;
         public boolean mark;
 
-        public OptionalListEntryPair(OptionalFile f) {
-            type = f.type;
-            name = f.name;
-            mark = f.mark;
+        public OptionalListEntryPair(OptionalFile optionalFile) {
+            type = optionalFile.type;
+            name = optionalFile.name;
+            mark = optionalFile.mark;
         }
     }
-    public static class OptionalListEntry
-    {
+
+    public static class OptionalListEntry {
         public List<OptionalListEntryPair> enabled = new LinkedList<>();
         public String name;
         public UUID profileUUID;
@@ -117,67 +116,63 @@ public class OptionsScene extends AbstractScene {
             return Objects.hash(name, profileUUID);
         }
     }
-    public void saveAll() throws IOException
-    {
+
+    public void saveAll() throws IOException {
         List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
-        if(profiles == null) return;
+        if (profiles == null)
+            return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
         List<OptionalListEntry> list = new ArrayList<>(5);
-        for(ClientProfile p : profiles)
-        {
+        for (ClientProfile clientProfile : profiles) {
             OptionalListEntry entry = new OptionalListEntry();
-            entry.name = p.getTitle();
-            entry.profileUUID = p.getUUID();
-            for(OptionalFile f : p.getOptional())
-            {
-                if(f.visible)
-                    entry.enabled.add(new OptionalListEntryPair(f));
+            entry.name = clientProfile.getTitle();
+            entry.profileUUID = clientProfile.getUUID();
+            for (OptionalFile optionalFile : clientProfile.getOptional()) {
+                if (optionalFile.visible)
+                    entry.enabled.add(new OptionalListEntryPair(optionalFile));
             }
             list.add(entry);
         }
-        try(Writer writer = IOHelper.newWriter(optionsFile))
-        {
+        try (Writer writer = IOHelper.newWriter(optionsFile)) {
             Launcher.gsonManager.gson.toJson(list, writer);
         }
     }
-    public void loadAll() throws IOException
-    {
+
+    public void loadAll() throws IOException {
         List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
-        if(profiles == null) return;
+        if (profiles == null)
+            return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
-        if(!Files.exists(optionsFile)) return;
-        Type collectionType = new TypeToken<List<OptionalListEntry>>() {}.getType();
-        try(Reader reader = IOHelper.newReader(optionsFile))
-        {
+        if (!Files.exists(optionsFile))
+            return;
+
+        Type collectionType = new TypeToken<List<OptionalListEntry>>() {
+        }.getType();
+
+        try (Reader reader = IOHelper.newReader(optionsFile)) {
             List<OptionalListEntry> list = Launcher.gsonManager.gson.fromJson(reader, collectionType);
-            for(OptionalListEntry e : list)
-            {
-                ClientProfile profile = null;
-                for(ClientProfile p : profiles)
-                {
-                    if(e.profileUUID != null ? e.profileUUID.equals(p.getUUID()) : p.getTitle().equals(e.name))
-                        profile = p;
+            for (OptionalListEntry entry : list) {
+                ClientProfile selectedProfile = null;
+                for (ClientProfile clientProfile : profiles) {
+                    if (entry.profileUUID != null ? entry.profileUUID.equals(clientProfile.getUUID()) : clientProfile.getTitle().equals(entry.name))
+                        selectedProfile = clientProfile;
                 }
-                if(profile == null)
-                {
-                    LogHelper.warning("Optional: profile %s(%s) not found", e.name, e.profileUUID);
+                if (selectedProfile == null) {
+                    LogHelper.warning("Optional: profile %s(%s) not found", entry.name, entry.profileUUID);
                     continue;
                 }
-                //
-                for(OptionalListEntryPair f : e.enabled)
-                {
+
+                for (OptionalListEntryPair entryPair : entry.enabled) {
                     try {
-                        OptionalFile file = profile.getOptionalFile(f.name, f.type);
-                        if(file.visible)
-                        {
-                            if(f.mark)
-                                profile.markOptional(file);
+                        OptionalFile file = selectedProfile.getOptionalFile(entryPair.name, entryPair.type);
+                        if (file.visible) {
+                            if (entryPair.mark)
+                                selectedProfile.markOptional(file);
                             else
-                                profile.unmarkOptional(file);
+                                selectedProfile.unmarkOptional(file);
                         }
-                    } catch (Exception exc)
-                    {
-                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed", profile.getTitle(), f.name);
+                    } catch (Exception exc) {
+                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed", selectedProfile.getTitle(), entryPair.name);
                     }
                 }
             }

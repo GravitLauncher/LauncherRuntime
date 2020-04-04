@@ -18,52 +18,46 @@ public class RuntimeStateMachine {
 
     public void setAuthResult(AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if (rawAuthResult.session != 0) Request.setSession(rawAuthResult.session);
+        if (rawAuthResult.session != 0)
+            Request.setSession(rawAuthResult.session);
     }
 
     public void setProfilesResult(ProfilesRequestEvent rawProfilesResult) {
         this.profiles = rawProfilesResult.profiles;
         this.profiles.sort(ClientProfile::compareTo);
-        for(ClientProfile prof : this.profiles)
-        {
-            for(OptionalFile opt : prof.getOptional())
-            {
-                if(opt.triggers == null) continue;
+        for (ClientProfile profile : this.profiles) {
+            for (OptionalFile optionalFile : profile.getOptional()) {
+                if (optionalFile.triggers == null)
+                    continue;
+
                 boolean anyTriggered = false;
                 boolean anyNeed = false;
                 boolean allNeedTriggered = false;
-                for(OptionalTrigger trigger : opt.triggers)
-                {
+
+                for (OptionalTrigger trigger : optionalFile.triggers) {
                     boolean isTriggered = trigger.isTriggered();
-                    if(isTriggered) anyTriggered = true;
-                    if(trigger.need)
-                    {
-                        if(!anyNeed)
-                        {
+                    if (isTriggered)
+                        anyTriggered = true;
+                    if (trigger.need) {
+                        if (!anyNeed) {
                             anyNeed = true;
                             allNeedTriggered = isTriggered;
-                        }
-                        else
-                        {
-                            if(allNeedTriggered) allNeedTriggered = isTriggered;
+                        } else {
+                            if (allNeedTriggered)
+                                allNeedTriggered = isTriggered;
                         }
                     }
                 }
-                if(!anyNeed)
-                {
-                    if(anyTriggered)
-                        prof.markOptional(opt);
-                }
-                else
-                {
-                    if(allNeedTriggered)
-                    {
-                        prof.markOptional(opt);
-                    }
-                    else
-                    {
-                        opt.visible = false;
-                        prof.unmarkOptional(opt);
+
+                if (!anyNeed) {
+                    if (anyTriggered)
+                        profile.markOptional(optionalFile);
+                } else {
+                    if (allNeedTriggered) {
+                        profile.markOptional(optionalFile);
+                    } else {
+                        optionalFile.visible = false;
+                        profile.unmarkOptional(optionalFile);
                     }
                 }
             }
@@ -71,7 +65,8 @@ public class RuntimeStateMachine {
     }
 
     public String getUsername() {
-        if (rawAuthResult == null || rawAuthResult.playerProfile == null) return "Player";
+        if (rawAuthResult == null || rawAuthResult.playerProfile == null)
+            return "Player";
         return rawAuthResult.playerProfile.username;
     }
 
@@ -88,17 +83,18 @@ public class RuntimeStateMachine {
     }
 
     public PlayerProfile getPlayerProfile() {
-        if (rawAuthResult == null) return null;
+        if (rawAuthResult == null)
+            return null;
         return rawAuthResult.playerProfile;
     }
 
     public String getAccessToken() {
-        if (rawAuthResult == null) return null;
+        if (rawAuthResult == null)
+            return null;
         return rawAuthResult.accessToken;
     }
 
-    public void exit()
-    {
+    public void exit() {
         rawAuthResult = null;
         profile = null;
     }
