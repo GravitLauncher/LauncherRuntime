@@ -17,12 +17,11 @@ import javax.swing.*;
 public class JavaRuntimeModule extends LauncherModule {
 
     public final static String RUNTIME_NAME = "stdruntime";
-
-    private RuntimeProvider provider;
     static LauncherEngine engine;
+    private RuntimeProvider provider;
 
     public JavaRuntimeModule() {
-        super(new LauncherModuleInfo("StdJavaRuntime", new Version(1, 0, 0,1, Version.Type.STABLE),
+        super(new LauncherModuleInfo("StdJavaRuntime", new Version(1, 0, 0, 1, Version.Type.STABLE),
                 0, new String[]{}, new String[]{"runtime"}));
     }
 

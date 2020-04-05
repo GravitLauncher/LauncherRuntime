@@ -21,9 +21,9 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MessageManager {
+    public final JavaFXApplication application;
     private final AtomicInteger count = new AtomicInteger(0);
     private final AtomicInteger localCount = new AtomicInteger(0);
-    public final JavaFXApplication application;
 
     public MessageManager(JavaFXApplication application) {
         this.application = application;

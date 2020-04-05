@@ -33,17 +33,16 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class UpdateOverlay extends AbstractOverlay {
+    private final AtomicLong totalDownloaded = new AtomicLong(0);
+    private final AtomicLong lastUpdateTime = new AtomicLong(0);
+    private final AtomicLong lastDownloaded = new AtomicLong(0);
     private ProgressBar progressBar;
     private Circle[] phases;
     private Label speed;
     private Label volume;
     private TextArea logOutput;
     private Text currentStatus;
-
     private long totalSize;
-    private final AtomicLong totalDownloaded = new AtomicLong(0);
-    private final AtomicLong lastUpdateTime = new AtomicLong(0);
-    private final AtomicLong lastDownloaded = new AtomicLong(0);
     private int currentPhase = 0;
     private double phaseOffset;
     private double progressRatio = 1.0;

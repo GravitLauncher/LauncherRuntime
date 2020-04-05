@@ -16,8 +16,8 @@
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8"
-      xmlns:fx="http://javafx.com/fxml/1">
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="overlay" prefHeight="500.0" prefWidth="900.0"
+      xmlns="http://javafx.com/javafx/8">
     <stylesheets>
         <URL value="@update.css"/>
         <URL value="@../../global.css"/>
@@ -28,7 +28,7 @@
             <Font size="18.0"/>
         </font>
         <cursor>
-      <Cursor fx:constant="NONE"/>
+            <Cursor fx:constant="NONE"/>
         </cursor>
     </Label>
     <ProgressBar id="progress" layoutX="112.0" layoutY="244.0" prefHeight="12.0" prefWidth="675.0" progress="0.0"/>
@@ -45,40 +45,40 @@
     <Text id="headingUpdate" layoutX="107.0" layoutY="182.0" strokeType="OUTSIDE" strokeWidth="0.0"
           text="%runtime.overlay.update.update.headingUpdate" wrappingWidth="435.7734069824219">
         <cursor>
-          <Cursor fx:constant="NONE"/>
+            <Cursor fx:constant="NONE"/>
         </cursor>
     </Text>
     <Label id="volume" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="471.0" layoutY="177.0" prefHeight="27.0"
            prefWidth="319.0" textAlignment="RIGHT" textFill="#b3b8d5">
         <font>
-          <Font size="18.0"/>
+            <Font size="18.0"/>
         </font>
         <cursor>
-          <Cursor fx:constant="NONE"/>
+            <Cursor fx:constant="NONE"/>
         </cursor>
     </Label>
     <TextArea id="outputUpdate" editable="false" layoutX="107.0" layoutY="290.0" prefHeight="210.0" prefWidth="688.0">
         <padding>
-          <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
+            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0"/>
         </padding>
     </TextArea>
     <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="785.0" layoutY="31.0" prefHeight="40.0"
             prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
         <graphic>
-          <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;"/>
+            <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;"/>
         </graphic>
         <tooltip>
-          <Tooltip id="hideTooltip" text="%runtime.overlay.update.update.hideTooltip"/>
+            <Tooltip id="hideTooltip" text="%runtime.overlay.update.update.hideTooltip"/>
         </tooltip>
     </Button>
     <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="829.0" layoutY="31.0" prefHeight="40.0"
             prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
         <graphic>
-          <SVGPath id="icons"
-                   content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;"/>
+            <SVGPath id="icons"
+                     content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;"/>
         </graphic>
         <tooltip>
-          <Tooltip id="closeTooltip" text="%runtime.overlay.update.update.closeTooltip"/>
+            <Tooltip id="closeTooltip" text="%runtime.overlay.update.update.closeTooltip"/>
         </tooltip>
     </Button>
 </Pane>

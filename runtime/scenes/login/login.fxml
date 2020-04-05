@@ -19,96 +19,117 @@
 
 <!-- DrLeonardo Design for ShadowsProject-->
 
-<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<Pane xmlns:fx="http://javafx.com/fxml/1" fx:id="loginPane" prefHeight="500.0" prefWidth="900.0"
+      xmlns="http://javafx.com/javafx/8.0.171">
     <stylesheets>
-        <URL value="@login.css" />
-        <URL value="@../../global.css" />
+        <URL value="@login.css"/>
+        <URL value="@../../global.css"/>
     </stylesheets>
     <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0">
         <Pane fx:id="authPane" prefHeight="500.0" prefWidth="900.0" styleClass="loginPane">
-            <Button id="goAuth" defaultButton="true" layoutX="303.0" layoutY="258.0" prefHeight="108.0" prefWidth="97.0" styleClass="auth" text="%runtime.scenes.login.login.goAuth" textFill="WHITE">
+            <Button id="goAuth" defaultButton="true" layoutX="303.0" layoutY="258.0" prefHeight="108.0" prefWidth="97.0"
+                    styleClass="auth" text="%runtime.scenes.login.login.goAuth" textFill="WHITE">
                 <font>
-                    <Font name="System Bold" size="32.0" />
+                    <Font name="System Bold" size="32.0"/>
                 </font>
             </Button>
-            <TextField id="login" layoutX="80.0" layoutY="233.0" prefHeight="45.0" prefWidth="280.0" promptText="%runtime.scenes.login.login.login" styleClass="loginInput">
+            <TextField id="login" layoutX="80.0" layoutY="233.0" prefHeight="45.0" prefWidth="280.0"
+                       promptText="%runtime.scenes.login.login.login" styleClass="loginInput">
                 <font>
-                    <Font size="16.0" />
+                    <Font size="16.0"/>
                 </font>
             </TextField>
-            <PasswordField id="password" layoutX="79.0" layoutY="289.0" prefHeight="45.0" prefWidth="218.0" promptText="%runtime.scenes.login.login.password" styleClass="passwordInput">
+            <PasswordField id="password" layoutX="79.0" layoutY="289.0" prefHeight="45.0" prefWidth="218.0"
+                           promptText="%runtime.scenes.login.login.password" styleClass="passwordInput">
                 <font>
-                    <Font size="16.0" />
+                    <Font size="16.0"/>
                 </font>
             </PasswordField>
-            <ComboBox id="combologin" fx:id="authOptions" layoutX="78.0" layoutY="345.0" prefWidth="150.0" promptText="%runtime.scenes.login.login.combologin">
+            <ComboBox id="combologin" fx:id="authOptions" layoutX="78.0" layoutY="345.0" prefWidth="150.0"
+                      promptText="%runtime.scenes.login.login.combologin">
                 <styleClass>
-                    <String fx:value="combologin" />
-                    <String fx:value="combologin-popup" />
+                    <String fx:value="combologin"/>
+                    <String fx:value="combologin-popup"/>
                 </styleClass>
             </ComboBox>
-            <CheckBox id="autoenter" layoutX="79.0" layoutY="449.0" prefHeight="20.0" prefWidth="205.0" text="%runtime.scenes.login.login.autoenter" textFill="#dadada">
+            <CheckBox id="autoenter" layoutX="79.0" layoutY="449.0" prefHeight="20.0" prefWidth="205.0"
+                      text="%runtime.scenes.login.login.autoenter" textFill="#dadada">
                 <opaqueInsets>
-                    <Insets />
+                    <Insets/>
                 </opaqueInsets>
                 <padding>
-                    <Insets left="5.0" />
+                    <Insets left="5.0"/>
                 </padding>
             </CheckBox>
-            <CheckBox id="savePassword" layoutX="79.0" layoutY="425.0" prefHeight="20.0" prefWidth="154.0" text="%runtime.scenes.login.login.savePassword" textFill="#dadada">
+            <CheckBox id="savePassword" layoutX="79.0" layoutY="425.0" prefHeight="20.0" prefWidth="154.0"
+                      text="%runtime.scenes.login.login.savePassword" textFill="#dadada">
                 <opaqueInsets>
-                    <Insets bottom="10.0" left="10.0" />
+                    <Insets bottom="10.0" left="10.0"/>
                 </opaqueInsets>
                 <padding>
-                    <Insets left="5.0" />
+                    <Insets left="5.0"/>
                 </padding>
             </CheckBox>
-            <Hyperlink id="createAccount" focusTraversable="false" layoutX="469.0" layoutY="31.0" prefHeight="28.0" prefWidth="296.0" text="%runtime.scenes.login.login.createAccount" textAlignment="CENTER">
+            <Hyperlink id="createAccount" focusTraversable="false" layoutX="469.0" layoutY="31.0" prefHeight="28.0"
+                       prefWidth="296.0" text="%runtime.scenes.login.login.createAccount" textAlignment="CENTER">
                 <font>
-                    <Font size="11.0" />
+                    <Font size="11.0"/>
                 </font>
                 <cursor>
-                    <Cursor fx:constant="OPEN_HAND" />
+                    <Cursor fx:constant="OPEN_HAND"/>
                 </cursor>
             </Hyperlink>
-            <Hyperlink id="forgotPass" alignment="CENTER_RIGHT" focusTraversable="false" layoutX="208.0" layoutY="390.0" prefHeight="22.0" prefWidth="182.0" text="%runtime.scenes.login.login.forgotPass" textAlignment="CENTER">
+            <Hyperlink id="forgotPass" alignment="CENTER_RIGHT" focusTraversable="false" layoutX="208.0" layoutY="390.0"
+                       prefHeight="22.0" prefWidth="182.0" text="%runtime.scenes.login.login.forgotPass"
+                       textAlignment="CENTER">
                 <font>
-                    <Font size="11.0" />
+                    <Font size="11.0"/>
                 </font>
                 <cursor>
-                    <Cursor fx:constant="OPEN_HAND" />
+                    <Cursor fx:constant="OPEN_HAND"/>
                 </cursor>
             </Hyperlink>
-            <Text id="textLogin" fill="WHITE" layoutX="474.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.login.login.textLogin" wrappingWidth="295.9999973028898" />
+            <Text id="textLogin" fill="WHITE" layoutX="474.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0"
+                  text="%runtime.scenes.login.login.textLogin" wrappingWidth="295.9999973028898"/>
             <ScrollPane id="scroll-pane" layoutX="470.0" layoutY="71.0" prefHeight="431.0" prefWidth="431.0">
                 <opaqueInsets>
-                    <Insets />
+                    <Insets/>
                 </opaqueInsets>
                 <padding>
-                    <Insets bottom="5.0" top="5.0" />
+                    <Insets bottom="5.0" top="5.0"/>
                 </padding>
-                <Text id="newsArea" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="410.13671875" />
+                <Text id="newsArea" fontSmoothingType="LCD" strokeType="OUTSIDE" strokeWidth="0.0"
+                      wrappingWidth="410.13671875"/>
             </ScrollPane>
-            <SVGPath id="logo" content="M0 40.8153L73.9399 0L94.618 12.4627L23.4979 53.5896V113.41L72.6867 140.517L123.129 113.41V53.5896L108.09 47.3582L60.1545 76.0224V89.1082L74.5665 97.5205V84.7463L108.09 64.4944V103.752L72.6867 125.562L37.2833 103.752V62.3134L108.09 21.1866L146 40.8153L144.747 125.562L72.6867 167L0 125.562V40.8153Z" layoutX="135.0" layoutY="59.0" />
-            <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="794.0" layoutY="16.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
+            <SVGPath id="logo"
+                     content="M0 40.8153L73.9399 0L94.618 12.4627L23.4979 53.5896V113.41L72.6867 140.517L123.129 113.41V53.5896L108.09 47.3582L60.1545 76.0224V89.1082L74.5665 97.5205V84.7463L108.09 64.4944V103.752L72.6867 125.562L37.2833 103.752V62.3134L108.09 21.1866L146 40.8153L144.747 125.562L72.6867 167L0 125.562V40.8153Z"
+                     layoutX="135.0" layoutY="59.0"/>
+            <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="794.0" layoutY="16.0"
+                    prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
                 <graphic>
-                    <SVGPath id="iconsLogin" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;" />
+                    <SVGPath id="iconsLogin" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;"/>
                 </graphic>
                 <tooltip>
-                    <Tooltip id="hideTooltip" text="%runtime.scenes.login.login.hideTooltip" />
+                    <Tooltip id="hideTooltip" text="%runtime.scenes.login.login.hideTooltip"/>
                 </tooltip>
             </Button>
-            <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="838.0" layoutY="16.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+            <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="838.0" layoutY="16.0"
+                    prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
                 <graphic>
-                    <SVGPath id="iconsLogin" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+                    <SVGPath id="iconsLogin"
+                             content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;"/>
                 </graphic>
                 <tooltip>
-                    <Tooltip id="closeTooltip" text="%runtime.scenes.login.login.closeTooltip" />
+                    <Tooltip id="closeTooltip" text="%runtime.scenes.login.login.closeTooltip"/>
                 </tooltip>
             </Button>
-            <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="33.0" layoutY="42.0" />
-            <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="327.0" layoutY="120.0" />
+            <SVGPath
+                    content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;"
+                    fill="#323232" layoutX="33.0" layoutY="42.0"/>
+            <SVGPath
+                    content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;"
+                    fill="#323232" layoutX="327.0" layoutY="120.0"/>
         </Pane>
     </Pane>
-    <Pane id="blur" layoutY="1.0" opacity="0.0" prefHeight="500.0" prefWidth="900.0" visible="false" />
+    <Pane id="blur" layoutY="1.0" opacity="0.0" prefHeight="500.0" prefWidth="900.0" visible="false"/>
 </Pane>

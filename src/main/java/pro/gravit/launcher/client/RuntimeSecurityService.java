@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RuntimeSecurityService {
+    private static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
+    private static final Path C_BINARY_PATH = BINARY_PATH.getParent().resolve(IOHelper.getFileName(BINARY_PATH) + ".tmp");
     private final JavaFXApplication application;
     private final Boolean[] waitObject = new Boolean[]{null};
 
@@ -71,9 +73,6 @@ public class RuntimeSecurityService {
             return waitObject[0];
         }
     }
-
-    private static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
-    private static final Path C_BINARY_PATH = BINARY_PATH.getParent().resolve(IOHelper.getFileName(BINARY_PATH) + ".tmp");
 
     public void update(LauncherRequestEvent result) throws IOException {
         List<String> args = new ArrayList<>(8);

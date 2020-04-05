@@ -10,8 +10,14 @@ public class ContextHelper {
         this.scene = scene;
     }
 
-    public interface GuiExceptionCallback {
-        void call() throws Throwable;
+    public static void runInFxThreadStatic(GuiExceptionCallback callback) {
+        Platform.runLater(() -> {
+            try {
+                callback.call();
+            } catch (Throwable ex) {
+                LogHelper.error(ex);
+            }
+        });
     }
 
     public final Runnable runCallback(GuiExceptionCallback callback) {
@@ -34,16 +40,6 @@ public class ContextHelper {
         });
     }
 
-    public static void runInFxThreadStatic(GuiExceptionCallback callback) {
-        Platform.runLater(() -> {
-            try {
-                callback.call();
-            } catch (Throwable ex) {
-                LogHelper.error(ex);
-            }
-        });
-    }
-
     final void errorHandling(Throwable e) {
         LogHelper.error(e);
         if (scene != null) {
@@ -53,5 +49,9 @@ public class ContextHelper {
                 scene.hideOverlay(2000, null);
             }
         }
+    }
+
+    public interface GuiExceptionCallback {
+        void call() throws Throwable;
     }
 }

@@ -9,9 +9,9 @@ import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import java.io.IOException;
 
 public abstract class AbstractOverlay implements AllowDisable {
+    public final String fxmlPath;
     protected final JavaFXApplication application;
     protected AbstractStage currentStage;
-    public final String fxmlPath;
     protected Pane pane;
     boolean isInit;
 
