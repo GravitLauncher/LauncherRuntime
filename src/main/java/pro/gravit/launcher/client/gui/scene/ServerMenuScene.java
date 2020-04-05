@@ -8,7 +8,9 @@ import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
-import javafx.scene.image.*;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -32,11 +34,12 @@ import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
-import sun.awt.image.IntegerComponentRaster;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.SinglePixelPackedSampleModel;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.URL;
@@ -57,6 +60,40 @@ public class ServerMenuScene extends AbstractScene {
 
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
+    }
+
+    private static Image convertToFxImage(BufferedImage image) {
+        if (JVMHelper.JVM_VERSION >= 9) {
+            return SwingFXUtils.toFXImage(image, null);
+        } else {
+            return convertToFxImageJava8(image);
+        }
+    }
+
+    private static Image convertToFxImageJava8(BufferedImage image) {
+        int bw = image.getWidth();
+        int bh = image.getHeight();
+        switch (image.getType()) {
+            case BufferedImage.TYPE_INT_ARGB:
+            case BufferedImage.TYPE_INT_ARGB_PRE:
+                break;
+            default:
+                BufferedImage converted = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB_PRE);
+                Graphics2D graphics2D = converted.createGraphics();
+                graphics2D.drawImage(image, 0, 0, null);
+                graphics2D.dispose();
+                image = converted;
+                break;
+        }
+        WritableImage writableImage = new WritableImage(bw, bh);
+        DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
+        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel
+                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
+        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ?
+                PixelFormat.getIntArgbPreInstance() :
+                PixelFormat.getIntArgbInstance();
+        writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
+        return writableImage;
     }
 
     @Override
@@ -189,50 +226,13 @@ public class ServerMenuScene extends AbstractScene {
         PlayerProfile playerProfile = application.runtimeStateMachine.getPlayerProfile();
         if (playerProfile == null)
             return;
-        if(playerProfile.skin == null || playerProfile.skin.url == null)
-        {
+        if (playerProfile.skin == null || playerProfile.skin.url == null) {
             LogHelper.debug("Skin not found");
             return;
         }
         String url = playerProfile.skin.url;
         BufferedImage image = downloadSkinHead(url);
         avatar.setImage(convertToFxImage(image));
-    }
-
-    private static Image convertToFxImage(BufferedImage image) {
-        if (JVMHelper.JVM_VERSION >= 9) {
-            return SwingFXUtils.toFXImage(image, null);
-        } else {
-            return convertToFxImageJava8(image);
-        }
-    }
-
-    private static Image convertToFxImageJava8(BufferedImage image) {
-        int bw = image.getWidth();
-        int bh = image.getHeight();
-        switch (image.getType()) {
-            case BufferedImage.TYPE_INT_ARGB:
-            case BufferedImage.TYPE_INT_ARGB_PRE:
-                break;
-            default:
-                BufferedImage converted = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB_PRE);
-                Graphics2D graphics2D = converted.createGraphics();
-                graphics2D.drawImage(image, 0, 0, null);
-                graphics2D.dispose();
-                image = converted;
-                break;
-        }
-        WritableImage writableImage = new WritableImage(bw, bh);
-        PixelWriter pixelWriter = writableImage.getPixelWriter();
-        IntegerComponentRaster integerComponentRaster = (IntegerComponentRaster) image.getRaster();
-        int[] data = integerComponentRaster.getDataStorage();
-        int offset = integerComponentRaster.getDataOffset(0);
-        int scan = integerComponentRaster.getScanlineStride();
-        PixelFormat<IntBuffer> pf = (image.isAlphaPremultiplied() ?
-                PixelFormat.getIntArgbPreInstance() :
-                PixelFormat.getIntArgbInstance());
-        pixelWriter.setPixels(0, 0, bw, bh, pf, data, offset, scan);
-        return writableImage;
     }
 
     private BufferedImage downloadSkinHead(String url) throws IOException {

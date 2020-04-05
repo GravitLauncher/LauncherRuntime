@@ -10,54 +10,28 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 public class RuntimeSettings extends UserSettings {
-    public enum LAUNCHER_LOCALE {
-        @LauncherNetworkAPI
-        RUSSIAN("ru", "Русский"),
-        @LauncherNetworkAPI
-        ENGLISH("en", "English");
-        public final String name;
-        public final String displayName;
-
-        LAUNCHER_LOCALE(String name, String displayName) {
-            this.name = name;
-            this.displayName = displayName;
-        }
-    }
-
     public static final LAUNCHER_LOCALE DEFAULT_LOCALE = LAUNCHER_LOCALE.RUSSIAN;
-
     public transient Path updatesDir;
-
     @LauncherNetworkAPI
     public String login;
-
     @LauncherNetworkAPI
     public byte[] encryptedPassword;
-
     @LauncherNetworkAPI
     public boolean autoAuth;
-
     @LauncherNetworkAPI
     public GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth;
-
     @LauncherNetworkAPI
     public String updatesDirPath;
-
     @LauncherNetworkAPI
     public boolean fullScreen;
-
     @LauncherNetworkAPI
     public boolean debug;
-
     @LauncherNetworkAPI
     public boolean autoEnter;
-
     @LauncherNetworkAPI
     public UUID lastProfile;
-
     @LauncherNetworkAPI
     public LAUNCHER_LOCALE locale;
-
     @LauncherNetworkAPI
     public int ram;
 
@@ -75,5 +49,19 @@ public class RuntimeSettings extends UserSettings {
     public void apply() {
         if (updatesDirPath != null)
             updatesDir = Paths.get(updatesDirPath);
+    }
+
+    public enum LAUNCHER_LOCALE {
+        @LauncherNetworkAPI
+        RUSSIAN("ru", "Русский"),
+        @LauncherNetworkAPI
+        ENGLISH("en", "English");
+        public final String name;
+        public final String displayName;
+
+        LAUNCHER_LOCALE(String name, String displayName) {
+            this.name = name;
+            this.displayName = displayName;
+        }
     }
 }

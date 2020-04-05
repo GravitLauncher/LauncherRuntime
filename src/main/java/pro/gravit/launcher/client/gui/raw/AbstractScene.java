@@ -23,24 +23,34 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
-    protected Scene scene;
-    protected final JavaFXApplication application;
     public final String fxmlPath;
+    protected final JavaFXApplication application;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
+    protected Scene scene;
+    AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
-    AbstractStage currentStage;
-
-    protected AbstractStage getCurrentStage() {
-        return currentStage;
-    }
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         this.fxmlPath = fxmlPath;
         this.application = application;
         this.launcherConfig = Launcher.getConfig();
         this.contextHelper = new ContextHelper(this);
+    }
+
+    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
+        if (onFinished != null)
+            fadeTransition.setOnFinished(onFinished);
+        fadeTransition.setDelay(Duration.millis(delay));
+        fadeTransition.setFromValue(from);
+        fadeTransition.setToValue(to);
+        fadeTransition.play();
+    }
+
+    protected AbstractStage getCurrentStage() {
+        return currentStage;
     }
 
     public void init() throws Exception {
@@ -52,16 +62,6 @@ public abstract class AbstractScene implements AllowDisable {
     }
 
     protected abstract void doInit() throws Exception;
-
-    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
-        if (onFinished != null)
-            fadeTransition.setOnFinished(onFinished);
-        fadeTransition.setDelay(Duration.millis(delay));
-        fadeTransition.setFromValue(from);
-        fadeTransition.setToValue(to);
-        fadeTransition.play();
-    }
 
     public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) {
         currentOverlay = overlay;

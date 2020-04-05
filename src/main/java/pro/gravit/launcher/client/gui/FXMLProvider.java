@@ -21,10 +21,6 @@ public class FXMLProvider {
         this.executorService = executorService;
     }
 
-    private static class FutureVirtualObject {
-        public IOException exception;
-    }
-
     public <T> Future<T> queue(String name, InputStream inputStream) {
         LogHelper.dev("FXML queue %s", name);
         fxmlCache.put(name, new FutureVirtualObject());
@@ -101,5 +97,9 @@ public class FXMLProvider {
                 return null;
             }
         });
+    }
+
+    private static class FutureVirtualObject {
+        public IOException exception;
     }
 }

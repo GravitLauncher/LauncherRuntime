@@ -85,38 +85,6 @@ public class OptionsScene extends AbstractScene {
         return checkBox::setSelected;
     }
 
-    public static class OptionalListEntryPair {
-        public OptionalType type;
-        public String name;
-        public boolean mark;
-
-        public OptionalListEntryPair(OptionalFile optionalFile) {
-            type = optionalFile.type;
-            name = optionalFile.name;
-            mark = optionalFile.mark;
-        }
-    }
-
-    public static class OptionalListEntry {
-        public List<OptionalListEntryPair> enabled = new LinkedList<>();
-        public String name;
-        public UUID profileUUID;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            OptionalListEntry that = (OptionalListEntry) o;
-            return Objects.equals(profileUUID, that.profileUUID) &&
-                    Objects.equals(name, that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name, profileUUID);
-        }
-    }
-
     public void saveAll() throws IOException {
         List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
         if (profiles == null)
@@ -176,6 +144,38 @@ public class OptionsScene extends AbstractScene {
                     }
                 }
             }
+        }
+    }
+
+    public static class OptionalListEntryPair {
+        public OptionalType type;
+        public String name;
+        public boolean mark;
+
+        public OptionalListEntryPair(OptionalFile optionalFile) {
+            type = optionalFile.type;
+            name = optionalFile.name;
+            mark = optionalFile.mark;
+        }
+    }
+
+    public static class OptionalListEntry {
+        public List<OptionalListEntryPair> enabled = new LinkedList<>();
+        public String name;
+        public UUID profileUUID;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            OptionalListEntry that = (OptionalListEntry) o;
+            return Objects.equals(profileUUID, that.profileUUID) &&
+                    Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, profileUUID);
         }
     }
 }

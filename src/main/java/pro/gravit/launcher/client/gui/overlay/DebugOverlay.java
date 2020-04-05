@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.overlay;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -24,10 +23,10 @@ import java.io.InputStream;
 public class DebugOverlay extends AbstractOverlay {
     private static final long MAX_LENGTH = 163840;
     private static final int REMOVE_LENGTH = 1024;
-    private Thread readThread;
-    private TextArea output;
     public Process currentProcess;
     public Thread writeParametersThread;
+    private Thread readThread;
+    private TextArea output;
 
     public DebugOverlay(JavaFXApplication application) {
         super("overlay/debug/debug.fxml", application);
