@@ -62,37 +62,15 @@ public class ServerMenuScene extends AbstractScene {
         super("scenes/servermenu/servermenu.fxml", application);
     }
 
-    private static Image convertToFxImage(BufferedImage image, int img_width, int img_height) {
-        if (JVMHelper.JVM_VERSION >= 9) {
-            return SwingFXUtils.toFXImage(image, null);
-        } else {
-            return convertToFxImageJava8(image, img_width, img_height);
-        }
-    }
+    private static Image convertToFxImage(BufferedImage image, int imageWidth, int imageHeight) {
+        java.awt.Image resized = image.getScaledInstance(imageWidth, imageHeight, java.awt.Image.SCALE_FAST);
+        BufferedImage converted = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB_PRE);
+        Graphics2D graphics2D = converted.createGraphics();
+        graphics2D.drawImage(resized, 0, 0, null);
+        graphics2D.dispose();
+        image = converted;
 
-    private static Image convertToFxImageJava8(BufferedImage image, int bw, int bh) {
-        switch (image.getType()) {
-            case BufferedImage.TYPE_INT_ARGB:
-            case BufferedImage.TYPE_INT_ARGB_PRE:
-                break;
-            default:
-                java.awt.Image resized = image.getScaledInstance(bw, bh, java.awt.Image.SCALE_FAST);
-                BufferedImage converted = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB_PRE);
-                Graphics2D graphics2D = converted.createGraphics();
-                graphics2D.drawImage(resized, 0, 0, null);
-                graphics2D.dispose();
-                image = converted;
-                break;
-        }
-        WritableImage writableImage = new WritableImage(bw, bh);
-        DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
-        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel
-                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
-        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ?
-                PixelFormat.getIntArgbPreInstance() :
-                PixelFormat.getIntArgbInstance();
-        writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
-        return writableImage;
+        return SwingFXUtils.toFXImage(image, null);
     }
 
     @Override
