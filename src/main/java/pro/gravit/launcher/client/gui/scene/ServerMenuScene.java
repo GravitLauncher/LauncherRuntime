@@ -62,17 +62,15 @@ public class ServerMenuScene extends AbstractScene {
         super("scenes/servermenu/servermenu.fxml", application);
     }
 
-    private static Image convertToFxImage(BufferedImage image) {
+    private static Image convertToFxImage(BufferedImage image, int img_width, int img_height) {
         if (JVMHelper.JVM_VERSION >= 9) {
             return SwingFXUtils.toFXImage(image, null);
         } else {
-            return convertToFxImageJava8(image);
+            return convertToFxImageJava8(image, img_width, img_height);
         }
     }
 
-    private static Image convertToFxImageJava8(BufferedImage image) {
-        int bw = 48; // avatar width at runtime
-        int bh = 48; // avatar height at runtime
+    private static Image convertToFxImageJava8(BufferedImage image, int bw, int bh) {
         switch (image.getType()) {
             case BufferedImage.TYPE_INT_ARGB:
             case BufferedImage.TYPE_INT_ARGB_PRE:
@@ -233,7 +231,7 @@ public class ServerMenuScene extends AbstractScene {
         }
         String url = playerProfile.skin.url;
         BufferedImage image = downloadSkinHead(url);
-        avatar.setImage(convertToFxImage(image));
+        avatar.setImage(convertToFxImage(image, (int) avatar.getFitWidth(), (int) avatar.getFitHeight()));
     }
 
     private BufferedImage downloadSkinHead(String url) throws IOException {
