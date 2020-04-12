@@ -233,6 +233,7 @@ public class ServerMenuScene extends AbstractScene {
         String url = playerProfile.skin.url;
         BufferedImage image = downloadSkinHead(url);
         avatar.setImage(convertToFxImage(image));
+        avatar.setSmooth(false);
     }
 
     private BufferedImage downloadSkinHead(String url) throws IOException {
