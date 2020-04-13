@@ -22,11 +22,12 @@ import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RuntimeSecurityService {
     private static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
-    private static final Path C_BINARY_PATH = BINARY_PATH.getParent().resolve(IOHelper.getFileName(BINARY_PATH) + ".tmp");
+    private static final Path C_BINARY_PATH = BINARY_PATH.resolveSibling(IOHelper.getFileName(BINARY_PATH) + ".tmp");
     private final JavaFXApplication application;
     private final Boolean[] waitObject = new Boolean[]{null};
 
@@ -87,7 +88,6 @@ public class RuntimeSecurityService {
         args.add(BINARY_PATH.toString());
         ProcessBuilder builder = new ProcessBuilder(args.toArray(new String[0]));
         builder.inheritIO();
-
         // Rewrite and start new instance
         try {
             LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
@@ -95,9 +95,9 @@ public class RuntimeSecurityService {
         } catch (Throwable ignored) {
         }
         Files.deleteIfExists(C_BINARY_PATH);
-        if (result.binary != null)
+        if (result.binary != null) {
             IOHelper.write(C_BINARY_PATH, result.binary);
-        else {
+        } else {
             URL url;
             try {
                 url = new URL(result.url);
@@ -109,6 +109,9 @@ public class RuntimeSecurityService {
                 IOHelper.transfer(in, C_BINARY_PATH);
             }
         }
+        if (Arrays.equals(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, C_BINARY_PATH),
+                SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, BINARY_PATH)))
+            throw new IOException("Invalid update (launcher needs update, but link has old launcher), check LaunchServer config...");
 
         try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
             IOHelper.transfer(in, BINARY_PATH);
