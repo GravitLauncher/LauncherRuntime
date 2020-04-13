@@ -77,15 +77,6 @@ public class RuntimeSecurityService {
     }
 
     public void update(LauncherRequestEvent result) throws IOException {
-        List<String> args = new ArrayList<>(8);
-        args.add(IOHelper.resolveJavaBin(null).toString());
-        if (LogHelper.isDebugEnabled())
-            args.add(JVMHelper.jvmProperty(LogHelper.DEBUG_PROPERTY, Boolean.toString(LogHelper.isDebugEnabled())));
-        args.add("-jar");
-        args.add(BINARY_PATH.toString());
-        ProcessBuilder builder = new ProcessBuilder(args.toArray(new String[0]));
-        builder.inheritIO();
-
         // Rewrite and start new instance
         if (result.binary != null)
             IOHelper.write(BINARY_PATH, result.binary);
@@ -111,8 +102,6 @@ public class RuntimeSecurityService {
                 LogHelper.error(e);
             }
         }
-        builder.start();
-
         // Kill current instance
         try {
             Class<?> clazz = Class.forName("java.lang.Shutdown");
