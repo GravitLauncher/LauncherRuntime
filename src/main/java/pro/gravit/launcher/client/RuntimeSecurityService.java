@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import javafx.application.Platform;
 
 public class RuntimeSecurityService {
     private final JavaFXApplication application;
@@ -95,29 +96,28 @@ public class RuntimeSecurityService {
             try (OutputStream stream = connection.getOutputStream()) {
                 IOHelper.transfer(BINARY_PATH, stream);
             }*/
-            try {
-                Files.deleteIfExists(C_BINARY_PATH);
-                URL url = new URL(result.url);
-                URLConnection connection = url.openConnection();
-                try (InputStream in = connection.getInputStream()) {
-                    IOHelper.transfer(in, C_BINARY_PATH);
-                }
-                try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
-                    IOHelper.transfer(in, BINARY_PATH);
-                }
-                Files.deleteIfExists(C_BINARY_PATH);
-            } catch (Throwable e) {
-                LogHelper.error(e);
+            Files.deleteIfExists(C_BINARY_PATH);
+            URL url = new URL(result.url);
+            URLConnection connection = url.openConnection();
+            try (InputStream in = connection.getInputStream()) {
+                IOHelper.transfer(in, C_BINARY_PATH);
             }
+            try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
+                IOHelper.transfer(in, BINARY_PATH);
+            }
+            Files.deleteIfExists(C_BINARY_PATH);
         }
+		LogHelper.info("Create new process");
         builder.start();
 
         // Kill current instance
+		LogHelper.info("Close current instances");
         try {
-            LauncherEngine.exitLauncher(0);
+			Platform.exit();
         } catch (Throwable e) {
-            System.exit(0);
+            LauncherEngine.exitLauncher(0);
         }
+		LauncherEngine.exitLauncher(0);
         throw new AssertionError("Why Launcher wasn't restarted?!");
     }
 
