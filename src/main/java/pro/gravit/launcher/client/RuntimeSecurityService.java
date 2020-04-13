@@ -2,10 +2,13 @@ package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
+import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.events.request.LauncherRequestEvent;
+import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
+import pro.gravit.launcher.request.websockets.ClientWebSocketService;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -13,6 +16,7 @@ import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -85,38 +89,34 @@ public class RuntimeSecurityService {
         builder.inheritIO();
 
         // Rewrite and start new instance
+        try {
+            LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
+            Request.service.close();
+        } catch (Throwable ignored) {
+        }
+        Files.deleteIfExists(C_BINARY_PATH);
         if (result.binary != null)
-            IOHelper.write(BINARY_PATH, result.binary);
+            IOHelper.write(C_BINARY_PATH, result.binary);
         else {
-            /*URLConnection connection = IOHelper.newConnection(new URL(result.url));
-            connection.setDoOutput(true);
-            connection.connect();
-            try (OutputStream stream = connection.getOutputStream()) {
-                IOHelper.transfer(BINARY_PATH, stream);
-            }*/
+            URL url;
             try {
-                Files.deleteIfExists(C_BINARY_PATH);
-                URL url = new URL(result.url);
-                URLConnection connection = url.openConnection();
-                try (InputStream in = connection.getInputStream()) {
-                    IOHelper.transfer(in, C_BINARY_PATH);
-                }
-                try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
-                    IOHelper.transfer(in, BINARY_PATH);
-                }
-                Files.deleteIfExists(C_BINARY_PATH);
-            } catch (Throwable e) {
-                LogHelper.error(e);
+                url = new URL(result.url);
+            } catch (MalformedURLException e) {
+                throw new IOException(e);
+            }
+            URLConnection connection = url.openConnection();
+            try (InputStream in = connection.getInputStream()) {
+                IOHelper.transfer(in, C_BINARY_PATH);
             }
         }
-        builder.start();
 
-        // Kill current instance
-        try {
-            LauncherEngine.exitLauncher(0);
-        } catch (Throwable e) {
-            System.exit(0);
+        try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
+            IOHelper.transfer(in, BINARY_PATH);
         }
+        Files.deleteIfExists(C_BINARY_PATH);
+        builder.start();
+        // Kill current instance
+        JVMHelper.RUNTIME.exit(0);
         throw new AssertionError("Why Launcher wasn't restarted?!");
     }
 
