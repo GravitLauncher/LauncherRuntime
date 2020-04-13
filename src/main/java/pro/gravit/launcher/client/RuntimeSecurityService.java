@@ -13,6 +13,8 @@ import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -113,9 +115,12 @@ public class RuntimeSecurityService {
 
         // Kill current instance
         try {
-            LauncherEngine.exitLauncher(0);
-        } catch (Throwable e) {
-            System.exit(0);
+            Class<?> clazz = Class.forName("java.lang.Shutdown");
+            Method halt = clazz.getDeclaredMethod("halt0", int.class);
+            halt.setAccessible(true);
+            halt.invoke(null, 0);
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException | ClassNotFoundException e) {
+            LogHelper.error(e);
         }
         throw new AssertionError("Why Launcher wasn't restarted?!");
     }
