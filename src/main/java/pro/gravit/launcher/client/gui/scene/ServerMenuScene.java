@@ -235,7 +235,7 @@ public class ServerMenuScene extends AbstractScene {
         int imageHeight = (int) avatar.getFitHeight(), imageWidth = (int) avatar.getFitWidth();
         java.awt.Image resized = origImage.getScaledInstance(imageWidth, imageHeight, java.awt.Image.SCALE_FAST);
         BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-        Graphics2D graphics2D = origImage.createGraphics();
+        Graphics2D graphics2D = image.createGraphics();
         graphics2D.drawImage(resized, 0, 0, null);
         graphics2D.dispose();
         avatar.setImage(convertToFxImage(image));

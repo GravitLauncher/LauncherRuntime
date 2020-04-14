@@ -95,7 +95,11 @@ public class SettingsScene extends AbstractScene {
             if (choose == null)
                 return;
             Path newDir = choose.toPath().toAbsolutePath();
-            DirBridge.dirUpdates = newDir;
+            try {
+                DirBridge.move(newDir);
+            } catch (IOException ex) {
+                LogHelper.error(ex);
+            }
             application.runtimeSettings.updatesDirPath = newDir.toString();
             application.runtimeSettings.updatesDir = newDir;
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
