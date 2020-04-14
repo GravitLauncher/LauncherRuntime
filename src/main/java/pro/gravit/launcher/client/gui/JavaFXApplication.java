@@ -240,9 +240,9 @@ public class JavaFXApplication extends Application {
     public void saveSettings() throws IOException {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
-        if (gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
+        if (gui != null && gui.optionsOverlay != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
             try {
-                gui.optionsScene.saveAll();
+                gui.optionsOverlay.saveAll();
             } catch (Throwable ex) {
                 LogHelper.error(ex);
             }

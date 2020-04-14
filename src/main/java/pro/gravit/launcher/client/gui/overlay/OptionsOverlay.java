@@ -1,6 +1,7 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.overlay;
 
 import com.google.gson.reflect.TypeToken;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
@@ -14,7 +15,7 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalType;
@@ -30,23 +31,41 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class OptionsScene extends AbstractScene {
+public class OptionsOverlay extends AbstractOverlay {
     private Pane componentList;
 
-    public OptionsScene(JavaFXApplication application) {
-        super("scenes/options/options.fxml", application);
+    public OptionsOverlay(JavaFXApplication application) {
+        super("overlay/options/options.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        Node layout = LookupHelper.lookup(scene.getRoot(), "#optionsPane");
-        sceneBaseInit(layout);
-        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run());
+        Node layout = pane;
+        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
+            try {
+                if (currentStage != null) {
+                    currentStage.getScene().hideOverlay(0, null);
+                }
+            } catch (Exception ex) {
+                errorHandle(ex);
+            }
+        });
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
+        LookupHelper.<ButtonBase>lookup(pane, "#close").setOnAction(
+                (e) -> Platform.exit());
+        LookupHelper.<ButtonBase>lookup(pane, "#hide").setOnAction((e) -> {
+            if (this.currentStage != null) this.currentStage.hide();
+        });
     }
 
+    @Override
     public void reset() {
         componentList.getChildren().clear();
+    }
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
     }
 
     public void addProfileOptionals(ClientProfile profile) {

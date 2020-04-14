@@ -154,9 +154,9 @@ public class LoginScene extends AbstractScene {
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();
-                if (application.gui.optionsScene != null) {
+                if (application.gui.optionsOverlay != null) {
                     try {
-                        application.gui.optionsScene.loadAll();
+                        application.gui.optionsOverlay.loadAll();
                     } catch (Throwable ex) {
                         LogHelper.error(ex);
                     }

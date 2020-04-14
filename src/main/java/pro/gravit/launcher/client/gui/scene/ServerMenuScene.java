@@ -140,19 +140,14 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 if (application.runtimeStateMachine.getProfile() == null)
                     return;
-                application.setMainScene(application.gui.optionsScene);
-                application.gui.optionsScene.reset();
-                application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getProfile());
+                application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getProfile());
+                showOverlay(application.gui.optionsOverlay, null);
             } catch (Exception ex) {
                 LogHelper.error(ex);
             }
         });
         LookupHelper.<ButtonBase>lookup(layout, "#settings").setOnAction((e) -> {
-            try {
-                application.setMainScene(application.gui.settingsScene);
-            } catch (Exception ex) {
-                LogHelper.error(ex);
-            }
+            showOverlay(application.gui.settingsOverlay, null);
         });
         LookupHelper.<ButtonBase>lookup(layout, "#exit").setOnAction((e) ->
                 application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
