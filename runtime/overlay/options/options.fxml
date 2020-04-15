@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+
+<!-- DrLeonardo Design for GravitLauncher-->
+
+<Pane fx:id="optionsPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@options.css" />
+        <URL value="@../../global.css" />
+    </stylesheets>
+    <Pane fx:id="optionsBackground" prefHeight="500.0" prefWidth="97.0">
+      <children>
+          <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutY="450.0" prefHeight="50.0" prefWidth="97.0" textFill="WHITE">
+              <font>
+                <Font name="System Bold" size="30.0" />
+              </font>
+              <opaqueInsets>
+                <Insets />
+              </opaqueInsets>
+              <graphic>
+                <SVGPath content="M26.2812 0.28125L9 17.5625L1.71875 10.2812L0.28125 11.7188L8.28125 19.7188L9 20.4062L9.71875 19.7188L27.7188 1.71875L26.2812 0.28125Z" fill="WHITE">
+                    <rotationAxis>
+                        <Point3D />
+                    </rotationAxis>
+                </SVGPath>
+              </graphic>
+              <tooltip>
+                <Tooltip id="optionsTooltip" text="%runtime.overlay.options.options.optionsTooltip" />
+              </tooltip>
+          </Button>
+      </children></Pane>
+    <Pane fx:id="serverImage" layoutX="97.0" prefHeight="500.0" prefWidth="803.0">
+      <children>
+         <Label id="headingOptional" layoutX="20.0" layoutY="39.0" text="%runtime.overlay.options.options.headingOptional" />
+          <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="687.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
+              <graphic>
+                <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;" />
+              </graphic>
+              <tooltip>
+                <Tooltip id="hideTooltip" text="%runtime.overlay.options.options.hideTooltip" />
+              </tooltip>
+          </Button>
+          <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="731.0" layoutY="32.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+              <graphic>
+                <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+              </graphic>
+              <tooltip>
+                <Tooltip id="closeTooltip" text="%runtime.overlay.options.options.closeTooltip" />
+              </tooltip>
+          </Button>
+          <ScrollPane id="optionslist" layoutY="101.0" prefHeight="399.0" prefWidth="804.0">
+              <VBox fx:id="componentList" prefHeight="394.0" prefWidth="800.0" spacing="10.0">
+                  <padding>
+                      <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                  </padding>
+                  <opaqueInsets>
+                      <Insets />
+                  </opaqueInsets>
+              </VBox>
+          </ScrollPane>
+      </children></Pane>
+</Pane>

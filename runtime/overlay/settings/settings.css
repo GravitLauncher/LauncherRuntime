@@ -1,0 +1,126 @@
+/*-- DrLeonardo Design for GravitLauncher --*/
+
+#settingsBackground {
+    -fx-background-color: transparent;
+    -fx-background-size: cover;
+    -fx-background-image: url('../../images/servermenu.png');
+}
+
+#settingsPane {
+    -fx-background-color: transparent;
+}
+
+#settingsPane>#settingslist {
+    -fx-background-color: transparent;
+}
+
+#settingsPane>#settingslist>.viewport {
+    -fx-background-color: transparent;
+}
+
+#headingSettings {
+    -fx-fill: #323232;
+    -fx-font-weight: bold;
+    -fx-font-size: 14pt;
+}
+
+#settingsItem {
+    -fx-background-color: transparent;
+}
+
+#dirLabel {
+    -fx-background-color: #eee;
+}
+
+#ramLabel {
+    -fx-font-weight: bold;
+    -fx-font-size: 15px;
+    -fx-text-fill: #323232;
+}
+
+#textLabel {
+    -fx-font-size: 15px;
+    -fx-text-fill: #323232;
+}
+
+
+/* RAM slider */
+
+.ramtext {
+    -fx-font-smoothing-type: lcd;
+    -fx-font-size: 14px;
+    -fx-background-color: #323232
+}
+
+#ramInfo,
+#patch {
+    -fx-font-smoothing-type: lcd;
+    -fx-font-size: 16px;
+    -fx-text-fill: #323232;
+}
+
+#ramSlider>.track {
+    -fx-background-color: #E7E7E7;
+    -fx-pref-height: 4px;
+}
+
+#ramSlider>.thumb {
+    -fx-background-color: #7C4DFF;
+}
+
+#ramSlider>.colored-track {
+    -fx-background-color: #7C4DFF;
+    -fx-pref-height: 4px;
+}
+
+#ramSlider>.animated-thumb {
+    -fx-background-color: transparent;
+}
+
+#ramSlider>.slider-value {
+    -fx-fill: white;
+    -fx-stroke: white;
+}
+
+
+/* Dir options */
+
+#changeDir,
+#deleteDir {
+    -fx-background-radius: 0;
+    -fx-background-color: #eee;
+    -fx-background-size: cover;
+    -fx-font-size: 13pt;
+}
+
+#changeDir:hover,
+#changeDir:pressed,
+#deleteDir:hover,
+#deleteDir:pressed {
+    -fx-background-color: #E7E7E7;
+}
+
+#console {
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+    -fx-background-size: cover;
+    -fx-font-size: 13pt;
+}
+
+#console:hover,
+#console:pressed {
+    -fx-background-color: rgba(254, 254, 255, 0.1);
+}
+
+#lang {
+    -fx-background-position: center;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+
+#lang:hover {
+    -fx-opacity: 0.8;
+}
+
+
+/*-- DrLeonardo Design for GravitLauncher --*/
