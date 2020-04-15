@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.geometry.Point3D?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<!-- DrLeonardo Design for GravitLauncher-->
+
+<Pane fx:id="settingsPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@../../global.css" />
+        <URL value="@settings.css" />
+    </stylesheets>
+    <Pane fx:id="settingsBackground" prefHeight="500.0" prefWidth="900.0">
+      <children>
+          <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="-1.0" layoutY="449.0" prefHeight="50.0" prefWidth="98.0" textFill="WHITE">
+              <font>
+                <Font name="System Bold" size="30.0" />
+              </font>
+              <opaqueInsets>
+                <Insets />
+              </opaqueInsets>
+              <graphic>
+                <SVGPath id="svgIcon" content="M26.2812 0.28125L9 17.5625L1.71875 10.2812L0.28125 11.7188L8.28125 19.7188L9 20.4062L9.71875 19.7188L27.7188 1.71875L26.2812 0.28125Z&#10;" fill="WHITE">
+                    <rotationAxis>
+                        <Point3D />
+                    </rotationAxis>
+                </SVGPath>
+              </graphic>
+          </Button>
+      </children></Pane>
+    <Pane fx:id="serverImage" layoutX="97.0" prefHeight="500.0" prefWidth="803.0">
+        <Slider id="ramSlider" layoutX="31.0" layoutY="124.0" prefHeight="17.0" prefWidth="742.0" />
+        <Label id="ramLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="631.0" layoutY="96.0" prefHeight="30.0" prefWidth="137.0" text="44444">
+            <cursor>
+                <Cursor fx:constant="DEFAULT" />
+            </cursor>
+        </Label>
+        <Text id="headingSettings" layoutX="30.0" layoutY="60.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.overlay.settings.settings.headingSettings" wrappingWidth="532.7734069824219" />
+        <Text id="textLabel" layoutX="30.0" layoutY="116.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.overlay.settings.settings.textLabel" />
+        <Button id="lang" alignment="CENTER" contentDisplay="CENTER" layoutX="645.0" layoutY="33.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
+            <tooltip>
+                <Tooltip id="langTooltip" text="%runtime.overlay.settings.settings.langTooltip" />
+            </tooltip>
+            <graphic>
+                <SVGPath id="icons" content="M0 0V18H6V24H24V6H18V0H0ZM2 2H16V6.5625L6.5625 16H2V2ZM7 4V5H4V7H8.9375C8.80859 8.14844 8.45703 9.05469 7.875 9.6875C7.53125 9.57422 7.22266 9.43359 6.96875 9.28125C6.26562 8.86328 6 8.41797 6 8H4C4 9.19141 4.73438 10.1836 5.71875 10.8438C5.22656 10.9492 4.65625 11 4 11V13C5.77344 13 7.25 12.5938 8.375 11.8438C8.89844 11.9336 9.42969 12 10 12V10.125C10.543 9.21484 10.832 8.15234 10.9375 7H12V5H9V4H7ZM17.4375 8H22V22H8V17.4375L17.4375 8ZM16 9.84375L15.0625 12.6875L13.0625 18.6875L13 18.8438V20H15V19.125L15.0312 19H16.9688L17 19.125V20H19V18.8438L18.9375 18.6875L16.9375 12.6875L16 9.84375ZM16 16.125L16.2812 17H15.7188L16 16.125Z&#10;" />
+            </graphic>
+            <contextMenu>
+                <ContextMenu id="langChoice">
+                </ContextMenu>
+            </contextMenu>
+        </Button>
+       <Button id="console" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="593.0" layoutY="28.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+           <font>
+             <Font name="System Bold" size="30.0" />
+           </font>
+           <opaqueInsets>
+             <Insets />
+           </opaqueInsets>
+           <graphic>
+             <SVGPath content="M4 5V27H28V5H4ZM6 7H26V9H6V7ZM6 11H26V25H6V11ZM11.2188 13.7812L9.78125 15.2188L12.5625 18L9.78125 20.7812L11.2188 22.2188L14.7188 18.7188L15.4062 18L14.7188 17.2812L11.2188 13.7812ZM16 20V22H22V20H16Z">
+                 <rotationAxis>
+                     <Point3D />
+                 </rotationAxis>
+             </SVGPath>
+           </graphic>
+           <tooltip>
+             <Tooltip id="consoleTooltip" text="%runtime.overlay.settings.settings.consoleTooltip" />
+           </tooltip>
+       </Button>
+       <ScrollPane id="settingslist" layoutY="163.0" prefHeight="337.0" prefWidth="803.0">
+           <VBox fx:id="componentList" prefHeight="240.0" prefWidth="780.0" spacing="10.0">
+               <padding>
+                   <Insets bottom="10.0" left="30.0" right="10.0" top="10.0" />
+               </padding>
+               <opaqueInsets>
+                   <Insets />
+               </opaqueInsets>
+           </VBox>
+       </ScrollPane>
+       <Pane id="dirLabel" layoutY="449.0" prefHeight="51.0" prefWidth="703.0">
+           <Hyperlink id="patch" focusTraversable="false" prefHeight="50.0" prefWidth="702.0" text="C:/Users">
+               <padding>
+                   <Insets left="10.0" right="10.0" />
+               </padding>
+           </Hyperlink>
+       </Pane>
+       <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="703.0" layoutY="449.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+           <font>
+             <Font name="System Bold" size="30.0" />
+           </font>
+           <opaqueInsets>
+             <Insets />
+           </opaqueInsets>
+           <graphic>
+             <SVGPath content="M0 0V26H12.7812C14.25 27.8281 16.4805 29 19 29C23.4062 29 27 25.4062 27 21C27 16.9336 23.9336 13.5625 20 13.0625V10.4375L21.7188 8.71875L22 8.40625V0H0ZM2 2H16V8.40625L16.2812 8.71875L18 10.4375V13.0625C14.0664 13.5625 11 16.9336 11 21C11 22.0664 11.2109 23.0703 11.5938 24H2V2ZM18 2H20V7.5625L19 8.5625L18 7.5625V2ZM19 15C22.3242 15 25 17.6758 25 21C25 24.3242 22.3242 27 19 27C15.6758 27 13 24.3242 13 21C13 17.6758 15.6758 15 19 15ZM18 17V20H15V22H18V25H20V22H23V20H20V17H18Z&#10;" fill="#b5b5b5">
+                 <rotationAxis>
+                     <Point3D />
+                 </rotationAxis>
+             </SVGPath>
+           </graphic>
+           <tooltip>
+             <Tooltip id="changedirTooltip" text="%runtime.overlay.settings.settings.changedirTooltip" />
+           </tooltip>
+       </Button>
+       <Button id="deleteDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="753.0" layoutY="449.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+           <font>
+             <Font name="System Bold" size="30.0" />
+           </font>
+           <opaqueInsets>
+             <Insets />
+           </opaqueInsets>
+           <graphic>
+             <SVGPath content="M8 0C6.841 0 6 0.841 6 2V3H0V5H1V21C1 22.654 2.346 24 4 24H13.7715L15.7715 22H4C3.449 22 3 21.552 3 21V5H17V14.6719L19 16.6719V5H20V3H14V2C14 0.841 13.159 0 12 0H8ZM8 2H12V3H8V2ZM5 8V19H7V8H5ZM9 8V19H11V8H9ZM13 8V15.4727L15 13.4727V8H13ZM15.4004 15.9004L14 17.3008L18.6504 21.9492L14 26.5996L15.4004 28L20.0508 23.3496L24.5996 27.9004L26 26.5L21.4492 21.9492L26 17.4004L24.5996 16L20.0508 20.5508L15.4004 15.9004Z&#10;" fill="#a4a4a4">
+                 <rotationAxis>
+                     <Point3D />
+                 </rotationAxis>
+             </SVGPath>
+           </graphic>
+           <tooltip>
+             <Tooltip id="deletedirTooltip" text="%runtime.overlay.settings.settings.deletedirTooltip" />
+           </tooltip>
+       </Button>
+    </Pane>
+    <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="788.0" layoutY="33.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
+        <graphic>
+          <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM9 20V22H23V20H9Z&#10;" />
+        </graphic>
+        <tooltip>
+          <Tooltip id="hideTooltip" text="%runtime.overlay.settings.settings.hideTooltip" />
+        </tooltip>
+    </Button>
+    <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="832.0" layoutY="33.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+        <graphic>
+          <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+        </graphic>
+        <tooltip>
+          <Tooltip id="closeTooltip" text="%runtime.overlay.settings.settings.closeTooltip" />
+        </tooltip>
+    </Button>
+</Pane>
