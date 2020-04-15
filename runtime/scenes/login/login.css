@@ -12,12 +12,12 @@
     -fx-background-color: transparent;
 }
 
-.passwordInput,
-.loginInput {
+#password,
+#login {
     -fx-background-radius: 0;
 }
 
-.auth {
+#goAuth {
     -fx-background-color: transparent;
     -fx-background-repeat: no-repeat;
     -fx-background-image: url('../../images/icons/auth.png');
