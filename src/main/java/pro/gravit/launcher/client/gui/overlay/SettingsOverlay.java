@@ -104,6 +104,9 @@ public class SettingsOverlay extends AbstractOverlay {
         });
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#dirLabel", "#patch");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
+        updateDirLink.setOnAction((e) -> {
+            application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString());
+        });
         LookupHelper.<ButtonBase>lookup(layout, "#changeDir").setOnAction((e) -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Сменить директорию загрузок");
