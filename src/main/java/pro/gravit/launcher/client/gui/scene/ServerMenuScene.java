@@ -166,8 +166,10 @@ public class ServerMenuScene extends AbstractScene {
                         }
                     });
                 });
-                if (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile)) {
+                if ((application.runtimeSettings.lastProfile == null && lastSelectedServerButton == null) || (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))) {
                     changeServer(profile, pingerResult.get());
+                    lastSelectedServerButton = pane;
+                    lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
