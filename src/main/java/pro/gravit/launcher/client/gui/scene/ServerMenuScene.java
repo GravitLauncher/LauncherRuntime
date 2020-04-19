@@ -179,8 +179,9 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 if (application.runtimeStateMachine.getProfile() == null)
                     return;
-                application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getProfile());
-                showOverlay(application.gui.optionsOverlay, null);
+                showOverlay(application.gui.optionsOverlay, (ec) -> {
+                    application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getProfile());
+                });
             } catch (Exception ex) {
                 LogHelper.error(ex);
             }

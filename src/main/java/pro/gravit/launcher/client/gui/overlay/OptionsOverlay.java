@@ -50,7 +50,7 @@ public class OptionsOverlay extends AbstractOverlay {
                 errorHandle(ex);
             }
         });
-        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
+        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverImage", "#optionslist").getContent();
         LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction(
                 (e) -> Platform.exit());
         LookupHelper.<ButtonBase>lookup(layout, "#hide").setOnAction((e) -> {
