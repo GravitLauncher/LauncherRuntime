@@ -187,9 +187,9 @@ public class ServerMenuScene extends AbstractScene {
             showOverlay(application.gui.settingsOverlay, null);
         });
         LookupHelper.<ButtonBase>lookup(layout, "#exit").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
-                        application.getTranslation("runtime.scenes.settings.exitDialog.description"), () ->
-                                processRequest(application.getTranslation("runtime.scenes.settings.exitDialog.processing"),
+                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
+                        application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
+                                processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
                                         new ExitRequest(), (event) -> {
                                             // Exit to main menu
                                             ContextHelper.runInFxThreadStatic(() -> {

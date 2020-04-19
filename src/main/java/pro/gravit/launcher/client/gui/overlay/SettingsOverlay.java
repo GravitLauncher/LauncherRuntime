@@ -70,7 +70,7 @@ public class SettingsOverlay extends AbstractOverlay {
                 final int finalI = i;
                 items[i].setOnAction((e) -> {
                     application.runtimeSettings.locale = locales[finalI];
-                    application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.langChanged.head"), application.getTranslation("runtime.scenes.settings.langChanged.description"));
+                    application.messageManager.createNotification(application.getTranslation("runtime.overlay.settings.langChanged.head"), application.getTranslation("runtime.overlay.settings.langChanged.description"));
                 });
             }
             langChoice.getItems().addAll(items);
@@ -125,16 +125,16 @@ public class SettingsOverlay extends AbstractOverlay {
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
         LookupHelper.<ButtonBase>lookup(layout, "#deleteDir").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.deletedir.header"),
-                        application.getTranslation("runtime.scenes.settings.deletedir.description"),
+                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.deletedir.header"),
+                        application.getTranslation("runtime.overlay.settings.deletedir.description"),
                         () -> {
                             LogHelper.debug("Delete dir: %s", DirBridge.dirUpdates);
                             try {
                                 IOHelper.deleteDir(DirBridge.dirUpdates, false);
                             } catch (IOException ex) {
                                 LogHelper.error(ex);
-                                application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
-                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.description"));
+                                application.messageManager.createNotification(application.getTranslation("runtime.overlay.settings.deletedir.fail.header"),
+                                        application.getTranslation("runtime.overlay.settings.deletedir.fail.description"));
                             }
                         }, () -> {
                         }, true));
@@ -152,8 +152,8 @@ public class SettingsOverlay extends AbstractOverlay {
     }
 
     public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {
-        String nameKey = String.format("runtime.scenes.settings.properties.%s.name", languageName.toLowerCase());
-        String descriptionKey = String.format("runtime.scenes.settings.properties.%s.key", languageName.toLowerCase());
+        String nameKey = String.format("runtime.overlay.settings.properties.%s.name", languageName.toLowerCase());
+        String descriptionKey = String.format("runtime.overlay.settings.properties.%s.key", languageName.toLowerCase());
         add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName), value, onChanged);
     }
 
