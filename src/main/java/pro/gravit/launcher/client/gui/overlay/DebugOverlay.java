@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import pro.gravit.launcher.Launcher;
+import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
@@ -16,9 +18,10 @@ import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class DebugOverlay extends AbstractOverlay {
     private static final long MAX_LENGTH = 163840;
@@ -47,6 +50,26 @@ public class DebugOverlay extends AbstractOverlay {
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
+        });
+        LookupHelper.<ButtonBase>lookup(layout, "#hastebin").setOnAction((e) -> {
+            String haste = null;
+            try {
+                haste = hastebin(output.getText());
+            } catch (IOException ex) {
+                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
+                LogHelper.error(ex);
+            }
+
+            if(haste == null)
+                return;
+
+            ClipboardContent clipboardContent = new ClipboardContent();
+            clipboardContent.putString(haste);
+            Clipboard clipboard = Clipboard.getSystemClipboard();
+            clipboard.setContent(clipboardContent);
+
+            application.openURL(haste);
         });
         LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction((e) -> {
             //TODO
@@ -140,4 +163,50 @@ public class DebugOverlay extends AbstractOverlay {
         append(String.format("Process exit code %d", code));
         if (writeParametersThread != null) writeParametersThread.interrupt();
     }
+
+    public class HasteResponse {
+        @LauncherNetworkAPI
+        public String key;
+    }
+
+    public String hastebin(String log) throws IOException {
+        if(application.guiModuleConfig.hastebinServer == null)
+            throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
+        URL url = new URL(application.guiModuleConfig.hastebinServer + "/documents");
+
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setDoInput(true);
+        connection.setDoOutput(true);
+        connection.setRequestMethod("POST");
+        connection.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
+        connection.setRequestProperty("Accept", "application/json");
+        connection.setConnectTimeout(10000);
+        try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8)) {
+            writer.write(log);
+            writer.flush();
+        }
+
+        InputStreamReader reader;
+        int statusCode = connection.getResponseCode();
+
+        if (200 <= statusCode && statusCode < 300)
+            reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
+        else
+            reader = new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8);
+        try {
+            HasteResponse obj = Launcher.gsonManager.gson.fromJson(reader, HasteResponse.class);
+            application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.success.header"),
+                    application.getTranslation("runtime.overlay.debug.hastebin.success.description"));
+            return application.guiModuleConfig.hastebinServer + "/" + obj.key;
+        } catch (Exception e) {
+            if (200 > statusCode || statusCode > 300) {
+                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
+                LogHelper.error("JsonRequest failed. Server response code %d", statusCode);
+                throw new IOException(e);
+            }
+            return null;
+        }
+    }
+
 }
