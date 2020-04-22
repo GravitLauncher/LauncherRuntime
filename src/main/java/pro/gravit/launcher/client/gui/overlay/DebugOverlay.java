@@ -171,7 +171,7 @@ public class DebugOverlay extends AbstractOverlay {
 
     public String hastebin(String log) throws IOException {
         if(application.guiModuleConfig.hastebinServer == null)
-            throw new NullPointerException("Перегенерируйте конфиг JavaRuntime.json");
+            throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
         URL url = new URL(application.guiModuleConfig.hastebinServer + "/documents");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
