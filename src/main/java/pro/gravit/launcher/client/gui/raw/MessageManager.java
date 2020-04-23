@@ -4,6 +4,7 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -170,8 +171,15 @@ public class MessageManager {
             if (isLauncher) {
                 AbstractScene currentScene = application.getCurrentScene();
                 Pane root = (Pane) currentScene.getScene().getRoot();
+                Pane shadow = new Pane();
+                shadow.setPrefHeight(root.getPrefHeight());
+                shadow.setPrefWidth(root.getPrefWidth());
+                root.getChildren().add(shadow);
                 root.getChildren().add(finalPane);
-                onClose = () -> root.getChildren().remove(finalPane);
+                onClose = () -> {
+                    root.getChildren().remove(finalPane);
+                    root.getChildren().remove(shadow);
+                };
                 pane.setLayoutX((root.getPrefWidth() - pane.getPrefWidth()) / 2.0);
                 pane.setLayoutY((root.getPrefHeight() - pane.getPrefHeight()) / 2.0);
                 LogHelper.debug("Layout: X: %f, Y: %f", pane.getLayoutX(), pane.getLayoutY());
