@@ -154,7 +154,7 @@ public class SettingsOverlay extends AbstractOverlay {
 
     public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {
         String nameKey = String.format("runtime.overlay.settings.properties.%s.name", languageName.toLowerCase());
-        String descriptionKey = String.format("runtime.overlay.settings.properties.%s.key", languageName.toLowerCase());
+        String descriptionKey = String.format("runtime.overlay.settings.properties.%s.description", languageName.toLowerCase());
         add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName), value, onChanged);
     }
 
