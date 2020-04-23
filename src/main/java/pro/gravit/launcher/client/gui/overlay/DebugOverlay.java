@@ -164,7 +164,7 @@ public class DebugOverlay extends AbstractOverlay {
         if (writeParametersThread != null) writeParametersThread.interrupt();
     }
 
-    public class HasteResponse {
+    public static class HasteResponse {
         @LauncherNetworkAPI
         public String key;
     }

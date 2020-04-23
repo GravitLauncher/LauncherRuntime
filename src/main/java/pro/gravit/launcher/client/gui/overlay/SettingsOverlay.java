@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 
 public class SettingsOverlay extends AbstractOverlay {
     private Pane componentList;
+    private Label ramLabel;
 
     public SettingsOverlay(JavaFXApplication application) {
         super("overlay/settings/settings.fxml", application);
@@ -82,8 +83,8 @@ public class SettingsOverlay extends AbstractOverlay {
         }
 
         Slider ramSlider = LookupHelper.lookup(layout, "#ramSlider");
-        Label ramLabel = LookupHelper.lookup(layout, "#serverImage", "#ramLabel");
-        ramLabel.setText(Integer.toString(application.runtimeSettings.ram));
+        ramLabel = LookupHelper.lookup(layout, "#serverImage", "#ramLabel");
+        updateRamLabel();
         try {
             SystemInfo systemInfo = new SystemInfo();
             ramSlider.setMax(systemInfo.getHardware().getMemory().getTotal() >> 20);
@@ -100,7 +101,7 @@ public class SettingsOverlay extends AbstractOverlay {
         ramSlider.setValue(application.runtimeSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             application.runtimeSettings.ram = newValue.intValue();
-            ramLabel.setText(application.runtimeSettings.ram <= 0 ? "Auto" : application.runtimeSettings.ram + " MiB");
+            updateRamLabel();
         });
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#dirLabel", "#patch");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
@@ -173,5 +174,9 @@ public class SettingsOverlay extends AbstractOverlay {
         checkBox.getStyleClass().add("optCheckbox");
         desc.getStyleClass().add("optDescription");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
+    }
+    public void updateRamLabel()
+    {
+        ramLabel.setText(application.runtimeSettings.ram == 0 ? "Auto" : Integer.toString(application.runtimeSettings.ram).concat(" MiB"));
     }
 }
