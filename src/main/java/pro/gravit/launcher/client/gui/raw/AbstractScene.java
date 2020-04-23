@@ -31,6 +31,7 @@ public abstract class AbstractScene implements AllowDisable {
     AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
+    private boolean enabled = true;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         this.fxmlPath = fxmlPath;
@@ -88,14 +89,13 @@ public abstract class AbstractScene implements AllowDisable {
         currentOverlayNode = newOverlay;
         Pane root = (Pane) scene.getRoot();
         root.getChildren().get(0).setEffect(new GaussianBlur(10));
-        fade(root, 0.0, 0.0, 1.0, (e) -> {
-            root.getChildren().add(newOverlay);
-            newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
-            newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
-            newOverlay.toFront();
-            newOverlay.requestFocus();
-            fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
-        });
+
+        root.getChildren().add(newOverlay);
+        newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
+        newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
+        newOverlay.toFront();
+        newOverlay.requestFocus();
+        fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
     }
 
     public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished) {
@@ -147,11 +147,25 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void disable() {
+        enabled = false;
     }
 
     @Override
     public void enable() {
+        enabled = true;
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    protected void doShow() {
+
+    }
+
+    public abstract void reset();
+
+    public abstract void errorHandle(Throwable e);
 
     public Scene getScene() {
         return scene;

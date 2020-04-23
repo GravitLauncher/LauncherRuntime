@@ -45,6 +45,7 @@ public abstract class AbstractStage {
         scene.currentStage = this;
         if (scene.getScene() == null)
             scene.init();
+        scene.doShow();
         stage.setScene(scene.getScene());
         stage.sizeToScene();
         stage.show();

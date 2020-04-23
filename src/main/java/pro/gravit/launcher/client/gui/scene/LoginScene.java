@@ -98,6 +98,18 @@ public class LoginScene extends AbstractScene {
         }
     }
 
+    @Override
+    public void reset() {
+        passwordField.getStyleClass().removeAll("hasSaved");
+        passwordField.setText("");
+        loginField.setText("");
+    }
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
+    }
+
     private void loginWithGui() {
         String login = loginField.getText();
         byte[] encryptedPassword;
@@ -161,9 +173,6 @@ public class LoginScene extends AbstractScene {
     public void clearPassword() {
         application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.login = null;
-        passwordField.getStyleClass().removeAll("hasSaved");
-        passwordField.setText("");
-        loginField.setText("");
     }
 
     private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {

@@ -46,6 +46,7 @@ import java.net.URL;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -57,6 +58,9 @@ public class ServerMenuScene extends AbstractScene {
     private Node layout;
     private ImageView avatar;
     private Node lastSelectedServerButton;
+
+    private List<ClientProfile> lastProfiles;
+    private Image originalAvatarImage;
 
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
@@ -100,12 +104,56 @@ public class ServerMenuScene extends AbstractScene {
     public void doInit() throws Exception {
         layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#serverMenu");
         sceneBaseInit(layout);
-        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
         avatar = LookupHelper.lookup(layout, "#avatar");
+        originalAvatarImage = avatar.getImage();
+        LookupHelper.<ButtonBase>lookup(layout, "#clientSettings").setOnAction((e) -> {
+            try {
+                if (application.runtimeStateMachine.getProfile() == null)
+                    return;
+                showOverlay(application.gui.optionsOverlay, (ec) -> {
+                    application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getProfile());
+                });
+            } catch (Exception ex) {
+                LogHelper.error(ex);
+            }
+        });
+        LookupHelper.<ButtonBase>lookup(layout, "#settings").setOnAction((e) -> {
+            showOverlay(application.gui.settingsOverlay, null);
+        });
+        LookupHelper.<ButtonBase>lookup(layout, "#exit").setOnAction((e) ->
+                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
+                        application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
+                                processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
+                                        new ExitRequest(), (event) -> {
+                                            // Exit to main menu
+                                            ContextHelper.runInFxThreadStatic(() -> {
+                                                hideOverlay(0, null);
+                                                application.gui.loginScene.clearPassword();
+                                                application.gui.loginScene.reset();
+                                                try {
+                                                    application.saveSettings();
+                                                    application.runtimeStateMachine.exit();
+                                                    getCurrentStage().setScene(application.gui.loginScene);
+                                                } catch (Exception ex) {
+                                                    LogHelper.error(ex);
+                                                }
+                                            });
+                                        }, (event) -> {
+
+                                        }), () -> {
+                        }, true));
+        LookupHelper.<ButtonBase>lookup(layout, "#clientLaunch").setOnAction((e) -> launchClient());
+        reset();
+    }
+
+    @Override
+    public void reset() {
+        lastProfiles = application.runtimeStateMachine.getProfiles();
         Map<ClientProfile, Future<Pane>> futures = new HashMap<>();
         Map<ClientProfile, Integer> positionMap = new HashMap<>();
-
-        {
+        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
+        avatar.setImage(originalAvatarImage);
+        try {
             int position = 0;
             for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
                 String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profile.getTitle());
@@ -118,9 +166,14 @@ public class ServerMenuScene extends AbstractScene {
                 positionMap.put(profile, position);
                 position++;
             }
+        } catch (IOException e)
+        {
+            errorHandle(e);
+            return;
         }
 
         Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverlist").getContent();
+        serverList.getChildren().clear();
         futures.forEach((profile, future) -> {
             try {
                 Pane pane = future.get();
@@ -175,42 +228,6 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(e);
             }
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#clientSettings").setOnAction((e) -> {
-            try {
-                if (application.runtimeStateMachine.getProfile() == null)
-                    return;
-                showOverlay(application.gui.optionsOverlay, (ec) -> {
-                    application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getProfile());
-                });
-            } catch (Exception ex) {
-                LogHelper.error(ex);
-            }
-        });
-        LookupHelper.<ButtonBase>lookup(layout, "#settings").setOnAction((e) -> {
-            showOverlay(application.gui.settingsOverlay, null);
-        });
-        LookupHelper.<ButtonBase>lookup(layout, "#exit").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
-                        application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
-                                processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
-                                        new ExitRequest(), (event) -> {
-                                            // Exit to main menu
-                                            ContextHelper.runInFxThreadStatic(() -> {
-                                                hideOverlay(0, null);
-                                                application.gui.loginScene.clearPassword();
-                                                try {
-                                                    application.saveSettings();
-                                                    application.runtimeStateMachine.exit();
-                                                    getCurrentStage().setScene(application.gui.loginScene);
-                                                } catch (Exception ex) {
-                                                    LogHelper.error(ex);
-                                                }
-                                            });
-                                        }, (event) -> {
-
-                                        }), () -> {
-                        }, true));
-        LookupHelper.<ButtonBase>lookup(layout, "#clientLaunch").setOnAction((e) -> launchClient());
         CommonHelper.newThread("SkinHead Downloader Thread", true, () -> {
             try {
                 updateSkinHead();
@@ -218,6 +235,20 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(e);
             }
         }).start();
+    }
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
+    }
+
+    @Override
+    protected void doShow() {
+        super.doShow();
+        if(lastProfiles != application.runtimeStateMachine.getProfiles())
+        {
+            reset();
+        }
     }
 
     private void updateSkinHead() throws IOException {

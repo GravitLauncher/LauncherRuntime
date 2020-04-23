@@ -46,12 +46,30 @@ public class ConsoleScene extends AbstractScene {
         LookupHelper.<Labeled>lookup(layout, "#version").setText(getMiniLauncherInfo());
     }
 
+    @Override
+    public void reset() {
+        output.clear();
+        commandLine.clear();
+        commandLine.getStyleClass().removeAll("InputError");
+    }
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
+    }
+
+    @Override
+    protected void doShow() {
+        super.doShow();
+
+    }
+
     private void send(ActionEvent ignored) {
         String command = commandLine.getText();
         commandLine.clear();
         try {
             ConsoleManager.handler.evalNative(command, false);
-            commandLine.getStyleClass().remove("InputError");
+            commandLine.getStyleClass().removeAll("InputError");
         } catch (Exception ex) {
             LogHelper.error(ex);
             commandLine.getStyleClass().add("InputError");
