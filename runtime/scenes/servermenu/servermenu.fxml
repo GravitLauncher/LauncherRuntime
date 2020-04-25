@@ -24,7 +24,9 @@
     </stylesheets>
     <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
         <Pane fx:id="serverMenu" prefHeight="500.0" prefWidth="900.0">
-            <Pane fx:id="serverImage" layoutX="282.0" prefHeight="500.0" prefWidth="620.0" />
+            <ImageView id="serverImage" layoutX="282.0" fitHeight="500.0" fitWidth="620.0" smooth="false">
+                <Image url="@../../images/servers/imageExample.png" />
+            </ImageView>
             <ScrollPane fx:id="serverlist" hbarPolicy="NEVER" layoutX="1.0" layoutY="1.0" prefHeight="500.0" prefWidth="288.0">
                 <FlowPane prefHeight="497.0" prefWidth="287.0" prefWrapLength="0.0" rowValignment="TOP" />
             </ScrollPane>

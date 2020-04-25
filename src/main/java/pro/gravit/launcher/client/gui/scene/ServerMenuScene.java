@@ -41,6 +41,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.io.IOException;
+import java.lang.ref.SoftReference;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.IntBuffer;
@@ -48,19 +49,24 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
+    private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
     private Node layout;
     private ImageView avatar;
+    private ImageView serverImage;
     private Node lastSelectedServerButton;
 
     private List<ClientProfile> lastProfiles;
     private Image originalAvatarImage;
+    private Image originalServerImage;
 
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
@@ -105,7 +111,10 @@ public class ServerMenuScene extends AbstractScene {
         layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#serverMenu");
         sceneBaseInit(layout);
         avatar = LookupHelper.lookup(layout, "#avatar");
+        serverImage = LookupHelper.lookup(layout, "#serverImage");
         originalAvatarImage = avatar.getImage();
+        originalServerImage = serverImage.getImage();
+
         LookupHelper.<ButtonBase>lookup(layout, "#clientSettings").setOnAction((e) -> {
             try {
                 if (application.runtimeStateMachine.getProfile() == null)
@@ -145,25 +154,55 @@ public class ServerMenuScene extends AbstractScene {
         LookupHelper.<ButtonBase>lookup(layout, "#clientLaunch").setOnAction((e) -> launchClient());
         reset();
     }
+    class ServerButtonCache
+    {
+        public Future<Pane> pane;
+        SoftReference<Image> imageRef = new SoftReference<>(null);
+        public int position;
+        Supplier<Image> getImage = () -> originalServerImage;
+        public Image getImage()
+        {
+            Image result = imageRef.get();
+            if(result != null)
+            {
+                return result;
+            }
+            result = getImage.get();
+            imageRef = new SoftReference<>(result);
+            return result;
+        }
+    }
 
     @Override
     public void reset() {
         lastProfiles = application.runtimeStateMachine.getProfiles();
-        Map<ClientProfile, Future<Pane>> futures = new HashMap<>();
-        Map<ClientProfile, Integer> positionMap = new HashMap<>();
+        Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new HashMap<>();
         LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
         avatar.setImage(originalAvatarImage);
         try {
             int position = 0;
             for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
-                String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profile.getTitle());
+                ServerButtonCache cache = new ServerButtonCache();
+                UUID profileUUID = profile.getUUID();
+                if(profileUUID == null) {
+                    profileUUID = UUID.randomUUID();
+                    LogHelper.warning("Profile %s UUID null", profileUUID);
+                }
+                String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profileUUID);
                 URL customFxml = application.tryResource(customFxmlName);
                 if (customFxml != null) {
-                    futures.put(profile, application.getNonCachedFxmlAsync(customFxmlName, IOHelper.newInput(customFxml)));
+                    cache.pane = application.getNonCachedFxmlAsync(customFxmlName, IOHelper.newInput(customFxml));
                 } else {
-                    futures.put(profile, application.getNonCachedFxmlAsync(SERVER_BUTTON_FXML));
+                    cache.pane = application.getNonCachedFxmlAsync(SERVER_BUTTON_FXML);
                 }
-                positionMap.put(profile, position);
+                String customImageName = String.format(SERVER_BUTTON_CUSTOM_IMAGE, profileUUID);
+                URL customImage = application.tryResource(customImageName);
+                if(customImage != null)
+                {
+                    cache.getImage = () -> new Image(customImage.toString());
+                }
+                cache.position = position;
+                serverButtonCacheMap.put(profile, cache);
                 position++;
             }
         } catch (IOException e)
@@ -174,9 +213,9 @@ public class ServerMenuScene extends AbstractScene {
 
         Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverlist").getContent();
         serverList.getChildren().clear();
-        futures.forEach((profile, future) -> {
+        serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             try {
-                Pane pane = future.get();
+                Pane pane = serverButtonCache.pane.get();
                 AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
                 LookupHelper.<Hyperlink>lookup(pane, "#nameServer").setText(profile.getTitle());
                 LookupHelper.<Text>lookup(pane, "#genreServer").setText(profile.getVersion().toString());
@@ -188,7 +227,7 @@ public class ServerMenuScene extends AbstractScene {
                         lastSelectedServerButton.getStyleClass().remove("serverButtonsActive");
                     lastSelectedServerButton = pane;
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
-                    changeServer(profile, pingerResult.get());
+                    changeServer(profile, pingerResult.get(), serverButtonCache.getImage());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
                 };
                 pane.setOnMouseClicked(handle);
@@ -196,7 +235,7 @@ public class ServerMenuScene extends AbstractScene {
                 pane.setOnMouseEntered((e) -> LookupHelper.lookup(pane, "#nameServer").getStyleClass().add("nameServerActive"));
                 pane.setOnMouseExited((e) -> LookupHelper.lookup(pane, "#nameServer").getStyleClass().remove("nameServerActive"));
                 ///////////
-                int profilePosition = positionMap.get(profile);
+                int profilePosition = serverButtonCache.position;
                 if (profilePosition >= serverList.getChildren().size())
                     profilePosition = serverList.getChildren().size();
                 serverList.getChildren().add(profilePosition, pane);
@@ -220,9 +259,10 @@ public class ServerMenuScene extends AbstractScene {
                     });
                 });
                 if ((application.runtimeSettings.lastProfile == null && lastSelectedServerButton == null) || (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))) {
-                    changeServer(profile, pingerResult.get());
                     lastSelectedServerButton = pane;
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
+                    changeServer(profile, pingerResult.get(), serverButtonCache.getImage());
+                    LogHelper.dev("Selected profile %s", profile.getTitle());
                 }
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
@@ -279,7 +319,7 @@ public class ServerMenuScene extends AbstractScene {
         return image.getSubimage(offset, offset, offset, offset);
     }
 
-    private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult) {
+    private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult, Image serverImage) {
         application.runtimeStateMachine.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
         LookupHelper.<Text>lookup(layout, "#heading").setText(profile.getTitle());
@@ -290,6 +330,10 @@ public class ServerMenuScene extends AbstractScene {
             LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", pingerResult.onlinePlayers, pingerResult.maxPlayers));
         else
             LookupHelper.<Text>lookup(layout, "#headingOnline").setText("? / ?");
+        if(serverImage != null)
+        {
+            this.serverImage.setImage(serverImage);
+        }
     }
 
     private void launchClient() {
