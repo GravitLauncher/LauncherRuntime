@@ -199,7 +199,7 @@ public class ServerMenuScene extends AbstractScene {
                 URL customImage = application.tryResource(customImageName);
                 if(customImage != null)
                 {
-                    cache.getImage = () -> new Image(customImage.toString());
+                    cache.getImage = () -> new Image("@".concat(customImageName));
                 }
                 cache.position = position;
                 serverButtonCacheMap.put(profile, cache);
