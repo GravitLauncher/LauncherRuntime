@@ -101,6 +101,7 @@ public class LoginScene extends AbstractScene {
     @Override
     public void reset() {
         passwordField.getStyleClass().removeAll("hasSaved");
+        passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password"));
         passwordField.setText("");
         loginField.setText("");
     }
