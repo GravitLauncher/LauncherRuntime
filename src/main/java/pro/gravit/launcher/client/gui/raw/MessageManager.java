@@ -54,6 +54,7 @@ public class MessageManager {
                 Rectangle2D bounds = screen.getVisualBounds();
                 Stage notificationStage = application.newStage(StageStyle.TRANSPARENT);
                 onClose = () -> {
+                    if(!notificationStage.isShowing()) return;
                     notificationStage.hide();
                     notificationStage.setScene(null);
                     count.getAndDecrement();
@@ -78,7 +79,7 @@ public class MessageManager {
                 Pane root = (Pane) currentScene.getScene().getRoot();
                 root.getChildren().add(finalPane);
                 onClose = () -> {
-                    root.getChildren().remove(finalPane);
+                    if(!root.getChildren().remove(finalPane)) return;
                     localCount.getAndDecrement();
                 };
                 int currentCount = localCount.getAndIncrement();
