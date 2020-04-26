@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.StringConverter;
 import pro.gravit.launcher.LauncherEngine;
+import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
@@ -65,15 +66,17 @@ public class LoginScene extends AbstractScene {
                 if (result.needUpdate) {
                     try {
                         application.securityService.update(result);
-                    } catch (IOException e) {
-                        LogHelper.error(e);
-                    } catch (Throwable ignored) {
-
-                    }
-                    try {
-                        LauncherEngine.exitLauncher(0);
                     } catch (Throwable e) {
-                        Platform.exit();
+                        contextHelper.runInFxThread(() -> {
+                            getCurrentOverlay().errorHandle(e);
+                        });
+                        try {
+                            Thread.sleep(1500);
+                            LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
+                            Platform.exit();
+                        } catch (Throwable ex) {
+                            LauncherEngine.exitLauncher(0);
+                        }
                     }
                 }
                 LogHelper.dev("Launcher update processed");
