@@ -20,6 +20,12 @@
       <URL value="@components.css" />
       <URL value="@../global.css" />
    </stylesheets>
+   <Text id="headingDialog" layoutX="84.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialogTextInput.headingDialog" textAlignment="CENTER" wrappingWidth="302.99999821186066" />
+   <TextField id="dialogInput" layoutX="62.0" layoutY="85.0" prefHeight="51.0" prefWidth="303.0" promptText="%runtime.scenes.components.dialogTextInput.2fa" styleClass="dialogInput">
+      <font>
+         <Font size="16.0" />
+      </font>
+   </TextField>
    <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="365.0" layoutY="85.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
       <font>
          <Font name="System Bold" size="30.0" />
@@ -38,12 +44,6 @@
          <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialogTextInput.applyTooltip" />
       </tooltip>
    </Button>
-   <Text id="headingDialog" layoutX="84.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialogTextInput.headingDialog" textAlignment="CENTER" wrappingWidth="302.99999821186066" />
-   <TextField id="dialogInput" layoutX="62.0" layoutY="85.0" prefHeight="51.0" prefWidth="303.0" promptText="%runtime.scenes.components.dialogTextInput.2fa" styleClass="dialogInput">
-      <font>
-         <Font size="16.0" />
-      </font>
-   </TextField>
    <Hyperlink id="hylink" alignment="CENTER_RIGHT" layoutX="57.0" layoutY="137.0" prefHeight="22.0" prefWidth="359.0" text="%runtime.scenes.components.dialogTextInput.forgot2fa" textAlignment="CENTER">
       <font>
          <Font size="11.0" />

@@ -74,12 +74,12 @@ public class RuntimeStateMachine {
         return profiles;
     }
 
-    public void setProfile(ClientProfile profile) {
-        this.profile = profile;
-    }
-
     public ClientProfile getProfile() {
         return profile;
+    }
+
+    public void setProfile(ClientProfile profile) {
+        this.profile = profile;
     }
 
     public PlayerProfile getPlayerProfile() {

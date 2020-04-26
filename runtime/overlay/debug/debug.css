@@ -29,7 +29,7 @@
     -fx-background-radius: 0;
 }
 
-#kill, #copy {
+#kill, #copy, #hastebin {
     -fx-background-radius: 0;
     -fx-pref-width: 50px;
     -fx-pref-height: 50px;
@@ -40,6 +40,8 @@
 
 #copy:hover,
 #copy:pressed,
+#hastebin:hover,
+#hastebin:pressed,
 #kill:hover,
 #kill:pressed {
     -fx-background-color: rgba(254, 254, 255, 0.1);

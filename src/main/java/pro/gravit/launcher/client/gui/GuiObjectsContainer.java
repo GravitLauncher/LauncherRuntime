@@ -1,8 +1,6 @@
 package pro.gravit.launcher.client.gui;
 
-import pro.gravit.launcher.client.gui.overlay.DebugOverlay;
-import pro.gravit.launcher.client.gui.overlay.ProcessingOverlay;
-import pro.gravit.launcher.client.gui.overlay.UpdateOverlay;
+import pro.gravit.launcher.client.gui.overlay.*;
 import pro.gravit.launcher.client.gui.scene.*;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 
@@ -14,8 +12,8 @@ public class GuiObjectsContainer {
 
     public ServerMenuScene serverMenuScene;
     public LoginScene loginScene;
-    public OptionsScene optionsScene;
-    public SettingsScene settingsScene;
+    public OptionsOverlay optionsOverlay;
+    public SettingsOverlay settingsOverlay;
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
@@ -29,8 +27,8 @@ public class GuiObjectsContainer {
         processingOverlay = application.registerOverlay(ProcessingOverlay.class);
 
         serverMenuScene = application.registerScene(ServerMenuScene.class);
-        optionsScene = application.registerScene(OptionsScene.class);
-        settingsScene = application.registerScene(SettingsScene.class);
+        optionsOverlay = application.registerOverlay(OptionsOverlay.class);
+        settingsOverlay = application.registerOverlay(SettingsOverlay.class);
         consoleScene = application.registerScene(ConsoleScene.class);
 
         updateOverlay = application.registerOverlay(UpdateOverlay.class);

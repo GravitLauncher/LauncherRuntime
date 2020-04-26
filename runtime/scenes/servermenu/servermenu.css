@@ -74,6 +74,7 @@
     -fx-background-color: #7C4DFF;
     -fx-background-size: cover;
     -fx-text-fill: #fff;
+    -fx-background-insets: 0;
 }
 
 #clientSettings {
@@ -81,6 +82,7 @@
     -fx-background-color: #7C4DFF;
     -fx-background-size: cover;
     -fx-font-size: 13pt;
+    -fx-background-insets: 0;
 }
 
 #clientLaunch:pressed,

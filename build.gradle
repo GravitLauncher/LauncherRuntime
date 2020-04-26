@@ -6,12 +6,12 @@ plugins {
 }
 javafx {
     version = "12"
-    modules = [ 'javafx.controls', 'javafx.fxml', 'javafx.swing' ]
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
 }
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
-version '1.0.0'
+version '1.1.0'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
 
 tasks.withType(JavaCompile) {
@@ -22,8 +22,8 @@ tasks.withType(JavaCompile) {
 
 jar {
     manifest.attributes("Module-Main-Class": mainClassName,
-                        "Module-Config-Class": "pro.gravit.launcher.client.GuiModuleConfig",
-                        "Module-Config-Name": "JavaRuntime")
+            "Module-Config-Class": "pro.gravit.launcher.client.GuiModuleConfig",
+            "Module-Config-Name": "JavaRuntime")
 }
 
 repositories {
@@ -40,3 +40,9 @@ dependencies {
     implementation 'com.github.oshi:oshi-core:4.5.2'
     implementation 'com.google.code.gson:gson:2.8.6'
 }
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+defaultTasks 'build'

@@ -14,19 +14,6 @@ public abstract class AbstractStage {
         this.stage = stage;
     }
 
-    public void setScene(AbstractScene scene) throws Exception {
-        if (scene == null) {
-            throw new NullPointerException("Try set null scene");
-        }
-        scene.currentStage = this;
-        if (scene.getScene() == null)
-            scene.init();
-        stage.setScene(scene.getScene());
-        stage.sizeToScene();
-        stage.show();
-        this.scene = scene;
-    }
-
     public void hide() {
         stage.setIconified(true);
     }
@@ -49,6 +36,20 @@ public abstract class AbstractStage {
 
     public AbstractScene getScene() {
         return scene;
+    }
+
+    public void setScene(AbstractScene scene) throws Exception {
+        if (scene == null) {
+            throw new NullPointerException("Try set null scene");
+        }
+        scene.currentStage = this;
+        if (scene.getScene() == null)
+            scene.init();
+        scene.doShow();
+        stage.setScene(scene.getScene());
+        stage.sizeToScene();
+        stage.show();
+        this.scene = scene;
     }
 
     public final boolean isNullScene() {

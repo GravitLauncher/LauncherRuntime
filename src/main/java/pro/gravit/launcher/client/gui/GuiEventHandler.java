@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.client.gui.scene.LoginScene;
 import pro.gravit.launcher.events.NotificationEvent;
+import pro.gravit.launcher.events.RequestEvent;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.websockets.ClientWebSocketService;
@@ -18,6 +19,11 @@ public class GuiEventHandler implements ClientWebSocketService.EventHandler {
     @Override
     public <T extends WebSocketEvent> boolean eventHandle(T event) {
         LogHelper.dev("Processing event %s", event.getType());
+        if( event instanceof RequestEvent)
+        {
+            if(!((RequestEvent) event).requestUUID.equals(RequestEvent.eventUUID))
+                return false;
+        }
         try {
             if (event instanceof NotificationEvent) {
                 NotificationEvent e = (NotificationEvent) event;

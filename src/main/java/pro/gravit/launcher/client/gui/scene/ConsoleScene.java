@@ -24,6 +24,16 @@ public class ConsoleScene extends AbstractScene {
         super("scenes/console/console.fxml", application);
     }
 
+    public static String getLauncherInfo() {
+        return String.format("Launcher %s | Java %d(%s %s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"), JVMHelper.JVM_BITS,
+                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+    }
+
+    public static String getMiniLauncherInfo() {
+        return String.format("Launcher %s | Java %d(%s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS,
+                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+    }
+
     @Override
     protected void doInit() {
         Node layout = scene.getRoot();
@@ -36,12 +46,30 @@ public class ConsoleScene extends AbstractScene {
         LookupHelper.<Labeled>lookup(layout, "#version").setText(getMiniLauncherInfo());
     }
 
+    @Override
+    public void reset() {
+        output.clear();
+        commandLine.clear();
+        commandLine.getStyleClass().removeAll("InputError");
+    }
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
+    }
+
+    @Override
+    protected void doShow() {
+        super.doShow();
+
+    }
+
     private void send(ActionEvent ignored) {
         String command = commandLine.getText();
         commandLine.clear();
         try {
             ConsoleManager.handler.evalNative(command, false);
-            commandLine.getStyleClass().remove("InputError");
+            commandLine.getStyleClass().removeAll("InputError");
         } catch (Exception ex) {
             LogHelper.error(ex);
             commandLine.getStyleClass().add("InputError");
@@ -54,15 +82,5 @@ public class ConsoleScene extends AbstractScene {
                 output.deleteText(0, REMOVE_LENGTH);
             output.appendText(text.concat("\n"));
         });
-    }
-
-    public static String getLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s %s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"), JVMHelper.JVM_BITS,
-                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
-    }
-
-    public static String getMiniLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS,
-                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
     }
 }

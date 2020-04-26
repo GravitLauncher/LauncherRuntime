@@ -23,13 +23,13 @@ build:
   stage: build
   script: gradle -Dorg.gradle.daemon=false --build-cache assemble
   after_script:
-   - apt-get -y update
-   - apt-get -y install zip
-   - mkdir -p artifacts
-   - cd runtime
-   - zip -r -9 ../artifacts/runtime.zip *
-   - cd ../build/libs
-   - cp *.jar ../../artifacts
+    - apt-get -y update
+    - apt-get -y install zip
+    - mkdir -p artifacts
+    - cd runtime
+    - zip -r -9 ../artifacts/runtime.zip *
+    - cd ../build/libs
+    - cp *.jar ../../artifacts
   cache:
     key: "$CI_COMMIT_REF_NAME"
     policy: push
@@ -39,7 +39,7 @@ build:
   artifacts:
     expire_in: 6 week
     paths:
-    - artifacts
+      - artifacts
 
 test:
   stage: test

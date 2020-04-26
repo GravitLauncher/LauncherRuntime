@@ -40,19 +40,28 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
-    public RuntimeSettings runtimeSettings;
+    private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
     public final LauncherConfig config = Launcher.getConfig();
+    public final ExecutorService workers = Executors.newCachedThreadPool();
+    public RuntimeSettings runtimeSettings;
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
     public RuntimeStateMachine runtimeStateMachine;
     public GuiModuleConfig guiModuleConfig;
     public MessageManager messageManager;
-    private ResourceBundle resources;
     public RuntimeSecurityService securityService;
+    private ResourceBundle resources;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
-
     private PrimaryStage mainStage;
+
+    public JavaFXApplication() {
+        INSTANCE.set(this);
+    }
+
+    public static JavaFXApplication getInstance() {
+        return INSTANCE.get();
+    }
 
     public AbstractScene getCurrentScene() {
         return mainStage.getScene();
@@ -60,17 +69,6 @@ public class JavaFXApplication extends Application {
 
     public PrimaryStage getMainStage() {
         return mainStage;
-    }
-
-    public final ExecutorService workers = Executors.newCachedThreadPool();
-    private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
-
-    public static JavaFXApplication getInstance() {
-        return INSTANCE.get();
-    }
-
-    public JavaFXApplication() {
-        INSTANCE.set(this);
     }
 
     @Override
@@ -240,9 +238,9 @@ public class JavaFXApplication extends Application {
     public void saveSettings() throws IOException {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
-        if (gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
+        if (gui != null && gui.optionsOverlay != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
             try {
-                gui.optionsScene.saveAll();
+                gui.optionsOverlay.saveAll();
             } catch (Throwable ex) {
                 LogHelper.error(ex);
             }

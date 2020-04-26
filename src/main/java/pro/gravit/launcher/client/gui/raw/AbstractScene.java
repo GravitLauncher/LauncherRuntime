@@ -23,24 +23,35 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
-    protected Scene scene;
-    protected final JavaFXApplication application;
     public final String fxmlPath;
+    protected final JavaFXApplication application;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
+    protected Scene scene;
+    AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
-    AbstractStage currentStage;
-
-    protected AbstractStage getCurrentStage() {
-        return currentStage;
-    }
+    private boolean enabled = true;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         this.fxmlPath = fxmlPath;
         this.application = application;
         this.launcherConfig = Launcher.getConfig();
         this.contextHelper = new ContextHelper(this);
+    }
+
+    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
+        FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
+        if (onFinished != null)
+            fadeTransition.setOnFinished(onFinished);
+        fadeTransition.setDelay(Duration.millis(delay));
+        fadeTransition.setFromValue(from);
+        fadeTransition.setToValue(to);
+        fadeTransition.play();
+    }
+
+    protected AbstractStage getCurrentStage() {
+        return currentStage;
     }
 
     public void init() throws Exception {
@@ -52,16 +63,6 @@ public abstract class AbstractScene implements AllowDisable {
     }
 
     protected abstract void doInit() throws Exception;
-
-    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
-        if (onFinished != null)
-            fadeTransition.setOnFinished(onFinished);
-        fadeTransition.setDelay(Duration.millis(delay));
-        fadeTransition.setFromValue(from);
-        fadeTransition.setToValue(to);
-        fadeTransition.play();
-    }
 
     public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) {
         currentOverlay = overlay;
@@ -88,14 +89,13 @@ public abstract class AbstractScene implements AllowDisable {
         currentOverlayNode = newOverlay;
         Pane root = (Pane) scene.getRoot();
         root.getChildren().get(0).setEffect(new GaussianBlur(10));
-        fade(root, 0.0, 0.0, 1.0, (e) -> {
-            root.getChildren().add(newOverlay);
-            newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
-            newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
-            newOverlay.toFront();
-            newOverlay.requestFocus();
-            fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
-        });
+
+        root.getChildren().add(newOverlay);
+        newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
+        newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
+        newOverlay.toFront();
+        newOverlay.requestFocus();
+        fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
     }
 
     public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished) {
@@ -147,11 +147,25 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void disable() {
+        enabled = false;
     }
 
     @Override
     public void enable() {
+        enabled = true;
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    protected void doShow() {
+
+    }
+
+    public abstract void reset();
+
+    public abstract void errorHandle(Throwable e);
 
     public Scene getScene() {
         return scene;

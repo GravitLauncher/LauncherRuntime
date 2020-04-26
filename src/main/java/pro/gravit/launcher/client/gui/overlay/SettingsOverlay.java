@@ -1,5 +1,6 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.overlay;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -12,7 +13,7 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -22,26 +23,43 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-public class SettingsScene extends AbstractScene {
+public class SettingsOverlay extends AbstractOverlay {
     private Pane componentList;
+    private Label ramLabel;
 
-    public SettingsScene(JavaFXApplication application) {
-        super("scenes/settings/settings.fxml", application);
+    public SettingsOverlay(JavaFXApplication application) {
+        super("overlay/settings/settings.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        Node layout = LookupHelper.lookup(scene.getRoot(), "#settingsPane");
+        Node layout = pane;
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
-        sceneBaseInit(layout);
-        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> contextHelper.runCallback(() -> application.setMainScene(application.gui.serverMenuScene)).run());
-        LookupHelper.<ButtonBase>lookup(layout, "#console").setOnAction((e) -> contextHelper.runCallback(() -> {
-            if (application.gui.consoleStage == null)
-                application.gui.consoleStage = new ConsoleStage(application);
-            if (application.gui.consoleStage.isNullScene())
-                application.gui.consoleStage.setScene(application.gui.consoleScene);
-            application.gui.consoleStage.show();
-        }).run());
+        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
+            try {
+                if (currentStage != null) {
+                    currentStage.getScene().hideOverlay(0, null);
+                }
+            } catch (Exception ex) {
+                errorHandle(ex);
+            }
+        });
+        LookupHelper.<ButtonBase>lookup(layout, "#console").setOnAction((e) -> {
+            try {
+                if (application.gui.consoleStage == null)
+                    application.gui.consoleStage = new ConsoleStage(application);
+                if (application.gui.consoleStage.isNullScene())
+                    application.gui.consoleStage.setScene(application.gui.consoleScene);
+                application.gui.consoleStage.show();
+            } catch (Exception ex) {
+                errorHandle(ex);
+            }
+        });
+        LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction(
+                (e) -> Platform.exit());
+        LookupHelper.<ButtonBase>lookup(layout, "#hide").setOnAction((e) -> {
+            if (this.currentStage != null) this.currentStage.hide();
+        });
 
         {
             Button langButton = LookupHelper.lookup(layout, "#lang");
@@ -53,7 +71,7 @@ public class SettingsScene extends AbstractScene {
                 final int finalI = i;
                 items[i].setOnAction((e) -> {
                     application.runtimeSettings.locale = locales[finalI];
-                    application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.langChanged.head"), application.getTranslation("runtime.scenes.settings.langChanged.description"));
+                    application.messageManager.createNotification(application.getTranslation("runtime.overlay.settings.langChanged.head"), application.getTranslation("runtime.overlay.settings.langChanged.description"));
                 });
             }
             langChoice.getItems().addAll(items);
@@ -65,8 +83,8 @@ public class SettingsScene extends AbstractScene {
         }
 
         Slider ramSlider = LookupHelper.lookup(layout, "#ramSlider");
-        Label ramLabel = LookupHelper.lookup(layout, "#serverImage", "#ramLabel");
-        ramLabel.setText(Integer.toString(application.runtimeSettings.ram));
+        ramLabel = LookupHelper.lookup(layout, "#serverImage", "#ramLabel");
+        updateRamLabel();
         try {
             SystemInfo systemInfo = new SystemInfo();
             ramSlider.setMax(systemInfo.getHardware().getMemory().getTotal() >> 20);
@@ -83,10 +101,13 @@ public class SettingsScene extends AbstractScene {
         ramSlider.setValue(application.runtimeSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             application.runtimeSettings.ram = newValue.intValue();
-            ramLabel.setText(application.runtimeSettings.ram <= 0 ? "Auto" : application.runtimeSettings.ram + " MiB");
+            updateRamLabel();
         });
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#dirLabel", "#patch");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
+        updateDirLink.setOnAction((e) -> {
+            application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString());
+        });
         LookupHelper.<ButtonBase>lookup(layout, "#changeDir").setOnAction((e) -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle("Сменить директорию загрузок");
@@ -95,22 +116,26 @@ public class SettingsScene extends AbstractScene {
             if (choose == null)
                 return;
             Path newDir = choose.toPath().toAbsolutePath();
-            DirBridge.dirUpdates = newDir;
+            try {
+                DirBridge.move(newDir);
+            } catch (IOException ex) {
+                LogHelper.error(ex);
+            }
             application.runtimeSettings.updatesDirPath = newDir.toString();
             application.runtimeSettings.updatesDir = newDir;
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
         LookupHelper.<ButtonBase>lookup(layout, "#deleteDir").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.deletedir.header"),
-                        application.getTranslation("runtime.scenes.settings.deletedir.description"),
+                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.deletedir.header"),
+                        application.getTranslation("runtime.overlay.settings.deletedir.description"),
                         () -> {
                             LogHelper.debug("Delete dir: %s", DirBridge.dirUpdates);
                             try {
                                 IOHelper.deleteDir(DirBridge.dirUpdates, false);
                             } catch (IOException ex) {
                                 LogHelper.error(ex);
-                                application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
-                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.description"));
+                                application.messageManager.createNotification(application.getTranslation("runtime.overlay.settings.deletedir.fail.header"),
+                                        application.getTranslation("runtime.overlay.settings.deletedir.fail.description"));
                             }
                         }, () -> {
                         }, true));
@@ -119,9 +144,17 @@ public class SettingsScene extends AbstractScene {
         add("Fullscreen", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);
     }
 
+    @Override
+    public void reset() {}
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
+    }
+
     public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {
-        String nameKey = String.format("runtime.scenes.settings.properties.%s.name", languageName.toLowerCase());
-        String descriptionKey = String.format("runtime.scenes.settings.properties.%s.key", languageName.toLowerCase());
+        String nameKey = String.format("runtime.overlay.settings.properties.%s.name", languageName.toLowerCase());
+        String descriptionKey = String.format("runtime.overlay.settings.properties.%s.description", languageName.toLowerCase());
         add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName), value, onChanged);
     }
 
@@ -141,5 +174,9 @@ public class SettingsScene extends AbstractScene {
         checkBox.getStyleClass().add("optCheckbox");
         desc.getStyleClass().add("optDescription");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
+    }
+    public void updateRamLabel()
+    {
+        ramLabel.setText(application.runtimeSettings.ram == 0 ? "Auto" : Integer.toString(application.runtimeSettings.ram).concat(" MiB"));
     }
 }

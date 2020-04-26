@@ -21,28 +21,13 @@ import java.io.IOException;
 import java.util.List;
 
 public class LoginScene extends AbstractScene {
-    private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
     public boolean isLoginStarted;
+    private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
     private TextField loginField;
     private TextField passwordField;
     private CheckBox savePasswordCheckBox;
+    private CheckBox autoenter;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
-
-    private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
-
-        @Override
-        public String toString(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
-            return authAvailability.displayName;
-        }
-
-        @Override
-        public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String s) {
-            for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth)
-                if (authAvailability.displayName.equals(s))
-                    return authAvailability;
-            return null;
-        }
-    }
 
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
@@ -62,6 +47,9 @@ public class LoginScene extends AbstractScene {
             passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
             LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
         }
+        autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
+        autoenter.setSelected(application.runtimeSettings.autoAuth);
+        autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
             LookupHelper.<Hyperlink>lookup(layout, "#createAccount").setOnAction((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
@@ -101,12 +89,29 @@ public class LoginScene extends AbstractScene {
                             lastAuth = authAvailability;
                         authList.getItems().add(authAvailability);
                     }
-                    if(lastAuth != null) authList.getSelectionModel().select(lastAuth);
+                    if (lastAuth != null) authList.getSelectionModel().select(lastAuth);
                     else authList.getSelectionModel().selectFirst();
-                    hideOverlay(0, null);
+
+                    hideOverlay(0, (event) -> {
+                        if (application.runtimeSettings.encryptedPassword != null && application.runtimeSettings.autoAuth)
+                            contextHelper.runCallback(this::loginWithGui).run();
+                    });
                 }), null);
-            }, (e) -> LauncherEngine.exitLauncher(0));
+            }, (event) -> LauncherEngine.exitLauncher(0));
         }
+    }
+
+    @Override
+    public void reset() {
+        passwordField.getStyleClass().removeAll("hasSaved");
+        passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password"));
+        passwordField.setText("");
+        loginField.setText("");
+    }
+
+    @Override
+    public void errorHandle(Throwable e) {
+        LogHelper.error(e);
     }
 
     private void loginWithGui() {
@@ -154,9 +159,9 @@ public class LoginScene extends AbstractScene {
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();
-                if (application.gui.optionsScene != null) {
+                if (application.gui.optionsOverlay != null) {
                     try {
-                        application.gui.optionsScene.loadAll();
+                        application.gui.optionsOverlay.loadAll();
                     } catch (Throwable ex) {
                         LogHelper.error(ex);
                     }
@@ -172,8 +177,21 @@ public class LoginScene extends AbstractScene {
     public void clearPassword() {
         application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.login = null;
-        passwordField.getStyleClass().removeAll("hasSaved");
-        passwordField.setText("");
-        loginField.setText("");
+    }
+
+    private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
+
+        @Override
+        public String toString(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
+            return authAvailability.displayName;
+        }
+
+        @Override
+        public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String s) {
+            for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth)
+                if (authAvailability.displayName.equals(s))
+                    return authAvailability;
+            return null;
+        }
     }
 }

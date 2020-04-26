@@ -22,6 +22,14 @@
    <Text id="headingDialog" layoutX="30.0" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" wrappingWidth="309.7929631473962" />
    <Text id="textDialog" layoutX="29.0" layoutY="86.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="JUSTIFY" wrappingWidth="309.79296875" />
    <Line id="line" endY="182.0" layoutX="367.0" layoutY="58.0" startY="-58.0" stroke="#dddddd" />
+   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="397.0" layoutY="23.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+      <graphic>
+         <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+      </graphic>
+      <tooltip>
+         <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialog.closeTooltip" />
+      </tooltip>
+   </Button>
    <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="394.0" layoutY="167.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
       <font>
          <Font name="System Bold" size="30.0" />
@@ -38,14 +46,6 @@
       </graphic>
       <tooltip>
          <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialog.applyTooltip" />
-      </tooltip>
-   </Button>
-   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="397.0" layoutY="23.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
-      <graphic>
-         <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
-      </graphic>
-      <tooltip>
-         <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialog.closeTooltip" />
       </tooltip>
    </Button>
 </Pane>
