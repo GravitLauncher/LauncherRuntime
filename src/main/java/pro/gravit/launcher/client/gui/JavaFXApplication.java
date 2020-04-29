@@ -125,6 +125,7 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void stop() {
+        LogHelper.debug("JavaFX method stop invoked");
         LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
     }
 

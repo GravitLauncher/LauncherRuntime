@@ -112,12 +112,14 @@ public class RuntimeSecurityService {
         if (Arrays.equals(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, C_BINARY_PATH),
                 SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, BINARY_PATH)))
             throw new IOException("Invalid update (launcher needs update, but link has old launcher), check LaunchServer config...");
-
-        try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
-            IOHelper.transfer(in, BINARY_PATH);
-        }
-        Files.deleteIfExists(C_BINARY_PATH);
-        builder.start();
+        //To StdJavaRuntimeProvider
+        //try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
+        //    IOHelper.transfer(in, BINARY_PATH);
+        //}
+        //Files.deleteIfExists(C_BINARY_PATH);
+        //builder.start();
+        StdJavaRuntimeProvider.launcherUpdateTempPath = C_BINARY_PATH;
+        StdJavaRuntimeProvider.processBuilder = builder;
     }
 
     public byte[] sign(byte[] data) {
