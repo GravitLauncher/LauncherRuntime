@@ -66,6 +66,8 @@ public class LoginScene extends AbstractScene {
                 if (result.needUpdate) {
                     try {
                         application.securityService.update(result);
+                        contextHelper.runInFxThread(Platform::exit);
+                        return;
                     } catch (Throwable e) {
                         contextHelper.runInFxThread(() -> {
                             getCurrentOverlay().errorHandle(e);

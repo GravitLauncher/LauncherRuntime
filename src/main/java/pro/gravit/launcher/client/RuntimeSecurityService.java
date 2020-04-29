@@ -118,9 +118,6 @@ public class RuntimeSecurityService {
         }
         Files.deleteIfExists(C_BINARY_PATH);
         builder.start();
-        // Kill current instance
-        JVMHelper.RUNTIME.exit(0);
-        throw new AssertionError("Why Launcher wasn't restarted?!");
     }
 
     public byte[] sign(byte[] data) {
