@@ -65,7 +65,11 @@ public class LoginScene extends AbstractScene {
             processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if (result.needUpdate) {
                     try {
+                        LogHelper.debug("Start update processing");
                         application.securityService.update(result);
+                        LogHelper.debug("Exit with Platform.exit");
+                        Platform.exit();
+                        return;
                     } catch (Throwable e) {
                         contextHelper.runInFxThread(() -> {
                             getCurrentOverlay().errorHandle(e);
