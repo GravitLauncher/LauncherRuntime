@@ -10,10 +10,20 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class StdJavaRuntimeProvider implements RuntimeProvider {
     public static Path launcherUpdateTempPath;
     public static ProcessBuilder processBuilder;
+    private static final AtomicReference<StdJavaRuntimeProvider> INSTANCE = new AtomicReference<>();
+
+    public StdJavaRuntimeProvider() {
+        INSTANCE.set(this);
+    }
+
+    public static StdJavaRuntimeProvider getInstance() {
+        return INSTANCE.get();
+    }
 
     public JavaFXApplication getApplication() {
         return JavaFXApplication.getInstance();

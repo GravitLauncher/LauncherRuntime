@@ -10,6 +10,7 @@ import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.*;
 import pro.gravit.launcher.client.events.ClientExitPhase;
+import pro.gravit.launcher.client.events.ClientGuiPhase;
 import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
 import pro.gravit.launcher.client.gui.commands.VersionCommand;
@@ -112,6 +113,7 @@ public class JavaFXApplication extends Application {
         //
         mainStage.setScene(gui.loginScene);
         //
+        LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
         AuthRequest.registerProviders();
     }
 
