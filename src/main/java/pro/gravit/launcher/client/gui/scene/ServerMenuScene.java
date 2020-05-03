@@ -46,6 +46,7 @@ import java.net.InetSocketAddress;
 import java.net.URL;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -335,31 +336,50 @@ public class ServerMenuScene extends AbstractScene {
             this.serverImage.setImage(serverImage);
         }
     }
-
+    private boolean isEnabledDownloadJava()
+    {
+        return application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && (!application.guiModuleConfig.userDisableDownloadJava || application.runtimeSettings.disableJavaDownload);
+    }
     private void launchClient() {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
-            Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
-            LogHelper.info("Start update to %s", target.toString());
-            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
-            application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
-                Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
-                LogHelper.info("Start update to %s", targetClient.toString());
-                application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
-                application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
-                    LogHelper.info("Success update");
-                    application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
-                    doLaunchClient(target, assetHDir, targetClient, clientHDir, profile);
+            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
+            if(isEnabledDownloadJava())
+            {
+                String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
+                Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
+                application.gui.updateOverlay.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), profile, false, (jvmHDir) -> {
+                    downloadClients(profile, jvmDirPath, jvmHDir);
                 });
-            });
+            }
+            else
+            {
+                downloadClients(profile, null, null);
+            }
         }), null);
     }
+    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir)
+    {
+        Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
+        LogHelper.info("Start update to %s", target.toString());
+        application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
+        application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
+            Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
+            LogHelper.info("Start update to %s", targetClient.toString());
+            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
+            application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
+                LogHelper.info("Success update");
+                application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
+                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, jvmDir, jvmHDir);
+            });
+        });
+    }
 
-    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile) {
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, profile, application.runtimeStateMachine.getPlayerProfile(),
-                application.runtimeStateMachine.getAccessToken(), clientHDir, assetHDir, assetHDir/* Replace to jvmHDir */);
+    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), profile, application.runtimeStateMachine.getPlayerProfile(),
+                application.runtimeStateMachine.getAccessToken(), clientHDir, assetHDir, jvmHDir == null ? new HashedDir() : jvmHDir/* Replace to jvmHDir */);
         clientLauncherProcess.params.ram = application.runtimeSettings.ram;
         if (clientLauncherProcess.params.ram > 0) {
             clientLauncherProcess.jvmArgs.add("-Xms" + clientLauncherProcess.params.ram + 'M');

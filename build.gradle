@@ -34,9 +34,9 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.1.2-SNAPSHOT"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.1.2-SNAPSHOT"
-    implementation "pro.gravit.launcher:launcher-client-api:5.1.2-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-core:5.1.4-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.1.4-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-client-api:5.1.4-SNAPSHOT"
     implementation 'com.github.oshi:oshi-core:4.5.2'
     implementation 'com.google.code.gson:gson:2.8.6'
 }

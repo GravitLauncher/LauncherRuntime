@@ -34,6 +34,8 @@ public class RuntimeSettings extends UserSettings {
     public LAUNCHER_LOCALE locale;
     @LauncherNetworkAPI
     public int ram;
+    @LauncherNetworkAPI
+    public boolean disableJavaDownload;
 
     public static RuntimeSettings getDefault() {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
@@ -43,6 +45,7 @@ public class RuntimeSettings extends UserSettings {
         runtimeSettings.fullScreen = false;
         runtimeSettings.ram = 1024;
         runtimeSettings.locale = DEFAULT_LOCALE;
+        runtimeSettings.disableJavaDownload = false;
         return runtimeSettings;
     }
 
