@@ -125,4 +125,9 @@ public class RuntimeSecurityService {
     public byte[] sign(byte[] data) {
         return SecurityHelper.sign(data, JavaRuntimeModule.engine.privateKey);
     }
+
+    public boolean isMayBeDownloadJava()
+    {
+        return JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE;
+    }
 }

@@ -16,6 +16,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.File;
@@ -142,6 +143,10 @@ public class SettingsOverlay extends AbstractOverlay {
         add("Debug", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
         add("AutoEnter", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
         add("Fullscreen", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);
+        if(application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && application.guiModuleConfig.userDisableDownloadJava)
+        {
+            add("DisableJavaDownload", application.runtimeSettings.disableJavaDownload, (value) -> application.runtimeSettings.disableJavaDownload = value);
+        }
     }
 
     @Override
