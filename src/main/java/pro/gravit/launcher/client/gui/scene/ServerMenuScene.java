@@ -233,8 +233,6 @@ public class ServerMenuScene extends AbstractScene {
                 };
                 pane.setOnMouseClicked(handle);
                 LookupHelper.lookup(pane, "#nameServer").setOnMouseClicked(handle);
-                pane.setOnMouseEntered((e) -> LookupHelper.lookup(pane, "#nameServer").getStyleClass().add("nameServerActive"));
-                pane.setOnMouseExited((e) -> LookupHelper.lookup(pane, "#nameServer").getStyleClass().remove("nameServerActive"));
                 ///////////
                 int profilePosition = serverButtonCache.position;
                 if (profilePosition >= serverList.getChildren().size())
