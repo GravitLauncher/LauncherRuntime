@@ -7,12 +7,11 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
+import pro.gravit.launcher.request.secure.HardwareReportRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
 import pro.gravit.launcher.request.websockets.ClientWebSocketService;
-import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
-import pro.gravit.utils.helper.LogHelper;
-import pro.gravit.utils.helper.SecurityHelper;
+import pro.gravit.launcher.utils.HWIDProvider;
+import pro.gravit.utils.helper.*;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,8 +45,15 @@ public class RuntimeSecurityService {
             try {
                 application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
                         .thenAccept((event1) -> {
-                            LogHelper.info("Advanced security level success completed");
-                            notifyWaitObject(true);
+                            if(!event1.needHardwareInfo)
+                            {
+                                LogHelper.info("Advanced security level success completed");
+                                notifyWaitObject(true);
+                            }
+                            else
+                            {
+                                doCollectHardwareInfo(!event1.onlyStatisticInfo);
+                            }
                         }).exceptionally((e) -> {
                     LogHelper.error(e);
                     notifyWaitObject(false);
@@ -62,6 +68,27 @@ public class RuntimeSecurityService {
             notifyWaitObject(false);
             return null;
         });
+    }
+
+    private void doCollectHardwareInfo(boolean needSerial)
+    {
+        CommonHelper.newThread("HardwareInfo Collector Thread", true, () -> {
+            HWIDProvider provider = new HWIDProvider();
+            HardwareReportRequest.HardwareInfo info = provider.getHardwareInfo(needSerial);
+            HardwareReportRequest reportRequest = new HardwareReportRequest();
+            reportRequest.hardware = info;
+            try {
+                application.service.request(reportRequest).thenAccept((event) -> {
+                    LogHelper.info("Advanced security level success completed");
+                    notifyWaitObject(true);
+                }).exceptionally((exc) -> {
+                    application.messageManager.createNotification("Hardware Checker", exc.getCause().getMessage());
+                    return null;
+                });
+            } catch (IOException e) {
+                LogHelper.error(e);
+            }
+        }).start();
     }
 
     private void notifyWaitObject(boolean state) {
