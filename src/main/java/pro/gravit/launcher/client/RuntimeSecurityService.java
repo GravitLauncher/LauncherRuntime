@@ -55,7 +55,7 @@ public class RuntimeSecurityService {
                                 doCollectHardwareInfo(!event1.onlyStatisticInfo);
                             }
                         }).exceptionally((e) -> {
-                    LogHelper.error(e);
+                    application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
                     notifyWaitObject(false);
                     return null;
                 });
