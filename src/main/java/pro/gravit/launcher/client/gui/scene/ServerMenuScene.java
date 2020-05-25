@@ -177,7 +177,7 @@ public class ServerMenuScene extends AbstractScene {
     @Override
     public void reset() {
         lastProfiles = application.runtimeStateMachine.getProfiles();
-        Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new HashMap<>();
+        Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
         avatar.setImage(originalAvatarImage);
         try {
