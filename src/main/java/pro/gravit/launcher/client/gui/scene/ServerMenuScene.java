@@ -48,6 +48,7 @@ import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -197,7 +198,7 @@ public class ServerMenuScene extends AbstractScene {
                 URL customImage = application.tryResource(customImageName);
                 if(customImage != null)
                 {
-                    cache.getImage = () -> new Image("@".concat(customImageName));
+                    cache.getImage = () -> new Image("@../../".concat(customImageName));
                 }
                 cache.position = position;
                 serverButtonCacheMap.put(profile, cache);
