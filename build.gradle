@@ -74,7 +74,7 @@ if (hasProperty('mavenUsername') && hasProperty('mavenPassword') && hasProperty(
 }
 publishing {
     publications {
-        launchserverapi(MavenPublication) {
+        javaruntimeapi(MavenPublication) {
             artifactId = 'javaruntime-api'
             artifact(jar) {
                 classifier ""
@@ -115,5 +115,5 @@ publishing {
 }
 
 signing {
-    sign publishing.publications.launchserverapi
+    sign publishing.publications.javaruntimeapi
 }
