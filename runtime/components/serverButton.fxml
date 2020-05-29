@@ -11,6 +11,6 @@
    <ImageView id="serverLogo" fitHeight="75.0" fitWidth="71.0" layoutX="14.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
       <Image url="@../images/preloader/logo.png" />
    </ImageView>
-   <Hyperlink id="nameServer" layoutX="101.0" layoutY="35.0" prefHeight="40.0" prefWidth="169.0" styleClass="nameServerPassive" text="SERVER" />
+   <Hyperlink id="nameServer" layoutX="101.0" layoutY="35.0" prefHeight="40.0" prefWidth="169.0" text="SERVER" />
    <Text id="genreServer" fontSmoothingType="LCD" layoutX="107.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TechnoMagic" wrappingWidth="169.115234375" />
 </Pane>

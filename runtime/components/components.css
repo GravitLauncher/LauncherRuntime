@@ -33,7 +33,7 @@
     -fx-background-image: url('../images/preloader/logo.png');
 }
 
-.nameServerPassive {
+#nameServer {
     -fx-fill: #2C2C2C;
     -fx-text-fill: #2C2C2C;
     -fx-font-size: 20px;
@@ -41,7 +41,7 @@
     -fx-font-weight: bold;
 }
 
-.nameServerActive {
+#nameServer:hover {
     -fx-fill: #7C4DFF;
     -fx-font-size: 20px;
     -fx-font-weight: bold;

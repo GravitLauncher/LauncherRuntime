@@ -1,6 +1,8 @@
 plugins {
     id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'java-library'
+    id 'maven-publish'
+    id 'signing'
     id 'idea'
     id 'eclipse'
 }
@@ -11,8 +13,18 @@ javafx {
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
-version '1.2.0'
+version '1.3.0'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier = 'javadoc'
+}
 
 tasks.withType(JavaCompile) {
     options.encoding = "UTF-8"
@@ -34,9 +46,9 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.1.4-SNAPSHOT"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.1.4-SNAPSHOT"
-    implementation "pro.gravit.launcher:launcher-client-api:5.1.4-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-core:5.1.6-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.1.6-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-client-api:5.1.6-SNAPSHOT"
     implementation 'com.github.oshi:oshi-core:4.5.2'
     implementation 'com.google.code.gson:gson:2.8.6'
 }
@@ -46,3 +58,62 @@ wrapper {
 }
 
 defaultTasks 'build'
+
+if (hasProperty('mavenUsername') && hasProperty('mavenPassword') && hasProperty('mavenReleaseRepository') && hasProperty('mavenSnapshotRepository')) {
+    publishing {
+        repositories {
+            maven {
+                url = version.endsWith('SNAPSHOT') ? getProperty('mavenSnapshotRepository') : getProperty('mavenReleaseRepository')
+                credentials {
+                    username getProperty('mavenUsername')
+                    password getProperty('mavenPassword')
+                }
+            }
+        }
+    }
+}
+publishing {
+    publications {
+        javaruntimeapi(MavenPublication) {
+            artifactId = 'javaruntime-api'
+            artifact(jar) {
+                classifier ""
+            }
+            artifact sourcesJar
+            artifact javadocJar
+            pom {
+                name = 'GravitLauncher JavaRuntime API'
+                description = 'GravitLauncher JavaRuntime Module API'
+                url = 'https://launcher.gravit.pro'
+                licenses {
+                    license {
+                        name = 'MIT'
+                        url = 'https://mit-license.org'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'gravit'
+                        name = 'Gravit'
+                        email = 'gravit.min@ya.ru'
+                    }
+                    developer {
+                        id = 'zaxar163'
+                        name = 'Zaxar163'
+                        email = 'zahar.vcherachny@yandex.ru'
+                    }
+                }
+
+                scm {
+                    connection = 'scm:git:https://github.com/GravitLauncher/LauncherRuntime.git'
+                    developerConnection = 'scm:git:ssh://git@github.com:GravitLauncher/LauncherRuntime.git'
+                    url = 'https://launcher.gravit.pro/'
+                }
+            }
+        }
+    }
+}
+
+signing {
+    sign publishing.publications.javaruntimeapi
+}

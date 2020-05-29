@@ -47,10 +47,8 @@ import java.net.URL;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -177,7 +175,7 @@ public class ServerMenuScene extends AbstractScene {
     @Override
     public void reset() {
         lastProfiles = application.runtimeStateMachine.getProfiles();
-        Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new HashMap<>();
+        Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
         avatar.setImage(originalAvatarImage);
         try {
@@ -200,7 +198,7 @@ public class ServerMenuScene extends AbstractScene {
                 URL customImage = application.tryResource(customImageName);
                 if(customImage != null)
                 {
-                    cache.getImage = () -> new Image("@".concat(customImageName));
+                    cache.getImage = () -> new Image(customImage.toString());
                 }
                 cache.position = position;
                 serverButtonCacheMap.put(profile, cache);
@@ -233,8 +231,6 @@ public class ServerMenuScene extends AbstractScene {
                 };
                 pane.setOnMouseClicked(handle);
                 LookupHelper.lookup(pane, "#nameServer").setOnMouseClicked(handle);
-                pane.setOnMouseEntered((e) -> LookupHelper.lookup(pane, "#nameServer").getStyleClass().add("nameServerActive"));
-                pane.setOnMouseExited((e) -> LookupHelper.lookup(pane, "#nameServer").getStyleClass().remove("nameServerActive"));
                 ///////////
                 int profilePosition = serverButtonCache.position;
                 if (profilePosition >= serverList.getChildren().size())
