@@ -50,7 +50,7 @@
                </SVGPath>
             </graphic>
             <tooltip>
-               <Tooltip id="copyTooltip" text="%runtime.overlay.debug.debug.hasteTooltip" />
+               <Tooltip id="copyTooltip" text="%runtime.overlay.debug.debug.logUploadTooltip" />
             </tooltip>
          </Button>
          <Button id="copy" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="22.0" layoutY="363.0" prefHeight="40.0" prefWidth="57.0" textFill="WHITE">

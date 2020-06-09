@@ -52,24 +52,24 @@ public class DebugOverlay extends AbstractOverlay {
             clipboard.setContent(clipboardContent);
         });
         LookupHelper.<ButtonBase>lookup(layout, "#hastebin").setOnAction((e) -> {
-            String haste = null;
+            String logUrl = null;
             try {
-                haste = hastebin(output.getText());
-            } catch (IOException ex) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
-                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
+                logUrl = logUpload(output.getText());
+            } catch (IOException | NullPointerException ex) {
                 LogHelper.error(ex);
             }
-
-            if (haste == null)
+            if (logUrl == null) {
+                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.debug.logUpload.fail.header"),
+                        application.getTranslation("runtime.overlay.debug.debug.logUpload.fail.description"));
                 return;
-
+            }
             ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(haste);
+            clipboardContent.putString(logUrl);
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
-
-            application.openURL(haste);
+            application.openURL(logUrl);
+            application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.debug.logUpload.header"),
+                    application.getTranslation("runtime.overlay.debug.debug.logUpload.description"));
         });
         LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction((e) -> {
             //TODO
@@ -164,9 +164,9 @@ public class DebugOverlay extends AbstractOverlay {
         if (writeParametersThread != null) writeParametersThread.interrupt();
     }
 
-    public String hastebin(String log) throws IOException {
+    public String logUpload(String log) throws IOException, NullPointerException {
         if (application.guiModuleConfig.hastebinServer == null)
-            throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
+            throw new NullPointerException("HastebinServer can not be null");
         URL url = new URL(application.guiModuleConfig.hastebinServer + "/documents");
 
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -190,13 +190,9 @@ public class DebugOverlay extends AbstractOverlay {
             reader = new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8);
         try {
             HasteResponse obj = Launcher.gsonManager.gson.fromJson(reader, HasteResponse.class);
-            application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.success.header"),
-                    application.getTranslation("runtime.overlay.debug.hastebin.success.description"));
             return application.guiModuleConfig.hastebinServer + "/" + obj.key;
         } catch (Exception e) {
             if (200 > statusCode || statusCode > 300) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
-                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
                 LogHelper.error("JsonRequest failed. Server response code %d", statusCode);
                 throw new IOException(e);
             }
