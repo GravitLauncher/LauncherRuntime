@@ -47,8 +47,10 @@ import java.net.URL;
 import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -153,24 +155,6 @@ public class ServerMenuScene extends AbstractScene {
         LookupHelper.<ButtonBase>lookup(layout, "#clientLaunch").setOnAction((e) -> launchClient());
         reset();
     }
-    class ServerButtonCache
-    {
-        public Future<Pane> pane;
-        SoftReference<Image> imageRef = new SoftReference<>(null);
-        public int position;
-        Supplier<Image> getImage = () -> originalServerImage;
-        public Image getImage()
-        {
-            Image result = imageRef.get();
-            if(result != null)
-            {
-                return result;
-            }
-            result = getImage.get();
-            imageRef = new SoftReference<>(result);
-            return result;
-        }
-    }
 
     @Override
     public void reset() {
@@ -183,7 +167,7 @@ public class ServerMenuScene extends AbstractScene {
             for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
                 ServerButtonCache cache = new ServerButtonCache();
                 UUID profileUUID = profile.getUUID();
-                if(profileUUID == null) {
+                if (profileUUID == null) {
                     profileUUID = UUID.randomUUID();
                     LogHelper.warning("Profile %s UUID null", profileUUID);
                 }
@@ -196,16 +180,14 @@ public class ServerMenuScene extends AbstractScene {
                 }
                 String customImageName = String.format(SERVER_BUTTON_CUSTOM_IMAGE, profileUUID);
                 URL customImage = application.tryResource(customImageName);
-                if(customImage != null)
-                {
+                if (customImage != null) {
                     cache.getImage = () -> new Image(customImage.toString());
                 }
                 cache.position = position;
                 serverButtonCacheMap.put(profile, cache);
                 position++;
             }
-        } catch (IOException e)
-        {
+        } catch (IOException e) {
             errorHandle(e);
             return;
         }
@@ -282,8 +264,7 @@ public class ServerMenuScene extends AbstractScene {
     @Override
     protected void doShow() {
         super.doShow();
-        if(lastProfiles != application.runtimeStateMachine.getProfiles())
-        {
+        if (lastProfiles != application.runtimeStateMachine.getProfiles()) {
             reset();
         }
     }
@@ -327,37 +308,34 @@ public class ServerMenuScene extends AbstractScene {
             LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", pingerResult.onlinePlayers, pingerResult.maxPlayers));
         else
             LookupHelper.<Text>lookup(layout, "#headingOnline").setText("? / ?");
-        if(serverImage != null)
-        {
+        if (serverImage != null) {
             this.serverImage.setImage(serverImage);
         }
     }
-    private boolean isEnabledDownloadJava()
-    {
+
+    private boolean isEnabledDownloadJava() {
         return application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && (!application.guiModuleConfig.userDisableDownloadJava || application.runtimeSettings.disableJavaDownload);
     }
+
     private void launchClient() {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
             application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
-            if(isEnabledDownloadJava())
-            {
+            if (isEnabledDownloadJava()) {
                 String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
                 Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateOverlay.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), profile, false, (jvmHDir) -> {
+                application.gui.updateOverlay.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), profile, false, (jvmHDir) -> {
                     downloadClients(profile, jvmDirPath, jvmHDir);
                 });
-            }
-            else
-            {
+            } else {
                 downloadClients(profile, null, null);
             }
         }), null);
     }
-    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir)
-    {
+
+    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
         application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
@@ -407,5 +385,22 @@ public class ServerMenuScene extends AbstractScene {
             clientLauncherProcess.start(true);
             showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(clientLauncherProcess.getProcess()));
         }).run();
+    }
+
+    class ServerButtonCache {
+        public Future<Pane> pane;
+        public int position;
+        SoftReference<Image> imageRef = new SoftReference<>(null);
+        Supplier<Image> getImage = () -> originalServerImage;
+
+        public Image getImage() {
+            Image result = imageRef.get();
+            if (result != null) {
+                return result;
+            }
+            result = getImage.get();
+            imageRef = new SoftReference<>(result);
+            return result;
+        }
     }
 }

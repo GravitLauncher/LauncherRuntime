@@ -17,7 +17,6 @@ import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
-import java.io.IOException;
 import java.util.List;
 
 public class LoginScene extends AbstractScene {
@@ -47,7 +46,7 @@ public class LoginScene extends AbstractScene {
             passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
             LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
         }
-        autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
+        autoenter = LookupHelper.lookup(layout, "#autoenter");
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)

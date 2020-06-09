@@ -16,7 +16,6 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.File;
@@ -143,14 +142,14 @@ public class SettingsOverlay extends AbstractOverlay {
         add("Debug", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
         add("AutoEnter", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
         add("Fullscreen", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);
-        if(application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && application.guiModuleConfig.userDisableDownloadJava)
-        {
+        if (application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && application.guiModuleConfig.userDisableDownloadJava) {
             add("DisableJavaDownload", application.runtimeSettings.disableJavaDownload, (value) -> application.runtimeSettings.disableJavaDownload = value);
         }
     }
 
     @Override
-    public void reset() {}
+    public void reset() {
+    }
 
     @Override
     public void errorHandle(Throwable e) {
@@ -180,8 +179,8 @@ public class SettingsOverlay extends AbstractOverlay {
         desc.getStyleClass().add("optDescription");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
     }
-    public void updateRamLabel()
-    {
+
+    public void updateRamLabel() {
         ramLabel.setText(application.runtimeSettings.ram == 0 ? "Auto" : Integer.toString(application.runtimeSettings.ram).concat(" MiB"));
     }
 }

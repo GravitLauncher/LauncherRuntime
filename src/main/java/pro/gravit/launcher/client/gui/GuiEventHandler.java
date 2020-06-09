@@ -19,9 +19,8 @@ public class GuiEventHandler implements ClientWebSocketService.EventHandler {
     @Override
     public <T extends WebSocketEvent> boolean eventHandle(T event) {
         LogHelper.dev("Processing event %s", event.getType());
-        if( event instanceof RequestEvent)
-        {
-            if(!((RequestEvent) event).requestUUID.equals(RequestEvent.eventUUID))
+        if (event instanceof RequestEvent) {
+            if (!((RequestEvent) event).requestUUID.equals(RequestEvent.eventUUID))
                 return false;
         }
         try {

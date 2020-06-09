@@ -61,7 +61,7 @@ public class DebugOverlay extends AbstractOverlay {
                 LogHelper.error(ex);
             }
 
-            if(haste == null)
+            if (haste == null)
                 return;
 
             ClipboardContent clipboardContent = new ClipboardContent();
@@ -164,13 +164,8 @@ public class DebugOverlay extends AbstractOverlay {
         if (writeParametersThread != null) writeParametersThread.interrupt();
     }
 
-    public static class HasteResponse {
-        @LauncherNetworkAPI
-        public String key;
-    }
-
     public String hastebin(String log) throws IOException {
-        if(application.guiModuleConfig.hastebinServer == null)
+        if (application.guiModuleConfig.hastebinServer == null)
             throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
         URL url = new URL(application.guiModuleConfig.hastebinServer + "/documents");
 
@@ -207,6 +202,11 @@ public class DebugOverlay extends AbstractOverlay {
             }
             return null;
         }
+    }
+
+    public static class HasteResponse {
+        @LauncherNetworkAPI
+        public String key;
     }
 
 }

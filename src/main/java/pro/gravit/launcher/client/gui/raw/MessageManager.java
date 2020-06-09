@@ -4,7 +4,6 @@ import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -54,7 +53,7 @@ public class MessageManager {
                 Rectangle2D bounds = screen.getVisualBounds();
                 Stage notificationStage = application.newStage(StageStyle.TRANSPARENT);
                 onClose = () -> {
-                    if(!notificationStage.isShowing()) return;
+                    if (!notificationStage.isShowing()) return;
                     notificationStage.hide();
                     notificationStage.setScene(null);
                     count.getAndDecrement();
@@ -79,7 +78,7 @@ public class MessageManager {
                 Pane root = (Pane) currentScene.getScene().getRoot();
                 root.getChildren().add(finalPane);
                 onClose = () -> {
-                    if(!root.getChildren().remove(finalPane)) return;
+                    if (!root.getChildren().remove(finalPane)) return;
                     localCount.getAndDecrement();
                 };
                 int currentCount = localCount.getAndIncrement();
@@ -149,7 +148,7 @@ public class MessageManager {
                         onClose.run();
                         onCloseCallback.run();
                     });
-                    TextField a = LookupHelper.<TextField>lookup(pane, "#dialogInput");
+                    TextField a = LookupHelper.lookup(pane, "#dialogInput");
                     LookupHelper.<Button>lookup(pane, "#apply").setOnAction((e) -> {
                         onClose.run();
                         onApplyCallback.accept(a.getText());
