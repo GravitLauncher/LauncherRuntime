@@ -28,8 +28,10 @@ import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
+import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
+import pro.gravit.launcher.request.management.PingServerRequest;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
@@ -52,6 +54,7 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class ServerMenuScene extends AbstractScene {
@@ -212,6 +215,22 @@ public class ServerMenuScene extends AbstractScene {
 
         Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverlist").getContent();
         serverList.getChildren().clear();
+        application.runtimeStateMachine.clearServerPingCallbacks();
+        try {
+            Request.service.request(new PingServerRequest()).thenAccept((event) -> {
+                if(event.serverMap != null)
+                {
+                    event.serverMap.forEach((name, value) -> {
+                        application.runtimeStateMachine.setServerPingReport(event.serverMap);
+                    });
+                }
+            }).exceptionally((ex) -> {
+                LogHelper.error(ex.getCause());
+                return null;
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             try {
                 Pane pane = serverButtonCache.pane.get();
@@ -237,24 +256,34 @@ public class ServerMenuScene extends AbstractScene {
                     profilePosition = serverList.getChildren().size();
                 serverList.getChildren().add(profilePosition, pane);
                 ///////////
-                application.workers.submit(() -> {
-                    ServerPinger pinger = new ServerPinger(profile);
-                    ServerPinger.Result result;
-                    try {
-                        result = pinger.ping();
-                    } catch (IOException e) {
-                        result = new ServerPinger.Result(0, 0, "0 / 0");
-                    }
-                    pingerResult.set(result);
-                    ServerPinger.Result finalResult = result;
-                    contextHelper.runInFxThread(() -> {
-                        LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(finalResult.onlinePlayers));
-                        if (application.runtimeStateMachine.getProfile() != null &&
-                                application.runtimeStateMachine.getProfile() == profile) {
-                            LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", finalResult.onlinePlayers, finalResult.maxPlayers));
+                ClientProfile.ServerProfile defaultServer = profile.getDefaultServerProfile();
+                if(defaultServer == null || defaultServer.serverAddress != null)
+                {
+                    application.workers.submit(() -> {
+                        ServerPinger pinger = new ServerPinger(profile);
+                        ServerPinger.Result result;
+                        try {
+                            result = pinger.ping();
+                        } catch (IOException e) {
+                            result = new ServerPinger.Result(0, 0, "0 / 0");
                         }
+                        pingerResult.set(result);
+                        changeOnline(pane, profile, result.onlinePlayers, result.maxPlayers);
                     });
-                });
+                }
+                else if(profile.getServers() != null)
+                {
+                    for(ClientProfile.ServerProfile serverProfile : profile.getServers())
+                    {
+                        if(serverProfile.serverAddress == null) continue;
+                        if(serverProfile.isDefault)
+                        {
+                            application.runtimeStateMachine.addServerPingCallback(serverProfile.name, (report) -> {
+                                changeOnline(pane, profile, report.playersOnline, report.maxPlayers);
+                            });
+                        }
+                    }
+                }
                 if ((application.runtimeSettings.lastProfile == null && lastSelectedServerButton == null) || (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))) {
                     lastSelectedServerButton = pane;
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
@@ -272,6 +301,17 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(e);
             }
         }).start();
+    }
+
+    public void changeOnline(Pane pane, ClientProfile profile, int online, int maxOnline)
+    {
+        contextHelper.runInFxThread(() -> {
+            LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(online));
+            if (application.runtimeStateMachine.getProfile() != null &&
+                    application.runtimeStateMachine.getProfile() == profile) {
+                LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", online, maxOnline));
+            }
+        });
     }
 
     @Override
