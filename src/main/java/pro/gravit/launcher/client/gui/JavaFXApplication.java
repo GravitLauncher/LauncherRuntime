@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -28,6 +29,7 @@ import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
@@ -104,17 +106,28 @@ public class JavaFXApplication extends Application {
             runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
         try (InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale.name))) {
             resources = new PropertyResourceBundle(input);
+        } catch (FileNotFoundException e)
+        {
+            JavaRuntimeModule.noLocaleAlert(runtimeSettings.locale.name);
+            Platform.exit();
         }
-        fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);
-        mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
-        // Overlay loading
-        gui = new GuiObjectsContainer(this);
-        gui.init();
-        //
-        mainStage.setScene(gui.loginScene);
-        //
-        LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
-        AuthRequest.registerProviders();
+        try {
+            fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);
+            mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
+            // Overlay loading
+            gui = new GuiObjectsContainer(this);
+            gui.init();
+            //
+            mainStage.setScene(gui.loginScene);
+            //
+            LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
+            AuthRequest.registerProviders();
+        } catch (Throwable e)
+        {
+            LogHelper.error(e);
+            JavaRuntimeModule.errorHandleAlert(e);
+            Platform.exit();
+        }
     }
 
     private void registerCommands() {
