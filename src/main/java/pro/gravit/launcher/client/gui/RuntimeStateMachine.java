@@ -29,7 +29,7 @@ public class RuntimeStateMachine {
 
     public void setAuthResult(AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if (rawAuthResult.session != 0)
+        if (rawAuthResult.session != null)
             Request.setSession(rawAuthResult.session);
     }
 
