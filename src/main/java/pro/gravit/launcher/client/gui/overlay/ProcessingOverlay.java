@@ -45,6 +45,9 @@ public class ProcessingOverlay extends AbstractOverlay {
     }
 
     public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+        processRequest(scene, message, request, onSuccess, null, onError);
+    }
+    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request, Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
         scene.showOverlay(this, (e) -> {
             try {
                 description.setText(message);
@@ -52,6 +55,7 @@ public class ProcessingOverlay extends AbstractOverlay {
                     LogHelper.dev("RequestFuture complete normally");
                     onSuccess.accept(result);
                 }).exceptionally((error) -> {
+                    if(onException != null) onException.accept(error);
                     ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
                     hide(2500, scene, onError);
                     return null;

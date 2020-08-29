@@ -140,6 +140,9 @@ public abstract class AbstractScene implements AllowDisable {
     protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
+    protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
+        application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onException, onError);
+    }
 
     public AbstractOverlay getCurrentOverlay() {
         return currentOverlay;
