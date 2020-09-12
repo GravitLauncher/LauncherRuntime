@@ -138,6 +138,8 @@ public class JavaFXApplication extends Application {
         ConsoleManager.handler.registerCategory(new CommandHandler.Category(category, "runtime"));
     }
 
+
+
     @Override
     public void stop() {
         LogHelper.debug("JavaFX method stop invoked");

@@ -18,6 +18,9 @@ import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
 import pro.gravit.launcher.hasher.HashedFile;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
+import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
 import pro.gravit.launcher.request.update.UpdateRequest;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -101,7 +104,7 @@ public class UpdateOverlay extends AbstractOverlay {
         }
     }
 
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         UpdateRequest request = new UpdateRequest(dirName);
         try {
             application.service.request(request).thenAccept(updateRequestEvent -> {
@@ -110,8 +113,15 @@ public class UpdateOverlay extends AbstractOverlay {
                 lastUpdateTime.set(System.currentTimeMillis());
                 lastDownloaded.set(0);
                 totalSize = 0;
-                if (optionalsEnabled)
-                    profile.pushOptionalFile(updateRequestEvent.hdir, digest);
+                if (optionalsEnabled) {
+                    for(OptionalAction action : view.getDisabledActions())
+                    {
+                        if(action instanceof OptionalActionFile)
+                        {
+                            ((OptionalActionFile) action).disableInHashedDir(updateRequestEvent.hdir);
+                        }
+                    }
+                }
                 try {
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
                     if (!IOHelper.exists(dir))

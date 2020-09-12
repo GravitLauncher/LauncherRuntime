@@ -19,6 +19,7 @@ import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalType;
+import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -68,17 +69,18 @@ public class OptionsOverlay extends AbstractOverlay {
         LogHelper.error(e);
     }
 
-    public void addProfileOptionals(ClientProfile profile) {
-        for (OptionalFile optionalFile : profile.getOptional()) {
+    public void addProfileOptionals(OptionalView view) {
+        for (OptionalFile optionalFile : view.all) {
             optionalFile.clearAllWatchers();
             if (!optionalFile.visible)
                 continue;
-            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, optionalFile.mark,
+
+            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, view.enabled.contains(optionalFile),
                     optionalFile.subTreeLevel, (isSelected) -> {
                         if (isSelected)
-                            profile.markOptional(optionalFile);
+                            view.enable(optionalFile);
                         else
-                            profile.unmarkOptional(optionalFile);
+                            view.disable(optionalFile);
                     });
             optionalFile.registerWatcher((o, isSelected) -> setCheckBox.accept(isSelected));
 
@@ -106,6 +108,7 @@ public class OptionsOverlay extends AbstractOverlay {
 
     public void saveAll() throws IOException {
         List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
+        Map<ClientProfile, OptionalView> optionalViewMap = application.runtimeStateMachine.getOptionalViewMap();
         if (profiles == null)
             return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
@@ -114,10 +117,13 @@ public class OptionsOverlay extends AbstractOverlay {
             OptionalListEntry entry = new OptionalListEntry();
             entry.name = clientProfile.getTitle();
             entry.profileUUID = clientProfile.getUUID();
-            for (OptionalFile optionalFile : clientProfile.getOptional()) {
-                if (optionalFile.visible)
-                    entry.enabled.add(new OptionalListEntryPair(optionalFile));
-            }
+            OptionalView view = optionalViewMap.get(clientProfile);
+            view.all.forEach((optionalFile -> {
+                if(optionalFile.visible) {
+                    boolean isEnabled = view.enabled.contains(optionalFile);
+                    entry.enabled.add(new OptionalListEntryPair(optionalFile, isEnabled));
+                }
+            }));
             list.add(entry);
         }
         try (Writer writer = IOHelper.newWriter(optionsFile)) {
@@ -127,6 +133,7 @@ public class OptionsOverlay extends AbstractOverlay {
 
     public void loadAll() throws IOException {
         List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
+        Map<ClientProfile, OptionalView> optionalViewMap = application.runtimeStateMachine.getOptionalViewMap();
         if (profiles == null)
             return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
@@ -148,15 +155,15 @@ public class OptionsOverlay extends AbstractOverlay {
                     LogHelper.warning("Optional: profile %s(%s) not found", entry.name, entry.profileUUID);
                     continue;
                 }
-
+                OptionalView view = optionalViewMap.get(selectedProfile);
                 for (OptionalListEntryPair entryPair : entry.enabled) {
                     try {
                         OptionalFile file = selectedProfile.getOptionalFile(entryPair.name, entryPair.type);
                         if (file.visible) {
                             if (entryPair.mark)
-                                selectedProfile.markOptional(file);
+                                view.enable(file);
                             else
-                                selectedProfile.unmarkOptional(file);
+                                view.disable(file);
                         }
                     } catch (Exception exc) {
                         LogHelper.warning("Optional: in profile %s markOptional mod %s failed", selectedProfile.getTitle(), entryPair.name);
@@ -171,10 +178,10 @@ public class OptionsOverlay extends AbstractOverlay {
         public String name;
         public boolean mark;
 
-        public OptionalListEntryPair(OptionalFile optionalFile) {
+        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled) {
             type = optionalFile.type;
             name = optionalFile.name;
-            mark = optionalFile.mark;
+            mark = enabled;
         }
     }
 

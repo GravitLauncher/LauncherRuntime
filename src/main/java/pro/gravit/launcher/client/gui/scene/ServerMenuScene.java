@@ -28,6 +28,7 @@ import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
+import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
@@ -122,7 +123,7 @@ public class ServerMenuScene extends AbstractScene {
                 if (application.runtimeStateMachine.getProfile() == null)
                     return;
                 showOverlay(application.gui.optionsOverlay, (ec) -> {
-                    application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getProfile());
+                    application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
                 });
             } catch (Exception ex) {
                 LogHelper.error(ex);
@@ -386,7 +387,7 @@ public class ServerMenuScene extends AbstractScene {
             {
                 String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
                 Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateOverlay.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), profile, false, (jvmHDir) -> {
+                application.gui.updateOverlay.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (jvmHDir) -> {
                     downloadClients(profile, jvmDirPath, jvmHDir);
                 });
             }
@@ -401,20 +402,20 @@ public class ServerMenuScene extends AbstractScene {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
         application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
-        application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), profile, false, (assetHDir) -> {
+        application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
             application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
-            application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), profile, true, (clientHDir) -> {
+            application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
                 application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
-                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, jvmDir, jvmHDir);
+                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.runtimeStateMachine.getOptionalView(), jvmDir, jvmHDir);
             });
         });
     }
 
-    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), profile, application.runtimeStateMachine.getPlayerProfile(),
+    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), clientDir.resolve("resourcepacks"), profile, application.runtimeStateMachine.getPlayerProfile(), view,
                 application.runtimeStateMachine.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = application.runtimeSettings.ram;
         if (clientLauncherProcess.params.ram > 0) {
