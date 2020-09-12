@@ -101,7 +101,15 @@ public class UpdateOverlay extends AbstractOverlay {
             Files.delete(subDir);
         }
     }
+    private static class PathRemapperData {
+        public String key;
+        public String value;
 
+        public PathRemapperData(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
     @SuppressWarnings("rawtypes")
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         UpdateRequest request = new UpdateRequest(dirName);
@@ -122,7 +130,7 @@ public class UpdateOverlay extends AbstractOverlay {
                     }
                 }
                 try {
-                    Map<String, String> pathRemapper = new HashMap<>();
+                    LinkedList<PathRemapperData> pathRemapper = new LinkedList<>();
                     if(optionalsEnabled)
                     {
                         Set<OptionalActionFile> fileActions = view.getActionsByClass(OptionalActionFile.class);
@@ -131,11 +139,12 @@ public class UpdateOverlay extends AbstractOverlay {
                             file.injectToHashedDir(updateRequestEvent.hdir);
                             file.files.forEach((k,v) -> {
                                 if(v == null || v.isEmpty()) return;
-                                pathRemapper.put(v,k); //reverse (!)
+                                pathRemapper.add(new PathRemapperData(v, k)); //reverse (!)
                                 LogHelper.dev("Remap prepare %s to %s", v, k);
                             });
                         }
                     }
+                    pathRemapper.sort(Comparator.comparingInt(c -> -c.key.length())); // Support deep remap
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
                     if (!IOHelper.exists(dir))
                         Files.createDirectories(dir);
@@ -148,11 +157,11 @@ public class UpdateOverlay extends AbstractOverlay {
                             case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
-                                for(Map.Entry<String, String> remapEntry : pathRemapper.entrySet())
+                                for(PathRemapperData remapEntry : pathRemapper)
                                 {
-                                    if(path.startsWith(remapEntry.getKey()))
+                                    if(path.startsWith(remapEntry.key))
                                     {
-                                        urlPath = path.replace(remapEntry.getKey(), remapEntry.getValue());
+                                        urlPath = path.replace(remapEntry.key, remapEntry.value);
                                         LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
                                     }
                                 }
