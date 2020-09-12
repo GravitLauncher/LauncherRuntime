@@ -28,9 +28,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -104,6 +102,7 @@ public class UpdateOverlay extends AbstractOverlay {
         }
     }
 
+    @SuppressWarnings("rawtypes")
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         UpdateRequest request = new UpdateRequest(dirName);
         try {
@@ -123,6 +122,20 @@ public class UpdateOverlay extends AbstractOverlay {
                     }
                 }
                 try {
+                    Map<String, String> pathRemapper = new HashMap<>();
+                    if(optionalsEnabled)
+                    {
+                        Set<OptionalActionFile> fileActions = view.getActionsByClass(OptionalActionFile.class);
+                        for(OptionalActionFile file : fileActions)
+                        {
+                            file.injectToHashedDir(updateRequestEvent.hdir);
+                            file.files.forEach((k,v) -> {
+                                if(v == null || v.isEmpty()) return;
+                                pathRemapper.put(v,k); //reverse (!)
+                                LogHelper.dev("Remap prepare %s to %s", v, k);
+                            });
+                        }
+                    }
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
                     if (!IOHelper.exists(dir))
                         Files.createDirectories(dir);
@@ -130,11 +143,20 @@ public class UpdateOverlay extends AbstractOverlay {
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
                     final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
+                        String urlPath = path;
                         switch (entry.getType()) {
                             case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
-                                adds.add(new AsyncDownloader.SizedFile(path, file.size));
+                                for(Map.Entry<String, String> remapEntry : pathRemapper.entrySet())
+                                {
+                                    if(path.startsWith(remapEntry.getKey()))
+                                    {
+                                        urlPath = path.replace(remapEntry.getKey(), remapEntry.getValue());
+                                        LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
+                                    }
+                                }
+                                adds.add(new AsyncDownloader.SizedFile(urlPath, path, file.size));
                                 break;
                             case DIR:
                                 Files.createDirectories(dir.resolve(path));
