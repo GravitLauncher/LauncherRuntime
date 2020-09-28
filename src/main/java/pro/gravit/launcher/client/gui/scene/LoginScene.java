@@ -9,9 +9,14 @@ import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
+import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
+import pro.gravit.launcher.request.auth.password.Auth2FAPassword;
+import pro.gravit.launcher.request.auth.password.AuthECPassword;
+import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
@@ -134,17 +139,29 @@ public class LoginScene extends AbstractScene {
         }
         GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
         boolean savePassword = savePasswordCheckBox.isSelected();
-        login(login, encryptedPassword, authId, savePassword);
+        login(login, encryptedPassword, authId, null, savePassword);
     }
 
     private byte[] encryptPassword(String password) throws Exception {
         return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
 
-    private void login(String login, byte[] password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, boolean savePassword) {
+    private void login(String login, byte[] password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
         isLoginStarted = true;
         LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
-        AuthRequest authRequest = new AuthRequest(login, password, authId.name);
+        AuthRequest authRequest;
+        if(totp == null)
+        {
+            authRequest = new AuthRequest(login, password, authId.name);
+        }
+        else
+        {
+            Auth2FAPassword auth2FAPassword = new Auth2FAPassword();
+            auth2FAPassword.firstPassword = new AuthECPassword(password);
+            auth2FAPassword.secondPassword = new AuthTOTPPassword();
+            ((AuthTOTPPassword) auth2FAPassword.secondPassword).totp = totp;
+            authRequest = new AuthRequest(login, auth2FAPassword, authId.name, true, AuthRequest.ConnectTypes.CLIENT);
+        }
         processRequest(application.getTranslation("runtime.overlay.processing.text.auth"), authRequest, (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
@@ -154,6 +171,23 @@ public class LoginScene extends AbstractScene {
             }
             onGetProfiles();
 
+        }, (error) -> {
+            LogHelper.info("Handle error: ", error.getClass().getName());
+            Throwable exception = error.getCause();
+            if(exception instanceof RequestException)
+            {
+                if(totp != null) {
+                    application.messageManager.createNotification(application.getTranslation("runtime.scenes.login.dialog2fa.header"), exception.getMessage());
+                    return;
+                }
+                String message = exception.getMessage();
+                if(message.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE))
+                {
+                    application.messageManager.showTextDialog(application.getTranslation("runtime.scenes.login.dialog2fa.header"), (result) -> {
+                        login(login, password, authId, result, savePassword);
+                    }, null, true);
+                }
+            }
         }, null);
     }
 

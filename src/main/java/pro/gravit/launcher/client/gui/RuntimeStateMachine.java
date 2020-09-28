@@ -7,6 +7,7 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalTrigger;
+import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.management.PingServerReportRequest;
 
@@ -20,6 +21,7 @@ public class RuntimeStateMachine {
     private List<ClientProfile> profiles;
     private ClientProfile profile;
     private Map<String, PingServerReportRequest.PingServerReport> serverPingReport;
+    private Map<ClientProfile, OptionalView> optionalViewMap;
     @FunctionalInterface
     public interface OnServerPingReportCallback
     {
@@ -29,7 +31,7 @@ public class RuntimeStateMachine {
 
     public void setAuthResult(AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if (rawAuthResult.session != 0)
+        if (rawAuthResult.session != null)
             Request.setSession(rawAuthResult.session);
     }
 
@@ -55,6 +57,10 @@ public class RuntimeStateMachine {
         serverPingReportCallbackMap.put(name, callback);
     }
 
+    public Map<ClientProfile, OptionalView> getOptionalViewMap() {
+        return optionalViewMap;
+    }
+
     public void clearServerPingCallbacks()
     {
         serverPingReportCallbackMap.clear();
@@ -63,7 +69,14 @@ public class RuntimeStateMachine {
     public void setProfilesResult(ProfilesRequestEvent rawProfilesResult) {
         this.profiles = rawProfilesResult.profiles;
         this.profiles.sort(ClientProfile::compareTo);
-        for (ClientProfile profile : this.profiles) {
+        if(this.optionalViewMap == null) this.optionalViewMap = new HashMap<>();
+        else this.optionalViewMap.clear();
+        for(ClientProfile profile : profiles)
+        {
+            this.optionalViewMap.put(profile, new OptionalView(profile));
+        }
+        //Triggers
+        this.optionalViewMap.forEach((profile, view) -> {
             for (OptionalFile optionalFile : profile.getOptional()) {
                 if (optionalFile.triggers == null)
                     continue;
@@ -89,17 +102,17 @@ public class RuntimeStateMachine {
 
                 if (!anyNeed) {
                     if (anyTriggered)
-                        profile.markOptional(optionalFile);
+                        view.enable(optionalFile);
                 } else {
                     if (allNeedTriggered) {
-                        profile.markOptional(optionalFile);
+                        view.enable(optionalFile);
                     } else {
                         optionalFile.visible = false;
-                        profile.unmarkOptional(optionalFile);
+                        view.disable(optionalFile);
                     }
                 }
             }
-        }
+        });
     }
 
     public String getUsername() {
@@ -118,6 +131,10 @@ public class RuntimeStateMachine {
 
     public void setProfile(ClientProfile profile) {
         this.profile = profile;
+    }
+
+    public OptionalView getOptionalView() {
+        return this.optionalViewMap.get(this.profile);
     }
 
     public PlayerProfile getPlayerProfile() {

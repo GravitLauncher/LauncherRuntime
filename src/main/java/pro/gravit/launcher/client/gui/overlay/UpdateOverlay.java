@@ -18,6 +18,9 @@ import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
 import pro.gravit.launcher.hasher.HashedFile;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
+import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
 import pro.gravit.launcher.request.update.UpdateRequest;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -25,9 +28,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
@@ -100,8 +101,17 @@ public class UpdateOverlay extends AbstractOverlay {
             Files.delete(subDir);
         }
     }
+    private static class PathRemapperData {
+        public String key;
+        public String value;
 
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, ClientProfile profile, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
+        public PathRemapperData(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+    @SuppressWarnings("rawtypes")
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         UpdateRequest request = new UpdateRequest(dirName);
         try {
             application.service.request(request).thenAccept(updateRequestEvent -> {
@@ -110,9 +120,31 @@ public class UpdateOverlay extends AbstractOverlay {
                 lastUpdateTime.set(System.currentTimeMillis());
                 lastDownloaded.set(0);
                 totalSize = 0;
-                if (optionalsEnabled)
-                    profile.pushOptionalFile(updateRequestEvent.hdir, digest);
+                if (optionalsEnabled) {
+                    for(OptionalAction action : view.getDisabledActions())
+                    {
+                        if(action instanceof OptionalActionFile)
+                        {
+                            ((OptionalActionFile) action).disableInHashedDir(updateRequestEvent.hdir);
+                        }
+                    }
+                }
                 try {
+                    LinkedList<PathRemapperData> pathRemapper = new LinkedList<>();
+                    if(optionalsEnabled)
+                    {
+                        Set<OptionalActionFile> fileActions = view.getActionsByClass(OptionalActionFile.class);
+                        for(OptionalActionFile file : fileActions)
+                        {
+                            file.injectToHashedDir(updateRequestEvent.hdir);
+                            file.files.forEach((k,v) -> {
+                                if(v == null || v.isEmpty()) return;
+                                pathRemapper.add(new PathRemapperData(v, k)); //reverse (!)
+                                LogHelper.dev("Remap prepare %s to %s", v, k);
+                            });
+                        }
+                    }
+                    pathRemapper.sort(Comparator.comparingInt(c -> -c.key.length())); // Support deep remap
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
                     if (!IOHelper.exists(dir))
                         Files.createDirectories(dir);
@@ -120,11 +152,20 @@ public class UpdateOverlay extends AbstractOverlay {
                     HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
                     final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
+                        String urlPath = path;
                         switch (entry.getType()) {
                             case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
-                                adds.add(new AsyncDownloader.SizedFile(path, file.size));
+                                for(PathRemapperData remapEntry : pathRemapper)
+                                {
+                                    if(path.startsWith(remapEntry.key))
+                                    {
+                                        urlPath = path.replace(remapEntry.key, remapEntry.value);
+                                        LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
+                                    }
+                                }
+                                adds.add(new AsyncDownloader.SizedFile(urlPath, path, file.size));
                                 break;
                             case DIR:
                                 Files.createDirectories(dir.resolve(path));
