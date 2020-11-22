@@ -13,7 +13,7 @@ javafx {
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
-version '1.5.0'
+version '1.5.1-SNAPSHOT'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
 
 task sourcesJar(type: Jar) {
