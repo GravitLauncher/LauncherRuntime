@@ -1,5 +1,7 @@
 package pro.gravit.launcher.client.gui.raw;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -150,10 +152,13 @@ public class MessageManager {
                         onCloseCallback.run();
                     });
                     TextField a = LookupHelper.<TextField>lookup(pane, "#dialogInput");
-                    LookupHelper.<Button>lookup(pane, "#apply").setOnAction((e) -> {
+                    EventHandler<ActionEvent> eventHandler = (e) -> {
                         onClose.run();
                         onApplyCallback.accept(a.getText());
-                    });
+                    };
+                    LookupHelper.<Button>lookup(pane, "#apply").setOnAction(eventHandler);
+                    a.setOnAction(eventHandler);
+                    a.requestFocus();
                 }, isLauncher);
     }
 
