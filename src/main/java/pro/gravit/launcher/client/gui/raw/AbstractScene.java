@@ -32,6 +32,7 @@ public abstract class AbstractScene implements AllowDisable {
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
     private boolean enabled = true;
+    private boolean hideTransformStarted = false;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         this.fxmlPath = fxmlPath;
@@ -103,6 +104,12 @@ public abstract class AbstractScene implements AllowDisable {
             return;
         if (currentOverlay == null)
             return;
+        if(hideTransformStarted) {
+            if(onFinished != null) {
+                contextHelper.runInFxThread(() -> onFinished.handle(null));
+            }
+        }
+        hideTransformStarted = true;
         enable();
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
@@ -116,6 +123,7 @@ public abstract class AbstractScene implements AllowDisable {
             if (onFinished != null) {
                 onFinished.handle(e);
             }
+            hideTransformStarted = false;
         });
     }
 

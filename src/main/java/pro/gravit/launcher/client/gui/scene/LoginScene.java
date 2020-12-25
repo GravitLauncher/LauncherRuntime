@@ -183,6 +183,7 @@ public class LoginScene extends AbstractScene {
                 String message = exception.getMessage();
                 if(message.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE))
                 {
+                    this.hideOverlay(0, null); //Force hide overlay
                     application.messageManager.showTextDialog(application.getTranslation("runtime.scenes.login.dialog2fa.header"), (result) -> {
                         login(login, password, authId, result, savePassword);
                     }, null, true);

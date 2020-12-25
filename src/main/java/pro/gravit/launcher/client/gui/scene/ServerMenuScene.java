@@ -217,21 +217,6 @@ public class ServerMenuScene extends AbstractScene {
         Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverlist").getContent();
         serverList.getChildren().clear();
         application.runtimeStateMachine.clearServerPingCallbacks();
-        try {
-            Request.service.request(new PingServerRequest()).thenAccept((event) -> {
-                if(event.serverMap != null)
-                {
-                    event.serverMap.forEach((name, value) -> {
-                        application.runtimeStateMachine.setServerPingReport(event.serverMap);
-                    });
-                }
-            }).exceptionally((ex) -> {
-                LogHelper.error(ex.getCause());
-                return null;
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             try {
                 Pane pane = serverButtonCache.pane.get();
@@ -276,7 +261,6 @@ public class ServerMenuScene extends AbstractScene {
                 {
                     for(ClientProfile.ServerProfile serverProfile : profile.getServers())
                     {
-                        if(serverProfile.serverAddress == null) continue;
                         if(serverProfile.isDefault)
                         {
                             application.runtimeStateMachine.addServerPingCallback(serverProfile.name, (report) -> {
@@ -295,6 +279,21 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(e);
             }
         });
+        try {
+            Request.service.request(new PingServerRequest()).thenAccept((event) -> {
+                if(event.serverMap != null)
+                {
+                    event.serverMap.forEach((name, value) -> {
+                        application.runtimeStateMachine.setServerPingReport(event.serverMap);
+                    });
+                }
+            }).exceptionally((ex) -> {
+                LogHelper.error(ex.getCause());
+                return null;
+            });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         CommonHelper.newThread("SkinHead Downloader Thread", true, () -> {
             try {
                 updateSkinHead();
