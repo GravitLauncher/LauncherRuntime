@@ -22,7 +22,7 @@ public class GuiModuleConfig {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravit.pro/createAccount.php";
         config.forgotPassURL = "https://gravit.pro/fogotPass.php";
-        config.hastebinServer = "https://hasteb.in";
+        config.hastebinServer = "https://hastebin.com";
         config.enableDownloadJava = false;
         config.userDisableDownloadJava = true;
         config.jvmWindows64Dir = "java-windows-x64";
