@@ -158,7 +158,7 @@ public class OptionsOverlay extends AbstractOverlay {
                 OptionalView view = optionalViewMap.get(selectedProfile);
                 for (OptionalListEntryPair entryPair : entry.enabled) {
                     try {
-                        OptionalFile file = selectedProfile.getOptionalFile(entryPair.name, entryPair.type);
+                        OptionalFile file = selectedProfile.getOptionalFile(entryPair.name);
                         if (file.visible) {
                             if (entryPair.mark)
                                 view.enable(file);
@@ -174,12 +174,10 @@ public class OptionsOverlay extends AbstractOverlay {
     }
 
     public static class OptionalListEntryPair {
-        public OptionalType type;
         public String name;
         public boolean mark;
 
         public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled) {
-            type = optionalFile.type;
             name = optionalFile.name;
             mark = enabled;
         }
