@@ -80,6 +80,9 @@ public class RuntimeStateMachine {
             for (OptionalFile optionalFile : profile.getOptional()) {
                 if (optionalFile.triggers == null)
                     continue;
+                if(optionalFile.permissions != 0 && rawAuthResult != null && rawAuthResult.permissions != null) {
+                    optionalFile.visible = (optionalFile.permissions & rawAuthResult.permissions.permissions) == optionalFile.permissions;
+                }
 
                 boolean anyTriggered = false;
                 boolean anyNeed = false;
