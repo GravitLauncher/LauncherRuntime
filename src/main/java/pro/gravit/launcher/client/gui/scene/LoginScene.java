@@ -60,11 +60,11 @@ public class LoginScene extends AbstractScene {
             }
         });
         passwordField = LookupHelper.lookup(layout, "#auth", "#password");
-        savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
+        savePasswordCheckBox = LookupHelper.lookup(layout , "#leftPane", "#savePassword");
         if (application.runtimeSettings.encryptedPassword != null) {
             passwordField.getStyleClass().add("hasSaved");
             passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
-            LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
+            LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
         }
         autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
         autoenter.setSelected(application.runtimeSettings.autoAuth);

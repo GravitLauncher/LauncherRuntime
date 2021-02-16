@@ -20,10 +20,17 @@ RadioButton {
 .check-box {
     -fx-background-color: transparent;
     -fx-text-fill: #606060;
-    -fx-background-image: url('images/icons/uncheck.png');
+    -fx-background-image: url('images/icons/checkbox_off.png');
     -fx-background-repeat: no-repeat;
     -fx-label-padding: 0 0 0 10px;
     -fx-padding: 0 0 0 0px;
+    -fx-font-family: Open Sans;
+    -fx-font-size: 10px;
+    -fx-font-style: normal;
+    -fx-font-weight: 400;
+    -fx-line-height: 14px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-align: left;
 }
 
 .check-box .mark {
@@ -36,7 +43,7 @@ RadioButton {
 
 .check-box:selected {
     -fx-background-color: transparent;
-    -fx-background-image: url('images/icons/check.png');
+    -fx-background-image: url('images/icons/checkbox_on.png');
     -fx-background-repeat: no-repeat;
 }
 
