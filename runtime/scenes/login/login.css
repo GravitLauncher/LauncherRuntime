@@ -4,7 +4,8 @@
 #layout {
     -fx-background-color: transparent;
     -fx-background-size: cover;
-    -fx-background-image: url('../../images/login.png');
+    -fx-background-color: white;
+    -fx-background-image: url('../../images/fon.png');
 }
 
 #loginPane,
@@ -20,10 +21,12 @@
 #goAuth {
     -fx-background-color: transparent;
     -fx-background-repeat: no-repeat;
-    -fx-background-image: url('../../images/icons/auth.png');
     -fx-text-fill: #fff;
     -fx-font-weight: bold;
     -fx-font-size: 11pt;
+}
+#authActive:hover {
+    -fx-cursor: hand;
 }
 
 #logo {
@@ -42,19 +45,32 @@
 }
 
 #forgotPass {
-    -fx-font-size: 8pt;
-    -fx-text-fill: #A9A9A9;
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 9px;
+    -fx-line-height: 12px;
+    -fx-align-items: center;
+    -fx-text-align: right;
+    -fx-letter-spacing: 0.25px;
 }
 
 #forgotPass:hover,
 #forgotPass:pressed {
     -fx-text-fill: #606060;
+    -fx-cursor: hand;
 }
 
 #createAccount {
-    -fx-font-size: 10pt;
-    -fx-font-weight: bold;
-    -fx-text-fill: #FFDE6B;
+    -fx-font-size: 9pt;
+    -fx-text-fill: #09BC6A;
+    -fx-font-family: Open Sans;
+    -fx-font-size: 9px;
+    -fx-font-style: normal;
+    -fx-font-weight: 700;
+    -fx-line-height: 12px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-align: left;
 }
 
 #textLogin {
@@ -65,6 +81,7 @@
 #createAccount:hover,
 #createAccount:pressed {
     -fx-text-fill: #FFC700;
+    -fx-cursor: hand;
 }
 
 #newsArea {

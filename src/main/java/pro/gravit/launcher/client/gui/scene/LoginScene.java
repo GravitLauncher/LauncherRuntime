@@ -3,6 +3,8 @@ package pro.gravit.launcher.client.gui.scene;
 import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientExitPhase;
@@ -32,6 +34,7 @@ public class LoginScene extends AbstractScene {
     private TextField passwordField;
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
+    private Pane authActive;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     public LoginScene(JavaFXApplication application) {
@@ -40,12 +43,23 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void doInit() {
-        Node layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#authPane");
+        Node layout = LookupHelper.lookup(scene.getRoot(), "#layout");
         sceneBaseInit(layout);
-        loginField = LookupHelper.lookup(layout, "#login");
-        if (application.runtimeSettings.login != null)
+        authActive = LookupHelper.lookup(layout, "#authActive");
+        loginField = LookupHelper.lookup(layout, "#auth", "#login");
+        if (application.runtimeSettings.login != null) {
             loginField.setText(application.runtimeSettings.login);
-        passwordField = LookupHelper.lookup(layout, "#password");
+            showAuthButton();;
+        }
+        loginField.textProperty().addListener((e) -> {
+            if(!loginField.getText().isEmpty()) {
+                showAuthButton();
+            }
+            else {
+                hideAuthButton();
+            }
+        });
+        passwordField = LookupHelper.lookup(layout, "#auth", "#password");
         savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
         if (application.runtimeSettings.encryptedPassword != null) {
             passwordField.getStyleClass().add("hasSaved");
@@ -56,14 +70,14 @@ public class LoginScene extends AbstractScene {
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Hyperlink>lookup(layout, "#createAccount").setOnAction((e) ->
+            LookupHelper.<Text>lookup(layout, "#header", "#controls", "#links", "#registerPane","#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
         if (application.guiModuleConfig.forgotPassURL != null)
-            LookupHelper.<Hyperlink>lookup(layout, "#forgotPass").setOnAction((e) ->
+            LookupHelper.<Text>lookup(layout, "#header", "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = LookupHelper.lookup(layout, "#combologin");
         authList.setConverter(new AuthConverter());
-        LookupHelper.<ButtonBase>lookup(layout, "#goAuth").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
+        authActive.setOnMouseClicked((e) -> contextHelper.runCallback(this::loginWithGui).run());
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
@@ -108,6 +122,14 @@ public class LoginScene extends AbstractScene {
                 }), null);
             }, (event) -> LauncherEngine.exitLauncher(0));
         }
+    }
+
+    public void showAuthButton() {
+        authActive.setVisible(true);
+    }
+
+    public void hideAuthButton() {
+        authActive.setVisible(false);
     }
 
     @Override

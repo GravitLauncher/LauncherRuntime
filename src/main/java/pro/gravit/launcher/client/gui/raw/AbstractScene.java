@@ -183,8 +183,15 @@ public abstract class AbstractScene implements AllowDisable {
     }
 
     protected void sceneBaseInit(Node node) {
-        LookupHelper.<ButtonBase>lookup(node, "#close").setOnAction((e) -> currentStage.close());
-        LookupHelper.<ButtonBase>lookup(node, "#hide").setOnAction((e) -> currentStage.hide());
+        try {
+            LookupHelper.<ButtonBase>lookup(node,  "#header", "#controls", "#exit").setOnAction((e) -> currentStage.close());
+            LookupHelper.<ButtonBase>lookup(node,  "#header", "#controls", "#minimize").setOnAction((e) -> currentStage.hide());
+        } catch (LookupHelper.LookupException ex)  {
+            // Old scenes
+            LookupHelper.<ButtonBase>lookup(node,  "#close").setOnAction((e) -> currentStage.close());
+            LookupHelper.<ButtonBase>lookup(node,  "#hide").setOnAction((e) -> currentStage.hide());
+        }
+
         currentStage.enableMouseDrag(node);
     }
 }

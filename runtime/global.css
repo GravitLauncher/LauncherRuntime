@@ -49,12 +49,16 @@ RadioButton {
 }
 
 .text-input {
-    -fx-focus-color: transparent;
-    -fx-background-repeat: no-repeat;
-    -fx-text-fill: #606060;
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
     -fx-font-weight: bold;
-    -fx-font-size: 11pt;
-    -fx-prompt-text-fill: #A9A9A9;
+    -fx-font-size: 14px;
+    -fx-line-height: 19px;
+    -fx-text-fill: #000000;
+    -fx-align-items: center;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-indent: 20px;
+    -fx-text-box-border: transparent;
     -fx-background-color: transparent;
 }
 
@@ -142,22 +146,13 @@ RadioButton {
     -fx-text-fill: white;
 }
 
-#close,
-#hide,
-#settings,
-#console,
-#exit,
-#back {
+.icon-button {
     -fx-background-position: center;
     -fx-background-radius: 0;
     -fx-background-color: transparent;
 }
 
-#close:hover,
-#hide:hover,
-#settings:hover,
-#exit:hover,
-#console:hover #back:hover {
+.icon-button:hover {
     -fx-opacity: 0.8;
 }
 
