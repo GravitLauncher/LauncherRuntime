@@ -62,6 +62,20 @@ RadioButton {
     -fx-background-color: transparent;
 }
 
+.logoText {
+    -fx-font-family: Open Sans;
+    -fx-font-size: 10px;
+    -fx-font-style: normal;
+    -fx-font-weight: 700;
+    -fx-line-height: 14px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-align: center;
+    -fx-fill: rgba(53, 53, 53, 0.38);
+}
+.logoTextBlack {
+    -fx-fill: #000000;
+}
+
 .InputError {
     -fx-background-radius: 0;
     -fx-background-color: white;
