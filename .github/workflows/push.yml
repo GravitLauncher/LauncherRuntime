@@ -1,9 +1,9 @@
 name: push
 on:
   push:
-  create:
-    tags:
-      - v*
+#  create:
+#    tags:
+#      - v*
 jobs:
   launcher:
     name: LauncherRuntime
