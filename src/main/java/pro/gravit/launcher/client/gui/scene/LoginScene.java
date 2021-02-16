@@ -77,7 +77,7 @@ public class LoginScene extends AbstractScene {
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = LookupHelper.lookup(layout, "#combologin");
         authList.setConverter(new AuthConverter());
-        authActive.setOnMouseClicked((e) -> contextHelper.runCallback(this::loginWithGui).run());
+        LookupHelper.<ButtonBase>lookup(authActive, "#authButton").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
