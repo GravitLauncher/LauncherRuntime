@@ -177,30 +177,6 @@ RadioButton {
     -fx-opacity: 0.8;
 }
 
-#apply {
-    -fx-background-radius: 0;
-    -fx-background-color: #7C4DFF;
-    -fx-background-size: cover;
-    -fx-font-size: 13pt;
-}
-
-#deny {
-    -fx-background-radius: 0;
-    -fx-background-color: #A23131;
-    -fx-background-size: cover;
-    -fx-font-size: 13pt;
-}
-
-#apply:hover,
-#apply:pressed {
-    -fx-background-color: #6B36FF;
-}
-
-#deny:hover,
-#deny:pressed {
-    -fx-background-color: #AB2727;
-}
-
 #version {
     -fx-text-fill: #939394;
     -fx-font-size: 10pt;

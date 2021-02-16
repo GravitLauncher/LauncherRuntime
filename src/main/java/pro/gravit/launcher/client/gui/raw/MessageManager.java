@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseButton;
@@ -125,8 +126,8 @@ public class MessageManager {
 
     public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback, boolean isLauncher) {
         showAbstractDialog("components/dialogApply.fxml", header, (pane) -> {
-            LookupHelper.<Text>lookup(pane, "#headingDialog").setText(header);
-            LookupHelper.<Text>lookup(pane, "#textDialog").setText(text);
+            LookupHelper.<Labeled>lookup(pane, "#headingDialog").setText(header);
+            LookupHelper.<Labeled>lookup(pane, "#textDialog").setText(text);
         }, (pane, onClose) -> {
             LookupHelper.<Button>lookup(pane, "#close").setOnAction((e) -> {
                 onClose.run();

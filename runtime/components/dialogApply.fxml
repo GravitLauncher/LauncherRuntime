@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.geometry.Point3D?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<Pane fx:id="dialogPane" prefHeight="240.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="dialogPane" prefHeight="221.0" prefWidth="589.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <padding>
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
@@ -19,51 +18,34 @@
         <URL value="@components.css" />
         <URL value="@../global.css" />
     </stylesheets>
-    <Text id="headingDialog" fontSmoothingType="LCD" layoutX="30.0" layoutY="38.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialogApply.headingDialog" textAlignment="CENTER" wrappingWidth="319.7929739356041" />
-    <Text id="textDialog" fontSmoothingType="LCD" layoutX="28.0" layoutY="94.0" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="JUSTIFY" wrappingWidth="319.79296875" />
-    <Line id="line" endY="171.0" layoutX="370.0" layoutY="69.0" startY="-69.0" stroke="#dddddd" />
-    <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="399.0" layoutY="23.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+    <Label id="headingDialog" alignment="CENTER" contentDisplay="CENTER" layoutY="8.0" prefHeight="55.0" prefWidth="589.0" styleClass="dialogHeader" text="%runtime.scenes.components.dialogApply.headingDialog" textAlignment="CENTER" />
+    <Label id="textDialog" alignment="TOP_LEFT" layoutX="81.0" layoutY="59.0" prefHeight="111.0" prefWidth="424.0" styleClass="dialogText" textAlignment="JUSTIFY" />
+    <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="548.0" layoutY="15.0" prefHeight="40.0" prefWidth="40.0" styleClass="icon-button" textAlignment="CENTER" textFill="#464646">
         <graphic>
-          <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
+          <SVGPath id="icons" content="M3.35714 0C1.78599 0 0.5 1.28599 0.5 2.85714V21.1429C0.5 22.714 1.78599 24 3.35714 24H21.6429C23.214 24 24.5 22.714 24.5 21.1429V2.85714C24.5 1.28599 23.214 0 21.6429 0H3.35714ZM3.35714 1.14286H21.6429C22.5963 1.14286 23.3571 1.90372 23.3571 2.85714V21.1429C23.3571 22.0963 22.5963 22.8571 21.6429 22.8571H3.35714C2.40372 22.8571 1.64286 22.0963 1.64286 21.1429V2.85714C1.64286 1.90372 2.40372 1.14286 3.35714 1.14286ZM7.76116 6.45312L6.95312 7.26116L11.692 12L6.95312 16.7388L7.76116 17.5469L12.5 12.808L17.2388 17.5469L18.0469 16.7388L13.308 12L18.0469 7.26116L17.2388 6.45312L12.5 11.192L7.76116 6.45312Z" fill="#09BC6A" styleClass="icon-button" />
         </graphic>
         <tooltip>
           <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialogApply.closeTooltip" />
         </tooltip>
     </Button>
-    <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="395.0" layoutY="107.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+    <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="206.0" layoutY="180.0" prefHeight="22.0" prefWidth="86.0" styleClass="dialogButton" text="Принять" textFill="WHITE">
         <font>
           <Font name="System Bold" size="30.0" />
         </font>
         <opaqueInsets>
           <Insets />
         </opaqueInsets>
-        <graphic>
-          <SVGPath id="icoApply" content="M13 0C5.83203 0 0 5.83203 0 13C0 20.168 5.83203 26 13 26C20.168 26 26 20.168 26 13C26 5.83203 20.168 0 13 0ZM13 2C19.0859 2 24 6.91406 24 13C24 19.0859 19.0859 24 13 24C6.91406 24 2 19.0859 2 13C2 6.91406 6.91406 2 13 2ZM19.2812 8.28125L12 15.5625L7.71875 11.2812L6.28125 12.7188L11.2812 17.7188L12 18.4062L12.7188 17.7188L20.7188 9.71875L19.2812 8.28125Z&#10;" fill="WHITE">
-              <rotationAxis>
-                  <Point3D />
-              </rotationAxis>
-          </SVGPath>
-        </graphic>
-        <tooltip>
-          <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialogApply.applyTooltip" />
-        </tooltip>
     </Button>
-    <Button id="deny" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="395.0" layoutY="167.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
+    <Button id="deny" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="303.0" layoutY="180.0" prefHeight="22.0" prefWidth="86.0" text="Отклонить" textFill="WHITE">
         <font>
           <Font name="System Bold" size="30.0" />
         </font>
         <opaqueInsets>
           <Insets />
         </opaqueInsets>
-        <graphic>
-          <SVGPath id="icoDeny" content="M13 0C5.83203 0 0 5.83203 0 13C0 20.168 5.83203 26 13 26C20.168 26 26 20.168 26 13C26 5.83203 20.168 0 13 0ZM13 2C19.0859 2 24 6.91406 24 13C24 15.7266 23.0117 18.207 21.375 20.125L6.03125 4.46875C7.92578 2.91797 10.3516 2 13 2ZM4.625 5.875L19.9688 21.5312C18.0742 23.082 15.6484 24 13 24C6.91406 24 2 19.0859 2 13C2 10.2734 2.98828 7.79297 4.625 5.875Z" fill="WHITE">
-              <rotationAxis>
-                  <Point3D />
-              </rotationAxis>
-          </SVGPath>
-        </graphic>
-        <tooltip>
-          <Tooltip id="rejectTooltip" text="%runtime.scenes.components.dialogApply.rejectTooltip" />
-        </tooltip>
+      <styleClass>
+         <String fx:value="dialogButton" />
+         <String fx:value="dialogRedButton" />
+      </styleClass>
     </Button>
 </Pane>
