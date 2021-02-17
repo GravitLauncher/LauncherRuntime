@@ -26,7 +26,7 @@
    </ImageView>
    <Pane layoutX="-2.0" layoutY="90.0" prefHeight="410.0" prefWidth="900.0">
       <children>
-         <Pane layoutX="15.0" prefHeight="374.0" prefWidth="877.0" style="-fx-background-radius: 10px;" styleClass="blackbox" />
+         <Pane layoutX="15.0" prefHeight="374.0" prefWidth="877.0" styleClass="blackbox" />
          <TextArea id="output" editable="false" layoutX="15.0" layoutY="-7.0" prefHeight="361.0" prefWidth="877.0" wrapText="true" />
          <Pane id="cmdinput" layoutY="354.0" prefHeight="58.0" prefWidth="900.0">
             <children>

@@ -70,7 +70,5 @@
 #cmdinput{
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
 }
-.blackbox{
-    -fx-background-color: rgba(224, 224, 224, 0.28);
-}
+
 /*-- DrLeonardo Design for GravitLauncher --*/
