@@ -34,11 +34,17 @@
     -fx-background-color: transparent, #A4B3BA, transparent, #fff;
 }
 .dialogButton:hover {
-    -fx-background-color: #AB2727;
+    -fx-background-color: #A4B3BA;
+    -fx-text-fill: #FFFFFF;
 }
+
 .dialogRedButton {
     -fx-background-color: transparent, #FF6F80, transparent, #fff;
     -fx-text-fill: #FF6F80;
+}
+.dialogRedButton:hover {
+    -fx-background-color: #FF6F80;
+    -fx-text-fill: #FFFFFF;
 }
 
 #dialogBackground {

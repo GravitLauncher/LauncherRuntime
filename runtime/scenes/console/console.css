@@ -1,6 +1,6 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
 
-#background {
+#layout {
     -fx-background-color: transparent;
     -fx-background-size: cover;
     -fx-background-image: url('../../images/fon.png');
@@ -11,12 +11,6 @@
        -fx-border-radius: 20;
     -fx-background-radius: 20;
 -fx-background-color:#fff;
-}
-
-#headingConsole {
-    -fx-fill: #323232;
-    -fx-font-weight: bold;
-    -fx-font-size: 14pt;
 }
 
 

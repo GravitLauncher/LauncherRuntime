@@ -43,7 +43,6 @@ public class ConsoleScene extends AbstractScene {
         LogHelper.addOutput(this::append, LogHelper.OutputTypes.PLAIN);
         commandLine.setOnAction(this::send);
         LookupHelper.<ButtonBase>lookup(layout, "#send").setOnAction(this::send);
-        LookupHelper.<Labeled>lookup(layout, "#version").setText(getMiniLauncherInfo());
     }
 
     @Override

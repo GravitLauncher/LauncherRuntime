@@ -84,6 +84,17 @@ RadioButton {
     -fx-fill: #000000;
 }
 
+/* Console and Debug */
+.sceneHeader {
+    -fx-font-family: Open Sans;
+    -fx-font-size: 18px;
+    -fx-font-style: normal;
+    -fx-font-weight: 700;
+    -fx-line-height: 21px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-align: left;
+}
+
 .InputError {
     -fx-background-radius: 0;
     -fx-background-color: white;
@@ -199,10 +210,6 @@ RadioButton {
     -fx-label-padding: 0 0 0 5px;
     -fx-padding: 3 0 0 0px;
     -fx-pref-width: 750px;
-}
-
-#icons {
-    -fx-fill: #A4B3BA;
 }
 
 
