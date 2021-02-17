@@ -17,7 +17,7 @@
 <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <Pane id="header" prefHeight="100.0" prefWidth="900.0">
       <children>
-         <Label id="headingConsole" layoutY="30.0" prefHeight="40.0" prefWidth="347.0" styleClass="sceneHeader" text="%runtime.scenes.console.console.headingConsole" />
+         <Label id="headingConsole" layoutX="30.0" layoutY="30.0" prefHeight="40.0" prefWidth="347.0" styleClass="sceneHeader" text="%runtime.scenes.console.console.headingConsole" />
          <Pane id="controls" layoutX="221.5" layoutY="34.0" prefHeight="32.0" prefWidth="644.0">
             <children>
                <Button id="minimize" alignment="CENTER" contentDisplay="CENTER" layoutX="570.0" prefHeight="32.0" prefWidth="32.0" styleClass="icon-button" textAlignment="CENTER">
