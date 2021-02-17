@@ -46,7 +46,10 @@
 }
 
 #notificationPane {
-    -fx-background-color: #fff;
+   -fx-border-radius: 10px;
+    -fx-padding: 10;
+-fx-border-color: white;
+-fx-background-color:#fff;
 }
 
 #serverButtonSelected,

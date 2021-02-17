@@ -15,6 +15,7 @@ RadioButton {
 
 .whiteBox {
     -fx-background-color: #ffffff;
+   
 }
 
 .check-box {
@@ -201,7 +202,7 @@ RadioButton {
 }
 
 #icons {
-    -fx-fill: #323232;
+    -fx-fill: #A4B3BA;
 }
 
 
