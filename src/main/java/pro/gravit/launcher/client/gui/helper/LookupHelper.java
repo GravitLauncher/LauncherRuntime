@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.helper;
 
 import javafx.scene.Node;
+import javafx.scene.Parent;
 
 public class LookupHelper {
     @SuppressWarnings("unchecked")
@@ -16,6 +17,30 @@ public class LookupHelper {
             }
         }
         return (T) current;
+    }
+
+    public static class Point2D {
+        public double x;
+        public double y;
+
+        public Point2D(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
+    }
+
+    public static <T extends Node> Point2D getAbsoluteCords(Node child, Node parent) {
+        Point2D point2D = new Point2D(0,0);
+        // Node current = child //Crash in runtime
+        Parent current = (Parent) child;
+        while(current != parent) {
+            point2D.x += current.getLayoutX();
+            point2D.y += current.getLayoutY();
+            current = current.getParent();
+            if(current == null) break;
+        }
+        return point2D;
     }
 
     public static class LookupException extends RuntimeException {
