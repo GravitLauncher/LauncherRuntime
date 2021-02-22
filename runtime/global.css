@@ -113,7 +113,11 @@ RadioButton {
 .scroll-bar:vertical {
     -fx-background-color: transparent;
 }
-
+.blackbox{
+    -fx-background-color: rgba(224, 224, 224, 0.28);
+    -fx-background-radius:10px;
+    
+}
 .increment-button,
 .decrement-button,
 .increment-arrow,
@@ -177,7 +181,9 @@ RadioButton {
 .icon-button:hover {
     -fx-opacity: 0.8;
 }
-
+#iconsError{
+    -fx-fill: #FF6F80;
+}
 #apply {
     -fx-background-radius: 0;
     -fx-background-color: #7C4DFF;
