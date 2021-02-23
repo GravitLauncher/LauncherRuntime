@@ -84,17 +84,6 @@ RadioButton {
     -fx-fill: #000000;
 }
 
-/* Console and Debug */
-.sceneHeader {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 18px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 21px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: left;
-}
-
 .InputError {
     -fx-background-radius: 0;
     -fx-background-color: white;
@@ -124,7 +113,11 @@ RadioButton {
 .scroll-bar:vertical {
     -fx-background-color: transparent;
 }
-
+.blackbox{
+    -fx-background-color: rgba(224, 224, 224, 0.28);
+    -fx-background-radius:10px;
+    
+}
 .increment-button,
 .decrement-button,
 .increment-arrow,
@@ -188,6 +181,32 @@ RadioButton {
 .icon-button:hover {
     -fx-opacity: 0.8;
 }
+#iconsError{
+    -fx-fill: #FF6F80;
+}
+#apply {
+    -fx-background-radius: 0;
+    -fx-background-color: #7C4DFF;
+    -fx-background-size: cover;
+    -fx-font-size: 13pt;
+}
+
+#deny {
+    -fx-background-radius: 0;
+    -fx-background-color: #A23131;
+    -fx-background-size: cover;
+    -fx-font-size: 13pt;
+}
+
+#apply:hover,
+#apply:pressed {
+    -fx-background-color: #6B36FF;
+}
+
+#deny:hover,
+#deny:pressed {
+    -fx-background-color: #AB2727;
+}
 
 #version {
     -fx-text-fill: #939394;
@@ -210,6 +229,10 @@ RadioButton {
     -fx-label-padding: 0 0 0 5px;
     -fx-padding: 3 0 0 0px;
     -fx-pref-width: 750px;
+}
+
+#icons {
+    -fx-fill: #A4B3BA;
 }
 
 
