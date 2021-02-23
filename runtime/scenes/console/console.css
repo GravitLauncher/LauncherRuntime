@@ -4,13 +4,10 @@
     -fx-background-color: transparent;
     -fx-background-size: cover;
     -fx-background-image: url('../../images/fon.png');
-    -fx-background-radius: 10px;
 }
 
 #consolePane {
-       -fx-border-radius: 20;
-    -fx-background-radius: 20;
--fx-background-color:#fff;
+    -fx-background-color: transparent;
 }
 
 #headingConsole {
@@ -70,5 +67,7 @@
 #cmdinput{
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
 }
-
+.blackbox{
+    -fx-background-color: rgba(224, 224, 224, 0.28);;
+}
 /*-- DrLeonardo Design for GravitLauncher --*/
