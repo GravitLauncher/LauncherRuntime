@@ -84,6 +84,15 @@ RadioButton {
     -fx-fill: #000000;
 }
 
+.sceneHeader {
+    -fx-font-family: Open Sans;
+    -fx-font-size: 18px;
+    -fx-font-style: normal;
+    -fx-font-weight: 700;
+    -fx-line-height: 21px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-align: left;
+}
 .InputError {
     -fx-background-radius: 0;
     -fx-background-color: white;
