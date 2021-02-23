@@ -83,6 +83,7 @@ RadioButton {
 .logoTextBlack {
     -fx-fill: #000000;
 }
+
 .sceneHeader {
     -fx-font-family: Open Sans;
     -fx-font-size: 18px;
