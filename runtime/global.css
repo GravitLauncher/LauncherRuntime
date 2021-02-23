@@ -84,15 +84,6 @@ RadioButton {
     -fx-fill: #000000;
 }
 
-.sceneHeader {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 18px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 21px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: left;
-}
 .InputError {
     -fx-background-radius: 0;
     -fx-background-color: white;
@@ -195,21 +186,24 @@ RadioButton {
 }
 #apply {
     -fx-background-radius: 0;
-    -fx-background-color: #7C4DFF;
     -fx-background-size: cover;
-    -fx-font-size: 13pt;
+    -fx-background-color:transparent;
+    
 }
-
+#close,
+#hide{
+    -fx-background-color:transparent;
+}
 #deny {
     -fx-background-radius: 0;
-    -fx-background-color: #A23131;
+    
     -fx-background-size: cover;
-    -fx-font-size: 13pt;
+    
 }
 
 #apply:hover,
 #apply:pressed {
-    -fx-background-color: #6B36FF;
+    
 }
 
 #deny:hover,
