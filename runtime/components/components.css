@@ -24,28 +24,24 @@
     -fx-font-family: Open Sans;
     -fx-font-style: normal;
     -fx-font-weight: bold;
-    -fx-font-size: 8px;
+    -fx-font-size: 3px;
     -fx-line-height: 11px;
     -fx-align-items: center;
     -fx-text-align: center;
     -fx-letter-spacing: 0.25px;
     -fx-text-fill: #A4B3BA;
-    -fx-background-radius: 3px, 1px, 2px, 1px;;
-    -fx-background-color: transparent, #A4B3BA, transparent, #fff;
-}
-.dialogButton:hover {
-    -fx-background-color: #A4B3BA;
-    -fx-text-fill: #FFFFFF;
+    -fx-background-radius: 3px, 1px, 2px, 1px;
+    -fx-background-color: transparent;
+    -fx-font-size:8px;
 }
 
+
 .dialogRedButton {
-    -fx-background-color: transparent, #FF6F80, transparent, #fff;
+    -fx-background-color: transparent;
     -fx-text-fill: #FF6F80;
+    -fx-font-size:8px;
 }
-.dialogRedButton:hover {
-    -fx-background-color: #FF6F80;
-    -fx-text-fill: #FFFFFF;
-}
+
 
 #dialogBackground {
     -fx-background-color: transparent;
@@ -122,7 +118,10 @@
 #dialogApplyPane,
 #dialogTextInput {
     -fx-background-color: #fff;
-    -fx-border-color: #C7C7C7;
+    -fx-border-color: #fff;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
+    -fx-border-radius:10px;
+    -fx-background-radius:10pxy;
 }
 
 #forgot2fa {
