@@ -120,7 +120,7 @@
                      <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" layoutX="-4.0" layoutY="-2.0" style="-fx-stroke: #A4B3BA; -fx-fill: transparent;" />
                      <SVGPath id="icons" content="M60.5 14.0632L68.3981 14.0632L66.3118 16.2035L67.0883 17L70.5 13.5L67.0883 10L66.3119 10.7965L68.3981 12.9368L60.5 12.9368L60.5 14.0632Z" layoutY="-3.0" />
                      <SVGPath id="icons" content="M70.5 17.9368H62.6019L64.6882 15.7965L63.9117 15L60.5 18.5L63.9117 22L64.6882 21.2035L62.6019 19.0632H70.5V17.9368Z" layoutY="-2.0" />
-                     <Text id="icons" layoutX="6.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 10px;" text="Hastebin" wrappingWidth="39.29522705078125" />
+                     <Text id="icons" layoutX="6.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 10px;" text="Hastebin" wrappingWidth="51.99999999999994" />
                   </children>
                </Pane>
             </graphic>
