@@ -1,8 +1,5 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
-@font-face {
-    font-family: 'tt-norms';
-    src: url('../../fonts/tt-norms.ttf');
-}
+
 #overlay {
     -fx-background-color: transparent;
     -fx-background-size: cover;
