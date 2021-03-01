@@ -1,9 +1,12 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
-
+@font-face {
+    font-family: 'tt-norms';
+    src: url('../../fonts/tt-norms.ttf');
+}
 #overlay {
     -fx-background-color: transparent;
     -fx-background-size: cover;
-    -fx-background-image: url('../../images/update.png');
+    -fx-background-image: url('../../images/fon.png');
 }
 
 #headingUpdate {
@@ -16,7 +19,7 @@
     -fx-background-radius: 0;
     -fx-font-family: monospace;
     -fx-font-weight: 400;
-    -fx-fill: #323232;
+    -fx-fill: grey;
     -fx-font-size: 12pt;
 }
 
@@ -46,8 +49,9 @@
 }
 
 .progress-bar>.bar {
-    -fx-background-image: url("../../images/icons/update.png");
-    -fx-background-color: transparent;
+    
+    
+    -fx-background-color: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #5D35B9);
     -fx-background-insets: 0;
     -fx-background-radius: 0;
     -fx-padding: 0;
@@ -76,13 +80,36 @@
     -fx-fill: #AB2727;
 }
 
-#speed,
-#volume,
+.speed{
+    -fx-fill: linear-gradient(#8D4CE0 42.72%, #5D35B9 100%);
+    -fx-font-size: 17pt;
+    -fx-font-weight: bold;
+}
+.speed-text{
+    -fx-font-size: 11pt;
+    -fx-font-weight: bold;
+}
+
 #phases,
 #file {
     -fx-text-fill: #323232;
     -fx-font-size: 14pt;
 }
 
-
+.speedError{
+    -fx-fill:#FF6F80; 
+}
+.progressError>.bar{
+    -fx-background-color: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #B93639);
+}
+/* buttons */
+.invisible{
+    -fx-opacity:0;
+}.visible{
+    -fx-opacity:1;
+}
+#reload,
+#cancel{
+    -fx-background-color:transparent;
+}
 /*-- DrLeonardo Design for GravitLauncher --*/

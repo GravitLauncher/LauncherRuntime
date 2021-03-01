@@ -2,11 +2,9 @@ package pro.gravit.launcher.client.gui.overlay;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
-import javafx.scene.control.ButtonBase;
-import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -39,10 +37,14 @@ public class UpdateOverlay extends AbstractOverlay {
     private final AtomicLong lastDownloaded = new AtomicLong(0);
     private ProgressBar progressBar;
     private Circle[] phases;
-    private Label speed;
+    private Text speed;
     private Label volume;
     private TextArea logOutput;
     private Text currentStatus;
+    private Button reload;
+    private Button cancel;
+    private Text speedtext;
+    private Text speederr;
     private long totalSize;
     private int currentPhase = 0;
     private double phaseOffset;
@@ -63,12 +65,22 @@ public class UpdateOverlay extends AbstractOverlay {
             phaseOffset = (circle.getRadius() * 2.0) / progressBar.getPrefWidth();
             progressRatio -= phaseOffset;
         }
+       
         phaseRatio = progressRatio / 4.0;
         speed = LookupHelper.lookup(pane, "#speed");
+        speederr = LookupHelper.lookup(pane, "#speedErr");
+        speedtext = LookupHelper.lookup(pane, "#speed-text");
+        reload = LookupHelper.lookup(pane, "#reload");
+        cancel = LookupHelper.lookup(pane, "#cancel");
         volume = LookupHelper.lookup(pane, "#volume");
         logOutput = LookupHelper.lookup(pane, "#outputUpdate");
         currentStatus = LookupHelper.lookup(pane, "#headingUpdate");
         logOutput.setText("");
+        LookupHelper.<ButtonBase>lookup(pane, "#reload").setOnAction(
+                (e) -> reset()
+        );
+        LookupHelper.<ButtonBase>lookup(pane, "#cancel").setOnAction(
+                (e) -> Platform.exit());
         LookupHelper.<ButtonBase>lookup(pane, "#close").setOnAction(
                 (e) -> Platform.exit());
         LookupHelper.<ButtonBase>lookup(pane, "#hide").setOnAction((e) -> {
@@ -228,9 +240,9 @@ public class UpdateOverlay extends AbstractOverlay {
         long lastTime = lastUpdateTime.get();
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastTime >= 130) {
-            String format = String.format("%.1f MB / %.1f MB", (double) newValue / (1024.0 * 1024.0), (double) totalSize / (1024.0 * 1024.0));
+            String format = String.format(" [%.1f MB]", (double) newValue / (1024.0 * 1024.0), (double) totalSize / (1024.0 * 1024.0));
             double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (currentTime - lastTime) * 1000.0;
-            String speedFormat = String.format("%.2f MiB/s", bytesSpeed * 8 / (1000.0 * 1000.0));
+            String speedFormat = String.format("%.2f ", bytesSpeed * 8 / (1000.0 * 1000.0));
             ContextHelper.runInFxThreadStatic(() -> {
                 volume.setText(format);
                 speed.setText(speedFormat);
@@ -246,7 +258,17 @@ public class UpdateOverlay extends AbstractOverlay {
         progressBar.progressProperty().setValue(0);
         logOutput.clear();
         volume.setText("");
-        speed.setText("");
+        speed.setText("0");
+       reload.setDisable(true);
+        reload.setStyle("-fx-opacity: 0");
+        cancel.setDisable(false);
+        cancel.setStyle("-fx-opacity: 1");
+        progressBar.getStyleClass().removeAll("progress");
+        speed.getStyleClass().removeAll("speedError");
+        speed.setStyle("-fx-opacity: 1");
+        speedtext.setStyle("-fx-opacity: 1");
+        speederr.setStyle("-fx-opacity: 0");
+       
         for (Circle circle : phases) {
             circle.getStyleClass().removeAll("phaseActive");
             circle.getStyleClass().removeAll("phaseError");
@@ -258,6 +280,14 @@ public class UpdateOverlay extends AbstractOverlay {
     public void errorHandle(Throwable e) {
         addLog(String.format("Exception %s: %s", e.getClass(), e.getMessage() == null ? "" : e.getMessage()));
         phases[currentPhase].getStyleClass().add("phaseError");
+        progressBar.getStyleClass().add("progressError");
+        speed.setStyle("-fx-opacity: 0");
+        speedtext.setStyle("-fx-opacity: 0");
+        speederr.setStyle("-fx-opacity: 1");
         LogHelper.error(e);
+        reload.setDisable(false);
+        reload.setStyle("-fx-opacity: 1");
+        cancel.setDisable(true);
+        cancel.setStyle("-fx-opacity: 0");
     }
 }
