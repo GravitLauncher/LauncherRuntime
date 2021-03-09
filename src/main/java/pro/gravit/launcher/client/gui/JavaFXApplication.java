@@ -19,6 +19,7 @@ import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.MessageManager;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
+import pro.gravit.launcher.debug.DebugMain;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.request.Request;
@@ -27,6 +28,7 @@ import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
@@ -35,6 +37,8 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutorService;
@@ -44,6 +48,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
+    private static Path runtimeDirectory = null;
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newCachedThreadPool();
     public RuntimeSettings runtimeSettings;
@@ -57,6 +62,7 @@ public class JavaFXApplication extends Application {
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
     private PrimaryStage mainStage;
+    private boolean debugMode;
 
     public JavaFXApplication() {
         INSTANCE.set(this);
@@ -101,6 +107,18 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
+        // If debugging
+        try {
+            Class.forName("pro.gravit.launcher.debug.DebugMain");
+            if(DebugMain.IS_DEBUG.get()) {
+                runtimeDirectory = IOHelper.WORKING_DIR.resolve("runtime");
+                debugMode = true;
+            }
+        } catch (Throwable e) {
+            if(!(e instanceof ClassNotFoundException)) {
+                LogHelper.error(e);
+            }
+        }
         // System loading
         if (runtimeSettings.locale == null)
             runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
@@ -146,13 +164,28 @@ public class JavaFXApplication extends Application {
         LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
     }
 
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
     private InputStream getResource(String name) throws IOException {
-        return IOHelper.newInput(Launcher.getResourceURL(name));
+        return IOHelper.newInput(getResourceURL(name));
+    }
+
+    public static URL getResourceURL(String name) throws IOException {
+        if(runtimeDirectory == null) {
+            return Launcher.getResourceURL(name);
+        } else {
+            Path target = runtimeDirectory.resolve(name);
+            if(!Files.exists(target))
+                throw new FileNotFoundException();
+            return target.toUri().toURL();
+        }
     }
 
     public URL tryResource(String name) {
         try {
-            return Launcher.getResourceURL(name);
+            return getResourceURL(name);
         } catch (IOException e) {
             return null;
         }
@@ -162,7 +195,7 @@ public class JavaFXApplication extends Application {
     private FXMLLoader newFXMLLoader(String name) {
         FXMLLoader loader;
         try {
-            loader = new FXMLLoader(IOHelper.getResourceURL(String.format("runtime/%s", name)));
+            loader = new FXMLLoader(JavaFXApplication.getResourceURL(String.format("%s", name)));
             if (resources != null) {
                 loader.setResources(resources);
             }

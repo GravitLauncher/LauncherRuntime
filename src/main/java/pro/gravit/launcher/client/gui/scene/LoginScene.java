@@ -23,6 +23,7 @@ import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
 import pro.gravit.launcher.request.auth.password.Auth2FAPassword;
 import pro.gravit.launcher.request.auth.password.AuthECPassword;
+import pro.gravit.launcher.request.auth.password.AuthPlainPassword;
 import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
@@ -88,6 +89,7 @@ public class LoginScene extends AbstractScene {
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
+            if(!application.isDebugMode())
             processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if (result.needUpdate) {
                     try {
@@ -207,48 +209,54 @@ public class LoginScene extends AbstractScene {
 
     private void loginWithGui() {
         String login = loginField.getText();
-        byte[] encryptedPassword;
+        AuthRequest.AuthPasswordInterface password;
         if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
                 application.getTranslation("runtime.scenes.login.login.password.saved"))) {
-            encryptedPassword = application.runtimeSettings.encryptedPassword;
+            password = new AuthECPassword(application.runtimeSettings.encryptedPassword);
         } else {
-            String password = passwordField.getText();
-            try {
-                encryptedPassword = encryptPassword(password);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            String rawPassword = passwordField.getText();
+            if(launcherConfig.passwordEncryptKey != null) {
+                try {
+                    password = new AuthECPassword(encryptPassword(rawPassword));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                password = new AuthPlainPassword(rawPassword);
             }
         }
         GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
         boolean savePassword = savePasswordCheckBox.isSelected();
-        login(login, encryptedPassword, authId, null, savePassword);
+        login(login, password, authId, null, savePassword);
+
     }
 
     private byte[] encryptPassword(String password) throws Exception {
         return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
 
-    private void login(String login, byte[] password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
+    private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
         isLoginStarted = true;
         LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
         AuthRequest authRequest;
         if(totp == null)
         {
-            authRequest = new AuthRequest(login, password, authId.name);
+            authRequest = new AuthRequest(login, password, authId == null ? "std" : authId.name,true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
         }
         else
         {
             Auth2FAPassword auth2FAPassword = new Auth2FAPassword();
-            auth2FAPassword.firstPassword = new AuthECPassword(password);
+            auth2FAPassword.firstPassword = password;
             auth2FAPassword.secondPassword = new AuthTOTPPassword();
             ((AuthTOTPPassword) auth2FAPassword.secondPassword).totp = totp;
-            authRequest = new AuthRequest(login, auth2FAPassword, authId.name, true, AuthRequest.ConnectTypes.CLIENT);
+            authRequest = new AuthRequest(login, auth2FAPassword, authId.name, true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
         }
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
-                application.runtimeSettings.encryptedPassword = password;
+                if(password instanceof AuthECPassword)
+                    application.runtimeSettings.encryptedPassword = ((AuthECPassword) password).password;
                 application.runtimeSettings.lastAuth = authId;
             }
             onGetProfiles();
