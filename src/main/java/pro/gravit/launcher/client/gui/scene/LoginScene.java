@@ -42,7 +42,6 @@ public class LoginScene extends AbstractScene {
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
     private Pane authActive;
-    private Pane layout;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     public LoginScene(JavaFXApplication application) {
@@ -51,8 +50,6 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void doInit() {
-        layout = LookupHelper.lookup(scene.getRoot(), "#layout");
-        sceneBaseInit(layout);
         authActive = LookupHelper.lookup(layout, "#authActive");
         loginField = LookupHelper.lookup(layout, "#auth", "#login");
         if (application.runtimeSettings.login != null) {
@@ -78,10 +75,10 @@ public class LoginScene extends AbstractScene {
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(layout, "#header", "#controls", "#links", "#registerPane","#createAccount").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header,  "#controls", "#links", "#registerPane","#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
         if (application.guiModuleConfig.forgotPassURL != null)
-            LookupHelper.<Text>lookup(layout, "#header", "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header,  "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = LookupHelper.lookup(layout, "#combologin");
         authList.setConverter(new AuthConverter());

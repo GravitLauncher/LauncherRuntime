@@ -36,8 +36,6 @@ public class ConsoleScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        Node layout = scene.getRoot();
-        sceneBaseInit(layout);
         output = LookupHelper.lookup(layout, "#output");
         commandLine = LookupHelper.lookup(layout, "#commandInput");
         LogHelper.addOutput(this::append, LogHelper.OutputTypes.PLAIN);

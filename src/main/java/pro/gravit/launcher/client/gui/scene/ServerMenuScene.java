@@ -62,7 +62,6 @@ public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
-    private Node layout;
     private ImageView avatar;
     private ImageView serverImage;
     private Node lastSelectedServerButton;
@@ -111,8 +110,6 @@ public class ServerMenuScene extends AbstractScene {
 
     @Override
     public void doInit() throws Exception {
-        layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#serverMenu");
-        sceneBaseInit(layout);
         avatar = LookupHelper.lookup(layout, "#avatar");
         serverImage = LookupHelper.lookup(layout, "#serverImage");
         originalAvatarImage = avatar.getImage();

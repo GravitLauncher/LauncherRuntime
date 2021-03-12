@@ -18,6 +18,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -28,6 +29,8 @@ public abstract class AbstractScene implements AllowDisable {
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
     protected Scene scene;
+    protected Node layout;
+    protected Node header;
     AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
@@ -60,6 +63,9 @@ public abstract class AbstractScene implements AllowDisable {
             scene = new Scene(application.getFxml(fxmlPath));
             scene.setFill(Color.TRANSPARENT);
         }
+        layout = LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
+        header = LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
+        sceneBaseInit();
         doInit();
     }
 
@@ -182,16 +188,23 @@ public abstract class AbstractScene implements AllowDisable {
         return scene;
     }
 
-    protected void sceneBaseInit(Node node) {
-        try {
-            LookupHelper.<ButtonBase>lookup(node,  "#header", "#controls", "#exit").setOnAction((e) -> currentStage.close());
-            LookupHelper.<ButtonBase>lookup(node,  "#header", "#controls", "#minimize").setOnAction((e) -> currentStage.hide());
-        } catch (LookupHelper.LookupException ex)  {
-            // Old scenes
-            LookupHelper.<ButtonBase>lookup(node,  "#close").setOnAction((e) -> currentStage.close());
-            LookupHelper.<ButtonBase>lookup(node,  "#hide").setOnAction((e) -> currentStage.hide());
+    private void sceneBaseInit() {
+        if(header == null) {
+            LogHelper.warning("Scene header button(#close, #hide) deprecated");
+            LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+        } else {
+            LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
         }
+        currentStage.enableMouseDrag(layout);
+    }
 
-        currentStage.enableMouseDrag(node);
+    public Node getLayout() {
+        return layout;
+    }
+
+    public Node getHeader() {
+        return header;
     }
 }
