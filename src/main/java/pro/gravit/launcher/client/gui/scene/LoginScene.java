@@ -143,7 +143,6 @@ public class LoginScene extends AbstractScene {
     public<T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
         Button authButton = LookupHelper.lookup(processingEnabled ? root : authActive, "#authButton");
-        Pane blur = LookupHelper.<Pane>lookup(layout, "#blur");
         LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton, layout);
         LogHelper.debug("X: %f, Y: %f",authAbsPosition.x, authAbsPosition.y);
         double authLayoutX = authButton.getLayoutX();
@@ -151,8 +150,7 @@ public class LoginScene extends AbstractScene {
         String oldText = authButton.getText();
         if(!processingEnabled) {
             contextHelper.runInFxThread(() -> {
-                blur.setVisible(true);
-                layout.setEffect(new GaussianBlur(20));
+                disable();
                 authActive.getChildren().remove(authButton);
                 root.getChildren().add(authButton);
                 authButton.setLayoutX(authAbsPosition.x);
@@ -166,8 +164,7 @@ public class LoginScene extends AbstractScene {
         Runnable processingOff = () -> {
             if(!processingEnabled) return;
             contextHelper.runInFxThread(() -> {
-                layout.setEffect(null);
-                blur.setVisible(false);
+                enable();
                 root.getChildren().remove(authButton);
                 authActive.getChildren().add(authButton);
                 authButton.setLayoutX(authLayoutX);

@@ -31,6 +31,7 @@ public abstract class AbstractScene implements AllowDisable {
     protected Scene scene;
     protected Node layout;
     protected Node header;
+    protected Pane disablePane;
     AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
@@ -92,11 +93,9 @@ public abstract class AbstractScene implements AllowDisable {
             swapOverlay(newOverlay, onFinished);
             return;
         }
-        disable();
         currentOverlayNode = newOverlay;
         Pane root = (Pane) scene.getRoot();
-        root.getChildren().get(0).setEffect(new GaussianBlur(10));
-
+        disable();
         root.getChildren().add(newOverlay);
         newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
         newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
@@ -116,12 +115,11 @@ public abstract class AbstractScene implements AllowDisable {
             }
         }
         hideTransformStarted = true;
-        enable();
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
             root.getChildren().remove(currentOverlayNode);
             root.requestFocus();
-            root.getChildren().get(0).setEffect(new GaussianBlur(0));
+            enable();
             currentOverlayNode = null;
             if (currentOverlay != null) currentOverlay.currentStage = null;
             if (currentOverlay != null) currentOverlay.reset();
@@ -164,12 +162,27 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void disable() {
+        if(!enabled) return;
         enabled = false;
+        Pane root = (Pane) scene.getRoot();
+        if(layout == root) {
+            throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
+        }
+        layout.setEffect(new GaussianBlur(10));
+        if(disablePane == null) {
+            disablePane = new Pane();
+            int index = root.getChildren().indexOf(layout);
+            root.getChildren().add(index+1, disablePane);
+            disablePane.setVisible(true);
+        }
     }
 
     @Override
     public void enable() {
+        if(enabled) return;
         enabled = true;
+        layout.setEffect(new GaussianBlur(0));
+        disablePane.setVisible(false);
     }
 
     public boolean isEnabled() {
