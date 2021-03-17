@@ -72,40 +72,6 @@ public class ServerMenuScene extends AbstractScene {
         super("scenes/servermenu/servermenu.fxml", application);
     }
 
-    private static Image convertToFxImage(BufferedImage image) {
-        if (JVMHelper.JVM_VERSION >= 9) {
-            return SwingFXUtils.toFXImage(image, null);
-        } else {
-            return convertToFxImageJava8(image);
-        }
-    }
-
-    private static Image convertToFxImageJava8(BufferedImage image) {
-        int bw = image.getWidth();
-        int bh = image.getHeight();
-        switch (image.getType()) {
-            case BufferedImage.TYPE_INT_ARGB:
-            case BufferedImage.TYPE_INT_ARGB_PRE:
-                break;
-            default:
-                BufferedImage converted = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB_PRE);
-                Graphics2D graphics2D = converted.createGraphics();
-                graphics2D.drawImage(image, 0, 0, null);
-                graphics2D.dispose();
-                image = converted;
-                break;
-        }
-        WritableImage writableImage = new WritableImage(bw, bh);
-        DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
-        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel
-                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
-        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ?
-                PixelFormat.getIntArgbPreInstance() :
-                PixelFormat.getIntArgbInstance();
-        writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
-        return writableImage;
-    }
-
     @Override
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
@@ -328,32 +294,11 @@ public class ServerMenuScene extends AbstractScene {
         }
     }
 
-    private void updateSkinHead() throws IOException {
-        PlayerProfile playerProfile = application.runtimeStateMachine.getPlayerProfile();
-        if (playerProfile == null)
-            return;
-        if (playerProfile.skin == null || playerProfile.skin.url == null) {
-            LogHelper.debug("Skin not found");
-            return;
-        }
-        String url = playerProfile.skin.url;
-        BufferedImage origImage = downloadSkinHead(url);
-        int imageHeight = (int) avatar.getFitHeight(), imageWidth = (int) avatar.getFitWidth();
-        java.awt.Image resized = origImage.getScaledInstance(imageWidth, imageHeight, java.awt.Image.SCALE_FAST);
-        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-        Graphics2D graphics2D = image.createGraphics();
-        graphics2D.drawImage(resized, 0, 0, null);
-        graphics2D.dispose();
-        avatar.setImage(convertToFxImage(image));
-    }
-
-    private BufferedImage downloadSkinHead(String url) throws IOException {
-        BufferedImage image = ImageIO.read(new URL(url));
-        int width = image.getWidth();
-        int renderScale = width / 64;
-        int offset = 8 * renderScale;
-        LogHelper.debug("ShinHead debug: W: %d Scale: %d Offset: %d", width, renderScale, offset);
-        return image.getSubimage(offset, offset, offset, offset);
+    private void updateSkinHead() {
+        int width = (int) avatar.getFitWidth();
+        int height = (int) avatar.getFitHeight();
+        Image head = application.skinManager.getScaledFxSkinHead(application.runtimeStateMachine.getUsername(), width, height);
+        avatar.setImage(head);
     }
 
     private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult, Image serverImage) {

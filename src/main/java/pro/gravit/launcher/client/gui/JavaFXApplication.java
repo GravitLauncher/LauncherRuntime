@@ -58,6 +58,7 @@ public class JavaFXApplication extends Application {
     public GuiModuleConfig guiModuleConfig;
     public MessageManager messageManager;
     public RuntimeSecurityService securityService;
+    public SkinManager skinManager;
     private ResourceBundle resources;
     private SettingsManager settingsManager;
     private FXMLProvider fxmlProvider;
@@ -102,6 +103,7 @@ public class JavaFXApplication extends Application {
         runtimeStateMachine = new RuntimeStateMachine();
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
+        skinManager = new SkinManager(this);
         registerCommands();
     }
 

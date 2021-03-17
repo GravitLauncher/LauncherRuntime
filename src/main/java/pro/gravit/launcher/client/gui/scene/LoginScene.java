@@ -6,6 +6,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
@@ -31,7 +33,10 @@ import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 
@@ -260,9 +265,21 @@ public class LoginScene extends AbstractScene {
                     application.runtimeSettings.encryptedPassword = ((AuthECPassword) password).password;
                 application.runtimeSettings.lastAuth = authId;
             }
+            if(result.playerProfile != null && result.playerProfile.skin != null) {
+                try {
+                    application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.skin.url));
+                    application.skinManager.getSkin(result.playerProfile.username); //Cache skin
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
             contextHelper.runInFxThread(() -> {
                 Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
                 if(player.isPresent()) {
+                    LookupHelper.<Labeled>lookupIfPossible(player.get(), "#playerName").ifPresent(l -> l.setText(result.playerProfile.username.toUpperCase(Locale.ROOT)));
+                    LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
+                            (h) -> h.setImage(application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight()))
+                    );
                     player.get().setVisible(true);
                     disable();
                     fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {
