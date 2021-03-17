@@ -8,7 +8,7 @@ public class GuiObjectsContainer {
     private final JavaFXApplication application;
     public ProcessingOverlay processingOverlay;
     public UpdateOverlay updateOverlay;
-    public DebugOverlay debugOverlay;
+    public DebugScene debugScene;
 
     public ServerMenuScene serverMenuScene;
     public LoginScene loginScene;
@@ -32,6 +32,6 @@ public class GuiObjectsContainer {
         consoleScene = application.registerScene(ConsoleScene.class);
 
         updateOverlay = application.registerOverlay(UpdateOverlay.class);
-        debugOverlay = application.registerOverlay(DebugOverlay.class);
+        debugScene = application.registerScene(DebugScene.class);
     }
 }

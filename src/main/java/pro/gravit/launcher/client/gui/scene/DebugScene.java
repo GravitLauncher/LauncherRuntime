@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.overlay;
+package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -12,6 +12,7 @@ import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
+import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.client.gui.scene.ConsoleScene;
 import pro.gravit.utils.helper.CommonHelper;
@@ -23,7 +24,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
-public class DebugOverlay extends AbstractOverlay {
+public class DebugScene extends AbstractScene {
     private static final long MAX_LENGTH = 163840;
     private static final int REMOVE_LENGTH = 1024;
     public Process currentProcess;
@@ -31,14 +32,12 @@ public class DebugOverlay extends AbstractOverlay {
     private Thread readThread;
     private TextArea output;
 
-    public DebugOverlay(JavaFXApplication application) {
+    public DebugScene(JavaFXApplication application) {
         super("overlay/debug/debug.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        Node layout = pane;
-        Node header = LookupHelper.lookup(layout, "#header");
         output = LookupHelper.lookup(layout, "#output");
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
             if (currentProcess != null && currentProcess.isAlive())
@@ -72,13 +71,11 @@ public class DebugOverlay extends AbstractOverlay {
 
             application.openURL(haste);
         }));
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#exit").setOnAction((e) -> {
-            //TODO
-            Platform.exit();
-        });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive())
-                return;
+            {
+                if(currentProcess.isAlive()) writeParametersThread.interrupt();
+            }
             if (currentProcess != null && currentProcess.isAlive()) {
                 Process process = currentProcess;
                 currentProcess = null;
@@ -94,19 +91,10 @@ public class DebugOverlay extends AbstractOverlay {
                 }
             }
             try {
-                if (currentStage != null) {
-                    currentStage.getScene().hideOverlay(0, ex -> {
-                    });
-                    application.gui.updateOverlay.reset();
-                }
+                getCurrentStage().setScene(application.gui.serverMenuScene);
             } catch (Exception ex) {
                 errorHandle(ex);
             }
-        });
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#minimize").setOnAction((e) -> {
-            //TODO
-            if (this.currentStage != null)
-                this.currentStage.hide();
         });
     }
 

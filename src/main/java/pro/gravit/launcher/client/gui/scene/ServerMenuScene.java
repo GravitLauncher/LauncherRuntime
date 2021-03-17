@@ -22,7 +22,6 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.overlay.DebugOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
@@ -55,7 +54,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class ServerMenuScene extends AbstractScene {
@@ -430,19 +428,22 @@ public class ServerMenuScene extends AbstractScene {
                     }
                 } catch (Throwable e) {
                     LogHelper.error(e);
-                    if (getCurrentOverlay() instanceof DebugOverlay) {
-                        DebugOverlay debugOverlay = (DebugOverlay) getCurrentOverlay();
-                        debugOverlay.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
-                        if (debugOverlay.currentProcess != null && debugOverlay.currentProcess.isAlive()) {
-                            debugOverlay.currentProcess.destroy();
+                    if (getCurrentStage().getScene() instanceof DebugScene) { //TODO: FIX
+                        DebugScene debugScene = (DebugScene) getCurrentStage().getScene();
+                        debugScene.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
+                        if (debugScene.currentProcess != null && debugScene.currentProcess.isAlive()) {
+                            debugScene.currentProcess.destroy();
                         }
                     }
                 }
             });
             writerThread.start();
-            application.gui.debugOverlay.writeParametersThread = writerThread;
+            application.gui.debugScene.writeParametersThread = writerThread;
             clientLauncherProcess.start(true);
-            showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(clientLauncherProcess.getProcess()));
+            contextHelper.runInFxThread(() -> {
+                getCurrentStage().setScene(application.gui.debugScene);
+                application.gui.debugScene.onProcess(clientLauncherProcess.getProcess());
+            });
         }).run();
     }
 }
