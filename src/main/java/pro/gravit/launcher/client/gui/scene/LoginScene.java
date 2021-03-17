@@ -203,6 +203,11 @@ public class LoginScene extends AbstractScene {
         LogHelper.error(e);
     }
 
+    @Override
+    public String getName() {
+        return "login";
+    }
+
     private void loginWithGui() {
         String login = loginField.getText();
         AuthRequest.AuthPasswordInterface password;

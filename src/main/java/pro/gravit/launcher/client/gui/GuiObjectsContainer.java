@@ -7,7 +7,7 @@ import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 public class GuiObjectsContainer {
     private final JavaFXApplication application;
     public ProcessingOverlay processingOverlay;
-    public UpdateOverlay updateOverlay;
+    public UpdateScene updateScene;
     public DebugScene debugScene;
 
     public ServerMenuScene serverMenuScene;
@@ -31,7 +31,7 @@ public class GuiObjectsContainer {
         settingsOverlay = application.registerOverlay(SettingsOverlay.class);
         consoleScene = application.registerScene(ConsoleScene.class);
 
-        updateOverlay = application.registerOverlay(UpdateOverlay.class);
+        updateScene = application.registerScene(UpdateScene.class);
         debugScene = application.registerScene(DebugScene.class);
     }
 }

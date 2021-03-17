@@ -315,6 +315,11 @@ public class ServerMenuScene extends AbstractScene {
     }
 
     @Override
+    public String getName() {
+        return "serverMenu";
+    }
+
+    @Override
     protected void doShow() {
         super.doShow();
         if(lastProfiles != application.runtimeStateMachine.getProfiles())
@@ -375,13 +380,14 @@ public class ServerMenuScene extends AbstractScene {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if (profile == null)
             return;
-        processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
-            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
+        processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
+            getCurrentStage().setScene(application.gui.updateScene);
+            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
             if(isEnabledDownloadJava())
             {
                 String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
                 Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateOverlay.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (jvmHDir) -> {
+                application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (jvmHDir) -> {
                     downloadClients(profile, jvmDirPath, jvmHDir);
                 });
             }
@@ -395,14 +401,14 @@ public class ServerMenuScene extends AbstractScene {
     {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
-        application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (assetHDir) -> {
+        application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
+        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
-            application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), true, (clientHDir) -> {
+            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
+            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
-                application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
+                application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
                 doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.runtimeStateMachine.getOptionalView(), jvmDir, jvmHDir);
             });
         });

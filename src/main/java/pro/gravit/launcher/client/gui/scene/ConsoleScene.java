@@ -56,6 +56,11 @@ public class ConsoleScene extends AbstractScene {
     }
 
     @Override
+    public String getName() {
+        return "console";
+    }
+
+    @Override
     protected void doShow() {
         super.doShow();
 

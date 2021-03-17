@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.overlay;
+package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -10,6 +10,7 @@ import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
+import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
@@ -31,7 +32,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
-public class UpdateOverlay extends AbstractOverlay {
+public class UpdateScene extends AbstractScene {
     private final AtomicLong totalDownloaded = new AtomicLong(0);
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
@@ -51,41 +52,36 @@ public class UpdateOverlay extends AbstractOverlay {
     private double progressRatio = 1.0;
     private double phaseRatio;
 
-    public UpdateOverlay(JavaFXApplication application) {
+    public UpdateScene(JavaFXApplication application) {
         super("overlay/update/update.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        progressBar = LookupHelper.lookup(pane, "#progress");
+        progressBar = LookupHelper.lookup(layout, "#progress");
         phases = new Circle[5];
         for (int i = 1; i <= 5; ++i) {
-            Circle circle = LookupHelper.lookup(pane, String.format("#phase%d", i));
+            Circle circle = LookupHelper.lookup(layout, String.format("#phase%d", i));
             phases[i - 1] = circle;
             phaseOffset = (circle.getRadius() * 2.0) / progressBar.getPrefWidth();
             progressRatio -= phaseOffset;
         }
        
         phaseRatio = progressRatio / 4.0;
-        speed = LookupHelper.lookup(pane, "#speed");
-        speederr = LookupHelper.lookup(pane, "#speedErr");
-        speedtext = LookupHelper.lookup(pane, "#speed-text");
-        reload = LookupHelper.lookup(pane, "#reload");
-        cancel = LookupHelper.lookup(pane, "#cancel");
-        volume = LookupHelper.lookup(pane, "#volume");
-        logOutput = LookupHelper.lookup(pane, "#outputUpdate");
-        currentStatus = LookupHelper.lookup(pane, "#headingUpdate");
+        speed = LookupHelper.lookup(layout, "#speed");
+        speederr = LookupHelper.lookup(layout, "#speedErr");
+        speedtext = LookupHelper.lookup(layout, "#speed-text");
+        reload = LookupHelper.lookup(layout, "#reload");
+        cancel = LookupHelper.lookup(layout, "#cancel");
+        volume = LookupHelper.lookup(layout, "#volume");
+        logOutput = LookupHelper.lookup(layout, "#outputUpdate");
+        currentStatus = LookupHelper.lookup(layout, "#headingUpdate");
         logOutput.setText("");
-        LookupHelper.<ButtonBase>lookup(pane, "#reload").setOnAction(
+        LookupHelper.<ButtonBase>lookup(layout, "#reload").setOnAction(
                 (e) -> reset()
         );
-        LookupHelper.<ButtonBase>lookup(pane, "#cancel").setOnAction(
+        LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction(
                 (e) -> Platform.exit());
-        LookupHelper.<ButtonBase>lookup(pane, "#close").setOnAction(
-                (e) -> Platform.exit());
-        LookupHelper.<ButtonBase>lookup(pane, "#hide").setOnAction((e) -> {
-            if (this.currentStage != null) this.currentStage.hide();
-        });
     }
 
     private void deleteExtraDir(Path subDir, HashedDir subHDir, boolean deleteDir) throws IOException {
@@ -289,5 +285,10 @@ public class UpdateOverlay extends AbstractOverlay {
         reload.setStyle("-fx-opacity: 1");
         cancel.setDisable(true);
         cancel.setStyle("-fx-opacity: 0");
+    }
+
+    @Override
+    public String getName() {
+        return "update";
     }
 }

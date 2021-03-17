@@ -21,6 +21,7 @@ import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
@@ -35,7 +36,7 @@ public abstract class AbstractScene implements AllowDisable {
     AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
-    private boolean enabled = true;
+    private AtomicInteger enabled = new AtomicInteger(0);
     private boolean hideTransformStarted = false;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
@@ -162,8 +163,8 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void disable() {
-        if(!enabled) return;
-        enabled = false;
+        LogHelper.debug("Scene %s disabled (%d)", getName(), enabled.incrementAndGet());
+        if(enabled.get() != 1) return;
         Pane root = (Pane) scene.getRoot();
         if(layout == root) {
             throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
@@ -179,14 +180,14 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void enable() {
-        if(enabled) return;
-        enabled = true;
+        LogHelper.debug("Scene %s enabled (%d)", getName(), enabled.decrementAndGet());
+        if(enabled.get() != 0) return;
         layout.setEffect(new GaussianBlur(0));
         disablePane.setVisible(false);
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return enabled.get() == 0;
     }
 
     protected void doShow() {
@@ -203,7 +204,7 @@ public abstract class AbstractScene implements AllowDisable {
 
     private void sceneBaseInit() {
         if(header == null) {
-            LogHelper.warning("Scene header button(#close, #hide) deprecated");
+            LogHelper.warning("Scene %s header button(#close, #hide) deprecated", getName());
             LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
             LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
         } else {
@@ -224,4 +225,6 @@ public abstract class AbstractScene implements AllowDisable {
     public static void runLater(double delay, EventHandler<ActionEvent> callback) {
         fade(null, delay, 0.0, 1.0, callback);
     }
+
+    public abstract String getName();
 }

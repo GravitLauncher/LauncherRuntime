@@ -148,6 +148,11 @@ public class DebugScene extends AbstractScene {
         }
     }
 
+    @Override
+    public String getName() {
+        return "debug";
+    }
+
     private void onProcessExit(int code) {
         append(String.format("Process exit code %d", code));
         if (writeParametersThread != null) writeParametersThread.interrupt();
