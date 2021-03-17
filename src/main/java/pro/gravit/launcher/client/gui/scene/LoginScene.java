@@ -32,6 +32,7 @@ import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class LoginScene extends AbstractScene {
@@ -42,6 +43,7 @@ public class LoginScene extends AbstractScene {
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
     private Pane authActive;
+    private Button authButton;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     public LoginScene(JavaFXApplication application) {
@@ -51,6 +53,7 @@ public class LoginScene extends AbstractScene {
     @Override
     public void doInit() {
         authActive = LookupHelper.lookup(layout, "#authActive");
+        authButton = LookupHelper.lookup(authActive, "#authButton");
         loginField = LookupHelper.lookup(layout, "#auth", "#login");
         if (application.runtimeSettings.login != null) {
             loginField.setText(application.runtimeSettings.login);
@@ -142,7 +145,6 @@ public class LoginScene extends AbstractScene {
 
     public<T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
-        Button authButton = LookupHelper.lookup(processingEnabled ? root : authActive, "#authButton");
         LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton, layout);
         LogHelper.debug("X: %f, Y: %f",authAbsPosition.x, authAbsPosition.y);
         double authLayoutX = authButton.getLayoutX();
@@ -253,7 +255,20 @@ public class LoginScene extends AbstractScene {
                     application.runtimeSettings.encryptedPassword = ((AuthECPassword) password).password;
                 application.runtimeSettings.lastAuth = authId;
             }
-            onGetProfiles();
+            contextHelper.runInFxThread(() -> {
+                Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
+                if(player.isPresent()) {
+                    player.get().setVisible(true);
+                    disable();
+                    fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {
+                        enable();
+                        onGetProfiles();
+                    }
+                    );
+                } else {
+                    onGetProfiles();
+                }
+            });
 
         }, (error) -> {
             LogHelper.info("Handle error: ", error);

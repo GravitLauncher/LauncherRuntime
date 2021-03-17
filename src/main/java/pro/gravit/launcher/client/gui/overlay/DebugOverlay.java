@@ -38,20 +38,21 @@ public class DebugOverlay extends AbstractOverlay {
     @Override
     protected void doInit() {
         Node layout = pane;
+        Node header = LookupHelper.lookup(layout, "#header");
         output = LookupHelper.lookup(layout, "#output");
-        LookupHelper.<ButtonBase>lookup(layout, "#kill").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
             if (currentProcess != null && currentProcess.isAlive())
                 currentProcess.destroyForcibly();
-        });
+        }));
 
-        LookupHelper.<Label>lookup(layout, "#version").setText(ConsoleScene.getMiniLauncherInfo());
-        LookupHelper.<ButtonBase>lookup(layout, "#copy").setOnAction((e) -> {
+        LookupHelper.<Label>lookupIfPossible(layout, "#version").ifPresent((v) -> v.setText(ConsoleScene.getMiniLauncherInfo()));
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
-        });
-        LookupHelper.<ButtonBase>lookup(layout, "#hastebin").setOnAction((e) -> {
+        }));
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
             String haste = null;
             try {
                 haste = hastebin(output.getText());
@@ -70,12 +71,12 @@ public class DebugOverlay extends AbstractOverlay {
             clipboard.setContent(clipboardContent);
 
             application.openURL(haste);
-        });
-        LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction((e) -> {
+        }));
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#exit").setOnAction((e) -> {
             //TODO
             Platform.exit();
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#back").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive())
                 return;
             if (currentProcess != null && currentProcess.isAlive()) {
@@ -102,7 +103,7 @@ public class DebugOverlay extends AbstractOverlay {
                 errorHandle(ex);
             }
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#hide").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#minimize").setOnAction((e) -> {
             //TODO
             if (this.currentStage != null)
                 this.currentStage.hide();

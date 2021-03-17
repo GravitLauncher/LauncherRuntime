@@ -220,4 +220,8 @@ public abstract class AbstractScene implements AllowDisable {
     public Node getHeader() {
         return header;
     }
+
+    public static void runLater(double delay, EventHandler<ActionEvent> callback) {
+        fade(null, delay, 0.0, 1.0, callback);
+    }
 }
