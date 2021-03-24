@@ -18,8 +18,10 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
@@ -28,10 +30,13 @@ public abstract class AbstractScene implements AllowDisable {
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
     protected Scene scene;
+    protected Node layout;
+    protected Node header;
+    protected Pane disablePane;
     AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
-    private boolean enabled = true;
+    private AtomicInteger enabled = new AtomicInteger(0);
     private boolean hideTransformStarted = false;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
@@ -60,6 +65,9 @@ public abstract class AbstractScene implements AllowDisable {
             scene = new Scene(application.getFxml(fxmlPath));
             scene.setFill(Color.TRANSPARENT);
         }
+        layout = LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
+        header = LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
+        sceneBaseInit();
         doInit();
     }
 
@@ -86,11 +94,9 @@ public abstract class AbstractScene implements AllowDisable {
             swapOverlay(newOverlay, onFinished);
             return;
         }
-        disable();
         currentOverlayNode = newOverlay;
         Pane root = (Pane) scene.getRoot();
-        root.getChildren().get(0).setEffect(new GaussianBlur(10));
-
+        disable();
         root.getChildren().add(newOverlay);
         newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
         newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
@@ -110,12 +116,11 @@ public abstract class AbstractScene implements AllowDisable {
             }
         }
         hideTransformStarted = true;
-        enable();
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, delay, 1.0, 0.0, (e) -> {
             root.getChildren().remove(currentOverlayNode);
             root.requestFocus();
-            root.getChildren().get(0).setEffect(new GaussianBlur(0));
+            enable();
             currentOverlayNode = null;
             if (currentOverlay != null) currentOverlay.currentStage = null;
             if (currentOverlay != null) currentOverlay.reset();
@@ -158,16 +163,31 @@ public abstract class AbstractScene implements AllowDisable {
 
     @Override
     public void disable() {
-        enabled = false;
+        LogHelper.debug("Scene %s disabled (%d)", getName(), enabled.incrementAndGet());
+        if(enabled.get() != 1) return;
+        Pane root = (Pane) scene.getRoot();
+        if(layout == root) {
+            throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
+        }
+        layout.setEffect(new GaussianBlur(10));
+        if(disablePane == null) {
+            disablePane = new Pane();
+            int index = root.getChildren().indexOf(layout);
+            root.getChildren().add(index+1, disablePane);
+            disablePane.setVisible(true);
+        }
     }
 
     @Override
     public void enable() {
-        enabled = true;
+        LogHelper.debug("Scene %s enabled (%d)", getName(), enabled.decrementAndGet());
+        if(enabled.get() != 0) return;
+        layout.setEffect(new GaussianBlur(0));
+        disablePane.setVisible(false);
     }
 
     public boolean isEnabled() {
-        return enabled;
+        return enabled.get() == 0;
     }
 
     protected void doShow() {
@@ -182,16 +202,29 @@ public abstract class AbstractScene implements AllowDisable {
         return scene;
     }
 
-    protected void sceneBaseInit(Node node) {
-        try {
-            LookupHelper.<ButtonBase>lookup(node,  "#header", "#controls", "#exit").setOnAction((e) -> currentStage.close());
-            LookupHelper.<ButtonBase>lookup(node,  "#header", "#controls", "#minimize").setOnAction((e) -> currentStage.hide());
-        } catch (LookupHelper.LookupException ex)  {
-            // Old scenes
-            LookupHelper.<ButtonBase>lookup(node,  "#close").setOnAction((e) -> currentStage.close());
-            LookupHelper.<ButtonBase>lookup(node,  "#hide").setOnAction((e) -> currentStage.hide());
+    private void sceneBaseInit() {
+        if(header == null) {
+            LogHelper.warning("Scene %s header button(#close, #hide) deprecated", getName());
+            LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+        } else {
+            LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
         }
-
-        currentStage.enableMouseDrag(node);
+        currentStage.enableMouseDrag(layout);
     }
+
+    public Node getLayout() {
+        return layout;
+    }
+
+    public Node getHeader() {
+        return header;
+    }
+
+    public static void runLater(double delay, EventHandler<ActionEvent> callback) {
+        fade(null, delay, 0.0, 1.0, callback);
+    }
+
+    public abstract String getName();
 }
