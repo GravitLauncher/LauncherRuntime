@@ -6,6 +6,8 @@ import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
@@ -23,6 +25,7 @@ import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
 import pro.gravit.launcher.request.auth.password.Auth2FAPassword;
 import pro.gravit.launcher.request.auth.password.AuthECPassword;
+import pro.gravit.launcher.request.auth.password.AuthPlainPassword;
 import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
@@ -30,7 +33,11 @@ import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class LoginScene extends AbstractScene {
@@ -41,7 +48,7 @@ public class LoginScene extends AbstractScene {
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
     private Pane authActive;
-    private Pane layout;
+    private Button authButton;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     public LoginScene(JavaFXApplication application) {
@@ -50,9 +57,8 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void doInit() {
-        layout = LookupHelper.lookup(scene.getRoot(), "#layout");
-        sceneBaseInit(layout);
         authActive = LookupHelper.lookup(layout, "#authActive");
+        authButton = LookupHelper.lookup(authActive, "#authButton");
         loginField = LookupHelper.lookup(layout, "#auth", "#login");
         if (application.runtimeSettings.login != null) {
             loginField.setText(application.runtimeSettings.login);
@@ -77,10 +83,10 @@ public class LoginScene extends AbstractScene {
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(layout, "#header", "#controls", "#links", "#registerPane","#createAccount").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header,  "#controls", "#links", "#registerPane","#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
         if (application.guiModuleConfig.forgotPassURL != null)
-            LookupHelper.<Text>lookup(layout, "#header", "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header,  "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = LookupHelper.lookup(layout, "#combologin");
         authList.setConverter(new AuthConverter());
@@ -88,6 +94,7 @@ public class LoginScene extends AbstractScene {
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
+            if(!application.isDebugMode())
             processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if (result.needUpdate) {
                     try {
@@ -143,8 +150,6 @@ public class LoginScene extends AbstractScene {
 
     public<T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
-        Button authButton = LookupHelper.lookup(processingEnabled ? root : authActive, "#authButton");
-        Pane blur = LookupHelper.<Pane>lookup(layout, "#blur");
         LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton, layout);
         LogHelper.debug("X: %f, Y: %f",authAbsPosition.x, authAbsPosition.y);
         double authLayoutX = authButton.getLayoutX();
@@ -152,8 +157,7 @@ public class LoginScene extends AbstractScene {
         String oldText = authButton.getText();
         if(!processingEnabled) {
             contextHelper.runInFxThread(() -> {
-                blur.setVisible(true);
-                layout.setEffect(new GaussianBlur(20));
+                disable();
                 authActive.getChildren().remove(authButton);
                 root.getChildren().add(authButton);
                 authButton.setLayoutX(authAbsPosition.x);
@@ -167,8 +171,7 @@ public class LoginScene extends AbstractScene {
         Runnable processingOff = () -> {
             if(!processingEnabled) return;
             contextHelper.runInFxThread(() -> {
-                layout.setEffect(null);
-                blur.setVisible(false);
+                enable();
                 root.getChildren().remove(authButton);
                 authActive.getChildren().add(authButton);
                 authButton.setLayoutX(authLayoutX);
@@ -205,53 +208,89 @@ public class LoginScene extends AbstractScene {
         LogHelper.error(e);
     }
 
+    @Override
+    public String getName() {
+        return "login";
+    }
+
     private void loginWithGui() {
         String login = loginField.getText();
-        byte[] encryptedPassword;
+        AuthRequest.AuthPasswordInterface password;
         if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
                 application.getTranslation("runtime.scenes.login.login.password.saved"))) {
-            encryptedPassword = application.runtimeSettings.encryptedPassword;
+            password = new AuthECPassword(application.runtimeSettings.encryptedPassword);
         } else {
-            String password = passwordField.getText();
-            try {
-                encryptedPassword = encryptPassword(password);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
+            String rawPassword = passwordField.getText();
+            if(launcherConfig.passwordEncryptKey != null) {
+                try {
+                    password = new AuthECPassword(encryptPassword(rawPassword));
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                password = new AuthPlainPassword(rawPassword);
             }
         }
         GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
         boolean savePassword = savePasswordCheckBox.isSelected();
-        login(login, encryptedPassword, authId, null, savePassword);
+        login(login, password, authId, null, savePassword);
+
     }
 
     private byte[] encryptPassword(String password) throws Exception {
         return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
 
-    private void login(String login, byte[] password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
+    private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
         isLoginStarted = true;
         LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
         AuthRequest authRequest;
         if(totp == null)
         {
-            authRequest = new AuthRequest(login, password, authId.name);
+            authRequest = new AuthRequest(login, password, authId == null ? "std" : authId.name,true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
         }
         else
         {
             Auth2FAPassword auth2FAPassword = new Auth2FAPassword();
-            auth2FAPassword.firstPassword = new AuthECPassword(password);
+            auth2FAPassword.firstPassword = password;
             auth2FAPassword.secondPassword = new AuthTOTPPassword();
             ((AuthTOTPPassword) auth2FAPassword.secondPassword).totp = totp;
-            authRequest = new AuthRequest(login, auth2FAPassword, authId.name, true, AuthRequest.ConnectTypes.CLIENT);
+            authRequest = new AuthRequest(login, auth2FAPassword, authId.name, true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
         }
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
-                application.runtimeSettings.encryptedPassword = password;
+                if(password instanceof AuthECPassword)
+                    application.runtimeSettings.encryptedPassword = ((AuthECPassword) password).password;
                 application.runtimeSettings.lastAuth = authId;
             }
-            onGetProfiles();
+            if(result.playerProfile != null && result.playerProfile.skin != null) {
+                try {
+                    application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.skin.url));
+                    application.skinManager.getSkin(result.playerProfile.username); //Cache skin
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+            }
+            contextHelper.runInFxThread(() -> {
+                Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
+                if(player.isPresent()) {
+                    LookupHelper.<Labeled>lookupIfPossible(player.get(), "#playerName").ifPresent(l -> l.setText(result.playerProfile.username.toUpperCase(Locale.ROOT)));
+                    LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
+                            (h) -> h.setImage(application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight()))
+                    );
+                    player.get().setVisible(true);
+                    disable();
+                    fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {
+                        enable();
+                        onGetProfiles();
+                    }
+                    );
+                } else {
+                    onGetProfiles();
+                }
+            });
 
         }, (error) -> {
             LogHelper.info("Handle error: ", error);

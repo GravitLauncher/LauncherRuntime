@@ -22,7 +22,6 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.overlay.DebugOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
@@ -55,14 +54,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
-    private Node layout;
     private ImageView avatar;
     private ImageView serverImage;
     private Node lastSelectedServerButton;
@@ -75,44 +72,8 @@ public class ServerMenuScene extends AbstractScene {
         super("scenes/servermenu/servermenu.fxml", application);
     }
 
-    private static Image convertToFxImage(BufferedImage image) {
-        if (JVMHelper.JVM_VERSION >= 9) {
-            return SwingFXUtils.toFXImage(image, null);
-        } else {
-            return convertToFxImageJava8(image);
-        }
-    }
-
-    private static Image convertToFxImageJava8(BufferedImage image) {
-        int bw = image.getWidth();
-        int bh = image.getHeight();
-        switch (image.getType()) {
-            case BufferedImage.TYPE_INT_ARGB:
-            case BufferedImage.TYPE_INT_ARGB_PRE:
-                break;
-            default:
-                BufferedImage converted = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB_PRE);
-                Graphics2D graphics2D = converted.createGraphics();
-                graphics2D.drawImage(image, 0, 0, null);
-                graphics2D.dispose();
-                image = converted;
-                break;
-        }
-        WritableImage writableImage = new WritableImage(bw, bh);
-        DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
-        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel
-                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
-        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ?
-                PixelFormat.getIntArgbPreInstance() :
-                PixelFormat.getIntArgbInstance();
-        writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
-        return writableImage;
-    }
-
     @Override
     public void doInit() throws Exception {
-        layout = LookupHelper.lookup(scene.getRoot(), "#layout", "#serverMenu");
-        sceneBaseInit(layout);
         avatar = LookupHelper.lookup(layout, "#avatar");
         serverImage = LookupHelper.lookup(layout, "#serverImage");
         originalAvatarImage = avatar.getImage();
@@ -320,6 +281,11 @@ public class ServerMenuScene extends AbstractScene {
     }
 
     @Override
+    public String getName() {
+        return "serverMenu";
+    }
+
+    @Override
     protected void doShow() {
         super.doShow();
         if(lastProfiles != application.runtimeStateMachine.getProfiles())
@@ -328,32 +294,11 @@ public class ServerMenuScene extends AbstractScene {
         }
     }
 
-    private void updateSkinHead() throws IOException {
-        PlayerProfile playerProfile = application.runtimeStateMachine.getPlayerProfile();
-        if (playerProfile == null)
-            return;
-        if (playerProfile.skin == null || playerProfile.skin.url == null) {
-            LogHelper.debug("Skin not found");
-            return;
-        }
-        String url = playerProfile.skin.url;
-        BufferedImage origImage = downloadSkinHead(url);
-        int imageHeight = (int) avatar.getFitHeight(), imageWidth = (int) avatar.getFitWidth();
-        java.awt.Image resized = origImage.getScaledInstance(imageWidth, imageHeight, java.awt.Image.SCALE_FAST);
-        BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB_PRE);
-        Graphics2D graphics2D = image.createGraphics();
-        graphics2D.drawImage(resized, 0, 0, null);
-        graphics2D.dispose();
-        avatar.setImage(convertToFxImage(image));
-    }
-
-    private BufferedImage downloadSkinHead(String url) throws IOException {
-        BufferedImage image = ImageIO.read(new URL(url));
-        int width = image.getWidth();
-        int renderScale = width / 64;
-        int offset = 8 * renderScale;
-        LogHelper.debug("ShinHead debug: W: %d Scale: %d Offset: %d", width, renderScale, offset);
-        return image.getSubimage(offset, offset, offset, offset);
+    private void updateSkinHead() {
+        int width = (int) avatar.getFitWidth();
+        int height = (int) avatar.getFitHeight();
+        Image head = application.skinManager.getScaledFxSkinHead(application.runtimeStateMachine.getUsername(), width, height);
+        avatar.setImage(head);
     }
 
     private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult, Image serverImage) {
@@ -380,13 +325,14 @@ public class ServerMenuScene extends AbstractScene {
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         if (profile == null)
             return;
-        processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> showOverlay(application.gui.updateOverlay, (e) -> {
-            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
+        processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
+            getCurrentStage().setScene(application.gui.updateScene);
+            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
             if(isEnabledDownloadJava())
             {
                 String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
                 Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateOverlay.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (jvmHDir) -> {
+                application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (jvmHDir) -> {
                     downloadClients(profile, jvmDirPath, jvmHDir);
                 });
             }
@@ -400,14 +346,14 @@ public class ServerMenuScene extends AbstractScene {
     {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
-        application.gui.updateOverlay.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (assetHDir) -> {
+        application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
+        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
-            application.gui.updateOverlay.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), true, (clientHDir) -> {
+            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
+            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
-                application.gui.updateOverlay.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
+                application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
                 doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.runtimeStateMachine.getOptionalView(), jvmDir, jvmHDir);
             });
         });
@@ -433,19 +379,22 @@ public class ServerMenuScene extends AbstractScene {
                     }
                 } catch (Throwable e) {
                     LogHelper.error(e);
-                    if (getCurrentOverlay() instanceof DebugOverlay) {
-                        DebugOverlay debugOverlay = (DebugOverlay) getCurrentOverlay();
-                        debugOverlay.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
-                        if (debugOverlay.currentProcess != null && debugOverlay.currentProcess.isAlive()) {
-                            debugOverlay.currentProcess.destroy();
+                    if (getCurrentStage().getScene() instanceof DebugScene) { //TODO: FIX
+                        DebugScene debugScene = (DebugScene) getCurrentStage().getScene();
+                        debugScene.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
+                        if (debugScene.currentProcess != null && debugScene.currentProcess.isAlive()) {
+                            debugScene.currentProcess.destroy();
                         }
                     }
                 }
             });
             writerThread.start();
-            application.gui.debugOverlay.writeParametersThread = writerThread;
+            application.gui.debugScene.writeParametersThread = writerThread;
             clientLauncherProcess.start(true);
-            showOverlay(application.gui.debugOverlay, (e) -> application.gui.debugOverlay.onProcess(clientLauncherProcess.getProcess()));
+            contextHelper.runInFxThread(() -> {
+                getCurrentStage().setScene(application.gui.debugScene);
+                application.gui.debugScene.onProcess(clientLauncherProcess.getProcess());
+            });
         }).run();
     }
 }
