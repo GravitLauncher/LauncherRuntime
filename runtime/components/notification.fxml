@@ -2,10 +2,12 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" style="-fx-background-radius: 10px;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" style="-fx-background-radius: 10px 0px 0px 10px;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
@@ -13,6 +15,11 @@
       <URL value="@components.css" />
       <URL value="@../global.css" />
    </stylesheets>
-   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="42.0" layoutY="48.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ваш кот не соответствует госту" wrappingWidth="247.79297161102295" />
-   <Text id="notificationText" disable="true" fontSmoothingType="LCD" layoutX="87.0" layoutY="56.0" opacity="0.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Вас забанили!" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
+   <ImageView fitHeight="63.0" fitWidth="66.0" layoutX="7.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@../images/preloader/logo.png" />
+      </image>
+   </ImageView>
+   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="76.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ваш кот очень пушмястый" wrappingWidth="219.79296875" />
+   <Text id="notificationText" fontSmoothingType="LCD" layoutX="76.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Он очень мягкий)" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
 </Pane>

@@ -47,11 +47,13 @@
     -fx-background-color: transparent;
 }
 
+
 #notificationPane {
    -fx-border-radius: 10px;
     -fx-padding: 10;
 -fx-border-color: white;
 -fx-background-color:#fff;
+-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
 }
 
 #serverButtonSelected,
@@ -66,9 +68,11 @@
 .serverButtonsActive {
     -fx-background-color: rgba(5, 5, 5, 0.1);
 }
-
+.imageserver{
+    backgroound-image:url('../images/servers/minecraft-rtx-world-conversion-ogimage.jpg');
+}
 #online {
-    -fx-fill: #FFDE6B;
+    -fx-fill: #ffffff;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
@@ -95,7 +99,7 @@
 }
 
 #genreServer {
-    -fx-fill: #808080;
+    -fx-fill: #000000;
     -fx-font-size: 12px;
 }
 
@@ -119,9 +123,10 @@
 #dialogTextInput {
     -fx-background-color: #fff;
     -fx-border-color: #fff;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
+    
+
     -fx-border-radius:10px;
-    -fx-background-radius:10pxy;
+    -fx-background-radius:10px;
 }
 
 #forgot2fa {

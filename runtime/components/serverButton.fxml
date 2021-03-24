@@ -1,16 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Hyperlink?>
+<?import java.net.URL?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="280.0" styleClass="serverButtons" stylesheets="@components.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
-   <Text id="online" fontSmoothingType="LCD" layoutX="14.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="24" />
-   <ImageView id="serverLogo" fitHeight="75.0" fitWidth="71.0" layoutX="14.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@../images/preloader/logo.png" />
-   </ImageView>
-   <Hyperlink id="nameServer" layoutX="101.0" layoutY="35.0" prefHeight="40.0" prefWidth="169.0" text="SERVER" />
-   <Text id="genreServer" fontSmoothingType="LCD" layoutX="107.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TechnoMagic" wrappingWidth="169.115234375" />
+<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="379.0" prefWidth="205.0" style="-fx-background-radius: 10px;" styleClass="serverButtons" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <Pane prefHeight="379.0" prefWidth="205.0" styleClass="blackbox">
+      <children>
+         <Text id="nameServer" layoutX="8.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SERVERNAME" textAlignment="CENTER" wrappingWidth="186.93670082092285" />
+         <ImageView id="serverLogo" fitHeight="307.0" fitWidth="169.0" layoutX="17.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/servers/minecraft-rtx-world-conversion-ogimage.jpg" />
+         </ImageView>
+         <Pane layoutX="111.0" layoutY="8.0" prefHeight="44.0" prefWidth="57.0" style="-fx-background-color: #09bc6a; -fx-background-radius: 10px;">
+            <children>
+               <Text id="online" fontSmoothingType="LCD" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="24" textAlignment="CENTER" wrappingWidth="56.999999999999886" />
+            </children>
+         </Pane>
+         <Text id="genreServer" layoutX="18.0" layoutY="369.0" strokeType="OUTSIDE" strokeWidth="0.0" text="HITECH" textAlignment="CENTER" wrappingWidth="169.115234375" />
+      </children>
+   </Pane>
+   <stylesheets>
+      <URL value="@components.css" />
+      <URL value="@../global.css" />
+   </stylesheets>
 </Pane>
