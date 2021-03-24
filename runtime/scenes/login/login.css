@@ -18,6 +18,26 @@
     -fx-background-radius: 0;
 }
 
+#playerName {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-line-height: 33px;
+    -fx-align-items: center;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-indent: 10px;
+}
+#welcome {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-font-size: 12px;
+    -fx-line-height: 16px;
+    -fx-align-items: center;
+    -fx-letter-spacing: 0.25px;
+}
+
 #goAuth {
     -fx-background-color: transparent;
     -fx-background-repeat: no-repeat;
