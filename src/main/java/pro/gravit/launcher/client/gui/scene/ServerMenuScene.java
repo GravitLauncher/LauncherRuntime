@@ -13,6 +13,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.Launcher;
@@ -151,16 +152,27 @@ public class ServerMenuScene extends AbstractScene {
             errorHandle(e);
             return;
         }
-
-        Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#servers").getContent();
+        ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
+        HBox serverList = (HBox) scrollPane.getContent();
+        serverList.setSpacing(20);
         serverList.getChildren().clear();
         application.runtimeStateMachine.clearServerPingCallbacks();
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             try {
                 Pane pane = serverButtonCache.pane.get();
                 AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
-                LookupHelper.<Text>lookup(pane, "#nameServer").setText(profile.getTitle());
-                LookupHelper.<Text>lookup(pane, "#genreServer").setText(profile.getVersion().toString());
+                LookupHelper.<Labeled>lookup(pane, "#nameServer").setText(profile.getTitle());
+                LookupHelper.<Labeled>lookup(pane, "#genreServer").setText(profile.getVersion().toString());
+                LookupHelper.<ImageView>lookupIfPossible(pane, "#serverLogo").ifPresent((a) -> {
+                    try {
+                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(a.getFitWidth(), a.getFitHeight());
+                        clip.setArcWidth(10.0);
+                        clip.setArcHeight(10.0);
+                        a.setClip(clip);
+                    } catch (Throwable e) {
+                        LogHelper.error(e);
+                    }
+                });
                 profile.updateOptionalGraph();
                 EventHandler<? super MouseEvent> handle = (event) -> {
                     if (!event.getButton().equals(MouseButton.PRIMARY))

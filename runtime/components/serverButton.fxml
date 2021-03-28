@@ -1,24 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.paint.ImagePattern?>
 
-<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="379.0" prefWidth="205.0" style="-fx-background-radius: 10px;" styleClass="serverButtons" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
-   <Pane prefHeight="379.0" prefWidth="205.0" styleClass="blackbox">
+<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="189.0" styleClass="serverButtons" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <Pane prefHeight="339.0" prefWidth="189.0" styleClass="blackbox">
       <children>
-         <Text id="nameServer" layoutX="8.0" layoutY="351.0" strokeType="OUTSIDE" strokeWidth="0.0" text="SERVERNAME" textAlignment="CENTER" wrappingWidth="186.93670082092285" />
-         <ImageView id="serverLogo" fitHeight="307.0" fitWidth="169.0" layoutX="17.0" layoutY="29.0" pickOnBounds="true" preserveRatio="true">
-            <Image url="@../images/servers/minecraft-rtx-world-conversion-ogimage.jpg" />
+         <ImageView id="serverLogo" fitHeight="242.0" fitWidth="151.0" layoutX="18.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/servers/black.png" />
          </ImageView>
-         <Pane layoutX="111.0" layoutY="8.0" prefHeight="44.0" prefWidth="57.0" style="-fx-background-color: #09bc6a; -fx-background-radius: 10px;">
+         <Label id="nameServer" alignment="CENTER" layoutY="265.0" prefHeight="29.0" prefWidth="189.0" text="SERVERNAME" textAlignment="CENTER" />
+         <Pane layoutX="115.0" layoutY="8.0" prefHeight="35.0" prefWidth="48.0" style="-fx-background-color: #09bc6a; -fx-background-radius: 10px;">
             <children>
-               <Text id="online" fontSmoothingType="LCD" layoutY="27.0" strokeType="OUTSIDE" strokeWidth="0.0" text="24" textAlignment="CENTER" wrappingWidth="56.999999999999886" />
+               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" text="21" />
             </children>
          </Pane>
-         <Text id="genreServer" layoutX="18.0" layoutY="369.0" strokeType="OUTSIDE" strokeWidth="0.0" text="HITECH" textAlignment="CENTER" wrappingWidth="169.115234375" />
+         <Label id="genreServer" alignment="CENTER" layoutY="290.0" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" />
       </children>
    </Pane>
    <stylesheets>

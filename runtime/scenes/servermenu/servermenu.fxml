@@ -8,7 +8,7 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Text?>
@@ -68,17 +68,24 @@
                  </Pane>
              </children>
          </Pane>
-         <ScrollPane id="servers" fx:id="serverlist" hbarPolicy="NEVER" layoutX="42.0" layoutY="90.0" prefHeight="365.0" prefWidth="811.0" vbarPolicy="NEVER">
-             <FlowPane prefHeight="364.0" prefWidth="811.0" prefWrapLength="0.0" rowValignment="TOP" />
+         <ScrollPane id="servers" fx:id="serverlist" hbarPolicy="NEVER" layoutX="42.0" layoutY="119.0" prefHeight="339.0" prefWidth="816.0" vbarPolicy="NEVER">
+         <content>
+            <HBox prefHeight="339.0" prefWidth="816.0" />
+         </content>
          </ScrollPane>
-         <ImageView id="avatar" fitHeight="48.0" fitWidth="48.0" layoutX="31.0" layoutY="31.0" smooth="false">
+         <ImageView id="avatar" fitHeight="39.0" fitWidth="39.0" layoutX="58.0" layoutY="31.0" smooth="false">
              <Image url="@../../images/icons/default.png" />
          </ImageView>
-         <Label id="nickname" layoutX="87.0" layoutY="38.0" prefHeight="34.0" prefWidth="282.0" text="PLAYER123">
+         <Label id="nickname" layoutX="109.0" layoutY="31.0" prefHeight="20.0" prefWidth="282.0" text="PLAYER123">
              <padding>
                  <Insets left="10.0" />
              </padding>
          </Label>
-      <Button id="clientLaunch" layoutX="823.0" layoutY="458.0" mnemonicParsing="false" text="Войти" />
+      <Label id="money" layoutX="109.0" layoutY="48.0" prefHeight="20.0" prefWidth="282.0" text="100 МОНЕТ">
+         <padding>
+            <Insets left="10.0" />
+         </padding>
+      </Label>
+      <Button id="clientLaunch" layoutX="689.0" layoutY="458.0" mnemonicParsing="false" text="Войти (Временная кнопка)" />
     </Pane>
 </Pane>

@@ -43,8 +43,23 @@
 }
 
 #nickname {
-    -fx-font-size: 13pt;
-    -fx-text-fill: #323232;
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-line-height: 19px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #2C2C2C;
+}
+
+#money {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-font-size: 12px;
+    -fx-line-height: 16px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #6D6D6D;
 }
 
 #heading {

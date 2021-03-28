@@ -61,6 +61,7 @@
 
 .serverButtons {
     -fx-background-color: transparent;
+    -fx-background-radius: 10px;
 }
 
 .serverButtonsActive {
@@ -75,8 +76,7 @@
 
 #serverLogo {
     -fx-background-position: center;
-    -fx-background-color: transparent;
-    -fx-background-image: url('../images/preloader/logo.png');
+    -fx-background-radius: 10px;
 }
 
 #nameServer {
@@ -121,7 +121,7 @@
     -fx-border-color: #fff;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
     -fx-border-radius:10px;
-    -fx-background-radius:10pxy;
+    -fx-background-radius:10px;
 }
 
 #forgot2fa {
