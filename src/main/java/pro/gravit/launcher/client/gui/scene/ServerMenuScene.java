@@ -61,12 +61,10 @@ public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
     private ImageView avatar;
-    private ImageView serverImage;
     private Node lastSelectedServerButton;
 
     private List<ClientProfile> lastProfiles;
     private Image originalAvatarImage;
-    private Image originalServerImage;
 
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
@@ -75,11 +73,9 @@ public class ServerMenuScene extends AbstractScene {
     @Override
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
-        serverImage = LookupHelper.lookup(layout, "#serverImage");
         originalAvatarImage = avatar.getImage();
-        originalServerImage = serverImage.getImage();
 
-        LookupHelper.<ButtonBase>lookup(layout, "#clientSettings").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#clientSettings").setOnAction((e) -> {
             try {
                 if (application.runtimeStateMachine.getProfile() == null)
                     return;
@@ -90,10 +86,10 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.error(ex);
             }
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#settings").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
             showOverlay(application.gui.settingsOverlay, null);
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#exit").setOnAction((e) ->
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
                 application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
                         application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
                                 processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
@@ -121,20 +117,7 @@ public class ServerMenuScene extends AbstractScene {
     class ServerButtonCache
     {
         public Future<Pane> pane;
-        SoftReference<Image> imageRef = new SoftReference<>(null);
         public int position;
-        Supplier<Image> getImage = () -> originalServerImage;
-        public Image getImage()
-        {
-            Image result = imageRef.get();
-            if(result != null)
-            {
-                return result;
-            }
-            result = getImage.get();
-            imageRef = new SoftReference<>(result);
-            return result;
-        }
     }
 
     @Override
@@ -159,12 +142,6 @@ public class ServerMenuScene extends AbstractScene {
                 } else {
                     cache.pane = application.getNonCachedFxmlAsync(SERVER_BUTTON_FXML);
                 }
-                String customImageName = String.format(SERVER_BUTTON_CUSTOM_IMAGE, profileUUID);
-                URL customImage = application.tryResource(customImageName);
-                if(customImage != null)
-                {
-                    cache.getImage = () -> new Image(customImage.toString());
-                }
                 cache.position = position;
                 serverButtonCacheMap.put(profile, cache);
                 position++;
@@ -175,7 +152,7 @@ public class ServerMenuScene extends AbstractScene {
             return;
         }
 
-        Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverlist").getContent();
+        Pane serverList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#servers").getContent();
         serverList.getChildren().clear();
         application.runtimeStateMachine.clearServerPingCallbacks();
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
@@ -192,7 +169,7 @@ public class ServerMenuScene extends AbstractScene {
                         lastSelectedServerButton.getStyleClass().remove("serverButtonsActive");
                     lastSelectedServerButton = pane;
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
-                    changeServer(profile, pingerResult.get(), serverButtonCache.getImage());
+                    changeServer(profile, pingerResult.get());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
                 };
                 pane.setOnMouseClicked(handle);
@@ -233,7 +210,7 @@ public class ServerMenuScene extends AbstractScene {
                 if ((application.runtimeSettings.lastProfile == null && lastSelectedServerButton == null) || (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))) {
                     lastSelectedServerButton = pane;
                     lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
-                    changeServer(profile, pingerResult.get(), serverButtonCache.getImage());
+                    changeServer(profile, pingerResult.get());
                     LogHelper.dev("Selected profile %s", profile.getTitle());
                 }
             } catch (InterruptedException | ExecutionException e) {
@@ -267,10 +244,10 @@ public class ServerMenuScene extends AbstractScene {
     public void changeOnline(Pane pane, ClientProfile profile, int online, int maxOnline)
     {
         contextHelper.runInFxThread(() -> {
-            LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(online));
+            //LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(online));
             if (application.runtimeStateMachine.getProfile() != null &&
                     application.runtimeStateMachine.getProfile() == profile) {
-                LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", online, maxOnline));
+                //LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", online, maxOnline));
             }
         });
     }
@@ -301,21 +278,9 @@ public class ServerMenuScene extends AbstractScene {
         avatar.setImage(head);
     }
 
-    private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult, Image serverImage) {
+    private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult) {
         application.runtimeStateMachine.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
-        LookupHelper.<Text>lookup(layout, "#heading").setText(profile.getTitle());
-        LookupHelper.<Text>lookup(LookupHelper.
-                        <ScrollPane>lookup(layout, "#serverInfo").getContent(),
-                "#servertext").setText(profile.getInfo());
-        if (pingerResult != null)
-            LookupHelper.<Text>lookup(layout, "#headingOnline").setText(String.format("%d / %d", pingerResult.onlinePlayers, pingerResult.maxPlayers));
-        else
-            LookupHelper.<Text>lookup(layout, "#headingOnline").setText("? / ?");
-        if(serverImage != null)
-        {
-            this.serverImage.setImage(serverImage);
-        }
     }
     private boolean isEnabledDownloadJava()
     {

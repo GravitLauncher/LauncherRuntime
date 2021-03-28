@@ -27,7 +27,6 @@
         <URL value="@../../global.css" />
     </stylesheets>
      <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0">
-      <Pane id="blur" prefHeight="500.0" prefWidth="900.0" visible="false" />
       <Pane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="155.0" style="-fx-background-radius: 0px;" styleClass="blackbox">
          <children>
                <CheckBox id="autoenter" layoutX="25.0" layoutY="431.0" prefHeight="18.0" text="%runtime.scenes.login.login.autoenter" textFill="#dadada">
