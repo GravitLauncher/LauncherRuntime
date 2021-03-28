@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<!-- DrLeonardo Design for GravitLauncher-->
+
+<Pane fx:id="serverPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <stylesheets>
+        <URL value="@../../global.css" />
+        <URL value="@servermenu.css" />
+    </stylesheets>
+    <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+        <Pane fx:id="serverMenu" prefHeight="500.0" prefWidth="900.0">
+            <ScrollPane fx:id="serverlist" hbarPolicy="NEVER" layoutX="42.0" layoutY="90.0" prefHeight="365.0" prefWidth="811.0" vbarPolicy="NEVER">
+                <FlowPane prefHeight="364.0" prefWidth="811.0" prefWrapLength="0.0" rowValignment="TOP" />
+            </ScrollPane>
+            <ImageView id="avatar" fitHeight="48.0" fitWidth="48.0" layoutX="31.0" layoutY="31.0" smooth="false">
+                <Image url="@../../images/icons/default.png" />
+            </ImageView>
+         <Label id="nickname" layoutX="87.0" layoutY="38.0" prefHeight="34.0" prefWidth="282.0" text="PLAYER123">
+            <padding>
+               <Insets left="10.0" />
+            </padding>
+         </Label>
+            <Button id="settings" alignment="CENTER" contentDisplay="CENTER" layoutX="744.0" layoutY="35.0" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;" textAlignment="CENTER" textFill="#464646">
+                <graphic>
+                    <SVGPath id="icons" content="M450.857 4C449.286 4 448 5.28599 448 6.85714V25.1429C448 26.714 449.286 28 450.857 28H469.143C470.714 28 472 26.714 472 25.1429V6.85714C472 5.28599 470.714 4 469.143 4H450.857ZM450.857 5.14286H469.143C470.096 5.14286 470.857 5.90372 470.857 6.85714V25.1429C470.857 26.0963 470.096 26.8571 469.143 26.8571H450.857C449.904 26.8571 449.143 26.0963 449.143 25.1429V6.85714C449.143 5.90372 449.904 5.14286 450.857 5.14286Z M459.333 9C458.471 9 457.737 9.53693 457.458 10.2727H452V11.5455H457.458C457.737 12.2812 458.471 12.8182 459.333 12.8182C460.195 12.8182 460.93 12.2812 461.208 11.5455H468V10.2727H461.208C460.93 9.53693 460.195 9 459.333 9ZM459.333 10.2727C459.708 10.2727 460 10.5511 460 10.9091C460 11.267 459.708 11.5455 459.333 11.5455C458.958 11.5455 458.667 11.267 458.667 10.9091C458.667 10.5511 458.958 10.2727 459.333 10.2727ZM464 14.0909C463.138 14.0909 462.404 14.6278 462.125 15.3636H452V16.6364H462.125C462.404 17.3722 463.138 17.9091 464 17.9091C464.862 17.9091 465.596 17.3722 465.875 16.6364H468V15.3636H465.875C465.596 14.6278 464.862 14.0909 464 14.0909ZM464 15.3636C464.375 15.3636 464.667 15.642 464.667 16C464.667 16.358 464.375 16.6364 464 16.6364C463.625 16.6364 463.333 16.358 463.333 16C463.333 15.642 463.625 15.3636 464 15.3636ZM456.667 19.1818C455.805 19.1818 455.07 19.7187 454.792 20.4545H452V21.7273H454.792C455.07 22.4631 455.805 23 456.667 23C457.529 23 458.263 22.4631 458.542 21.7273H468V20.4545H458.542C458.263 19.7187 457.529 19.1818 456.667 19.1818ZM456.667 20.4545C457.042 20.4545 457.333 20.733 457.333 21.0909C457.333 21.4489 457.042 21.7273 456.667 21.7273C456.292 21.7273 456 21.4489 456 21.0909C456 20.733 456.292 20.4545 456.667 20.4545Z" />
+                </graphic>
+                <tooltip>
+                    <Tooltip id="settingsTooltip" text="%runtime.scenes.servermenu.servermenu.settingsTooltip" />
+                </tooltip>
+            </Button>
+            <Button id="exit" alignment="CENTER" contentDisplay="CENTER" layoutX="701.0" layoutY="35.0" prefHeight="40.0" prefWidth="40.0" style="-fx-background-color: transparent;" textAlignment="CENTER" textFill="#464646">
+                <graphic>
+                    <SVGPath id="icons" content="M324.811 27.9868L343.176 27.9868C344.726 27.9868 345.987 26.7258 345.987 25.1759L345.987 21.4279L344.999 21.4279L344.999 25.1759C344.999 25.9929 343.999 26.9929 343.176 26.9929L324.811 26.9929C323.999 26.9929 322.999 25.9929 322.999 25.1759L322.999 6.81104C322.999 5.99292 323.999 4.99292 324.811 4.99292L343.176 4.99292C343.999 4.99292 344.999 5.99292 344.999 6.81104L344.999 10.559L345.987 10.559L345.987 6.81104C345.987 5.26107 344.726 4.00009 343.176 4.00009L324.811 4.00008C323.261 4.00008 322 5.26107 322 6.81104L322 25.1759C322 26.7258 323.261 27.9868 324.811 27.9868Z M332 16.8046L343.057 16.8046L340.137 19.8621L341.224 21L346 16L341.224 11L340.137 12.1379L343.057 15.1954L332 15.1954L332 16.8046Z" strokeMiterLimit="11.0" />
+                </graphic>
+                <tooltip>
+                    <Tooltip id="logoutTooltip" text="%runtime.scenes.servermenu.servermenu.logoutTooltip" />
+                </tooltip>
+            </Button>
+            <Button id="hide" alignment="CENTER" contentDisplay="CENTER" layoutX="789.0" layoutY="35.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#c6c6c6">
+                <graphic>
+                    <SVGPath id="icons" content="M576.857 4C575.286 4 574 5.28599 574 6.85714V25.1429C574 26.714 575.286 28 576.857 28H595.143C596.714 28 598 26.714 598 25.1429V6.85714C598 5.28599 596.714 4 595.143 4H576.857ZM576.857 5.14286H595.143C596.096 5.14286 596.857 5.90372 596.857 6.85714V25.1429C596.857 26.0963 596.096 26.8571 595.143 26.8571H576.857C575.904 26.8571 575.143 26.0963 575.143 25.1429V6.85714C575.143 5.90372 575.904 5.14286 576.857 5.14286ZM579.714 20C579.09 20 578.571 20.5183 578.571 21.1429V22.2857C578.571 22.9103 579.09 23.4286 579.714 23.4286H592.286C592.91 23.4286 593.429 22.9103 593.429 22.2857V21.1429C593.429 20.5183 592.91 20 592.286 20H579.714ZM579.714 21.1429H592.286V22.2857H579.714V21.1429Z" />
+                </graphic>
+                <tooltip>
+                    <Tooltip id="hideTooltip" text="%runtime.scenes.servermenu.servermenu.hideTooltip" />
+                </tooltip>
+            </Button>
+            <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="833.0" layoutY="35.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+                <graphic>
+                    <SVGPath id="icons" content="M618.857 4C617.286 4 616 5.28599 616 6.85714V25.1429C616 26.714 617.286 28 618.857 28H637.143C638.714 28 640 26.714 640 25.1429V6.85714C640 5.28599 638.714 4 637.143 4H618.857ZM618.857 5.14286H637.143C638.096 5.14286 638.857 5.90372 638.857 6.85714V25.1429C638.857 26.0963 638.096 26.8571 637.143 26.8571H618.857C617.904 26.8571 617.143 26.0963 617.143 25.1429V6.85714C617.143 5.90372 617.904 5.14286 618.857 5.14286ZM623.261 10.4531L622.453 11.2612L627.192 16L622.453 20.7388L623.261 21.5469L628 16.808L632.739 21.5469L633.547 20.7388L628.808 16L633.547 11.2612L632.739 10.4531L628 15.192L623.261 10.4531Z" />
+                </graphic>
+                <tooltip>
+                    <Tooltip id="closeTooltip" text="%runtime.scenes.servermenu.servermenu.closeTooltip" />
+                </tooltip>
+            </Button>
+            <Button id="clientSettings" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="603.0" layoutY="33.0" prefHeight="48.0" prefWidth="101.0" style="-fx-background-color: transparent;" textFill="WHITE">
+                <font>
+                    <Font name="System Bold" size="30.0" />
+                </font>
+            <graphic>
+               <Pane id="mods-stroke" prefHeight="36.0" prefWidth="78.0">
+                  <children>
+                     <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" style="-fx-fill: transparent; -fx-stroke: #A4B3BA;" />
+                     <SVGPath id="icons" content="M219 10.1992V8H221V10.0996C221.9 10.2996 222.7 10.5996 223.5 11.0996L225 9.59961L226.4 11L224.9 12.5C225.4 13.2 225.8 14.1 225.9 15H228V17H225.9C225.7 17.9 225.4 18.7 224.9 19.5L226.4 21L225 22.4004L223.5 20.9004C222.8 21.4004 221.9 21.8004 221 21.9004V24H219V21.9004C218.1 21.7004 217.3 21.4004 216.5 20.9004L215 22.4004L213.6 21L215.1 19.5C214.6 18.8 214.2 17.9 214.1 17H212V15H214.1C214.3 14.1 214.6 13.3 215.1 12.5L213.6 11.0996L215 9.69922L216.5 11.1992C217.2 10.6992 218.1 10.2992 219 10.1992Z" layoutX="-151.0" />
+                     <SVGPath content="M224 16C224 13.8 222.2 12 220 12C217.8 12 216 13.8 216 16C216 18.2 217.8 20 220 20C222.2 20 224 18.2 224 16Z" layoutX="-151.0" style="-fx-fill: #E0E0E0;" />
+                     <SVGPath id="icons" content="M218 16C218 14.9 218.9 14 220 14C221.1 14 222 14.9 222 16C222 17.1 221.1 18 220 18C218.9 18 218 17.1 218 16Z" layoutX="-151.0" />
+                     <Text id="icons" layoutX="7.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 9px;" text="Опц. Моды" wrappingWidth="53.9971923828125" />
+                  </children>
+               </Pane>
+            </graphic>
+            </Button>
+        </Pane>
+    </Pane>
+</Pane>
