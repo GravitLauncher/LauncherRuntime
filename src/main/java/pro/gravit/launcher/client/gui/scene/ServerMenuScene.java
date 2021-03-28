@@ -182,7 +182,7 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 Pane pane = serverButtonCache.pane.get();
                 AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
-                LookupHelper.<Hyperlink>lookup(pane, "#nameServer").setText(profile.getTitle());
+                LookupHelper.<Text>lookup(pane, "#nameServer").setText(profile.getTitle());
                 LookupHelper.<Text>lookup(pane, "#genreServer").setText(profile.getVersion().toString());
                 profile.updateOptionalGraph();
                 EventHandler<? super MouseEvent> handle = (event) -> {
