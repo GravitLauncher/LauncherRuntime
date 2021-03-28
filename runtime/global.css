@@ -90,8 +90,18 @@ RadioButton {
     -fx-text-fill: #AB2727;
 }
 
+/* Icons */
+.icon-button {
+    -fx-background-position: center;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
 
-/* Scrolls */
+.icon-button:hover {
+    -fx-opacity: 0.8;
+}
+
+/* Default transparent settings */
 
 #scroll-pane {
     -fx-background-color: transparent;
@@ -172,50 +182,11 @@ RadioButton {
     -fx-text-fill: white;
 }
 
-.icon-button {
-    -fx-background-position: center;
-    -fx-background-radius: 0;
-    -fx-background-color: transparent;
-}
+/* remove later */
 
-.icon-button:hover {
-    -fx-opacity: 0.8;
-}
 #iconsError{
     -fx-fill: #FF6F80;
 }
-#apply {
-    -fx-background-radius: 0;
-    -fx-background-size: cover;
-    -fx-background-color:transparent;
-    
-}
-#close,
-#hide{
-    -fx-background-color:transparent;
-}
-#deny {
-    -fx-background-radius: 0;
-    
-    -fx-background-size: cover;
-    
-}
-
-#apply:hover,
-#apply:pressed {
-    
-}
-
-#deny:hover,
-#deny:pressed {
-    -fx-background-color: #AB2727;
-}
-
-#version {
-    -fx-text-fill: #939394;
-    -fx-font-size: 10pt;
-}
-
 .optContainer {
     -fx-background-color: transparent;
     -fx-padding: 10 10 10 10px;
@@ -233,10 +204,7 @@ RadioButton {
     -fx-padding: 3 0 0 0px;
     -fx-pref-width: 750px;
 }
-
-#icons {
-    -fx-fill: #A4B3BA;
-}
+/* end remove later */
 
 
 /*-- DrLeonardo Design for GravitLauncher --*/
