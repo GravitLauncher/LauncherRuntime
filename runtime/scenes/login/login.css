@@ -16,6 +16,16 @@
 #password,
 #login {
     -fx-background-radius: 0;
+    /* ********************* */
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-line-height: 19px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-indent: 20px;
+    -fx-color: #2C2C2C;
+
 }
 
 #playerName {

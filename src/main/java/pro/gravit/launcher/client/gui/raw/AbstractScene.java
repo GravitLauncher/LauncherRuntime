@@ -169,9 +169,11 @@ public abstract class AbstractScene implements AllowDisable {
         if(layout == root) {
             throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
         }
-        layout.setEffect(new GaussianBlur(10));
+        layout.setEffect(new GaussianBlur(20));
         if(disablePane == null) {
             disablePane = new Pane();
+            disablePane.setPrefHeight(root.getPrefHeight());
+            disablePane.setPrefWidth(root.getPrefWidth());
             int index = root.getChildren().indexOf(layout);
             root.getChildren().add(index+1, disablePane);
             disablePane.setVisible(true);

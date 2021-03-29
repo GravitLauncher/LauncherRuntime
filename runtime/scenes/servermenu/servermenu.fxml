@@ -70,7 +70,7 @@
          </Pane>
          <ScrollPane id="servers" fx:id="serverlist" hbarPolicy="NEVER" layoutX="42.0" layoutY="119.0" prefHeight="339.0" prefWidth="816.0" vbarPolicy="NEVER">
          <content>
-            <HBox prefHeight="339.0" prefWidth="816.0" />
+            <HBox alignment="CENTER" prefHeight="339.0" prefWidth="816.0" />
          </content>
          </ScrollPane>
          <ImageView id="avatar" fitHeight="39.0" fitWidth="39.0" layoutX="58.0" layoutY="31.0" smooth="false">
