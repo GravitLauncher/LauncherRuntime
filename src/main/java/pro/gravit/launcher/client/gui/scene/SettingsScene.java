@@ -43,7 +43,7 @@ public class SettingsScene extends AbstractScene {
                 errorHandle(ex);
             }
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#console").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
             try {
                 if (application.gui.consoleStage == null)
                     application.gui.consoleStage = new ConsoleStage(application);
@@ -56,7 +56,7 @@ public class SettingsScene extends AbstractScene {
         });
 
         {
-            Button langButton = LookupHelper.lookup(layout, "#lang");
+            Button langButton = LookupHelper.lookup(header, "#controls", "#lang");
             ContextMenu langChoice = langButton.getContextMenu();
             RuntimeSettings.LAUNCHER_LOCALE[] locales = RuntimeSettings.LAUNCHER_LOCALE.values();
             MenuItem[] items = new MenuItem[locales.length];
@@ -77,7 +77,7 @@ public class SettingsScene extends AbstractScene {
         }
 
         Slider ramSlider = LookupHelper.lookup(layout, "#ramSlider");
-        ramLabel = LookupHelper.lookup(layout, "#serverImage", "#ramLabel");
+        ramLabel = LookupHelper.lookup(layout, "#ramLabel");
         updateRamLabel();
         try {
             SystemInfo systemInfo = new SystemInfo();
