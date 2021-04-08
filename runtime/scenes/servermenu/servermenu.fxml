@@ -68,7 +68,7 @@
                  </Pane>
              </children>
          </Pane>
-         <ScrollPane id="servers" fx:id="serverlist" hbarPolicy="NEVER" layoutX="42.0" layoutY="119.0" prefHeight="339.0" prefWidth="816.0" vbarPolicy="NEVER">
+         <ScrollPane id="servers" fx:id="serverlist" layoutX="42.0" layoutY="119.0" prefHeight="339.0" prefWidth="816.0" vbarPolicy="NEVER" vmax="0.0">
          <content>
             <HBox alignment="CENTER" prefHeight="339.0" prefWidth="816.0" />
          </content>
