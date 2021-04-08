@@ -68,7 +68,12 @@
 #savePassword,
 #autoenter {
     -fx-font-size: 8pt;
+    -fx-background-image: url('../../images/icons/checkbox_off.png');
     -fx-text-fill: #5E5E5E;
+}
+#savePassword:selected,
+#autoenter:selected {
+    -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
 
 #forgotPass {

@@ -29,12 +29,12 @@
      <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0">
       <Pane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="155.0" style="-fx-background-radius: 0px;" styleClass="blackbox">
          <children>
-               <CheckBox id="autoenter" layoutX="25.0" layoutY="431.0" prefHeight="18.0" text="%runtime.scenes.login.login.autoenter" textFill="#dadada">
+               <CheckBox styleClass="logincheckbox" id="autoenter" layoutX="25.0" layoutY="431.0" prefHeight="18.0" text="%runtime.scenes.login.login.autoenter" textFill="#dadada">
                    <padding>
                        <Insets left="5.0" />
                    </padding>
                </CheckBox>
-               <CheckBox id="savePassword" layoutX="25.0" layoutY="457.0" prefHeight="18.0" text="%runtime.scenes.login.login.savePassword" textFill="#dadada">
+               <CheckBox styleClass="logincheckbox" id="savePassword" layoutX="25.0" layoutY="457.0" prefHeight="18.0" text="%runtime.scenes.login.login.savePassword" textFill="#dadada">
                    <padding>
                        <Insets left="5.0" />
                    </padding>
