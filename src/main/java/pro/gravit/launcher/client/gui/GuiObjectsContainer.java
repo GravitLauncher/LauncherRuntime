@@ -13,7 +13,7 @@ public class GuiObjectsContainer {
     public ServerMenuScene serverMenuScene;
     public LoginScene loginScene;
     public OptionsScene optionsScene;
-    public SettingsOverlay settingsOverlay;
+    public SettingsScene settingsScene;
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
@@ -28,7 +28,7 @@ public class GuiObjectsContainer {
 
         serverMenuScene = application.registerScene(ServerMenuScene.class);
         optionsScene = application.registerScene(OptionsScene.class);
-        settingsOverlay = application.registerOverlay(SettingsOverlay.class);
+        settingsScene = application.registerScene(SettingsScene.class);
         consoleScene = application.registerScene(ConsoleScene.class);
 
         updateScene = application.registerScene(UpdateScene.class);

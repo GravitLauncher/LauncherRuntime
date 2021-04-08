@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.overlay;
+package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
 import javafx.geometry.Insets;
@@ -14,6 +14,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
+import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
@@ -24,23 +25,20 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-public class SettingsOverlay extends AbstractOverlay {
+public class SettingsScene extends AbstractScene {
     private Pane componentList;
     private Label ramLabel;
 
-    public SettingsOverlay(JavaFXApplication application) {
+    public SettingsScene(JavaFXApplication application) {
         super("overlay/settings/settings.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        Node layout = pane;
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
         LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
             try {
-                if (currentStage != null) {
-                    currentStage.getScene().hideOverlay(0, null);
-                }
+                getCurrentStage().setScene(application.gui.serverMenuScene);
             } catch (Exception ex) {
                 errorHandle(ex);
             }
@@ -55,11 +53,6 @@ public class SettingsOverlay extends AbstractOverlay {
             } catch (Exception ex) {
                 errorHandle(ex);
             }
-        });
-        LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction(
-                (e) -> Platform.exit());
-        LookupHelper.<ButtonBase>lookup(layout, "#hide").setOnAction((e) -> {
-            if (this.currentStage != null) this.currentStage.hide();
         });
 
         {
@@ -155,6 +148,11 @@ public class SettingsOverlay extends AbstractOverlay {
     @Override
     public void errorHandle(Throwable e) {
         LogHelper.error(e);
+    }
+
+    @Override
+    public String getName() {
+        return "settings";
     }
 
     public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {

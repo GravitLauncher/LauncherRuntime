@@ -74,7 +74,11 @@ public class ServerMenuScene extends AbstractScene {
             }
         });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
-            showOverlay(application.gui.settingsOverlay, null);
+            try {
+                getCurrentStage().setScene(application.gui.settingsScene);
+            } catch (Exception exception) {
+                LogHelper.error(exception);
+            }
         });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
                 application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
