@@ -34,8 +34,13 @@
 }
 
 #headingOptional {
-    -fx-fill: #323232;
-    -fx-font-weight: bold;
-    -fx-font-size: 14pt;
+-fx-font-family: Roboto;
+-fx-font-style: normal;
+-fx-font-weight: bold;
+-fx-font-size: 18px;
+-fx-line-height: 21px;
+-fx-letter-spacing: 0.25px;
+-fx-text-indent: 60px;
+-fx-fill: #2C2C2C;
 }
 /*-- DrLeonardo Design for GravitLauncher --*/

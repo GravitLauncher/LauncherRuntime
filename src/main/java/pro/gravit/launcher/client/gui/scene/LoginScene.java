@@ -1,11 +1,8 @@
 package pro.gravit.launcher.client.gui.scene;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -19,7 +16,6 @@ import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
@@ -29,12 +25,10 @@ import pro.gravit.launcher.request.auth.password.AuthPlainPassword;
 import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
-import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 import java.util.Locale;
@@ -322,9 +316,9 @@ public class LoginScene extends AbstractScene {
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();
-                if (application.gui.optionsOverlay != null) {
+                if (application.gui.optionsScene != null) {
                     try {
-                        application.gui.optionsOverlay.loadAll();
+                        application.gui.optionsScene.loadAll();
                     } catch (Throwable ex) {
                         LogHelper.error(ex);
                     }

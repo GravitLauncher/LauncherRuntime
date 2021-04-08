@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.overlay;
+package pro.gravit.launcher.client.gui.scene;
 
 import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
@@ -16,6 +16,7 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
+import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalType;
@@ -32,31 +33,23 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 
-public class OptionsOverlay extends AbstractOverlay {
+public class OptionsScene extends AbstractScene {
     private Pane componentList;
 
-    public OptionsOverlay(JavaFXApplication application) {
+    public OptionsScene(JavaFXApplication application) {
         super("overlay/options/options.fxml", application);
     }
 
     @Override
     protected void doInit() {
-        Node layout = pane;
         LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
             try {
-                if (currentStage != null) {
-                    currentStage.getScene().hideOverlay(0, null);
-                }
-            } catch (Exception ex) {
-                errorHandle(ex);
+                getCurrentStage().setScene(application.gui.serverMenuScene);
+            } catch (Exception exception) {
+                LogHelper.error(exception);
             }
         });
-        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#serverImage", "#optionslist").getContent();
-        LookupHelper.<ButtonBase>lookup(layout, "#close").setOnAction(
-                (e) -> Platform.exit());
-        LookupHelper.<ButtonBase>lookup(layout, "#hide").setOnAction((e) -> {
-            if (this.currentStage != null) this.currentStage.hide();
-        });
+        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
     }
 
     @Override
@@ -67,6 +60,11 @@ public class OptionsOverlay extends AbstractOverlay {
     @Override
     public void errorHandle(Throwable e) {
         LogHelper.error(e);
+    }
+
+    @Override
+    public String getName() {
+        return "options";
     }
 
     public void addProfileOptionals(OptionalView view) {

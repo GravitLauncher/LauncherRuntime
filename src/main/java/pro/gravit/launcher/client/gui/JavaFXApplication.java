@@ -28,7 +28,6 @@ import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
@@ -291,9 +290,9 @@ public class JavaFXApplication extends Application {
     public void saveSettings() throws IOException {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
-        if (gui != null && gui.optionsOverlay != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
+        if (gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
             try {
-                gui.optionsOverlay.saveAll();
+                gui.optionsScene.saveAll();
             } catch (Throwable ex) {
                 LogHelper.error(ex);
             }

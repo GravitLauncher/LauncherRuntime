@@ -1,21 +1,16 @@
 package pro.gravit.launcher.client.gui.scene;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.Hyperlink;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.ClientLauncherProcess;
@@ -27,7 +22,6 @@ import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.profiles.PlayerProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.ExitRequest;
@@ -38,16 +32,9 @@ import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-import java.awt.image.SinglePixelPackedSampleModel;
 import java.io.IOException;
-import java.lang.ref.SoftReference;
 import java.net.InetSocketAddress;
 import java.net.URL;
-import java.nio.IntBuffer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -55,7 +42,6 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -80,9 +66,9 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 if (application.runtimeStateMachine.getProfile() == null)
                     return;
-                showOverlay(application.gui.optionsOverlay, (ec) -> {
-                    application.gui.optionsOverlay.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
-                });
+                getCurrentStage().setScene(application.gui.optionsScene);
+                application.gui.optionsScene.reset();
+                application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
             } catch (Exception ex) {
                 LogHelper.error(ex);
             }
