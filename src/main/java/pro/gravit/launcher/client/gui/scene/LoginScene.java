@@ -29,6 +29,7 @@ import pro.gravit.launcher.request.auth.password.AuthPlainPassword;
 import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
+import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
@@ -269,8 +270,8 @@ public class LoginScene extends AbstractScene {
                 try {
                     application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.skin.url));
                     application.skinManager.getSkin(result.playerProfile.username); //Cache skin
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                } catch (Exception e) {
+                    LogHelper.error(e);
                 }
             }
             contextHelper.runInFxThread(() -> {
@@ -278,7 +279,14 @@ public class LoginScene extends AbstractScene {
                 if(player.isPresent()) {
                     LookupHelper.<Labeled>lookupIfPossible(player.get(), "#playerName").ifPresent(l -> l.setText(result.playerProfile.username.toUpperCase(Locale.ROOT)));
                     LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
-                            (h) -> h.setImage(application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight()))
+                            (h) -> {
+                                try {
+                                    Image image = application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight());
+                                    h.setImage(image);
+                                } catch (Throwable e) {
+                                    LogHelper.warning("Skin head error");
+                                }
+                            }
                     );
                     player.get().setVisible(true);
                     disable();
