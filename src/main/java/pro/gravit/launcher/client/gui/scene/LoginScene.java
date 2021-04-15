@@ -287,6 +287,7 @@ public class LoginScene extends AbstractScene {
                     fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {
                         enable();
                         onGetProfiles();
+                        player.get().setVisible(false);
                     }
                     );
                 } else {
