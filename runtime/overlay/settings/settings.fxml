@@ -17,7 +17,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
 <!-- DrLeonardo Design for GravitLauncher-->
 
@@ -47,12 +46,12 @@
                             <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" fill="#A4B3BA" />
                         </graphic>
                         </Button>
-                        <Button id="console" layoutX="532.0" layoutY="-2.0" mnemonicParsing="false" styleClass="icon-button">
+                        <Button id="console" layoutX="532.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="icon-button">
                         <graphic>
-                            <SVGPath content="M6.85715 4C5.28599 4 4 5.28599 4 6.85714V25.1428C4 26.714 5.28599 28 6.85715 28H25.1429C26.714 28 28 26.714 28 25.1428V6.85714C28 5.28599 26.714 4 25.1429 4H6.85715ZM6.85715 5.14286H25.1429C26.0963 5.14286 26.8571 5.90372 26.8571 6.85714V25.1428C26.8571 26.0963 26.0963 26.8571 25.1429 26.8571H6.85715C5.90373 26.8571 5.14285 26.0963 5.14285 25.1428V6.85714C5.14285 5.90372 5.90373 5.14286 6.85715 5.14286Z M9 10V22H23V10H9ZM10.1667 11.0909H21.8333V12.1818H10.1667V11.0909ZM10.1667 13.2727H21.8333V20.9091H10.1667V13.2727ZM13.2109 14.7898L12.3724 15.5739L13.9948 17.0909L12.3724 18.608L13.2109 19.392L15.2526 17.483L15.6536 17.0909L15.2526 16.6989L13.2109 14.7898ZM16 18.1818V19.2727H19.5V18.1818H16Z" fill="#A4B3BA" />
+                            <SVGPath content="M3.35715 0C1.78599 0 0.5 1.28599 0.5 2.85714V21.1428C0.5 22.714 1.78599 24 3.35715 24H21.6429C23.214 24 24.5 22.714 24.5 21.1428V2.85714C24.5 1.28599 23.214 0 21.6429 0H3.35715ZM3.35715 1.14286H21.6429C22.5963 1.14286 23.3571 1.90372 23.3571 2.85714V21.1428C23.3571 22.0963 22.5963 22.8571 21.6429 22.8571H3.35715C2.40373 22.8571 1.64285 22.0963 1.64285 21.1428V2.85714C1.64285 1.90372 2.40373 1.14286 3.35715 1.14286Z M5.5 6V18H19.5V6H5.5ZM6.66667 7.09091H18.3333V8.18182H6.66667V7.09091ZM6.66667 9.27273H18.3333V16.9091H6.66667V9.27273ZM9.71094 10.7898L8.8724 11.5739L10.4948 13.0909L8.8724 14.608L9.71094 15.392L11.7526 13.483L12.1536 13.0909L11.7526 12.6989L9.71094 10.7898ZM12.5 14.1818V15.2727H16V14.1818H12.5Z" fill="#A4B3BA" />
                         </graphic>
                         </Button>
-                        <Button id="lang" layoutX="508.0" mnemonicParsing="false" styleClass="icon-button">
+                        <Button id="lang" layoutX="490.0" minHeight="32.0" minWidth="32.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="icon-button">
                         <graphic>
                             <SVGPath content="M6.85715 4C5.28599 4 4 5.28599 4 6.85714V25.1428C4 26.714 5.28599 28 6.85715 28H25.1429C26.714 28 28 26.714 28 25.1428V6.85714C28 5.28599 26.714 4 25.1429 4H6.85715ZM6.85715 5.14286H25.1429C26.0963 5.14286 26.8571 5.90372 26.8571 6.85714V25.1428C26.8571 26.0963 26.0963 26.8571 25.1429 26.8571H6.85715C5.90373 26.8571 5.14285 26.0963 5.14285 25.1428V6.85714C5.14285 5.90372 5.90373 5.14286 6.85715 5.14286Z M7 7V20.5H11.5V25H25V11.5H20.5V7H7ZM8.5 8.5H19V11.9219L11.9219 19H8.5V8.5ZM12.25 10V10.75H10V12.25H13.7031C13.6064 13.1113 13.3428 13.791 12.9062 14.2656C12.6484 14.1807 12.417 14.0752 12.2266 13.9609C11.6992 13.6475 11.5 13.3135 11.5 13H10C10 13.8936 10.5508 14.6377 11.2891 15.1328C10.9199 15.2119 10.4922 15.25 10 15.25V16.75C11.3301 16.75 12.4375 16.4453 13.2812 15.8828C13.6738 15.9502 14.0723 16 14.5 16V14.5938C14.9072 13.9111 15.124 13.1143 15.2031 12.25H16V10.75H13.75V10H12.25ZM20.0781 13H23.5V23.5H13V20.0781L20.0781 13ZM19 14.3828L18.2969 16.5156L16.7969 21.0156L16.75 21.1328V22H18.25V21.3438L18.2734 21.25H19.7266L19.75 21.3438V22H21.25V21.1328L21.2031 21.0156L19.7031 16.5156L19 14.3828ZM19 19.0938L19.2109 19.75H18.7891L19 19.0938Z" fill="#A4B3BA" />
                         </graphic>
@@ -68,19 +67,12 @@
                         </Button>
                      </children>
                   </Pane>
+               <Slider id="ramSlider" layoutX="56.0" layoutY="42.0" prefHeight="17.0" prefWidth="589.0" />
                </children>
             </Pane>
-         <Slider id="ramSlider" layoutX="41.0" layoutY="134.0" prefHeight="17.0" prefWidth="742.0" />
-         <Label id="ramLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="641.0" layoutY="106.0" prefHeight="30.0" prefWidth="137.0" text="44444">
-            <cursor>
-               <Cursor fx:constant="DEFAULT" />
-            </cursor>
-         </Label>
-         <Text id="headingSettings" layoutX="40.0" layoutY="50.04533386230469" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.overlay.settings.settings.headingSettings" wrappingWidth="532.7734069824219" />
-         <Text id="textLabel" layoutX="40.0" layoutY="109.96499633789062" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.overlay.settings.settings.textLabel" />
-         <ScrollPane id="settingslist" layoutX="10.0" layoutY="173.0" prefHeight="337.0" prefWidth="803.0">
+         <ScrollPane id="settingslist" layoutX="227.0" layoutY="122.0" prefHeight="303.0" prefWidth="624.0">
             <content>
-               <VBox fx:id="componentList" prefHeight="240.0" prefWidth="780.0" spacing="10.0">
+               <VBox fx:id="componentList" prefWidth="622.0" spacing="10.0">
                   <padding>
                      <Insets bottom="10.0" left="30.0" right="10.0" top="10.0" />
                   </padding>
@@ -90,52 +82,31 @@
                </VBox>
             </content>
          </ScrollPane>
-         <Pane id="dirLabel" layoutX="10.0" layoutY="459.0" prefHeight="51.0" prefWidth="703.0">
+         <Pane id="folder" layoutX="243.0" layoutY="418.0" prefHeight="40.0" prefWidth="624.0">
             <children>
-               <Hyperlink id="patch" focusTraversable="false" prefHeight="50.0" prefWidth="702.0" text="C:/Users">
+               <Hyperlink id="path" focusTraversable="false" prefHeight="40.0" prefWidth="478.0" text="C:/Users">
                   <padding>
                      <Insets left="10.0" right="10.0" />
                   </padding>
                </Hyperlink>
+               <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="478.0" prefHeight="40.0" prefWidth="147.0" text="CHANGE FOLDER" textFill="WHITE">
+                  <font>
+                     <Font name="System Bold" size="30.0" />
+                  </font>
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+                  <graphic>
+                     <SVGPath content="M11.8547 19.5L10.1661 20.9917V13.5882C10.1661 13.2634 9.86787 13 9.5 13C9.13213 13 8.83387 13.2634 8.83387 13.5882V20.9917L7.14529 19.5C6.88964 19.2663 6.46794 19.2599 6.20335 19.4855C5.93875 19.7113 5.93143 20.0836 6.18692 20.3173C6.19229 20.3222 6.19782 20.3269 6.20335 20.3317L9.02838 22.8271C9.09001 22.8813 9.16303 22.9246 9.24353 22.954C9.40746 23.0153 9.59254 23.0153 9.75647 22.954C9.83697 22.9246 9.90999 22.8813 9.97162 22.8271L12.7967 20.3317C13.0613 20.106 13.0686 19.7337 12.8131 19.5C12.5574 19.2663 12.1357 19.2599 11.8711 19.4855C11.8656 19.4902 11.8601 19.4951 11.8547 19.5Z M17.2188 6.33333H9.8176C9.79383 6.29801 9.76614 6.2654 9.73512 6.23592L7.70802 4.32556C7.48783 4.1165 7.19371 3.99972 6.88756 4H1.78125C0.797417 4 0 4.78343 0 5.75V16.25C0 17.2166 0.797417 18 1.78125 18H7.125C7.4529 18 7.71875 17.7388 7.71875 17.4167C7.71875 17.0945 7.4529 16.8333 7.125 16.8333H1.78125C1.45335 16.8333 1.1875 16.5721 1.1875 16.25V5.75C1.1875 5.42786 1.45335 5.16667 1.78125 5.16667H6.88756L8.87479 7.041C9.09919 7.32981 9.44767 7.49957 9.8176 7.5H17.2188C17.5466 7.5 17.8125 7.76119 17.8125 8.08333V16.25C17.8125 16.5721 17.5466 16.8333 17.2188 16.8333H11.875C11.5471 16.8333 11.2812 17.0945 11.2812 17.4167C11.2812 17.7388 11.5471 18 11.875 18H17.2188C18.2026 18 19 17.2166 19 16.25V8.08333C19 7.1169 18.2026 6.33333 17.2188 6.33333Z" fill="#a4a4a4">
+               </SVGPath>
+                  </graphic>
+                  <tooltip>
+                     <Tooltip id="changedirTooltip" text="%runtime.overlay.settings.settings.changedirTooltip" />
+                  </tooltip>
+               </Button>
             </children>
          </Pane>
-         <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="713.0" layoutY="459.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
-            <font>
-               <Font name="System Bold" size="30.0" />
-            </font>
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
-            <graphic>
-               <SVGPath content="M0 0V26H12.7812C14.25 27.8281 16.4805 29 19 29C23.4062 29 27 25.4062 27 21C27 16.9336 23.9336 13.5625 20 13.0625V10.4375L21.7188 8.71875L22 8.40625V0H0ZM2 2H16V8.40625L16.2812 8.71875L18 10.4375V13.0625C14.0664 13.5625 11 16.9336 11 21C11 22.0664 11.2109 23.0703 11.5938 24H2V2ZM18 2H20V7.5625L19 8.5625L18 7.5625V2ZM19 15C22.3242 15 25 17.6758 25 21C25 24.3242 22.3242 27 19 27C15.6758 27 13 24.3242 13 21C13 17.6758 15.6758 15 19 15ZM18 17V20H15V22H18V25H20V22H23V20H20V17H18Z&#10;" fill="#b5b5b5">
-                  <rotationAxis>
-                     <Point3D />
-                  </rotationAxis>
-               </SVGPath>
-            </graphic>
-            <tooltip>
-               <Tooltip id="changedirTooltip" text="%runtime.overlay.settings.settings.changedirTooltip" />
-            </tooltip>
-         </Button>
-         <Button id="deleteDir" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="763.0" layoutY="459.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
-            <font>
-               <Font name="System Bold" size="30.0" />
-            </font>
-            <opaqueInsets>
-               <Insets />
-            </opaqueInsets>
-            <graphic>
-               <SVGPath content="M8 0C6.841 0 6 0.841 6 2V3H0V5H1V21C1 22.654 2.346 24 4 24H13.7715L15.7715 22H4C3.449 22 3 21.552 3 21V5H17V14.6719L19 16.6719V5H20V3H14V2C14 0.841 13.159 0 12 0H8ZM8 2H12V3H8V2ZM5 8V19H7V8H5ZM9 8V19H11V8H9ZM13 8V15.4727L15 13.4727V8H13ZM15.4004 15.9004L14 17.3008L18.6504 21.9492L14 26.5996L15.4004 28L20.0508 23.3496L24.5996 27.9004L26 26.5L21.4492 21.9492L26 17.4004L24.5996 16L20.0508 20.5508L15.4004 15.9004Z&#10;" fill="#a4a4a4">
-                  <rotationAxis>
-                     <Point3D />
-                  </rotationAxis>
-               </SVGPath>
-            </graphic>
-            <tooltip>
-               <Tooltip id="deletedirTooltip" text="%runtime.overlay.settings.settings.deletedirTooltip" />
-            </tooltip>
-         </Button>
-          <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="802.0" layoutY="273.0" prefHeight="50.0" prefWidth="98.0" textFill="WHITE">
+          <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="69.0" layoutY="250.0" prefHeight="50.0" prefWidth="98.0" textFill="WHITE">
               <font>
                 <Font name="System Bold" size="30.0" />
               </font>
@@ -150,6 +121,11 @@
                 </SVGPath>
               </graphic>
           </Button>
+         <Label id="ramLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="36.0" layoutY="91.0" prefHeight="30.0" prefWidth="137.0" text="44444">
+            <cursor>
+               <Cursor fx:constant="DEFAULT" />
+            </cursor>
+         </Label>
       </children>
    </Pane>
 </Pane>

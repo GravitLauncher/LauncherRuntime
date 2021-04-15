@@ -8,6 +8,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.DirectoryChooser;
+import javafx.util.StringConverter;
 import oshi.SystemInfo;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -89,15 +90,26 @@ public class SettingsScene extends AbstractScene {
         ramSlider.setSnapToTicks(true);
         ramSlider.setShowTickMarks(true);
         ramSlider.setShowTickLabels(true);
-        ramSlider.setMinorTickCount(3);
+        ramSlider.setMinorTickCount(1);
         ramSlider.setMajorTickUnit(1024);
         ramSlider.setBlockIncrement(1024);
+        ramSlider.setLabelFormatter(new StringConverter<Double>() {
+            @Override
+            public String toString(Double object) {
+                return String.format("%.0fG", object / 1024);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                return null;
+            }
+        });
         ramSlider.setValue(application.runtimeSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             application.runtimeSettings.ram = newValue.intValue();
             updateRamLabel();
         });
-        Hyperlink updateDirLink = LookupHelper.lookup(layout, "#dirLabel", "#patch");
+        Hyperlink updateDirLink = LookupHelper.lookup(layout, "#folder", "#path");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
         updateDirLink.setOnAction((e) -> {
             application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString());
@@ -119,7 +131,7 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDir = newDir;
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
-        LookupHelper.<ButtonBase>lookup(layout, "#deleteDir").setOnAction((e) ->
+        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction((e) ->
                 application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.deletedir.header"),
                         application.getTranslation("runtime.overlay.settings.deletedir.description"),
                         () -> {
@@ -132,7 +144,7 @@ public class SettingsScene extends AbstractScene {
                                         application.getTranslation("runtime.overlay.settings.deletedir.fail.description"));
                             }
                         }, () -> {
-                        }, true));
+                        }, true)));
         add("Debug", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
         add("AutoEnter", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
         add("Fullscreen", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);

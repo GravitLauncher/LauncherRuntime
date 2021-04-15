@@ -4,6 +4,7 @@ import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
+import pro.gravit.launcher.request.auth.AuthRequest;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,6 +16,9 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public String login;
     @LauncherNetworkAPI
+    public AuthRequest.AuthPasswordInterface password;
+    @LauncherNetworkAPI
+    @Deprecated
     public byte[] encryptedPassword;
     @LauncherNetworkAPI
     public boolean autoAuth;

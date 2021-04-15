@@ -60,12 +60,14 @@
 }
 
 #ramSlider>.track {
-    -fx-background-color: #E7E7E7;
+    -fx-background-color: linear-gradient(from 50% 50% to 100% 100%, #09BC6A, #6B36FF);
     -fx-pref-height: 4px;
 }
 
 #ramSlider>.thumb {
-    -fx-background-color: #7C4DFF;
+    -fx-background-image: url("../../images/icons/thumb.png");
+    -fx-pref-width: 14px;
+    -fx-pref-height: 14px;
 }
 
 #ramSlider>.colored-track {
@@ -85,19 +87,19 @@
 
 /* Dir options */
 
-#changeDir,
-#deleteDir {
-    -fx-background-radius: 0;
-    -fx-background-color: #eee;
-    -fx-background-size: cover;
-    -fx-font-size: 13pt;
+#changeDir {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-font-size: 10px;
+    -fx-line-height: 14px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #A4B3BA;
+    -fx-background-color: transparent;
 }
-
-#changeDir:hover,
-#changeDir:pressed,
-#deleteDir:hover,
-#deleteDir:pressed {
-    -fx-background-color: #E7E7E7;
+#folder {
+    -fx-background-color: #fff;
+    -fx-background-radius: 5px;
 }
 
 #console {

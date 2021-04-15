@@ -13,6 +13,7 @@ import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.request.Request;
@@ -23,7 +24,6 @@ import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
-import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
 import java.net.URL;
@@ -41,6 +41,7 @@ public class LoginScene extends AbstractScene {
     private CheckBox autoenter;
     private Pane authActive;
     private Button authButton;
+    private final AuthService authService = new AuthService(application);
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
 
     public LoginScene(JavaFXApplication application) {
@@ -66,7 +67,7 @@ public class LoginScene extends AbstractScene {
         });
         passwordField = LookupHelper.lookup(layout, "#auth", "#password");
         savePasswordCheckBox = LookupHelper.lookup(layout , "#leftPane", "#savePassword");
-        if (application.runtimeSettings.encryptedPassword != null) {
+        if (application.runtimeSettings.password != null) {
             passwordField.getStyleClass().add("hasSaved");
             passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
             LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
@@ -122,7 +123,7 @@ public class LoginScene extends AbstractScene {
                     else authList.getSelectionModel().selectFirst();
 
                     hideOverlay(0, (event) -> {
-                        if (application.runtimeSettings.encryptedPassword != null && application.runtimeSettings.autoAuth)
+                        if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
                             contextHelper.runCallback(this::loginWithGui).run();
                     });
                 }), null);
@@ -210,27 +211,15 @@ public class LoginScene extends AbstractScene {
         AuthRequest.AuthPasswordInterface password;
         if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
                 application.getTranslation("runtime.scenes.login.login.password.saved"))) {
-            password = new AuthAESPassword(application.runtimeSettings.encryptedPassword);
+            password = application.runtimeSettings.password;
         } else {
             String rawPassword = passwordField.getText();
-            if(launcherConfig.passwordEncryptKey != null) {
-                try {
-                    password = new AuthAESPassword(encryptPassword(rawPassword));
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                password = new AuthPlainPassword(rawPassword);
-            }
+            password = authService.makePassword(rawPassword);
         }
         GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
         boolean savePassword = savePasswordCheckBox.isSelected();
         login(login, password, authId, null, savePassword);
 
-    }
-
-    private byte[] encryptPassword(String password) throws Exception {
-        return SecurityHelper.encrypt(launcherConfig.passwordEncryptKey, password);
     }
 
     private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
@@ -239,22 +228,19 @@ public class LoginScene extends AbstractScene {
         AuthRequest authRequest;
         if(totp == null)
         {
-            authRequest = new AuthRequest(login, password, authId == null ? "std" : authId.name,true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
+            authRequest = authService.makeAuthRequest(login, password, "std");
         }
         else
         {
-            Auth2FAPassword auth2FAPassword = new Auth2FAPassword();
-            auth2FAPassword.firstPassword = password;
-            auth2FAPassword.secondPassword = new AuthTOTPPassword();
-            ((AuthTOTPPassword) auth2FAPassword.secondPassword).totp = totp;
-            authRequest = new AuthRequest(login, auth2FAPassword, authId.name, true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
+            AuthRequest.AuthPasswordInterface auth2FAPassword = authService.make2FAPassword(password, totp);
+            authRequest = authService.makeAuthRequest(login, auth2FAPassword, "std");
         }
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
-                if(password instanceof AuthAESPassword)
-                    application.runtimeSettings.encryptedPassword = ((AuthAESPassword) password).password;
+                if(password instanceof AuthAESPassword) //TODO: Check if save possibly
+                    application.runtimeSettings.password = password;
                 application.runtimeSettings.lastAuth = authId;
             }
             if(result.playerProfile != null && result.playerProfile.skin != null) {
@@ -329,8 +315,10 @@ public class LoginScene extends AbstractScene {
         }, null);
     }
 
+    @SuppressWarnings("deprecation")
     public void clearPassword() {
         application.runtimeSettings.encryptedPassword = null;
+        application.runtimeSettings.password = null;
         application.runtimeSettings.login = null;
     }
 
