@@ -110,7 +110,7 @@ public class JavaFXApplication extends Application {
     public void start(Stage stage) throws Exception {
         // If debugging
         try {
-            Class.forName("pro.gravit.launcher.debug.DebugMain");
+            Class.forName("pro.gravit.launcher.debug.DebugMain", false, JavaFXApplication.class.getClassLoader());
             if(DebugMain.IS_DEBUG.get()) {
                 runtimeDirectory = IOHelper.WORKING_DIR.resolve("runtime");
                 debugMode = true;

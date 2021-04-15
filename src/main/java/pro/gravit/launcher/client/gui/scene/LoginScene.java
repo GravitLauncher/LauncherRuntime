@@ -19,10 +19,7 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
-import pro.gravit.launcher.request.auth.password.Auth2FAPassword;
-import pro.gravit.launcher.request.auth.password.AuthECPassword;
-import pro.gravit.launcher.request.auth.password.AuthPlainPassword;
-import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
+import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
@@ -213,12 +210,12 @@ public class LoginScene extends AbstractScene {
         AuthRequest.AuthPasswordInterface password;
         if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
                 application.getTranslation("runtime.scenes.login.login.password.saved"))) {
-            password = new AuthECPassword(application.runtimeSettings.encryptedPassword);
+            password = new AuthAESPassword(application.runtimeSettings.encryptedPassword);
         } else {
             String rawPassword = passwordField.getText();
             if(launcherConfig.passwordEncryptKey != null) {
                 try {
-                    password = new AuthECPassword(encryptPassword(rawPassword));
+                    password = new AuthAESPassword(encryptPassword(rawPassword));
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -256,8 +253,8 @@ public class LoginScene extends AbstractScene {
             application.runtimeStateMachine.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
-                if(password instanceof AuthECPassword)
-                    application.runtimeSettings.encryptedPassword = ((AuthECPassword) password).password;
+                if(password instanceof AuthAESPassword)
+                    application.runtimeSettings.encryptedPassword = ((AuthAESPassword) password).password;
                 application.runtimeSettings.lastAuth = authId;
             }
             if(result.playerProfile != null && result.playerProfile.skin != null) {
