@@ -39,6 +39,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
@@ -107,7 +108,7 @@ public class ServerMenuScene extends AbstractScene {
     }
     class ServerButtonCache
     {
-        public Future<Pane> pane;
+        public CompletableFuture<Pane> pane;
         public int position;
     }
 
@@ -117,30 +118,24 @@ public class ServerMenuScene extends AbstractScene {
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
         avatar.setImage(originalAvatarImage);
-        try {
-            int position = 0;
-            for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
-                ServerButtonCache cache = new ServerButtonCache();
-                UUID profileUUID = profile.getUUID();
-                if(profileUUID == null) {
-                    profileUUID = UUID.randomUUID();
-                    LogHelper.warning("Profile %s UUID null", profileUUID);
-                }
-                String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profileUUID);
-                URL customFxml = application.tryResource(customFxmlName);
-                if (customFxml != null) {
-                    cache.pane = application.getNonCachedFxmlAsync(customFxmlName, IOHelper.newInput(customFxml));
-                } else {
-                    cache.pane = application.getNonCachedFxmlAsync(SERVER_BUTTON_FXML);
-                }
-                cache.position = position;
-                serverButtonCacheMap.put(profile, cache);
-                position++;
+        int position = 0;
+        for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
+            ServerButtonCache cache = new ServerButtonCache();
+            UUID profileUUID = profile.getUUID();
+            if(profileUUID == null) {
+                profileUUID = UUID.randomUUID();
+                LogHelper.warning("Profile %s UUID null", profileUUID);
             }
-        } catch (IOException e)
-        {
-            errorHandle(e);
-            return;
+            String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profileUUID);
+            URL customFxml = application.tryResource(customFxmlName);
+            if (customFxml != null) {
+                cache.pane = application.fxmlFactory.getAsync(customFxmlName);
+            } else {
+                cache.pane = application.fxmlFactory.getAsync(SERVER_BUTTON_FXML);
+            }
+            cache.position = position;
+            serverButtonCacheMap.put(profile, cache);
+            position++;
         }
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         HBox serverList = (HBox) scrollPane.getContent();

@@ -2,26 +2,29 @@ package pro.gravit.launcher.client.gui.raw;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractOverlay implements AllowDisable {
-    public final String fxmlPath;
     protected final JavaFXApplication application;
     protected AbstractStage currentStage;
     protected Pane pane;
+    private final CompletableFuture<Node> future;
     boolean isInit;
 
     protected AbstractOverlay(String fxmlPath, JavaFXApplication application) {
         this.application = application;
-        this.fxmlPath = fxmlPath;
+        this.future = application.fxmlFactory.getAsync(fxmlPath);
     }
 
-    public final void init() throws IOException, InterruptedException {
-        pane = application.getFxml(fxmlPath);
+    public final void init() throws IOException, InterruptedException, ExecutionException {
+        pane = (Pane) future.get();
         doInit();
         isInit = true;
     }

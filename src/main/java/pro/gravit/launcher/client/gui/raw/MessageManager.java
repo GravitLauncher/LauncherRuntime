@@ -14,6 +14,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import pro.gravit.launcher.client.gui.FXMLFactory;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -42,9 +43,9 @@ public class MessageManager {
             throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
         Pane pane;
         try {
-            pane = (Pane) application.getNonCachedFxmlAsync("components/notification.fxml").get();
-        } catch (IOException | InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
+            pane = application.fxmlFactory.get("components/notification.fxml");
+        } catch (IOException e) {
+            throw new FXMLFactory.FXMLLoadException(e);
         }
         Pane finalPane = pane;
         Scene scene = isLauncher ? null : new Scene(finalPane);
@@ -166,8 +167,8 @@ public class MessageManager {
     private void showAbstractDialog(String componentName, String nativeHeader, Consumer<Pane> initPane, BiConsumer<Pane, Runnable> bindPane, boolean isLauncher) {
         Pane pane;
         try {
-            pane = (Pane) application.getNonCachedFxmlAsync(componentName).get();
-        } catch (IOException | InterruptedException | ExecutionException e) {
+            pane = application.fxmlFactory.get(componentName);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
         Pane finalPane = pane;

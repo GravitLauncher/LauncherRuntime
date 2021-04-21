@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
+@Deprecated
 public class FXMLProvider {
     private final Function<String, FXMLLoader> loaderFactory;
     private final ExecutorService executorService;

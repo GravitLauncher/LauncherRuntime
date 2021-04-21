@@ -58,11 +58,11 @@ public class JavaFXApplication extends Application {
     public MessageManager messageManager;
     public RuntimeSecurityService securityService;
     public SkinManager skinManager;
-    private ResourceBundle resources;
+    public FXMLFactory fxmlFactory;
     private SettingsManager settingsManager;
-    private FXMLProvider fxmlProvider;
     private PrimaryStage mainStage;
     private boolean debugMode;
+    private ResourceBundle resources;
 
     public JavaFXApplication() {
         INSTANCE.set(this);
@@ -131,7 +131,7 @@ public class JavaFXApplication extends Application {
             Platform.exit();
         }
         try {
-            fxmlProvider = new FXMLProvider(this::newFXMLLoader, workers);
+            fxmlFactory = new FXMLFactory(resources, workers);
             mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
             // Overlay loading
             gui = new GuiObjectsContainer(this);
@@ -193,39 +193,6 @@ public class JavaFXApplication extends Application {
 
     }
 
-    private FXMLLoader newFXMLLoader(String name) {
-        FXMLLoader loader;
-        try {
-            loader = new FXMLLoader(JavaFXApplication.getResourceURL(String.format("%s", name)));
-            if (resources != null) {
-                loader.setResources(resources);
-            }
-        } catch (Exception e) {
-            LogHelper.error(e);
-            return null;
-        }
-        loader.setCharset(IOHelper.UNICODE_CHARSET);
-        return loader;
-    }
-
-    private <T> Future<T> getFxmlAsync(String name) throws IOException {
-        InputStream input = getResource(name);
-        return fxmlProvider.queue(name, input);
-    }
-
-    public <T> T getFxml(String name) throws IOException, InterruptedException {
-        return fxmlProvider.getFxml(name);
-    }
-
-    public <T> Future<T> getNonCachedFxmlAsync(String name) throws IOException {
-        InputStream input = getResource(name);
-        return fxmlProvider.queueNoCache(name, input);
-    }
-
-    public <T> Future<T> getNonCachedFxmlAsync(String name, InputStream input) throws IOException {
-        return fxmlProvider.queueNoCache(name, input);
-    }
-
     public void setMainScene(AbstractScene scene) throws Exception {
         mainStage.setScene(scene);
     }
@@ -257,7 +224,6 @@ public class JavaFXApplication extends Application {
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            getFxmlAsync(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);
@@ -279,7 +245,6 @@ public class JavaFXApplication extends Application {
     public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
         try {
             T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            getFxmlAsync(instance.fxmlPath);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);

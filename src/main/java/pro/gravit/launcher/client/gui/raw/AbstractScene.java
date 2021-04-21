@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.effect.GaussianBlur;
@@ -21,11 +22,12 @@ import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 public abstract class AbstractScene implements AllowDisable {
-    public final String fxmlPath;
     protected final JavaFXApplication application;
     protected final LauncherConfig launcherConfig;
     protected final ContextHelper contextHelper;
@@ -38,9 +40,10 @@ public abstract class AbstractScene implements AllowDisable {
     private AbstractOverlay currentOverlay;
     private AtomicInteger enabled = new AtomicInteger(0);
     private boolean hideTransformStarted = false;
+    private CompletableFuture<Node> layoutFuture;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
-        this.fxmlPath = fxmlPath;
+        this.layoutFuture = application.fxmlFactory.getAsync(fxmlPath);
         this.application = application;
         this.launcherConfig = Launcher.getConfig();
         this.contextHelper = new ContextHelper(this);
@@ -62,7 +65,7 @@ public abstract class AbstractScene implements AllowDisable {
 
     public void init() throws Exception {
         if (scene == null) {
-            scene = new Scene(application.getFxml(fxmlPath));
+            scene = new Scene((Parent) layoutFuture.get());
             scene.setFill(Color.TRANSPARENT);
         }
         layout = LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
@@ -78,7 +81,7 @@ public abstract class AbstractScene implements AllowDisable {
         if (!overlay.isInit) {
             try {
                 overlay.init();
-            } catch (IOException | InterruptedException e) {
+            } catch (IOException | InterruptedException | ExecutionException e) {
                 contextHelper.errorHandling(e);
                 return;
             }
