@@ -106,7 +106,7 @@ public class MessageManager {
     }
 
     public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        showAbstractDialog("components/dialog.fxml", header, (pane) -> {
+        showAbstractDialog("dialogs/info/dialog.fxml", header, (pane) -> {
             LookupHelper.<Text>lookup(pane, "#headingDialog").setText(header);
             LookupHelper.<Text>lookup(pane, "#textDialog").setText(text);
         }, (pane, onClose) -> {
@@ -126,7 +126,7 @@ public class MessageManager {
     }
 
     public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        showAbstractDialog("components/dialogApply.fxml", header, (pane) -> {
+        showAbstractDialog("dialogs/apply/dialog.fxml", header, (pane) -> {
             LookupHelper.<Labeled>lookup(pane, "#headingDialog").setText(header);
             LookupHelper.<Labeled>lookup(pane, "#textDialog").setText(text);
         }, (pane, onClose) -> {
@@ -146,7 +146,7 @@ public class MessageManager {
     }
 
     public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        showAbstractDialog("components/dialogTextInput.fxml", header, (pane) ->
+        showAbstractDialog("dialogs/text/dialog.fxml", header, (pane) ->
                         LookupHelper.<Text>lookup(pane, "#headingDialog").setText(header),
                 (pane, onClose) -> {
                     LookupHelper.<Button>lookup(pane, "#close").setOnAction((e) -> {

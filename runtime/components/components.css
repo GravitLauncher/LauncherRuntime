@@ -1,63 +1,5 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
 
-
-.dialogText {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 12px;
-    -fx-font-style: normal;
-    -fx-font-weight: 400;
-    -fx-line-height: 16px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: left;
-}
-.dialogHeader {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 14px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 19px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: center;
-}
-
-.dialogButton {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 3px;
-    -fx-line-height: 11px;
-    -fx-align-items: center;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #A4B3BA;
-    -fx-background-radius: 3px, 1px, 2px, 1px;
-    -fx-background-color: transparent;
-    -fx-font-size:8px;
-}
-
-#save {
-    -fx-background-color: #6B36FF;
-    -fx-background-radius: 10px;
-    -fx-font-family: Roboto;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 24px;
-    -fx-line-height: 28px;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #FFFFFF;
-}
-.dialogRedButton {
-    -fx-background-color: transparent;
-    -fx-text-fill: #FF6F80;
-    -fx-font-size:8px;
-}
-
-
-#dialogBackground {
-    -fx-background-color: transparent;
-}
-
 #notificationPane {
    -fx-border-radius: 10px;
     -fx-padding: 10;
@@ -119,25 +61,6 @@
 #notificationText {
     -fx-fill: #5F5F5F;
     -fx-font-size: 10pt;
-}
-
-.dialogInput {
-    -fx-background-color: #eee;
-}
-
-#dialogPane,
-#dialogApplyPane,
-#dialogTextInput {
-    -fx-background-color: #fff;
-    -fx-border-color: #fff;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
-    -fx-border-radius:10px;
-    -fx-background-radius:10px;
-}
-
-#forgot2fa {
-    -fx-font-size: 8pt;
-    -fx-text-fill: #A9A9A9;
 }
 
 #line {
