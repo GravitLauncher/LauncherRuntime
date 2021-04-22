@@ -53,7 +53,7 @@ public class UpdateScene extends AbstractScene {
     private double phaseRatio;
 
     public UpdateScene(JavaFXApplication application) {
-        super("overlay/update/update.fxml", application);
+        super("scenes/update/update.fxml", application);
     }
 
     @Override

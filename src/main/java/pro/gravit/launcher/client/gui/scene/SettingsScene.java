@@ -31,7 +31,7 @@ public class SettingsScene extends AbstractScene {
     private Label ramLabel;
 
     public SettingsScene(JavaFXApplication application) {
-        super("overlay/settings/settings.fxml", application);
+        super("scenes/settings/settings.fxml", application);
     }
 
     @Override

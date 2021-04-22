@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<Pane fx:id="dialogPane" prefHeight="228.0" prefWidth="529.0" style="-fx-background-radius: 10px;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane styleClass="dialog" prefHeight="228.0" prefWidth="529.0" style="-fx-background-radius: 10px;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
@@ -20,9 +20,9 @@
    </stylesheets>
    <Text id="headingDialog" layoutY="33.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="dialogHeader" text="Подари мне своего кота" textAlignment="CENTER" wrappingWidth="528.9999999999999" />
    <Text id="textDialog" layoutX="51.0" layoutY="90.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Я буду за ним ухаживать,гладить,кормить,и спать с ним:)" textAlignment="JUSTIFY" wrappingWidth="427.39300537109375" />
-   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="475.0" layoutY="8.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
+   <Button id="close" styleClass="icon-button" alignment="CENTER" contentDisplay="CENTER" layoutX="475.0" layoutY="8.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
       <graphic>
-         <SVGPath id="icons" content="M3.35714 0C1.78599 0 0.5 1.28599 0.5 2.85714V21.1429C0.5 22.714 1.78599 24 3.35714 24H21.6429C23.214 24 24.5 22.714 24.5 21.1429V2.85714C24.5 1.28599 23.214 0 21.6429 0H3.35714ZM3.35714 1.14286H21.6429C22.5963 1.14286 23.3571 1.90372 23.3571 2.85714V21.1429C23.3571 22.0963 22.5963 22.8571 21.6429 22.8571H3.35714C2.40372 22.8571 1.64286 22.0963 1.64286 21.1429V2.85714C1.64286 1.90372 2.40372 1.14286 3.35714 1.14286ZM7.76116 6.45312L6.95312 7.26116L11.692 12L6.95312 16.7388L7.76116 17.5469L12.5 12.808L17.2388 17.5469L18.0469 16.7388L13.308 12L18.0469 7.26116L17.2388 6.45312L12.5 11.192L7.76116 6.45312Z" />
+         <SVGPath content="M3.35714 0C1.78599 0 0.5 1.28599 0.5 2.85714V21.1429C0.5 22.714 1.78599 24 3.35714 24H21.6429C23.214 24 24.5 22.714 24.5 21.1429V2.85714C24.5 1.28599 23.214 0 21.6429 0H3.35714ZM3.35714 1.14286H21.6429C22.5963 1.14286 23.3571 1.90372 23.3571 2.85714V21.1429C23.3571 22.0963 22.5963 22.8571 21.6429 22.8571H3.35714C2.40372 22.8571 1.64286 22.0963 1.64286 21.1429V2.85714C1.64286 1.90372 2.40372 1.14286 3.35714 1.14286ZM7.76116 6.45312L6.95312 7.26116L11.692 12L6.95312 16.7388L7.76116 17.5469L12.5 12.808L17.2388 17.5469L18.0469 16.7388L13.308 12L18.0469 7.26116L17.2388 6.45312L12.5 11.192L7.76116 6.45312Z" />
       </graphic>
       <tooltip>
          <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialog.closeTooltip" />
@@ -36,7 +36,7 @@
          <Insets />
       </opaqueInsets>
       <graphic>
-         <SVGPath id="icoApply" content="M244 4.5H306C306.828 4.5 307.5 5.17157 307.5 6V26C307.5 26.8284 306.828 27.5 306 27.5H244C243.172 27.5 242.5 26.8284 242.5 26V6C242.5 5.17157 243.172 4.5 244 4.5Z" fill="WHITE" style="-fx-background-color: transparent; -fx-stroke: #A4B3BA;">
+         <SVGPath content="M244 4.5H306C306.828 4.5 307.5 5.17157 307.5 6V26C307.5 26.8284 306.828 27.5 306 27.5H244C243.172 27.5 242.5 26.8284 242.5 26V6C242.5 5.17157 243.172 4.5 244 4.5Z" fill="WHITE" style="-fx-background-color: transparent; -fx-stroke: #A4B3BA;">
             <rotationAxis>
                <Point3D />
             </rotationAxis>

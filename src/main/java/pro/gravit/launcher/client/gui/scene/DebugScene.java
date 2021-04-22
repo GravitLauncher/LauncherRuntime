@@ -33,7 +33,7 @@ public class DebugScene extends AbstractScene {
     private TextArea output;
 
     public DebugScene(JavaFXApplication application) {
-        super("overlay/debug/debug.fxml", application);
+        super("scenes/debug/debug.fxml", application);
     }
 
     @Override

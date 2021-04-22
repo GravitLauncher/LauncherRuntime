@@ -37,7 +37,7 @@ public class OptionsScene extends AbstractScene {
     private Pane componentList;
 
     public OptionsScene(JavaFXApplication application) {
-        super("overlay/options/options.fxml", application);
+        super("scenes/options/options.fxml", application);
     }
 
     @Override

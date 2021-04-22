@@ -62,9 +62,7 @@
     -fx-background-color: #eee;
 }
 
-#dialogPane,
-#dialogApplyPane,
-#dialogTextInput {
+.dialog {
     -fx-background-color: #fff;
     -fx-border-color: #fff;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
@@ -80,45 +78,5 @@
 #line {
     -fx-stroke: #C7C7C7;
 }
-
-
-/*Icons*/
-
-#icoApply {
-    -fx-fill: #fff;
-    -fx-font-size: 23pt;
-}
-
-#icoDeny {
-    -fx-fill: #fff;
-    -fx-font-size: 23pt;
-}
-
-#applyComponents {
-    -fx-background-radius: 0;
-    -fx-fill: #7C4DFF;
-    -fx-background-color: transparent;
-    -fx-font-size: 13pt;
-}
-
-#denyComponents {
-    -fx-background-radius: 0;
-    -fx-fill: #A23131;
-    -fx-background-color: transparent;
-    -fx-font-size: 13pt;
-}
-
-#applyComponents:hover,
-#applyComponents:pressed {
-    -fx-background-color: #6B36FF;
-    -fx-fill: #fff;
-}
-
-#denyComponents:hover,
-#denyComponents:pressed {
-    -fx-background-color: #AB2727;
-    -fx-fill: #fff;
-}
-
 
 /*-- DrLeonardo Design for GravitLauncher --*/
