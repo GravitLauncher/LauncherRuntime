@@ -219,6 +219,10 @@ public abstract class AbstractScene implements AllowDisable {
         currentStage.enableMouseDrag(layout);
     }
 
+    protected void switchScene(AbstractScene scene) throws Exception {
+        currentStage.setScene(scene);
+    }
+
     public Node getLayout() {
         return layout;
     }

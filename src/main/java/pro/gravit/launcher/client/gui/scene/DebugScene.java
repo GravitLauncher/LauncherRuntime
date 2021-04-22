@@ -91,7 +91,7 @@ public class DebugScene extends AbstractScene {
                 }
             }
             try {
-                getCurrentStage().setScene(application.gui.serverMenuScene);
+                switchScene(application.gui.serverMenuScene);
             } catch (Exception ex) {
                 errorHandle(ex);
             }

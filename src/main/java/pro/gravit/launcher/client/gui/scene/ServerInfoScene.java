@@ -2,6 +2,8 @@ package pro.gravit.launcher.client.gui.scene;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
@@ -23,20 +25,34 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class ServerInfoScene extends AbstractScene {
+    private ImageView avatar;
+    private Image originalAvatarImage;
+
     public ServerInfoScene(JavaFXApplication application) {
         super("scenes/serverinfo/serverinfo.fxml", application);
     }
 
     @Override
     protected void doInit() throws Exception {
+        avatar = LookupHelper.lookup(layout, "#avatar");
+        originalAvatarImage = avatar.getImage();
+        LookupHelper.<Button>lookup(header, "#back").setOnAction((e) -> {
+            try {
+                switchScene(application.gui.serverMenuScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        });
         reset();
     }
 
     @Override
     public void reset() {
+        avatar.setImage(originalAvatarImage);
         ClientProfile profile = application.runtimeStateMachine.getProfile();
         LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getTitle()));
         LookupHelper.<Label>lookupIfPossible(layout, "#serverDescription").ifPresent((e) -> e.setText(profile.getInfo()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.runtimeStateMachine.getUsername()));
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
@@ -48,11 +64,12 @@ public class ServerInfoScene extends AbstractScene {
                 serverButtonContainer.getChildren().add(pane);
             });
         });
+        ServerMenuScene.putAvatarToImageView(application, application.runtimeStateMachine.getUsername(), avatar);
     }
 
     @Override
     public void errorHandle(Throwable e) {
-
+        LogHelper.error(e);
     }
 
     @Override
@@ -110,7 +127,7 @@ public class ServerInfoScene extends AbstractScene {
             application.gui.debugScene.writeParametersThread = writerThread;
             clientLauncherProcess.start(true);
             contextHelper.runInFxThread(() -> {
-                getCurrentStage().setScene(application.gui.debugScene);
+                switchScene(application.gui.debugScene);
                 application.gui.debugScene.onProcess(clientLauncherProcess.getProcess());
             });
         }).run();
@@ -125,7 +142,7 @@ public class ServerInfoScene extends AbstractScene {
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
-            getCurrentStage().setScene(application.gui.updateScene);
+            switchScene(application.gui.updateScene);
             application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
             if(isEnabledDownloadJava())
             {

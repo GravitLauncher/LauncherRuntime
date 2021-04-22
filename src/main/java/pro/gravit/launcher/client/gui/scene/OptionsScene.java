@@ -44,7 +44,7 @@ public class OptionsScene extends AbstractScene {
     protected void doInit() {
         LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
             try {
-                getCurrentStage().setScene(application.gui.serverMenuScene);
+                switchScene(application.gui.serverMenuScene);
             } catch (Exception exception) {
                 LogHelper.error(exception);
             }

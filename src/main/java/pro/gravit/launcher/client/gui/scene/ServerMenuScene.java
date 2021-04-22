@@ -12,44 +12,29 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherEngine;
-import pro.gravit.launcher.client.ClientLauncherProcess;
-import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
-import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.ExitRequest;
-import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.launcher.request.management.PingServerRequest;
 import pro.gravit.utils.helper.CommonHelper;
-import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.URL;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private ImageView avatar;
-    private Node lastSelectedServerButton;
 
     private List<ClientProfile> lastProfiles;
     private Image originalAvatarImage;
@@ -67,7 +52,7 @@ public class ServerMenuScene extends AbstractScene {
             try {
                 if (application.runtimeStateMachine.getProfile() == null)
                     return;
-                getCurrentStage().setScene(application.gui.optionsScene);
+                switchScene(application.gui.optionsScene);
                 application.gui.optionsScene.reset();
                 application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
             } catch (Exception ex) {
@@ -76,7 +61,7 @@ public class ServerMenuScene extends AbstractScene {
         });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
             try {
-                getCurrentStage().setScene(application.gui.settingsScene);
+                switchScene(application.gui.settingsScene);
             } catch (Exception exception) {
                 LogHelper.error(exception);
             }
@@ -94,7 +79,7 @@ public class ServerMenuScene extends AbstractScene {
                                                 try {
                                                     application.saveSettings();
                                                     application.runtimeStateMachine.exit();
-                                                    getCurrentStage().setScene(application.gui.loginScene);
+                                                    switchScene(application.gui.loginScene);
                                                 } catch (Exception ex) {
                                                     LogHelper.error(ex);
                                                 }
@@ -105,10 +90,18 @@ public class ServerMenuScene extends AbstractScene {
                         }, true));
         reset();
     }
-    class ServerButtonCache
+    static class ServerButtonCache
     {
         public CompletableFuture<Pane> pane;
         public int position;
+    }
+    public static boolean putAvatarToImageView(JavaFXApplication application, String username, ImageView imageView) {
+        int width = (int) imageView.getFitWidth();
+        int height = (int) imageView.getFitHeight();
+        Image head = application.skinManager.getScaledFxSkinHead(username, width, height);
+        if(head == null) return false;
+        imageView.setImage(head);
+        return true;
     }
     public static CompletableFuture<Pane> getServerButton(JavaFXApplication application, ClientProfile profile) {
         UUID profileUUID = profile.getUUID();
@@ -171,9 +164,10 @@ public class ServerMenuScene extends AbstractScene {
                 EventHandler<? super MouseEvent> handle = (event) -> {
                     if (!event.getButton().equals(MouseButton.PRIMARY))
                         return;
-                    changeServer(profile, null);
+                    changeServer(profile);
                     try {
-                        getCurrentStage().setScene(application.gui.serverInfoScene);
+                        switchScene(application.gui.serverInfoScene);
+                        application.gui.serverInfoScene.reset();
                     } catch (Exception e) {
                         errorHandle(e);
                     }
@@ -199,13 +193,7 @@ public class ServerMenuScene extends AbstractScene {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        CommonHelper.newThread("SkinHead Downloader Thread", true, () -> {
-            try {
-                updateSkinHead();
-            } catch (Throwable e) {
-                LogHelper.error(e);
-            }
-        }).start();
+        putAvatarToImageView(application, application.runtimeStateMachine.getUsername(), avatar);
     }
 
     @Override
@@ -227,14 +215,7 @@ public class ServerMenuScene extends AbstractScene {
         }
     }
 
-    private void updateSkinHead() {
-        int width = (int) avatar.getFitWidth();
-        int height = (int) avatar.getFitHeight();
-        Image head = application.skinManager.getScaledFxSkinHead(application.runtimeStateMachine.getUsername(), width, height);
-        avatar.setImage(head);
-    }
-
-    private void changeServer(ClientProfile profile, ServerPinger.Result pingerResult) {
+    private void changeServer(ClientProfile profile) {
         application.runtimeStateMachine.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
     }

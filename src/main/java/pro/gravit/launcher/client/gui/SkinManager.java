@@ -132,6 +132,7 @@ public class SkinManager {
     }
 
     private static BufferedImage scaleImage(BufferedImage origImage, int width, int height) {
+        if(origImage == null) return null;
         java.awt.Image resized = origImage.getScaledInstance(width, height, java.awt.Image.SCALE_FAST);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
         Graphics2D graphics2D = image.createGraphics();
@@ -158,6 +159,7 @@ public class SkinManager {
     }
 
     private static Image convertToFxImage(BufferedImage image) {
+        if(image == null) return null;
         try {
             return SwingFXUtils.toFXImage(image, null);
         } catch (Throwable e) {
