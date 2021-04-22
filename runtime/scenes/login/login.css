@@ -1,12 +1,6 @@
 /*-- DrLeonardo Design for GravitLauncher --*/
 
 /* Backgrounds */
-#layout {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-background-color: white;
-    -fx-background-image: url('../../images/fon.png');
-}
 
 #loginPane,
 #serverPaneLayout {

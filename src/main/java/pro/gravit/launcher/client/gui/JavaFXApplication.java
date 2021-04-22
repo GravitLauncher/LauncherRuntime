@@ -201,7 +201,7 @@ public class JavaFXApplication extends Application {
         if(runtimeDirectory != null) {
             Path target = runtimeDirectory.resolve(name);
             if(!Files.exists(target))
-                throw new FileNotFoundException();
+                throw new FileNotFoundException(String.format("File runtime/%s not found", name));
             return target.toUri().toURL();
         } else if(enfsDirectory != null) {
             return getResourceEnFs(name);

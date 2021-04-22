@@ -11,6 +11,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.ClientLauncherProcess;
@@ -47,7 +48,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
-    private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
     private ImageView avatar;
     private Node lastSelectedServerButton;
 
@@ -111,6 +111,40 @@ public class ServerMenuScene extends AbstractScene {
         public CompletableFuture<Pane> pane;
         public int position;
     }
+    public static CompletableFuture<Pane> getServerButton(JavaFXApplication application, ClientProfile profile) {
+        UUID profileUUID = profile.getUUID();
+        if(profileUUID == null) {
+            profileUUID = UUID.randomUUID();
+            LogHelper.warning("Profile %s UUID null", profileUUID);
+        }
+        String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profileUUID);
+        URL customFxml = application.tryResource(customFxmlName);
+        CompletableFuture<Pane> future;
+        if (customFxml != null) {
+            future = application.fxmlFactory.getAsync(customFxmlName);
+        } else {
+            future = application.fxmlFactory.getAsync(SERVER_BUTTON_FXML);
+        }
+        future = future.thenApply(pane -> {
+            LookupHelper.<Labeled>lookup(pane, "#nameServer").setText(profile.getTitle());
+            LookupHelper.<Labeled>lookup(pane, "#genreServer").setText(profile.getVersion().toString());
+            LookupHelper.<ImageView>lookupIfPossible(pane, "#serverLogo").ifPresent((a) -> {
+                try {
+                    javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(a.getFitWidth(), a.getFitHeight());
+                    clip.setArcWidth(10.0);
+                    clip.setArcHeight(10.0);
+                    a.setClip(clip);
+                } catch (Throwable e) {
+                    LogHelper.error(e);
+                }
+            });
+            application.runtimeStateMachine.addServerPingCallback(profile.getDefaultServerProfile().name, (report) -> {
+                LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(report.playersOnline));
+            });
+            return pane;
+        });
+        return future;
+    }
 
     @Override
     public void reset() {
@@ -121,20 +155,10 @@ public class ServerMenuScene extends AbstractScene {
         int position = 0;
         for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
             ServerButtonCache cache = new ServerButtonCache();
-            UUID profileUUID = profile.getUUID();
-            if(profileUUID == null) {
-                profileUUID = UUID.randomUUID();
-                LogHelper.warning("Profile %s UUID null", profileUUID);
-            }
-            String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profileUUID);
-            URL customFxml = application.tryResource(customFxmlName);
-            if (customFxml != null) {
-                cache.pane = application.fxmlFactory.getAsync(customFxmlName);
-            } else {
-                cache.pane = application.fxmlFactory.getAsync(SERVER_BUTTON_FXML);
-            }
+            cache.pane = getServerButton(application, profile);
             cache.position = position;
             serverButtonCacheMap.put(profile, cache);
+            profile.updateOptionalGraph();
             position++;
         }
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
@@ -145,71 +169,18 @@ public class ServerMenuScene extends AbstractScene {
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             try {
                 Pane pane = serverButtonCache.pane.get();
-                AtomicReference<ServerPinger.Result> pingerResult = new AtomicReference<>();
-                LookupHelper.<Labeled>lookup(pane, "#nameServer").setText(profile.getTitle());
-                LookupHelper.<Labeled>lookup(pane, "#genreServer").setText(profile.getVersion().toString());
-                LookupHelper.<ImageView>lookupIfPossible(pane, "#serverLogo").ifPresent((a) -> {
-                    try {
-                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(a.getFitWidth(), a.getFitHeight());
-                        clip.setArcWidth(10.0);
-                        clip.setArcHeight(10.0);
-                        a.setClip(clip);
-                    } catch (Throwable e) {
-                        LogHelper.error(e);
-                    }
-                });
-                profile.updateOptionalGraph();
                 EventHandler<? super MouseEvent> handle = (event) -> {
                     if (!event.getButton().equals(MouseButton.PRIMARY))
                         return;
-                    if (lastSelectedServerButton != null)
-                        lastSelectedServerButton.getStyleClass().remove("serverButtonsActive");
-                    lastSelectedServerButton = pane;
-                    lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
-                    changeServer(profile, pingerResult.get());
-                    LogHelper.dev("Selected profile %s", profile.getTitle());
+                    changeServer(profile, null);
+                    try {
+                        getCurrentStage().setScene(application.gui.serverInfoScene);
+                    } catch (Exception e) {
+                        errorHandle(e);
+                    }
                 };
                 pane.setOnMouseClicked(handle);
-                LookupHelper.lookup(pane, "#nameServer").setOnMouseClicked(handle);
-                ///////////
-                int profilePosition = serverButtonCache.position;
-                if (profilePosition >= serverList.getChildren().size())
-                    profilePosition = serverList.getChildren().size();
-                serverList.getChildren().add(profilePosition, pane);
-                ///////////
-                ClientProfile.ServerProfile defaultServer = profile.getDefaultServerProfile();
-                if(defaultServer == null || defaultServer.serverAddress != null)
-                {
-                    application.workers.submit(() -> {
-                        ServerPinger pinger = new ServerPinger(profile);
-                        ServerPinger.Result result;
-                        try {
-                            result = pinger.ping();
-                        } catch (IOException e) {
-                            result = new ServerPinger.Result(0, 0, "0 / 0");
-                        }
-                        pingerResult.set(result);
-                        changeOnline(pane, profile, result.onlinePlayers, result.maxPlayers);
-                    });
-                }
-                else if(profile.getServers() != null)
-                {
-                    for(ClientProfile.ServerProfile serverProfile : profile.getServers())
-                    {
-                        if(serverProfile.isDefault)
-                        {
-                            application.runtimeStateMachine.addServerPingCallback(serverProfile.name, (report) -> {
-                                changeOnline(pane, profile, report.playersOnline, report.maxPlayers);
-                            });
-                        }
-                    }
-                }
-                if ((application.runtimeSettings.lastProfile == null && lastSelectedServerButton == null) || (profile.getUUID() != null && profile.getUUID().equals(application.runtimeSettings.lastProfile))) {
-                    lastSelectedServerButton = pane;
-                    lastSelectedServerButton.getStyleClass().add("serverButtonsActive");
-                    changeServer(profile, pingerResult.get());
-                    LogHelper.dev("Selected profile %s", profile.getTitle());
-                }
+                serverList.getChildren().add(pane);
             } catch (InterruptedException | ExecutionException e) {
                 LogHelper.error(e);
             }

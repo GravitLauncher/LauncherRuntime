@@ -1,0 +1,40 @@
+#nickname {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-line-height: 19px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #2C2C2C;
+}
+
+#money {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-font-size: 12px;
+    -fx-line-height: 16px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #6D6D6D;
+}
+
+#serverName {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 24.233px;
+    -fx-line-height: 33px;
+    -fx-letter-spacing: 0.252427px;
+    -fx-text-indent: 40.3883px;
+    -fx-text-color: #2C2C2C;
+}
+
+#serverDescription {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-line-height: 19px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-color: #2C2C2C;
+}
