@@ -47,47 +47,6 @@ public class ServerMenuScene extends AbstractScene {
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
-
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#clientSettings").setOnAction((e) -> {
-            try {
-                if (application.runtimeStateMachine.getProfile() == null)
-                    return;
-                switchScene(application.gui.optionsScene);
-                application.gui.optionsScene.reset();
-                application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
-            } catch (Exception ex) {
-                LogHelper.error(ex);
-            }
-        });
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
-            try {
-                switchScene(application.gui.settingsScene);
-            } catch (Exception exception) {
-                LogHelper.error(exception);
-            }
-        });
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
-                        application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
-                                processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
-                                        new ExitRequest(), (event) -> {
-                                            // Exit to main menu
-                                            ContextHelper.runInFxThreadStatic(() -> {
-                                                hideOverlay(0, null);
-                                                application.gui.loginScene.clearPassword();
-                                                application.gui.loginScene.reset();
-                                                try {
-                                                    application.saveSettings();
-                                                    application.runtimeStateMachine.exit();
-                                                    switchScene(application.gui.loginScene);
-                                                } catch (Exception ex) {
-                                                    LogHelper.error(ex);
-                                                }
-                                            });
-                                        }, (event) -> {
-
-                                        }), () -> {
-                        }, true));
         reset();
     }
     static class ServerButtonCache

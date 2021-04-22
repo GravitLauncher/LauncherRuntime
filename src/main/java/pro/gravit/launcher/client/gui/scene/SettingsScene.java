@@ -39,7 +39,7 @@ public class SettingsScene extends AbstractScene {
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
         LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
             try {
-                switchScene(application.gui.serverMenuScene);
+                switchScene(application.gui.serverInfoScene);
             } catch (Exception ex) {
                 errorHandle(ex);
             }

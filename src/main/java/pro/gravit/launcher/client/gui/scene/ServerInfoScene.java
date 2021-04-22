@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scene;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -12,9 +13,11 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.raw.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.JVMHelper;
@@ -43,6 +46,47 @@ public class ServerInfoScene extends AbstractScene {
                 errorHandle(exception);
             }
         });
+
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#clientSettings").setOnAction((e) -> {
+            try {
+                if (application.runtimeStateMachine.getProfile() == null)
+                    return;
+                switchScene(application.gui.optionsScene);
+                application.gui.optionsScene.reset();
+                application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
+            } catch (Exception ex) {
+                LogHelper.error(ex);
+            }
+        });
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+            try {
+                switchScene(application.gui.settingsScene);
+            } catch (Exception exception) {
+                LogHelper.error(exception);
+            }
+        });
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
+                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
+                        application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
+                                processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
+                                        new ExitRequest(), (event) -> {
+                                            // Exit to main menu
+                                            ContextHelper.runInFxThreadStatic(() -> {
+                                                hideOverlay(0, null);
+                                                application.gui.loginScene.clearPassword();
+                                                application.gui.loginScene.reset();
+                                                try {
+                                                    application.saveSettings();
+                                                    application.runtimeStateMachine.exit();
+                                                    switchScene(application.gui.loginScene);
+                                                } catch (Exception ex) {
+                                                    LogHelper.error(ex);
+                                                }
+                                            });
+                                        }, (event) -> {
+
+                                        }), () -> {
+                        }, true));
         reset();
     }
 
