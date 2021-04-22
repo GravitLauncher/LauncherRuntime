@@ -17,6 +17,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
+import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -37,13 +38,6 @@ public class SettingsScene extends AbstractScene {
     @Override
     protected void doInit() {
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
-        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
-            try {
-                switchScene(application.gui.serverInfoScene);
-            } catch (Exception ex) {
-                errorHandle(ex);
-            }
-        });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
             try {
                 if (application.gui.consoleStage == null)
@@ -152,10 +146,29 @@ public class SettingsScene extends AbstractScene {
         {
             add("DisableJavaDownload", application.runtimeSettings.disableJavaDownload, (value) -> application.runtimeSettings.disableJavaDownload = value);
         }
+        reset();
     }
 
     @Override
-    public void reset() {}
+    public void reset() {
+        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+        serverButtonContainer.getChildren().clear();
+        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
+            contextHelper.runInFxThread(() -> {
+                Button save = LookupHelper.lookup(pane,  "#save");
+                save.setVisible(true);
+                save.setOnAction((e) -> {
+                    try {
+                        switchScene(application.gui.serverInfoScene);
+                    } catch (Exception exception) {
+                        LogHelper.error(exception);
+                    }
+                });
+                serverButtonContainer.getChildren().add(pane);
+            });
+        });
+    }
 
     @Override
     public void errorHandle(Throwable e) {

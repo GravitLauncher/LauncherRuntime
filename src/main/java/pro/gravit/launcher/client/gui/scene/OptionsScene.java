@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
@@ -42,19 +43,29 @@ public class OptionsScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        LookupHelper.<ButtonBase>lookup(layout, "#apply").setOnAction((e) -> {
-            try {
-                switchScene(application.gui.serverInfoScene);
-            } catch (Exception exception) {
-                LogHelper.error(exception);
-            }
-        });
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
     }
 
     @Override
     public void reset() {
         componentList.getChildren().clear();
+        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+        serverButtonContainer.getChildren().clear();
+        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
+            contextHelper.runInFxThread(() -> {
+                Button save = LookupHelper.lookup(pane,  "#save");
+                save.setVisible(true);
+                save.setOnAction((e) -> {
+                    try {
+                        switchScene(application.gui.serverInfoScene);
+                    } catch (Exception exception) {
+                        LogHelper.error(exception);
+                    }
+                });
+                serverButtonContainer.getChildren().add(pane);
+            });
+        });
     }
 
     @Override

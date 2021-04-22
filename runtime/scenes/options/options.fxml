@@ -59,7 +59,7 @@
                   </opaqueInsets>
               </VBox>
           </ScrollPane>
-         <Button id="apply" layoutX="86.0" layoutY="237.0" mnemonicParsing="false" text="Apply" />
+         <Pane id="serverButton" layoutX="34.0" layoutY="119.0" prefHeight="340.0" prefWidth="190.0" />
       </children>
    </Pane>
 </Pane>
