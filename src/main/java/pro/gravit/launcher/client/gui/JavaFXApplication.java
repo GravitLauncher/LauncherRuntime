@@ -27,8 +27,10 @@ import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandHandler;
+import pro.gravit.utils.enfs.EnFS;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
+import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -38,8 +40,8 @@ import java.lang.invoke.MethodType;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.PropertyResourceBundle;
-import java.util.ResourceBundle;
+import java.nio.file.Paths;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -49,7 +51,7 @@ public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
     private static Path runtimeDirectory = null;
     public final LauncherConfig config = Launcher.getConfig();
-    public final ExecutorService workers = Executors.newWorkStealingPool(4);
+    public final ExecutorService workers = Executors.newWorkStealingPool(1);
     public RuntimeSettings runtimeSettings;
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
@@ -63,6 +65,7 @@ public class JavaFXApplication extends Application {
     private PrimaryStage mainStage;
     private boolean debugMode;
     private ResourceBundle resources;
+    private static Path enfsDirectory;
 
     public JavaFXApplication() {
         INSTANCE.set(this);
@@ -114,6 +117,27 @@ public class JavaFXApplication extends Application {
             if(DebugMain.IS_DEBUG.get()) {
                 runtimeDirectory = IOHelper.WORKING_DIR.resolve("runtime");
                 debugMode = true;
+            }
+        } catch (Throwable e) {
+            if(!(e instanceof ClassNotFoundException)) {
+                LogHelper.error(e);
+            }
+        }
+        try {
+            Class.forName("pro.gravit.utils.enfs.EnFS", false, JavaFXApplication.class.getClassLoader());
+            if(runtimeDirectory == null) {
+                LogHelper.error("AAA");
+                enfsDirectory = Paths.get("aone");
+                EnFS.main.newDirectory(enfsDirectory);
+                config.runtime.forEach((name, digest) -> {
+                    EnFS.main.newDirectories(enfsDirectory.resolve(name).getParent());
+                    try {
+                        EnFS.main.addFile(enfsDirectory.resolve(name), Launcher.getResourceURL(name));
+                        LogHelper.debug("Pushed %s", enfsDirectory.resolve(name).toString());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
             }
         } catch (Throwable e) {
             if(!(e instanceof ClassNotFoundException)) {
@@ -174,14 +198,21 @@ public class JavaFXApplication extends Application {
     }
 
     public static URL getResourceURL(String name) throws IOException {
-        if(runtimeDirectory == null) {
-            return Launcher.getResourceURL(name);
-        } else {
+        if(runtimeDirectory != null) {
             Path target = runtimeDirectory.resolve(name);
             if(!Files.exists(target))
                 throw new FileNotFoundException();
             return target.toUri().toURL();
+        } else if(enfsDirectory != null) {
+            return getResourceEnFs(name);
+        } else {
+            return Launcher.getResourceURL(name);
         }
+    }
+
+    private static URL getResourceEnFs(String name) throws IOException {
+        return new URL("enfs", null, -1, enfsDirectory.resolve(name).toString());
+        //return EnFS.main.getURL(enfsDirectory.resolve(name));
     }
 
     public URL tryResource(String name) {
