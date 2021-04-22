@@ -77,5 +77,17 @@
 #line {
     -fx-stroke: #C7C7C7;
 }
+#save {
+    -fx-font-family: Roboto;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-line-height: 28px;
+    -fx-text-align: center;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #FFFFFF;
+    -fx-background-color: #6B36FF;
+    -fx-background-radius: 10px;
+}
 
 /*-- DrLeonardo Design for GravitLauncher --*/

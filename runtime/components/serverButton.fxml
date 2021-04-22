@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.Pane?>
 
 <Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="189.0" styleClass="serverButtons" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
-   <Pane prefHeight="339.0" prefWidth="189.0" styleClass="blackbox">
+   <Pane id="serverButtonLayout" prefHeight="339.0" prefWidth="189.0" styleClass="blackbox">
       <children>
          <ImageView id="serverLogo" fitHeight="242.0" fitWidth="151.0" layoutX="18.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../images/servers/black.png" />

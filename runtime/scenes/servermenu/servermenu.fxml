@@ -86,6 +86,5 @@
             <Insets left="10.0" />
          </padding>
       </Label>
-      <Button id="clientLaunch" layoutX="689.0" layoutY="458.0" mnemonicParsing="false" text="Войти (Временная кнопка)" />
     </Pane>
 </Pane>
