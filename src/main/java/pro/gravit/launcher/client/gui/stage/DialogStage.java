@@ -1,12 +1,13 @@
 package pro.gravit.launcher.client.gui.stage;
 
+import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
+import javafx.stage.Screen;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.dialogs.AbstractDialog;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
-import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -25,5 +26,10 @@ public class DialogStage extends AbstractStage {
             LogHelper.error(e);
         }
         setScene(dialog);
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
+        LookupHelper.Point2D coords = dialog.getOutSceneCoords(bounds);
+        stage.setX(coords.x);
+        stage.setY(coords.y);
     }
 }

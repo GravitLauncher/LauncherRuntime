@@ -165,6 +165,7 @@ public class JavaFXApplication extends Application {
             gui.init();
             //
             mainStage.setScene(gui.loginScene);
+            mainStage.show();
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
             AuthRequest.registerProviders();

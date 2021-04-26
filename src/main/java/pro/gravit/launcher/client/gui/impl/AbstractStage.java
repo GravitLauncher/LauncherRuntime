@@ -60,7 +60,6 @@ public abstract class AbstractStage {
             stage.setScene(scene);
         }
         stage.sizeToScene();
-        stage.show();
         this.scene = visualComponent;
     }
 
