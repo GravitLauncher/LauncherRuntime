@@ -51,7 +51,7 @@ public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
     private static Path runtimeDirectory = null;
     public final LauncherConfig config = Launcher.getConfig();
-    public final ExecutorService workers = Executors.newWorkStealingPool(1);
+    public final ExecutorService workers = Executors.newWorkStealingPool(4);
     public RuntimeSettings runtimeSettings;
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
