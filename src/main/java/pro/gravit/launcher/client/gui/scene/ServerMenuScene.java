@@ -134,7 +134,7 @@ public class ServerMenuScene extends AbstractScene {
                 pane.setOnMouseClicked(handle);
                 serverList.getChildren().add(pane);
             } catch (InterruptedException | ExecutionException e) {
-                LogHelper.error(e);
+                errorHandle(e);
             }
         });
         try {
@@ -146,18 +146,13 @@ public class ServerMenuScene extends AbstractScene {
                     });
                 }
             }).exceptionally((ex) -> {
-                LogHelper.error(ex.getCause());
+                errorHandle(ex.getCause());
                 return null;
             });
         } catch (IOException e) {
             e.printStackTrace();
         }
         putAvatarToImageView(application, application.runtimeStateMachine.getUsername(), avatar);
-    }
-
-    @Override
-    public void errorHandle(Throwable e) {
-        LogHelper.error(e);
     }
 
     @Override

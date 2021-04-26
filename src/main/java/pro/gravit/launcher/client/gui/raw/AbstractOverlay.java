@@ -6,9 +6,11 @@ import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
+import pro.gravit.launcher.request.RequestException;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractOverlay implements AllowDisable {
@@ -42,7 +44,22 @@ public abstract class AbstractOverlay implements AllowDisable {
 
     public abstract void reset();
 
-    public abstract void errorHandle(Throwable e);
+    public void errorHandle(Throwable e) {
+        String message = null;
+        if(e instanceof CompletionException) {
+            e = e.getCause();
+        }
+        if(e instanceof ExecutionException) {
+            e = e.getCause();
+        }
+        if(e instanceof RequestException) {
+            message = e.getMessage();
+        }
+        if(message == null) {
+            message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+        }
+        application.messageManager.createNotification("Error", message);
+    }
 
     public Pane getPane() {
         return pane;

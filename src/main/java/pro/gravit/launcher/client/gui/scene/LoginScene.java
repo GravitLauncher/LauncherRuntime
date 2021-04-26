@@ -17,6 +17,7 @@ import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.request.Request;
+import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
@@ -178,14 +179,20 @@ public class LoginScene extends AbstractScene {
                 onSuccess.accept(result);
                 processingOff.run();
             }).exceptionally((exc) -> {
-                LogHelper.error(exc);
                 onError.accept(exc.getCause().getMessage());
                 processingOff.run();
                 return null;
             });
         } catch (IOException e) {
-            LogHelper.error(e);
+            processingOff.run();
+            errorHandle(e);
         }
+    }
+
+
+    @Override
+    public void errorHandle(Throwable e) {
+        super.errorHandle(e);
     }
 
     @Override
@@ -194,11 +201,6 @@ public class LoginScene extends AbstractScene {
         passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password"));
         passwordField.setText("");
         loginField.setText("");
-    }
-
-    @Override
-    public void errorHandle(Throwable e) {
-        LogHelper.error(e);
     }
 
     @Override
@@ -247,8 +249,7 @@ public class LoginScene extends AbstractScene {
                 try {
                     application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.skin.url));
                     application.skinManager.getSkin(result.playerProfile.username); //Cache skin
-                } catch (Exception e) {
-                    LogHelper.error(e);
+                } catch (Exception ignored) {
                 }
             }
             contextHelper.runInFxThread(() -> {
@@ -279,7 +280,6 @@ public class LoginScene extends AbstractScene {
             });
 
         }, (error) -> {
-            LogHelper.info("Handle error: ", error);
             if(totp != null) {
                 application.messageManager.createNotification(application.getTranslation("runtime.scenes.login.dialog2fa.header"), error);
                 return;
@@ -290,6 +290,8 @@ public class LoginScene extends AbstractScene {
                 application.messageManager.showTextDialog(application.getTranslation("runtime.scenes.login.dialog2fa.header"), (result) -> {
                     login(login, password, authId, result, savePassword);
                 }, null, true);
+            } else {
+                errorHandle(new RequestException(error));
             }
         });
     }
@@ -304,7 +306,7 @@ public class LoginScene extends AbstractScene {
                     try {
                         application.gui.optionsScene.loadAll();
                     } catch (Throwable ex) {
-                        LogHelper.error(ex);
+                        errorHandle(ex);
                     }
                 }
                 if (application.getCurrentScene() instanceof LoginScene) {

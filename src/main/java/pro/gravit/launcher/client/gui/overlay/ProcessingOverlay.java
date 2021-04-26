@@ -38,7 +38,7 @@ public class ProcessingOverlay extends AbstractOverlay {
     }
 
     public void errorHandle(Throwable e) {
-        LogHelper.error(e);
+        super.errorHandle(e);
         description.textProperty().unbind();
         description.getStyleClass().add("error");
         description.setText(e.toString());

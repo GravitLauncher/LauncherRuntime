@@ -18,11 +18,13 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.request.Request;
+import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
@@ -201,7 +203,22 @@ public abstract class AbstractScene implements AllowDisable {
 
     public abstract void reset();
 
-    public abstract void errorHandle(Throwable e);
+    public void errorHandle(Throwable e) {
+        String message = null;
+        if(e instanceof CompletionException) {
+            e = e.getCause();
+        }
+        if(e instanceof ExecutionException) {
+            e = e.getCause();
+        }
+        if(e instanceof RequestException) {
+            message = e.getMessage();
+        }
+        if(message == null) {
+            message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+        }
+        application.messageManager.createNotification("Error", message);
+    }
 
     public Scene getScene() {
         return scene;

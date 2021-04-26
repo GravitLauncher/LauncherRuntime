@@ -41,12 +41,13 @@ public class ContextHelper {
     }
 
     final void errorHandling(Throwable e) {
-        LogHelper.error(e);
         if (scene != null) {
             AbstractOverlay currentOverlay = scene.getCurrentOverlay();
             if (currentOverlay != null) {
                 currentOverlay.errorHandle(e);
                 scene.hideOverlay(2000, null);
+            } else {
+                scene.errorHandle(e);
             }
         }
     }

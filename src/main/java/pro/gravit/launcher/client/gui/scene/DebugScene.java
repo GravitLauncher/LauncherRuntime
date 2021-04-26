@@ -139,7 +139,6 @@ public class DebugScene extends AbstractScene {
     @Override
     public void errorHandle(Throwable e) {
         if (!(e instanceof EOFException)) {
-            LogHelper.error(e);
             if (LogHelper.isDebugEnabled())
                 append(e.toString());
         }

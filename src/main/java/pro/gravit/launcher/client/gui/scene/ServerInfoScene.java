@@ -55,14 +55,14 @@ public class ServerInfoScene extends AbstractScene {
                 application.gui.optionsScene.reset();
                 application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
             } catch (Exception ex) {
-                LogHelper.error(ex);
+                errorHandle(ex);
             }
         });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.settingsScene);
             } catch (Exception exception) {
-                LogHelper.error(exception);
+                errorHandle(exception);
             }
         });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
@@ -80,7 +80,7 @@ public class ServerInfoScene extends AbstractScene {
                                                     application.runtimeStateMachine.exit();
                                                     switchScene(application.gui.loginScene);
                                                 } catch (Exception ex) {
-                                                    LogHelper.error(ex);
+                                                    errorHandle(ex);
                                                 }
                                             });
                                         }, (event) -> {
@@ -109,11 +109,6 @@ public class ServerInfoScene extends AbstractScene {
             });
         });
         ServerMenuScene.putAvatarToImageView(application, application.runtimeStateMachine.getUsername(), avatar);
-    }
-
-    @Override
-    public void errorHandle(Throwable e) {
-        LogHelper.error(e);
     }
 
     @Override

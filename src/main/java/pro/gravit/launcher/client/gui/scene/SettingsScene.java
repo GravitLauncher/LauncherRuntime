@@ -119,7 +119,7 @@ public class SettingsScene extends AbstractScene {
             try {
                 DirBridge.move(newDir);
             } catch (IOException ex) {
-                LogHelper.error(ex);
+                errorHandle(ex);
             }
             application.runtimeSettings.updatesDirPath = newDir.toString();
             application.runtimeSettings.updatesDir = newDir;
@@ -162,17 +162,12 @@ public class SettingsScene extends AbstractScene {
                     try {
                         switchScene(application.gui.serverInfoScene);
                     } catch (Exception exception) {
-                        LogHelper.error(exception);
+                        errorHandle(exception);
                     }
                 });
                 serverButtonContainer.getChildren().add(pane);
             });
         });
-    }
-
-    @Override
-    public void errorHandle(Throwable e) {
-        LogHelper.error(e);
     }
 
     @Override

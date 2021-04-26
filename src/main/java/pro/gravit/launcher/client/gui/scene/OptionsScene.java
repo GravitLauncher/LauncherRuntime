@@ -60,17 +60,12 @@ public class OptionsScene extends AbstractScene {
                     try {
                         switchScene(application.gui.serverInfoScene);
                     } catch (Exception exception) {
-                        LogHelper.error(exception);
+                        errorHandle(exception);
                     }
                 });
                 serverButtonContainer.getChildren().add(pane);
             });
         });
-    }
-
-    @Override
-    public void errorHandle(Throwable e) {
-        LogHelper.error(e);
     }
 
     @Override

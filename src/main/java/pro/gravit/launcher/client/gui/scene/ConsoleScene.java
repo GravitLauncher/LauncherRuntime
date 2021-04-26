@@ -51,11 +51,6 @@ public class ConsoleScene extends AbstractScene {
     }
 
     @Override
-    public void errorHandle(Throwable e) {
-        LogHelper.error(e);
-    }
-
-    @Override
     public String getName() {
         return "console";
     }
