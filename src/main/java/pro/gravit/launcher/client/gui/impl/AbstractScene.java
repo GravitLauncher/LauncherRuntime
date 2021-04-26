@@ -1,64 +1,42 @@
 package pro.gravit.launcher.client.gui.impl;
 
-import javafx.animation.FadeTransition;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-public abstract class AbstractScene implements AllowDisable {
-    protected final JavaFXApplication application;
+public abstract class AbstractScene extends AbstractVisualComponent {
     protected final LauncherConfig launcherConfig;
-    protected final ContextHelper contextHelper;
     protected Scene scene;
-    protected Node layout;
-    protected Node header;
+    protected Pane header;
     protected Pane disablePane;
-    AbstractStage currentStage;
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
     private AtomicInteger enabled = new AtomicInteger(0);
     private boolean hideTransformStarted = false;
-    private CompletableFuture<Node> layoutFuture;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
-        this.layoutFuture = application.fxmlFactory.getAsync(fxmlPath);
-        this.application = application;
+        super(fxmlPath, application);
         this.launcherConfig = Launcher.getConfig();
-        this.contextHelper = new ContextHelper(this);
-    }
-
-    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
-        FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
-        if (onFinished != null)
-            fadeTransition.setOnFinished(onFinished);
-        fadeTransition.setDelay(Duration.millis(delay));
-        fadeTransition.setFromValue(from);
-        fadeTransition.setToValue(to);
-        fadeTransition.play();
     }
 
     protected AbstractStage getCurrentStage() {
@@ -67,11 +45,11 @@ public abstract class AbstractScene implements AllowDisable {
 
     public void init() throws Exception {
         if (scene == null) {
-            scene = new Scene((Parent) layoutFuture.get());
+            scene = new Scene(getFxmlRoot());
             scene.setFill(Color.TRANSPARENT);
         }
-        layout = LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
-        header = LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
+        layout = (Pane) LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
+        header = (Pane) LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
         sceneBaseInit();
         doInit();
     }
@@ -89,8 +67,8 @@ public abstract class AbstractScene implements AllowDisable {
             }
         }
         overlay.currentStage = currentStage;
-        currentStage.enableMouseDrag(overlay.pane);
-        showOverlay(overlay.getPane(), onFinished);
+        currentStage.enableMouseDrag(overlay.layout);
+        showOverlay(overlay.getLayout(), onFinished);
     }
 
     private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
@@ -166,7 +144,6 @@ public abstract class AbstractScene implements AllowDisable {
         return currentOverlay;
     }
 
-    @Override
     public void disable() {
         LogHelper.debug("Scene %s disabled (%d)", getName(), enabled.incrementAndGet());
         if(enabled.get() != 1) return;
@@ -185,7 +162,6 @@ public abstract class AbstractScene implements AllowDisable {
         }
     }
 
-    @Override
     public void enable() {
         LogHelper.debug("Scene %s enabled (%d)", getName(), enabled.decrementAndGet());
         if(enabled.get() != 0) return;
@@ -239,10 +215,6 @@ public abstract class AbstractScene implements AllowDisable {
 
     protected void switchScene(AbstractScene scene) throws Exception {
         currentStage.setScene(scene);
-    }
-
-    public Node getLayout() {
-        return layout;
     }
 
     public Node getHeader() {

@@ -27,7 +27,7 @@ public class ProcessingOverlay extends AbstractOverlay {
     @Override
     protected void doInit() {
         // spinner = LookupHelper.lookup(pane, "#spinner"); //TODO: DrLeonardo?
-        description = LookupHelper.lookup(pane, "#description");
+        description = LookupHelper.lookup(layout, "#description");
     }
 
     @Override

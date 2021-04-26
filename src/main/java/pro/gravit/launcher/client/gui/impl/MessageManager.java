@@ -99,7 +99,7 @@ public class MessageManager {
                     return;
                 onClose.run();
             });
-            AbstractScene.fade(finalPane, 2500, 1.0, 0.0, (e) -> onClose.run());
+            AbstractVisualComponent.fade(finalPane, 2500, 1.0, 0.0, (e) -> onClose.run());
         });
     }
 

@@ -4,10 +4,10 @@ import javafx.application.Platform;
 import pro.gravit.utils.helper.LogHelper;
 
 public class ContextHelper {
-    private final AbstractScene scene;
+    private final AbstractVisualComponent pane;
 
-    ContextHelper(AbstractScene scene) {
-        this.scene = scene;
+    ContextHelper(AbstractVisualComponent pane) {
+        this.pane = pane;
     }
 
     public static void runInFxThreadStatic(GuiExceptionCallback callback) {
@@ -41,14 +41,16 @@ public class ContextHelper {
     }
 
     final void errorHandling(Throwable e) {
-        if (scene != null) {
+        if (pane != null) {
+            pane.errorHandle(e);
+            /*
             AbstractOverlay currentOverlay = scene.getCurrentOverlay();
             if (currentOverlay != null) {
                 currentOverlay.errorHandle(e);
                 scene.hideOverlay(2000, null);
             } else {
                 scene.errorHandle(e);
-            }
+            }*/
         }
     }
 
