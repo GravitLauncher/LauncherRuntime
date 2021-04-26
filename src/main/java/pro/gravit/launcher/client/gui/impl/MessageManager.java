@@ -7,20 +7,23 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import pro.gravit.launcher.client.gui.dialogs.AbstractDialog;
+import pro.gravit.launcher.client.gui.dialogs.NotificationDialog;
+import pro.gravit.launcher.client.gui.helper.PositionHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.client.gui.utils.FXMLFactory;
+import pro.gravit.launcher.client.gui.stage.DialogStage;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -37,71 +40,60 @@ public class MessageManager {
         createNotification(head, message, application.getCurrentScene() != null);
     }
 
-    public void createNotification(String head, String message, boolean isLauncher) {
-        if (isLauncher && application.getCurrentScene() == null)
-            throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
-        Pane pane;
-        try {
-            pane = application.fxmlFactory.get("components/notification.fxml");
-        } catch (IOException e) {
-            throw new FXMLFactory.FXMLLoadException(e);
-        }
-        Pane finalPane = pane;
-        Scene scene = isLauncher ? null : new Scene(finalPane);
-        ContextHelper.runInFxThreadStatic(() -> {
-            LookupHelper.<Text>lookup(finalPane, "#notificationHeading").setText(head);
-            LookupHelper.<Text>lookup(finalPane, "#notificationText").setText(message);
-            Runnable onClose;
-            if (!isLauncher) {
-                Screen screen = Screen.getPrimary();
-                Rectangle2D bounds = screen.getVisualBounds();
-                Stage notificationStage = application.newStage(StageStyle.TRANSPARENT);
-                onClose = () -> {
-                    if(!notificationStage.isShowing()) return;
-                    notificationStage.hide();
-                    notificationStage.setScene(null);
-                    count.getAndDecrement();
-                };
-                finalPane.setOnMouseClicked((e) -> onClose.run());
-                notificationStage.setAlwaysOnTop(true);
-                notificationStage.setScene(scene);
-                notificationStage.sizeToScene();
-                notificationStage.setResizable(false);
-                notificationStage.setTitle(head);
-                notificationStage.show();
-                int currentCount = count.getAndIncrement() + 1;
-                double maxX = bounds.getMaxX();
-                double maxY = bounds.getMaxY();
-                double x = maxX - notificationStage.getWidth() * 1.1;
-                double y = maxY - notificationStage.getHeight() * currentCount * 1.1;
-                LogHelper.dev("Screen %f %f setted %f %f", maxX, maxY, x, y);
-                notificationStage.setX(x);
-                notificationStage.setY(y);
-            } else {
-                AbstractScene currentScene = application.getCurrentScene();
-                Pane root = (Pane) currentScene.getScene().getRoot();
-                root.getChildren().add(finalPane);
-                onClose = () -> {
-                    if(!root.getChildren().remove(finalPane)) return;
-                    localCount.getAndDecrement();
-                };
-                int currentCount = localCount.getAndIncrement();
-                double maxX = root.getWidth();
-                double maxY = root.getHeight();
-                finalPane.setVisible(true);
-                double x = maxX - finalPane.getPrefWidth();
-                double y = finalPane.getPrefHeight() * currentCount * 1.1 + finalPane.getPrefHeight() * 0.6;
-                finalPane.setLayoutX(x);
-                finalPane.setLayoutY(y);
-                LogHelper.dev("Layout %f %f setted %f %f", maxX, maxY, x, y);
+    public void initDialogInScene(AbstractScene scene, AbstractDialog dialog) {
+        Pane root = (Pane) scene.getFxmlRoot();
+        if(!dialog.isInit()) {
+            try {
+                dialog.currentStage = scene.currentStage;
+                dialog.init();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
-            finalPane.setOnMouseClicked((e) -> {
-                if (!e.getButton().equals(MouseButton.PRIMARY))
-                    return;
-                onClose.run();
-            });
-            AbstractVisualComponent.fade(finalPane, 2500, 1.0, 0.0, (e) -> onClose.run());
+        }
+        Pane dialogRoot = (Pane) dialog.getFxmlRoot();
+        dialog.setOnClose(() -> {
+            root.getChildren().remove(dialogRoot);
         });
+        if(dialog instanceof NotificationDialog) {
+
+            NotificationDialog.NotificationSlot slot = new NotificationDialog.NotificationSlot((scrollTo) -> {
+                dialogRoot.setLayoutY(dialogRoot.getLayoutY()+scrollTo);
+            }, ((Pane)dialog.getFxmlRoot()).getPrefHeight()+20);
+            NotificationDialog notificationDialog = (NotificationDialog) dialog;
+            notificationDialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
+        }
+        LookupHelper.Point2D coords = dialog.getSceneCoords(root);
+        dialogRoot.setLayoutX(coords.x);
+        dialogRoot.setLayoutY(coords.y);
+        LogHelper.info("X: %f Y: %f", coords.x, coords.y);
+        root.getChildren().add(dialogRoot);
+    }
+
+    public void createNotification(String head, String message, boolean isLauncher) {
+        NotificationDialog dialog = new NotificationDialog(application, head, message);
+        if(isLauncher) {
+            AbstractScene scene = application.getCurrentScene();
+            if(scene == null) {
+                throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
+            }
+            ContextHelper.runInFxThreadStatic(() -> {
+                initDialogInScene(scene, dialog);
+            });
+        } else {
+            AtomicReference<DialogStage> stage = new AtomicReference<>(null);
+            ContextHelper.runInFxThreadStatic(() -> {
+                stage.set(new DialogStage(application, head, dialog));
+            });
+            NotificationDialog.NotificationSlot slot = new NotificationDialog.NotificationSlot((scrollTo) -> {
+                stage.get().stage.setY(stage.get().stage.getY()+scrollTo);
+            }, ((Pane)dialog.getFxmlRoot()).getPrefHeight()+20);
+            dialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
+            dialog.setOnClose(() -> {
+                stage.get().close();
+                stage.get().stage.setScene(null);
+            });
+            stage.get().show();
+        }
     }
 
     public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
