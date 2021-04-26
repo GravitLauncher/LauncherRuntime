@@ -30,6 +30,8 @@ import java.util.function.Consumer;
 public class SettingsScene extends AbstractScene {
     private Pane componentList;
     private Label ramLabel;
+    private Slider ramSlider;
+    private RuntimeSettings.ProfileSettingsView profileSettings;
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -71,9 +73,8 @@ public class SettingsScene extends AbstractScene {
             });
         }
 
-        Slider ramSlider = LookupHelper.lookup(layout, "#ramSlider");
+        ramSlider = LookupHelper.lookup(layout, "#ramSlider");
         ramLabel = LookupHelper.lookup(layout, "#ramLabel");
-        updateRamLabel();
         try {
             SystemInfo systemInfo = new SystemInfo();
             ramSlider.setMax(systemInfo.getHardware().getMemory().getTotal() >> 20);
@@ -97,11 +98,6 @@ public class SettingsScene extends AbstractScene {
             public Double fromString(String string) {
                 return null;
             }
-        });
-        ramSlider.setValue(application.runtimeSettings.ram);
-        ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            application.runtimeSettings.ram = newValue.intValue();
-            updateRamLabel();
         });
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#folder", "#path");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
@@ -139,18 +135,26 @@ public class SettingsScene extends AbstractScene {
                             }
                         }, () -> {
                         }, true)));
-        add("Debug", application.runtimeSettings.debug, (value) -> application.runtimeSettings.debug = value);
-        add("AutoEnter", application.runtimeSettings.autoEnter, (value) -> application.runtimeSettings.autoEnter = value);
-        add("Fullscreen", application.runtimeSettings.fullScreen, (value) -> application.runtimeSettings.fullScreen = value);
-        if(application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && application.guiModuleConfig.userDisableDownloadJava)
-        {
-            add("DisableJavaDownload", application.runtimeSettings.disableJavaDownload, (value) -> application.runtimeSettings.disableJavaDownload = value);
-        }
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#back").ifPresent(a -> a.setOnAction((e) ->{
+            try {
+                profileSettings = null;
+                switchScene(application.gui.serverInfoScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        }));
         reset();
     }
 
     @Override
     public void reset() {
+        profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
+        ramSlider.setValue(profileSettings.ram);
+        ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            profileSettings.ram = newValue.intValue();
+            updateRamLabel();
+        });
+        updateRamLabel();
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ClientProfile profile = application.runtimeStateMachine.getProfile();
@@ -160,6 +164,7 @@ public class SettingsScene extends AbstractScene {
                 save.setVisible(true);
                 save.setOnAction((e) -> {
                     try {
+                        profileSettings.apply();
                         switchScene(application.gui.serverInfoScene);
                     } catch (Exception exception) {
                         errorHandle(exception);
@@ -168,6 +173,15 @@ public class SettingsScene extends AbstractScene {
                 serverButtonContainer.getChildren().add(pane);
             });
         });
+        componentList.getChildren().clear();
+        add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
+        add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
+        add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value);
+        if(application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && application.guiModuleConfig.userDisableDownloadJava)
+        {
+            add("DisableJavaDownload", application.runtimeSettings.disableJavaDownload, (value) -> application.runtimeSettings.disableJavaDownload = value);
+        }
+
     }
 
     @Override
@@ -200,6 +214,6 @@ public class SettingsScene extends AbstractScene {
     }
     public void updateRamLabel()
     {
-        ramLabel.setText(application.runtimeSettings.ram == 0 ? "Auto" : Integer.toString(application.runtimeSettings.ram).concat(" MiB"));
+        ramLabel.setText(profileSettings.ram == 0 ? "Auto" : Integer.toString(profileSettings.ram).concat(" MiB"));
     }
 }

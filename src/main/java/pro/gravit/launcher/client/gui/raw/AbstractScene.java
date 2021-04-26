@@ -217,6 +217,7 @@ public abstract class AbstractScene implements AllowDisable {
         if(message == null) {
             message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
         }
+        LogHelper.error(e);
         application.messageManager.createNotification("Error", message);
     }
 

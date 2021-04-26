@@ -11,6 +11,7 @@ import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.ClientLauncherProcess;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.raw.AbstractScene;
 import pro.gravit.launcher.client.gui.raw.ContextHelper;
@@ -61,6 +62,7 @@ public class ServerInfoScene extends AbstractScene {
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.settingsScene);
+                application.gui.settingsScene.reset();
             } catch (Exception exception) {
                 errorHandle(exception);
             }
@@ -136,18 +138,19 @@ public class ServerInfoScene extends AbstractScene {
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
         ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), clientDir.resolve("resourcepacks"), profile, application.runtimeStateMachine.getPlayerProfile(), view,
                 application.runtimeStateMachine.getAccessToken(), clientHDir, assetHDir, jvmHDir);
-        clientLauncherProcess.params.ram = application.runtimeSettings.ram;
+        RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+        clientLauncherProcess.params.ram = profileSettings.ram;
         if (clientLauncherProcess.params.ram > 0) {
             clientLauncherProcess.jvmArgs.add("-Xms" + clientLauncherProcess.params.ram + 'M');
             clientLauncherProcess.jvmArgs.add("-Xmx" + clientLauncherProcess.params.ram + 'M');
         }
-        clientLauncherProcess.params.fullScreen = application.runtimeSettings.fullScreen;
-        clientLauncherProcess.params.autoEnter = application.runtimeSettings.autoEnter;
+        clientLauncherProcess.params.fullScreen = profileSettings.fullScreen;
+        clientLauncherProcess.params.autoEnter = profileSettings.autoEnter;
         contextHelper.runCallback(() -> {
             Thread writerThread = CommonHelper.newThread("Client Params Writer Thread", true, () -> {
                 try {
                     clientLauncherProcess.runWriteParams(new InetSocketAddress("127.0.0.1", Launcher.getConfig().clientPort));
-                    if (!application.runtimeSettings.debug) {
+                    if (!profileSettings.debug) {
                         LogHelper.debug("Params writted successful. Exit...");
                         LauncherEngine.exitLauncher(0);
                     }

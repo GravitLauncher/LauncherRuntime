@@ -7,6 +7,7 @@ import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.interfaces.AllowDisable;
 import pro.gravit.launcher.request.RequestException;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
@@ -58,6 +59,7 @@ public abstract class AbstractOverlay implements AllowDisable {
         if(message == null) {
             message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
         }
+        LogHelper.error(e);
         application.messageManager.createNotification("Error", message);
     }
 

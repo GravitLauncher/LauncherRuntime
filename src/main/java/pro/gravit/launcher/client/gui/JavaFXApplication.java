@@ -22,6 +22,7 @@ import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.debug.DebugMain;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
+import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
@@ -221,6 +222,19 @@ public class JavaFXApplication extends Application {
             return null;
         }
 
+    }
+
+
+    public RuntimeSettings.ProfileSettings getProfileSettings() {
+        ClientProfile profile = runtimeStateMachine.getProfile();
+        if(profile == null) throw new NullPointerException("ClientProfile not selected");
+        UUID uuid = profile.getUUID();
+        RuntimeSettings.ProfileSettings settings = runtimeSettings.profileSettings.get(uuid);
+        if(settings == null) {
+            settings = RuntimeSettings.ProfileSettings.getDefault(profile);
+            runtimeSettings.profileSettings.put(uuid, settings);
+        }
+        return settings;
     }
 
     public void setMainScene(AbstractScene scene) throws Exception {
