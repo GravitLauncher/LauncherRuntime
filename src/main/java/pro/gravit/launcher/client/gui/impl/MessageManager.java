@@ -12,8 +12,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import pro.gravit.launcher.client.gui.dialogs.AbstractDialog;
-import pro.gravit.launcher.client.gui.dialogs.NotificationDialog;
+import pro.gravit.launcher.client.gui.dialogs.*;
 import pro.gravit.launcher.client.gui.helper.PositionHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.DialogStage;
@@ -53,6 +52,9 @@ public class MessageManager {
         Pane dialogRoot = (Pane) dialog.getFxmlRoot();
         dialog.setOnClose(() -> {
             root.getChildren().remove(dialogRoot);
+            if(!(dialog instanceof NotificationDialog)) {
+                scene.enable();
+            }
         });
         if(dialog instanceof NotificationDialog) {
 
@@ -61,6 +63,8 @@ public class MessageManager {
             }, ((Pane)dialog.getFxmlRoot()).getPrefHeight()+20);
             NotificationDialog notificationDialog = (NotificationDialog) dialog;
             notificationDialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
+        } else {
+            scene.disable();
         }
         LookupHelper.Point2D coords = dialog.getSceneCoords(root);
         dialogRoot.setLayoutX(coords.x);
@@ -97,19 +101,8 @@ public class MessageManager {
     }
 
     public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        showAbstractDialog("dialogs/info/dialog.fxml", header, (pane) -> {
-            LookupHelper.<Text>lookup(pane, "#headingDialog").setText(header);
-            LookupHelper.<Text>lookup(pane, "#textDialog").setText(text);
-        }, (pane, onClose) -> {
-            LookupHelper.<Button>lookup(pane, "#close").setOnAction((e) -> {
-                onClose.run();
-                onCloseCallback.run();
-            });
-            LookupHelper.<Button>lookup(pane, "#apply").setOnAction((e) -> {
-                onClose.run();
-                onApplyCallback.run();
-            });
-        }, isLauncher);
+        InfoDialog dialog = new InfoDialog(application, header, text, onApplyCallback, onCloseCallback);
+        showAbstractDialog(dialog, header, isLauncher);
     }
 
     public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, boolean isLauncher) {
@@ -117,92 +110,34 @@ public class MessageManager {
     }
 
     public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        showAbstractDialog("dialogs/apply/dialog.fxml", header, (pane) -> {
-            LookupHelper.<Labeled>lookup(pane, "#headingDialog").setText(header);
-            LookupHelper.<Labeled>lookup(pane, "#textDialog").setText(text);
-        }, (pane, onClose) -> {
-            LookupHelper.<Button>lookup(pane, "#close").setOnAction((e) -> {
-                onClose.run();
-                onCloseCallback.run();
-            });
-            LookupHelper.<Button>lookup(pane, "#apply").setOnAction((e) -> {
-                onClose.run();
-                onApplyCallback.run();
-            });
-            LookupHelper.<Button>lookup(pane, "#deny").setOnAction((e) -> {
-                onClose.run();
-                onDenyCallback.run();
-            });
-        }, isLauncher);
+        ApplyDialog dialog = new ApplyDialog(application, header, text, onApplyCallback, onDenyCallback, onCloseCallback);
+        showAbstractDialog(dialog, header, isLauncher);
     }
 
     public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        showAbstractDialog("dialogs/text/dialog.fxml", header, (pane) ->
-                        LookupHelper.<Text>lookup(pane, "#headingDialog").setText(header),
-                (pane, onClose) -> {
-                    LookupHelper.<Button>lookup(pane, "#close").setOnAction((e) -> {
-                        onClose.run();
-                        onCloseCallback.run();
-                    });
-                    TextField a = LookupHelper.<TextField>lookup(pane, "#dialogInput");
-                    EventHandler<ActionEvent> eventHandler = (e) -> {
-                        onClose.run();
-                        onApplyCallback.accept(a.getText());
-                    };
-                    LookupHelper.<Button>lookup(pane, "#apply").setOnAction(eventHandler);
-                    a.setOnAction(eventHandler);
-                    a.requestFocus();
-                }, isLauncher);
+        TextDialog dialog = new TextDialog(application, header, "", onApplyCallback, onCloseCallback);
+        showAbstractDialog(dialog, header, isLauncher);
     }
 
-    private void showAbstractDialog(String componentName, String nativeHeader, Consumer<Pane> initPane, BiConsumer<Pane, Runnable> bindPane, boolean isLauncher) {
-        Pane pane;
-        try {
-            pane = application.fxmlFactory.get(componentName);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        Pane finalPane = pane;
-        Scene scene = isLauncher ? null : new Scene(finalPane);
-        ContextHelper.runInFxThreadStatic(() -> {
-            initPane.accept(finalPane);
-            Runnable onClose;
-            if (isLauncher) {
-                AbstractScene currentScene = application.getCurrentScene();
-                Pane root = (Pane) currentScene.getScene().getRoot();
-                Pane shadow = new Pane();
-                shadow.setPrefHeight(root.getPrefHeight());
-                shadow.setPrefWidth(root.getPrefWidth());
-                root.getChildren().add(shadow);
-                root.getChildren().add(finalPane);
-                onClose = () -> {
-                    root.getChildren().remove(finalPane);
-                    root.getChildren().remove(shadow);
-                };
-                pane.setLayoutX((root.getPrefWidth() - pane.getPrefWidth()) / 2.0);
-                pane.setLayoutY((root.getPrefHeight() - pane.getPrefHeight()) / 2.0);
-                LogHelper.debug("Layout: X: %f, Y: %f", pane.getLayoutX(), pane.getLayoutY());
-            } else {
-                Screen screen = Screen.getPrimary();
-                Rectangle2D bounds = screen.getVisualBounds();
-                Stage notificationStage = application.newStage(StageStyle.TRANSPARENT);
-                onClose = () -> {
-                    notificationStage.hide();
-                    notificationStage.setScene(null);
-                };
-                finalPane.setOnMouseClicked((e) -> onClose.run());
-                notificationStage.setAlwaysOnTop(true);
-                notificationStage.setScene(scene);
-                notificationStage.sizeToScene();
-                notificationStage.setResizable(false);
-                notificationStage.setTitle(nativeHeader);
-                notificationStage.show();
-                double x = (bounds.getMaxX() - pane.getPrefWidth()) / 2.0;
-                double y = (bounds.getMaxY() - pane.getPrefHeight()) / 2.0;
-                notificationStage.setX(x);
-                notificationStage.setY(y);
+    public void showAbstractDialog(AbstractDialog dialog, String header, boolean isLauncher) {
+        if(isLauncher) {
+            AbstractScene scene = application.getCurrentScene();
+            if(scene == null) {
+                throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
             }
-            bindPane.accept(finalPane, onClose);
-        });
+            ContextHelper.runInFxThreadStatic(() -> {
+                initDialogInScene(scene, dialog);
+            });
+        } else {
+            AtomicReference<DialogStage> stage = new AtomicReference<>(null);
+            ContextHelper.runInFxThreadStatic(() -> {
+                stage.set(new DialogStage(application, header, dialog));
+            });
+            dialog.setOnClose(() -> {
+                stage.get().close();
+                stage.get().stage.setScene(null);
+            });
+            stage.get().show();
+        }
     }
 }
