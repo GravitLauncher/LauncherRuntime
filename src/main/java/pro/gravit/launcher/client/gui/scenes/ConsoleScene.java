@@ -6,7 +6,6 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.JVMHelper;
@@ -51,12 +50,6 @@ public class ConsoleScene extends AbstractScene {
     @Override
     public String getName() {
         return "console";
-    }
-
-    @Override
-    protected void doShow() {
-        super.doShow();
-
     }
 
     private void send(ActionEvent ignored) {

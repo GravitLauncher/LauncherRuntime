@@ -1,15 +1,12 @@
-package pro.gravit.launcher.client.gui.impl;
+package pro.gravit.launcher.client.gui.overlays;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.request.RequestException;
-import pro.gravit.utils.helper.LogHelper;
-
-import java.io.IOException;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
+import pro.gravit.launcher.client.gui.impl.AbstractStage;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 
 public abstract class AbstractOverlay extends AbstractVisualComponent {
 
@@ -22,7 +19,7 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     protected final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
-        if (!isInit)
+        if (!isInit())
             throw new IllegalStateException("Using method hide before init");
         scene.hideOverlay(delay, (e) -> {
             if (onFinished != null)
@@ -38,5 +35,14 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     public void enable() {
+    }
+
+    public Pane show(AbstractStage stage) throws Exception {
+        if(!isInit()) {
+            init();
+        }
+        this.currentStage = stage;
+        currentStage.enableMouseDrag(layout);
+        return layout;
     }
 }

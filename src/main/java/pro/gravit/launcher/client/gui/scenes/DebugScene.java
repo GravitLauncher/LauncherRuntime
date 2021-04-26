@@ -9,7 +9,6 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;

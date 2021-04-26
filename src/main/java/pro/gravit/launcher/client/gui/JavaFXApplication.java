@@ -18,6 +18,8 @@ import pro.gravit.launcher.client.gui.config.GuiModuleConfig;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.config.StdSettingsManager;
 import pro.gravit.launcher.client.gui.impl.*;
+import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
@@ -77,7 +79,7 @@ public class JavaFXApplication extends Application {
     }
 
     public AbstractScene getCurrentScene() {
-        return mainStage.getScene();
+        return (AbstractScene) mainStage.getVisualComponent();
     }
 
     public PrimaryStage getMainStage() {

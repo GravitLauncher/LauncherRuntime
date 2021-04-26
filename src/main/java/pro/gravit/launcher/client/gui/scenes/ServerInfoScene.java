@@ -13,7 +13,6 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
@@ -156,8 +155,8 @@ public class ServerInfoScene extends AbstractScene {
                     }
                 } catch (Throwable e) {
                     LogHelper.error(e);
-                    if (getCurrentStage().getScene() instanceof DebugScene) { //TODO: FIX
-                        DebugScene debugScene = (DebugScene) getCurrentStage().getScene();
+                    if (getCurrentStage().getVisualComponent() instanceof DebugScene) { //TODO: FIX
+                        DebugScene debugScene = (DebugScene) getCurrentStage().getVisualComponent();
                         debugScene.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
                         if (debugScene.currentProcess != null && debugScene.currentProcess.isAlive()) {
                             debugScene.currentProcess.destroy();

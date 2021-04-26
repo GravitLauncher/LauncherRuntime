@@ -2,13 +2,16 @@ package pro.gravit.launcher.client.gui.impl;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractStage {
     public final Stage stage;
-    protected AbstractScene scene;
+    protected AbstractVisualComponent scene;
 
     protected AbstractStage(Stage stage) {
         this.stage = stage;
@@ -34,22 +37,31 @@ public abstract class AbstractStage {
         });
     }
 
-    public AbstractScene getScene() {
+    public AbstractVisualComponent getVisualComponent() {
         return scene;
     }
 
-    public void setScene(AbstractScene scene) throws Exception {
-        if (scene == null) {
+    public void setScene(AbstractVisualComponent visualComponent) throws Exception {
+        if (visualComponent == null) {
             throw new NullPointerException("Try set null scene");
         }
-        scene.currentStage = this;
-        if (scene.getScene() == null)
-            scene.init();
-        scene.doShow();
-        stage.setScene(scene.getScene());
+        visualComponent.currentStage = this;
+        if(!visualComponent.isInit()) {
+            visualComponent.init();
+        }
+        if(visualComponent.isResetOnShow) {
+            visualComponent.reset();
+        }
+        if(visualComponent instanceof AbstractScene) {
+            stage.setScene(((AbstractScene) visualComponent).getScene());
+        } else {
+            Scene scene = new Scene(visualComponent.layout);
+            scene.setFill(Color.TRANSPARENT);
+            stage.setScene(scene);
+        }
         stage.sizeToScene();
         stage.show();
-        this.scene = scene;
+        this.scene = visualComponent;
     }
 
     public final boolean isNullScene() {

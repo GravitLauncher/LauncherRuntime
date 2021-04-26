@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.impl;
+package pro.gravit.launcher.client.gui.scenes;
 
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -13,14 +13,13 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
+import pro.gravit.launcher.client.gui.impl.AbstractStage;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -56,18 +55,9 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     protected abstract void doInit() throws Exception;
 
-    public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) {
+    public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
         currentOverlay = overlay;
-        if (!overlay.isInit) {
-            try {
-                overlay.init();
-            } catch (Exception e) {
-                contextHelper.errorHandling(e);
-                return;
-            }
-        }
-        overlay.currentStage = currentStage;
-        currentStage.enableMouseDrag(overlay.layout);
+        currentOverlay.show(currentStage);
         showOverlay(overlay.getLayout(), onFinished);
     }
 
@@ -105,7 +95,6 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             root.requestFocus();
             enable();
             currentOverlayNode = null;
-            if (currentOverlay != null) currentOverlay.currentStage = null;
             if (currentOverlay != null) currentOverlay.reset();
             currentOverlay = null;
             if (onFinished != null) {
@@ -171,10 +160,6 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public boolean isEnabled() {
         return enabled.get() == 0;
-    }
-
-    protected void doShow() {
-
     }
 
     public abstract void reset();

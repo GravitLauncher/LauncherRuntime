@@ -12,7 +12,6 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.IOHelper;

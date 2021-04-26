@@ -8,7 +8,6 @@ import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;

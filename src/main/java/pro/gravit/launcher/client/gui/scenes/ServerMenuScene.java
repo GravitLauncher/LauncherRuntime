@@ -12,7 +12,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.management.PingServerRequest;
@@ -42,6 +41,7 @@ public class ServerMenuScene extends AbstractScene {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
         reset();
+        isResetOnShow = true;
     }
     static class ServerButtonCache
     {
@@ -93,6 +93,7 @@ public class ServerMenuScene extends AbstractScene {
 
     @Override
     public void reset() {
+        if(lastProfiles == application.stateService.getProfiles()) return;
         lastProfiles = application.stateService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername());
@@ -152,15 +153,6 @@ public class ServerMenuScene extends AbstractScene {
     @Override
     public String getName() {
         return "serverMenu";
-    }
-
-    @Override
-    protected void doShow() {
-        super.doShow();
-        if(lastProfiles != application.stateService.getProfiles())
-        {
-            reset();
-        }
     }
 
     private void changeServer(ClientProfile profile) {

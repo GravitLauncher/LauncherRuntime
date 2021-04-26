@@ -23,6 +23,7 @@ public abstract class AbstractVisualComponent {
     protected Pane layout;
     private final CompletableFuture<Node> future;
     boolean isInit;
+    protected boolean isResetOnShow = false;
 
     protected AbstractVisualComponent(String fxmlPath, JavaFXApplication application) {
         this.application = application;
@@ -42,6 +43,10 @@ public abstract class AbstractVisualComponent {
 
     public Pane getLayout() {
         return layout;
+    }
+
+    public boolean isInit() {
+        return isInit;
     }
 
     protected Parent getFxmlRoot() {
