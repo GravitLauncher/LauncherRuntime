@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.raw;
+package pro.gravit.launcher.client.gui.impl;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,20 +7,18 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
-import javafx.scene.effect.GaussianBlur;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import pro.gravit.launcher.client.gui.FXMLFactory;
+import pro.gravit.launcher.client.gui.utils.FXMLFactory;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;

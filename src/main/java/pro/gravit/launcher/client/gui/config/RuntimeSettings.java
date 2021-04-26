@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui;
+package pro.gravit.launcher.client.gui.config;
 
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;

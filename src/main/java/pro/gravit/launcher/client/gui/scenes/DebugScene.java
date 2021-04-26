@@ -1,7 +1,5 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.scenes;
 
-import javafx.application.Platform;
-import javafx.scene.Node;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -11,10 +9,8 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.launcher.client.gui.raw.ContextHelper;
-import pro.gravit.launcher.client.gui.scene.ConsoleScene;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;

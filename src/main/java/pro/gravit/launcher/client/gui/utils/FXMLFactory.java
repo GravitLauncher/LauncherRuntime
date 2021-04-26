@@ -1,7 +1,8 @@
-package pro.gravit.launcher.client.gui;
+package pro.gravit.launcher.client.gui.utils;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 

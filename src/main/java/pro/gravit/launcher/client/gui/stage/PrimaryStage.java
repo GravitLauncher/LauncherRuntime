@@ -5,7 +5,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.raw.AbstractStage;
+import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;

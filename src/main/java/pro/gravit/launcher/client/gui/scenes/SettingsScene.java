@@ -1,8 +1,6 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.scenes;
 
-import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
@@ -12,14 +10,12 @@ import javafx.util.StringConverter;
 import oshi.SystemInfo;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.RuntimeSettings;
+import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.File;
@@ -157,7 +153,7 @@ public class SettingsScene extends AbstractScene {
         updateRamLabel();
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        ClientProfile profile = application.stateService.getProfile();
         ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
             contextHelper.runInFxThread(() -> {
                 Button save = LookupHelper.lookup(pane,  "#save");

@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.scenes;
 
 import javafx.application.Platform;
 import javafx.scene.Node;
@@ -12,7 +12,7 @@ import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
@@ -238,7 +238,7 @@ public class LoginScene extends AbstractScene {
             authRequest = authService.makeAuthRequest(login, auth2FAPassword, "std");
         }
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
-            application.runtimeStateMachine.setAuthResult(result);
+            application.stateService.setAuthResult(result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
                 if(password instanceof AuthAESPassword) //TODO: Check if save possibly
@@ -298,7 +298,7 @@ public class LoginScene extends AbstractScene {
 
     public void onGetProfiles() {
         processing(new ProfilesRequest(), application.getTranslation("runtime.overlay.processing.text.profiles"), (profiles) -> {
-            application.runtimeStateMachine.setProfilesResult(profiles);
+            application.stateService.setProfilesResult(profiles);
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();

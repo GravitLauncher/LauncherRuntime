@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.raw;
+package pro.gravit.launcher.client.gui.impl;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;

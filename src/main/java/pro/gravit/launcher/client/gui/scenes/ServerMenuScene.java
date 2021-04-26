@@ -1,8 +1,6 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.scenes;
 
 import javafx.event.EventHandler;
-import javafx.scene.Node;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -12,16 +10,12 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
-import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.launcher.client.gui.raw.ContextHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.launcher.request.management.PingServerRequest;
-import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -89,7 +83,7 @@ public class ServerMenuScene extends AbstractScene {
                     LogHelper.error(e);
                 }
             });
-            application.runtimeStateMachine.addServerPingCallback(profile.getDefaultServerProfile().name, (report) -> {
+            application.stateService.addServerPingCallback(profile.getDefaultServerProfile().name, (report) -> {
                 LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(report.playersOnline));
             });
             return pane;
@@ -99,12 +93,12 @@ public class ServerMenuScene extends AbstractScene {
 
     @Override
     public void reset() {
-        lastProfiles = application.runtimeStateMachine.getProfiles();
+        lastProfiles = application.stateService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.runtimeStateMachine.getUsername());
+        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername());
         avatar.setImage(originalAvatarImage);
         int position = 0;
-        for (ClientProfile profile : application.runtimeStateMachine.getProfiles()) {
+        for (ClientProfile profile : application.stateService.getProfiles()) {
             ServerButtonCache cache = new ServerButtonCache();
             cache.pane = getServerButton(application, profile);
             cache.position = position;
@@ -116,7 +110,7 @@ public class ServerMenuScene extends AbstractScene {
         HBox serverList = (HBox) scrollPane.getContent();
         serverList.setSpacing(20);
         serverList.getChildren().clear();
-        application.runtimeStateMachine.clearServerPingCallbacks();
+        application.stateService.clearServerPingCallbacks();
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             try {
                 Pane pane = serverButtonCache.pane.get();
@@ -142,7 +136,7 @@ public class ServerMenuScene extends AbstractScene {
                 if(event.serverMap != null)
                 {
                     event.serverMap.forEach((name, value) -> {
-                        application.runtimeStateMachine.setServerPingReport(event.serverMap);
+                        application.stateService.setServerPingReport(event.serverMap);
                     });
                 }
             }).exceptionally((ex) -> {
@@ -152,7 +146,7 @@ public class ServerMenuScene extends AbstractScene {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        putAvatarToImageView(application, application.runtimeStateMachine.getUsername(), avatar);
+        putAvatarToImageView(application, application.stateService.getUsername(), avatar);
     }
 
     @Override
@@ -163,14 +157,14 @@ public class ServerMenuScene extends AbstractScene {
     @Override
     protected void doShow() {
         super.doShow();
-        if(lastProfiles != application.runtimeStateMachine.getProfiles())
+        if(lastProfiles != application.stateService.getProfiles())
         {
             reset();
         }
     }
 
     private void changeServer(ClientProfile profile) {
-        application.runtimeStateMachine.setProfile(profile);
+        application.stateService.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
     }
 }

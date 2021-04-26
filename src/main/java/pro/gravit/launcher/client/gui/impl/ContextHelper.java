@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.raw;
+package pro.gravit.launcher.client.gui.impl;
 
 import javafx.application.Platform;
 import pro.gravit.utils.helper.LogHelper;

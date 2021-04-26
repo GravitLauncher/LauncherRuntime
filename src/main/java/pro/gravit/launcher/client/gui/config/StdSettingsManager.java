@@ -1,7 +1,8 @@
-package pro.gravit.launcher.client.gui;
+package pro.gravit.launcher.client.gui.config;
 
 import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.client.JavaRuntimeModule;
+import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.managers.SettingsManager;
 
 public class StdSettingsManager extends SettingsManager {

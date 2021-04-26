@@ -1,11 +1,8 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.scenes;
 
 import com.google.gson.reflect.TypeToken;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
@@ -16,11 +13,9 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
-import pro.gravit.launcher.profiles.optional.OptionalType;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -51,7 +46,7 @@ public class OptionsScene extends AbstractScene {
         componentList.getChildren().clear();
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        ClientProfile profile = application.stateService.getProfile();
         ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
             contextHelper.runInFxThread(() -> {
                 Button save = LookupHelper.lookup(pane,  "#save");
@@ -111,8 +106,8 @@ public class OptionsScene extends AbstractScene {
     }
 
     public void saveAll() throws IOException {
-        List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
-        Map<ClientProfile, OptionalView> optionalViewMap = application.runtimeStateMachine.getOptionalViewMap();
+        List<ClientProfile> profiles = application.stateService.getProfiles();
+        Map<ClientProfile, OptionalView> optionalViewMap = application.stateService.getOptionalViewMap();
         if (profiles == null)
             return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
@@ -136,8 +131,8 @@ public class OptionsScene extends AbstractScene {
     }
 
     public void loadAll() throws IOException {
-        List<ClientProfile> profiles = application.runtimeStateMachine.getProfiles();
-        Map<ClientProfile, OptionalView> optionalViewMap = application.runtimeStateMachine.getOptionalViewMap();
+        List<ClientProfile> profiles = application.stateService.getProfiles();
+        Map<ClientProfile, OptionalView> optionalViewMap = application.stateService.getOptionalViewMap();
         if (profiles == null)
             return;
         Path optionsFile = DirBridge.dir.resolve("options.json");

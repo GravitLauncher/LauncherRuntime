@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.overlay;
+package pro.gravit.launcher.client.gui.overlays;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -6,9 +6,9 @@ import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.launcher.client.gui.raw.ContextHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractOverlay;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;

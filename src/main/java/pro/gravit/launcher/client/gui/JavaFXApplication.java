@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.Launcher;
@@ -15,10 +14,13 @@ import pro.gravit.launcher.client.events.ClientGuiPhase;
 import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
 import pro.gravit.launcher.client.gui.commands.VersionCommand;
-import pro.gravit.launcher.client.gui.raw.AbstractOverlay;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.launcher.client.gui.raw.MessageManager;
+import pro.gravit.launcher.client.gui.config.GuiModuleConfig;
+import pro.gravit.launcher.client.gui.config.RuntimeSettings;
+import pro.gravit.launcher.client.gui.config.StdSettingsManager;
+import pro.gravit.launcher.client.gui.impl.*;
+import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
+import pro.gravit.launcher.client.gui.utils.FXMLFactory;
 import pro.gravit.launcher.debug.DebugMain;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
@@ -31,7 +33,6 @@ import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.enfs.EnFS;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
-import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,7 +56,7 @@ public class JavaFXApplication extends Application {
     public RuntimeSettings runtimeSettings;
     public StdWebSocketService service;
     public GuiObjectsContainer gui;
-    public RuntimeStateMachine runtimeStateMachine;
+    public StateService stateService;
     public GuiModuleConfig guiModuleConfig;
     public MessageManager messageManager;
     public RuntimeSecurityService securityService;
@@ -102,7 +103,7 @@ public class JavaFXApplication extends Application {
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
         service = Request.service;
         service.registerEventHandler(new GuiEventHandler(this));
-        runtimeStateMachine = new RuntimeStateMachine();
+        stateService = new StateService();
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
@@ -226,7 +227,7 @@ public class JavaFXApplication extends Application {
 
 
     public RuntimeSettings.ProfileSettings getProfileSettings() {
-        ClientProfile profile = runtimeStateMachine.getProfile();
+        ClientProfile profile = stateService.getProfile();
         if(profile == null) throw new NullPointerException("ClientProfile not selected");
         UUID uuid = profile.getUUID();
         RuntimeSettings.ProfileSettings settings = runtimeSettings.profileSettings.get(uuid);
@@ -299,7 +300,7 @@ public class JavaFXApplication extends Application {
     public void saveSettings() throws IOException {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
-        if (gui != null && gui.optionsScene != null && runtimeStateMachine != null && runtimeStateMachine.getProfiles() != null) {
+        if (gui != null && gui.optionsScene != null && stateService != null && stateService.getProfiles() != null) {
             try {
                 gui.optionsScene.saveAll();
             } catch (Throwable ex) {

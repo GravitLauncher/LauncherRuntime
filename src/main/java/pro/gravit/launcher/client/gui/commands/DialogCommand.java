@@ -1,6 +1,6 @@
 package pro.gravit.launcher.client.gui.commands;
 
-import pro.gravit.launcher.client.gui.raw.MessageManager;
+import pro.gravit.launcher.client.gui.impl.MessageManager;
 import pro.gravit.utils.command.Command;
 import pro.gravit.utils.helper.LogHelper;
 

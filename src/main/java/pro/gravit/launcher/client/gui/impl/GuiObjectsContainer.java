@@ -1,7 +1,8 @@
-package pro.gravit.launcher.client.gui;
+package pro.gravit.launcher.client.gui.impl;
 
-import pro.gravit.launcher.client.gui.overlay.*;
-import pro.gravit.launcher.client.gui.scene.*;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.overlays.*;
+import pro.gravit.launcher.client.gui.scenes.*;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 
 public class GuiObjectsContainer {

@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui;
+package pro.gravit.launcher.client.gui.service;
 
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.PingServerRequestEvent;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RuntimeStateMachine {
+public class StateService {
     private AuthRequestEvent rawAuthResult;
 
     private List<ClientProfile> profiles;

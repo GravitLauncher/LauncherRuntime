@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scene;
+package pro.gravit.launcher.client.gui.scenes;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
@@ -11,10 +11,10 @@ import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.ClientLauncherProcess;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.RuntimeSettings;
+import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.raw.AbstractScene;
-import pro.gravit.launcher.client.gui.raw.ContextHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractScene;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
@@ -50,11 +50,11 @@ public class ServerInfoScene extends AbstractScene {
 
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#clientSettings").setOnAction((e) -> {
             try {
-                if (application.runtimeStateMachine.getProfile() == null)
+                if (application.stateService.getProfile() == null)
                     return;
                 switchScene(application.gui.optionsScene);
                 application.gui.optionsScene.reset();
-                application.gui.optionsScene.addProfileOptionals(application.runtimeStateMachine.getOptionalView());
+                application.gui.optionsScene.addProfileOptionals(application.stateService.getOptionalView());
             } catch (Exception ex) {
                 errorHandle(ex);
             }
@@ -79,7 +79,7 @@ public class ServerInfoScene extends AbstractScene {
                                                 application.gui.loginScene.reset();
                                                 try {
                                                     application.saveSettings();
-                                                    application.runtimeStateMachine.exit();
+                                                    application.stateService.exit();
                                                     switchScene(application.gui.loginScene);
                                                 } catch (Exception ex) {
                                                     errorHandle(ex);
@@ -95,10 +95,10 @@ public class ServerInfoScene extends AbstractScene {
     @Override
     public void reset() {
         avatar.setImage(originalAvatarImage);
-        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        ClientProfile profile = application.stateService.getProfile();
         LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getTitle()));
         LookupHelper.<Label>lookupIfPossible(layout, "#serverDescription").ifPresent((e) -> e.setText(profile.getInfo()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.runtimeStateMachine.getUsername()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
@@ -110,7 +110,7 @@ public class ServerInfoScene extends AbstractScene {
                 serverButtonContainer.getChildren().add(pane);
             });
         });
-        ServerMenuScene.putAvatarToImageView(application, application.runtimeStateMachine.getUsername(), avatar);
+        ServerMenuScene.putAvatarToImageView(application, application.stateService.getUsername(), avatar);
     }
 
     @Override
@@ -123,21 +123,21 @@ public class ServerInfoScene extends AbstractScene {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
         application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
-        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (assetHDir) -> {
+        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
             application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
-            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), true, (clientHDir) -> {
+            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
                 application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
-                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.runtimeStateMachine.getOptionalView(), jvmDir, jvmHDir);
+                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), jvmDir, jvmHDir);
             });
         });
     }
 
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), clientDir.resolve("resourcepacks"), profile, application.runtimeStateMachine.getPlayerProfile(), view,
-                application.runtimeStateMachine.getAccessToken(), clientHDir, assetHDir, jvmHDir);
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
+                application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
         clientLauncherProcess.params.ram = profileSettings.ram;
         if (clientLauncherProcess.params.ram > 0) {
@@ -180,7 +180,7 @@ public class ServerInfoScene extends AbstractScene {
         return application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && (!application.guiModuleConfig.userDisableDownloadJava || application.runtimeSettings.disableJavaDownload);
     }
     private void launchClient() {
-        ClientProfile profile = application.runtimeStateMachine.getProfile();
+        ClientProfile profile = application.stateService.getProfile();
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
@@ -190,7 +190,7 @@ public class ServerInfoScene extends AbstractScene {
             {
                 String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
                 Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.runtimeStateMachine.getOptionalView(), false, (jvmHDir) -> {
+                application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
                     downloadClients(profile, jvmDirPath, jvmHDir);
                 });
             }

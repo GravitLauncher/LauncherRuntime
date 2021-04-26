@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client;
+package pro.gravit.launcher.client.gui.config;
 
 import pro.gravit.launcher.LauncherInject;
 
