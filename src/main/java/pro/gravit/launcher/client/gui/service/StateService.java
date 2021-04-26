@@ -105,13 +105,13 @@ public class StateService {
 
                 if (!anyNeed) {
                     if (anyTriggered)
-                        view.enable(optionalFile);
+                        view.enable(optionalFile, false, null);
                 } else {
                     if (allNeedTriggered) {
-                        view.enable(optionalFile);
+                        view.enable(optionalFile, false, null);
                     } else {
                         optionalFile.visible = false;
-                        view.disable(optionalFile);
+                        view.disable(optionalFile, null);
                     }
                 }
             }

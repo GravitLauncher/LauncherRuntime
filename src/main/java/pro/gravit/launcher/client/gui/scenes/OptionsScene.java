@@ -67,20 +67,30 @@ public class OptionsScene extends AbstractScene {
         return "options";
     }
 
+    private final Map<OptionalFile, Consumer<Boolean>> watchers = new HashMap<>();
+    private void callWatcher(OptionalFile file, Boolean value) {
+        for(Map.Entry<OptionalFile, Consumer<Boolean>> v : watchers.entrySet()) {
+            if(v.getKey() == file) {
+                v.getValue().accept(value);
+                break;
+            }
+        }
+    }
+
     public void addProfileOptionals(OptionalView view) {
         for (OptionalFile optionalFile : view.all) {
-            optionalFile.clearAllWatchers();
+            watchers.clear();
             if (!optionalFile.visible)
                 continue;
 
             Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, view.enabled.contains(optionalFile),
                     optionalFile.subTreeLevel, (isSelected) -> {
                         if (isSelected)
-                            view.enable(optionalFile);
+                            view.enable(optionalFile, true, this::callWatcher);
                         else
-                            view.disable(optionalFile);
+                            view.disable(optionalFile, this::callWatcher);
                     });
-            optionalFile.registerWatcher((o, isSelected) -> setCheckBox.accept(isSelected));
+            watchers.put(optionalFile, setCheckBox);
 
         }
     }
@@ -119,7 +129,8 @@ public class OptionsScene extends AbstractScene {
             view.all.forEach((optionalFile -> {
                 if(optionalFile.visible) {
                     boolean isEnabled = view.enabled.contains(optionalFile);
-                    entry.enabled.add(new OptionalListEntryPair(optionalFile, isEnabled));
+                    OptionalView.OptionalFileInstallInfo installInfo = view.installInfo.get(optionalFile);
+                    entry.enabled.add(new OptionalListEntryPair(optionalFile, isEnabled, installInfo));
                 }
             }));
             list.add(entry);
@@ -159,9 +170,9 @@ public class OptionsScene extends AbstractScene {
                         OptionalFile file = selectedProfile.getOptionalFile(entryPair.name);
                         if (file.visible) {
                             if (entryPair.mark)
-                                view.enable(file);
+                                view.enable(file, entryPair.installInfo != null && entryPair.installInfo.isManual, null);
                             else
-                                view.disable(file);
+                                view.disable(file, null);
                         }
                     } catch (Exception exc) {
                         LogHelper.warning("Optional: in profile %s markOptional mod %s failed", selectedProfile.getTitle(), entryPair.name);
@@ -174,10 +185,12 @@ public class OptionsScene extends AbstractScene {
     public static class OptionalListEntryPair {
         public String name;
         public boolean mark;
+        public OptionalView.OptionalFileInstallInfo installInfo;
 
-        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled) {
+        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled, OptionalView.OptionalFileInstallInfo installInfo) {
             name = optionalFile.name;
             mark = enabled;
+            this.installInfo = installInfo;
         }
     }
 
