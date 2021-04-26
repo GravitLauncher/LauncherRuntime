@@ -9,6 +9,8 @@ import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
+import pro.gravit.launcher.request.RequestException;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -58,9 +60,33 @@ public abstract class AbstractVisualComponent {
             throw new FXMLFactory.FXMLLoadException(cause);
         }
     }
-    public abstract void init() throws Exception;
+    public void init() throws Exception {
+        if(layout == null) {
+            layout = (Pane) getFxmlRoot();
+        }
+        doInit();
+        isInit = true;
+    }
+    protected abstract void doInit() throws Exception;
     public abstract void reset();
     public abstract void disable();
     public abstract void enable();
-    public abstract void errorHandle(Throwable e);
+
+    public void errorHandle(Throwable e) {
+        String message = null;
+        if(e instanceof CompletionException) {
+            e = e.getCause();
+        }
+        if(e instanceof ExecutionException) {
+            e = e.getCause();
+        }
+        if(e instanceof RequestException) {
+            message = e.getMessage();
+        }
+        if(message == null) {
+            message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+        }
+        LogHelper.error(e);
+        application.messageManager.createNotification("Error", message);
+    }
 }

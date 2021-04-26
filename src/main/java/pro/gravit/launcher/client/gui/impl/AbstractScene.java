@@ -51,7 +51,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         layout = (Pane) LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
         header = (Pane) LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
         sceneBaseInit();
-        doInit();
+        super.init();
     }
 
     protected abstract void doInit() throws Exception;
@@ -61,7 +61,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         if (!overlay.isInit) {
             try {
                 overlay.init();
-            } catch (IOException | InterruptedException | ExecutionException e) {
+            } catch (Exception e) {
                 contextHelper.errorHandling(e);
                 return;
             }
@@ -178,24 +178,6 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     }
 
     public abstract void reset();
-
-    public void errorHandle(Throwable e) {
-        String message = null;
-        if(e instanceof CompletionException) {
-            e = e.getCause();
-        }
-        if(e instanceof ExecutionException) {
-            e = e.getCause();
-        }
-        if(e instanceof RequestException) {
-            message = e.getMessage();
-        }
-        if(message == null) {
-            message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
-        }
-        LogHelper.error(e);
-        application.messageManager.createNotification("Error", message);
-    }
 
     public Scene getScene() {
         return scene;

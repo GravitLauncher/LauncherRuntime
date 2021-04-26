@@ -17,10 +17,8 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
         super(fxmlPath, application);
     }
 
-    public final void init() throws IOException, InterruptedException, ExecutionException {
-        layout = (Pane) getFxmlRoot();
-        doInit();
-        isInit = true;
+    public final void init() throws Exception {
+        super.init();
     }
 
     protected final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
@@ -35,24 +33,6 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     protected abstract void doInit();
 
     public abstract void reset();
-
-    public void errorHandle(Throwable e) {
-        String message = null;
-        if(e instanceof CompletionException) {
-            e = e.getCause();
-        }
-        if(e instanceof ExecutionException) {
-            e = e.getCause();
-        }
-        if(e instanceof RequestException) {
-            message = e.getMessage();
-        }
-        if(message == null) {
-            message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
-        }
-        LogHelper.error(e);
-        application.messageManager.createNotification("Error", message);
-    }
 
     public void disable() {
     }
