@@ -63,6 +63,46 @@ RadioButton {
     -fx-background-color: transparent;
 }
 
+.radio-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #606060;
+    -fx-background-image: url('images/icons/checkbox1_off.png');
+    -fx-background-repeat: no-repeat;
+}
+.radio-button .label {
+    -fx-label-padding: 0 0 0 10px;
+    -fx-padding: 0 0 0 0px;
+    -fx-font-family: Open Sans;
+    -fx-font-size: 10px;
+    -fx-font-style: normal;
+    -fx-font-weight: 400;
+    -fx-line-height: 14px;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-align: left;
+}
+
+.radio-button .dot {
+    -fx-background-color: transparent;
+}
+
+.radio-button .radio {
+    -fx-background-color: transparent;
+}
+
+.radio-button:selected {
+    -fx-background-color: transparent;
+    -fx-background-image: url('images/icons/checkbox1_on.png');
+    -fx-background-repeat: no-repeat;
+}
+
+.radio-button:selected .mark {
+    -fx-background-color: transparent;
+}
+
+.radio-button:selected .box {
+    -fx-background-color: transparent;
+}
+
 .text-input {
     -fx-font-family: Open Sans;
     -fx-font-style: normal;

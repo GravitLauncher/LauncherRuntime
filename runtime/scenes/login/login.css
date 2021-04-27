@@ -70,6 +70,15 @@
     -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
 
+#authRadio {
+    -fx-background-image: url('../../images/icons/checkbox_off.png');
+    -fx-text-fill: #5E5E5E;
+}
+
+#authRadio:selected {
+    -fx-background-image: url('../../images/icons/checkbox_on.png');
+}
+
 #forgotPass {
     -fx-font-family: Open Sans;
     -fx-font-style: normal;
@@ -122,67 +131,8 @@
     -fx-background-color: transparent;
 }
 
-#newsArea {
-    -fx-font-size: 10pt;
-    -fx-fill: #fff;
+#authList {
+    -fx-background-color: rgba(224, 224, 224, 0.28);
+    -fx-background-radius: 20px;
 }
-
-#combologin {
-    -fx-text-fill: #606060;
-    -fx-prompt-text-fill: #A9A9A9;
-    -fx-font-weight: bold;
-    -fx-font-size: 11pt;
-    -fx-pref-width: 280px;
-    -fx-pref-height: 45px;
-}
-
-.combologin,
-.combologin {
-    -fx-font-size: 11px;
-    -fx-prompt-text-fill: #A9A9A9;
-    -fx-text-fill: #606060;
-    -fx-background-color: transparent;
-}
-
-.combologin .list-cell {
-    -fx-background: #EDEEEF;
-    -fx-background-color: transparent;
-}
-
-.combologin-popup .list-view {
-    -fx-background-color: #EDEEEF, #EDEEEF;
-    -fx-background-insets: 0, 1;
-    -fx-effect: dropshadow( three-pass-box, rgba(0, 0, 0, 0.3), 3, 0.0, 0, 0);
-}
-
-.combologin .list-cell:filled:selected .text,
-.combologin .list-cell:filled:selected .text {
-    -fx-fill: #A9A9A9;
-}
-
-.combologin .arrow,
-.combologin .arrow {
-    -fx-background-color: #A9A9A9;
-}
-
-.combologin-popup .list-view .list-cell {
-    -fx-background-color: #EDEEEF;
-}
-
-.combologin-popup .list-view .list-cell:filled:selected,
-.combologin-popup .list-view .list-cell:filled:selected:hover {
-    -fx-background: #EDEEEF;
-    -fx-background-color: #EDEEEF;
-    -fx-text-fill: -fx-selection-bar-text;
-}
-
-.combologin-popup .list-view .list-cell:filled:hover {
-    -fx-background-color: #EDEEEF;
-    -fx-text-fill: -fx-text-inner-color;
-}
-
-#iconsLogin {
-    -fx-fill: #fff;
-}
-
 /*-- DrLeonardo Design for GravitLauncher --*/

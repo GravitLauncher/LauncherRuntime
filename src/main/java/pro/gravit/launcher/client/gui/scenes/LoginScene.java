@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.util.StringConverter;
 import pro.gravit.launcher.LauncherEngine;
@@ -42,7 +43,9 @@ public class LoginScene extends AbstractScene {
     private Pane authActive;
     private Button authButton;
     private final AuthService authService = new AuthService(application);
-    private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
+    private VBox authList;
+    private ToggleGroup authToggleGroup;
+    private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
 
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
@@ -81,8 +84,8 @@ public class LoginScene extends AbstractScene {
         if (application.guiModuleConfig.forgotPassURL != null)
             LookupHelper.<Text>lookup(header,  "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
-        authList = LookupHelper.lookup(layout, "#combologin");
-        authList.setConverter(new AuthConverter());
+        authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
+        authToggleGroup = new ToggleGroup();
         LookupHelper.<ButtonBase>lookup(authActive, "#authButton").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
         // Verify Launcher
         {
@@ -113,14 +116,11 @@ public class LoginScene extends AbstractScene {
                 GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
                 processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
                     this.auth = auth.list;
-                    GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth = null;
                     for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
-                        if (authAvailability.equals(application.runtimeSettings.lastAuth))
-                            lastAuth = authAvailability;
-                        authList.getItems().add(authAvailability);
+                        if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
+                            this.authAvailability = authAvailability;
+                        addAuthAvailability(authAvailability);
                     }
-                    if (lastAuth != null) authList.getSelectionModel().select(lastAuth);
-                    else authList.getSelectionModel().selectFirst();
 
                     hideOverlay(0, (event) -> {
                         if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
@@ -129,6 +129,22 @@ public class LoginScene extends AbstractScene {
                 }), null);
             }, (event) -> LauncherEngine.exitLauncher(0));
         }
+    }
+
+    public void addAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
+        RadioButton radio = new RadioButton();
+        radio.setToggleGroup(authToggleGroup);
+        radio.setId("authRadio");
+        radio.setText(authAvailability.displayName);
+        if(this.authAvailability == authAvailability) {
+            radio.fire();
+        }
+        radio.setOnAction((e) -> {
+            LogHelper.info("Selected auth: %s", authAvailability.name);
+            this.authAvailability = authAvailability;
+        });
+        LogHelper.info("Added %s: %s", authAvailability.name, authAvailability.displayName);
+        authList.getChildren().add(radio);
     }
 
     public void showAuthButton() {
@@ -217,9 +233,8 @@ public class LoginScene extends AbstractScene {
             String rawPassword = passwordField.getText();
             password = authService.makePassword(rawPassword);
         }
-        GetAvailabilityAuthRequestEvent.AuthAvailability authId = authList.getSelectionModel().getSelectedItem();
         boolean savePassword = savePasswordCheckBox.isSelected();
-        login(login, password, authId, null, savePassword);
+        login(login, password, authAvailability, null, savePassword);
 
     }
 
@@ -321,21 +336,5 @@ public class LoginScene extends AbstractScene {
         application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.password = null;
         application.runtimeSettings.login = null;
-    }
-
-    private class AuthConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
-
-        @Override
-        public String toString(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
-            return authAvailability.displayName;
-        }
-
-        @Override
-        public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String s) {
-            for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth)
-                if (authAvailability.displayName.equals(s))
-                    return authAvailability;
-            return null;
-        }
     }
 }
