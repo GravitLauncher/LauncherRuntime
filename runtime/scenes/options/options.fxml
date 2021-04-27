@@ -48,7 +48,7 @@
             </Pane>
          </children>
       </Pane>
-         <Label id="headingOptional" layoutX="56.0" layoutY="26.0" prefHeight="40.0" text="%runtime.overlay.options.options.headingOptional" />
+         <Label id="headingOptional" layoutX="56.0" layoutY="26.0" prefHeight="40.0" text="%runtime.scenes.options.headingOptional" />
           <ScrollPane id="optionslist" layoutX="249.0" layoutY="119.0" prefHeight="339.0" prefWidth="624.0">
               <VBox fx:id="componentList" spacing="10.0">
                   <padding>

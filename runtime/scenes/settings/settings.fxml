@@ -100,7 +100,7 @@
                </SVGPath>
                   </graphic>
                   <tooltip>
-                     <Tooltip id="changedirTooltip" text="%runtime.overlay.settings.settings.changedirTooltip" />
+                     <Tooltip id="changedirTooltip" text="%runtime.scenes.settings.changedirTooltip" />
                   </tooltip>
                </Button>
             </children>

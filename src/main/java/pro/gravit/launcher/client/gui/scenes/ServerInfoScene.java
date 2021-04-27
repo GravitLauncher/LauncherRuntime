@@ -67,9 +67,9 @@ public class ServerInfoScene extends AbstractScene {
             }
         });
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.overlay.settings.exitDialog.header"),
-                        application.getTranslation("runtime.overlay.settings.exitDialog.description"), () ->
-                                processRequest(application.getTranslation("runtime.overlay.settings.exitDialog.processing"),
+                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
+                        application.getTranslation("runtime.scenes.settings.exitDialog.description"), () ->
+                                processRequest(application.getTranslation("runtime.scenes.settings.exitDialog.processing"),
                                         new ExitRequest(), (event) -> {
                                             // Exit to main menu
                                             ContextHelper.runInFxThreadStatic(() -> {
@@ -121,14 +121,14 @@ public class ServerInfoScene extends AbstractScene {
     {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.assets"));
+        application.gui.updateScene.initNewPhase(application.getTranslation("runtime.scenes.update.phase.assets"));
         application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.client"));
+            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.scenes.update.phase.client"));
             application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
-                application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.launch"));
+                application.gui.updateScene.initNewPhase(application.getTranslation("runtime.scenes.update.phase.launch"));
                 doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), jvmDir, jvmHDir);
             });
         });
@@ -184,7 +184,7 @@ public class ServerInfoScene extends AbstractScene {
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
             switchScene(application.gui.updateScene);
-            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.overlay.update.phase.java"));
+            application.gui.updateScene.initNewPhase(application.getTranslation("runtime.scenes.update.phase.java"));
             if(isEnabledDownloadJava())
             {
                 String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;

@@ -72,7 +72,7 @@ public class LoginScene extends AbstractScene {
         savePasswordCheckBox = LookupHelper.lookup(layout , "#leftPane", "#savePassword");
         if (application.runtimeSettings.password != null) {
             passwordField.getStyleClass().add("hasSaved");
-            passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password.saved"));
+            passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
         }
         autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
@@ -213,7 +213,7 @@ public class LoginScene extends AbstractScene {
     @Override
     public void reset() {
         passwordField.getStyleClass().removeAll("hasSaved");
-        passwordField.setPromptText(application.getTranslation("runtime.scenes.login.login.password"));
+        passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password"));
         passwordField.setText("");
         loginField.setText("");
     }
@@ -227,7 +227,7 @@ public class LoginScene extends AbstractScene {
         String login = loginField.getText();
         AuthRequest.AuthPasswordInterface password;
         if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
-                application.getTranslation("runtime.scenes.login.login.password.saved"))) {
+                application.getTranslation("runtime.scenes.login.password.saved"))) {
             password = application.runtimeSettings.password;
         } else {
             String rawPassword = passwordField.getText();
