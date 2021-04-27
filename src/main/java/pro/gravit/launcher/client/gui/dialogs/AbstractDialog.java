@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractDialog extends AbstractVisualComponent {
-    private List<ContextHelper.GuiExceptionCallback> onClose = new ArrayList<>(1);
+    private List<ContextHelper.GuiExceptionRunnable> onClose = new ArrayList<>(1);
     protected AbstractDialog(String fxmlPath, JavaFXApplication application) {
         super(fxmlPath, application);
     }
@@ -33,12 +33,12 @@ public abstract class AbstractDialog extends AbstractVisualComponent {
 
     }
 
-    public void setOnClose(ContextHelper.GuiExceptionCallback callback) {
+    public void setOnClose(ContextHelper.GuiExceptionRunnable callback) {
         onClose.add(callback);
     }
 
     public void close() throws Throwable {
-        for(ContextHelper.GuiExceptionCallback callback : onClose) {
+        for(ContextHelper.GuiExceptionRunnable callback : onClose) {
             callback.call();
         }
     }

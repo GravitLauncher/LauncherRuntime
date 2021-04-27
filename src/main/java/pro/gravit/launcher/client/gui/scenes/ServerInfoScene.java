@@ -171,7 +171,7 @@ public class ServerInfoScene extends AbstractScene {
                 switchScene(application.gui.debugScene);
                 application.gui.debugScene.onProcess(clientLauncherProcess.getProcess());
             });
-        }).run();
+        });
     }
 
     private boolean isEnabledDownloadJava()

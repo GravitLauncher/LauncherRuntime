@@ -13,6 +13,7 @@ import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientGuiPhase;
 import pro.gravit.launcher.client.gui.commands.DialogCommand;
 import pro.gravit.launcher.client.gui.commands.NotifyCommand;
+import pro.gravit.launcher.client.gui.commands.RuntimeCommand;
 import pro.gravit.launcher.client.gui.commands.VersionCommand;
 import pro.gravit.launcher.client.gui.config.GuiModuleConfig;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
@@ -182,6 +183,7 @@ public class JavaFXApplication extends Application {
         category.registerCommand("notify", new NotifyCommand(messageManager));
         category.registerCommand("dialog", new DialogCommand(messageManager));
         category.registerCommand("version", new VersionCommand());
+        category.registerCommand("runtime", new RuntimeCommand(this));
         ConsoleManager.handler.registerCategory(new CommandHandler.Category(category, "runtime"));
     }
 
@@ -268,17 +270,6 @@ public class JavaFXApplication extends Application {
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends AbstractScene> T registerScene(Class<T> clazz) {
-        try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            return instance;
-        } catch (Throwable e) {
-            LogHelper.error(e);
-            throw new RuntimeException(e);
-        }
-    }
-
     public boolean openURL(String url) {
         try {
             getHostServices().showDocument(url);
@@ -286,17 +277,6 @@ public class JavaFXApplication extends Application {
         } catch (Throwable e) {
             LogHelper.error(e);
             return false;
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
-        try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(this);
-            return instance;
-        } catch (Throwable e) {
-            LogHelper.error(e);
-            throw new RuntimeException(e);
         }
     }
 

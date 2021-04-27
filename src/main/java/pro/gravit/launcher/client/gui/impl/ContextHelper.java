@@ -3,6 +3,8 @@ package pro.gravit.launcher.client.gui.impl;
 import javafx.application.Platform;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.util.concurrent.CompletableFuture;
+
 public class ContextHelper {
     private final AbstractVisualComponent pane;
 
@@ -10,33 +12,76 @@ public class ContextHelper {
         this.pane = pane;
     }
 
-    public static void runInFxThreadStatic(GuiExceptionCallback callback) {
-        Platform.runLater(() -> {
+    public static<T> CompletableFuture<T> runInFxThreadStatic(GuiExceptionCallback<T> callback) {
+        CompletableFuture<T> result = new CompletableFuture<>();
+        if(Platform.isFxApplicationThread()) {
+            try {
+                result.complete(callback.call());
+            } catch (Throwable throwable) {
+                result.completeExceptionally(throwable);
+            }
+        } else {
+            Platform.runLater(() -> {
+                try {
+                    result.complete(callback.call());
+                } catch (Throwable throwable) {
+                    result.completeExceptionally(throwable);
+                }
+            });
+        }
+        return result;
+    }
+
+    public<T> T runCallback(GuiExceptionCallback<T> callback) {
+        try {
+            return callback.call();
+        } catch (Throwable throwable) {
+            errorHandling(throwable);
+            return null;
+        }
+    }
+
+    public void runCallback(GuiExceptionRunnable callback) {
+        try {
+            callback.call();
+        } catch (Throwable throwable) {
+            errorHandling(throwable);
+        }
+    }
+
+    public static CompletableFuture<Void> runInFxThreadStatic(GuiExceptionRunnable callback) {
+        CompletableFuture<Void> result = new CompletableFuture<>();
+        if(Platform.isFxApplicationThread()) {
             try {
                 callback.call();
-            } catch (Throwable ex) {
-                LogHelper.error(ex);
+                result.complete(null);
+            } catch (Throwable throwable) {
+                result.completeExceptionally(throwable);
             }
+        } else {
+            Platform.runLater(() -> {
+                try {
+                    callback.call();
+                    result.complete(null);
+                } catch (Throwable throwable) {
+                    result.completeExceptionally(throwable);
+                }
+            });
+        }
+        return result;
+    }
+
+    public final<T> CompletableFuture<T> runInFxThread(GuiExceptionCallback<T> callback) {
+        return runInFxThreadStatic(callback).exceptionally((t) -> {
+            errorHandling(t);
+            return null;
         });
     }
 
-    public final Runnable runCallback(GuiExceptionCallback callback) {
-        return () -> {
-            try {
-                callback.call();
-            } catch (Throwable ex) {
-                errorHandling(ex);
-            }
-        };
-    }
-
-    public final void runInFxThread(GuiExceptionCallback callback) {
-        Platform.runLater(() -> {
-            try {
-                callback.call();
-            } catch (Throwable ex) {
-                errorHandling(ex);
-            }
+    public final CompletableFuture<Void> runInFxThread(GuiExceptionRunnable callback) {
+        return runInFxThreadStatic(callback).exceptionally((t) -> {
+            errorHandling(t);
+            return null;
         });
     }
 
@@ -54,7 +99,11 @@ public class ContextHelper {
         }
     }
 
-    public interface GuiExceptionCallback {
+    public interface GuiExceptionCallback<T> {
+        T call() throws Throwable;
+    }
+
+    public interface GuiExceptionRunnable {
         void call() throws Throwable;
     }
 }

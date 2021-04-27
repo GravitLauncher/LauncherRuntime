@@ -86,7 +86,7 @@ public class LoginScene extends AbstractScene {
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
         authToggleGroup = new ToggleGroup();
-        LookupHelper.<ButtonBase>lookup(authActive, "#authButton").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui).run());
+        LookupHelper.<ButtonBase>lookup(authActive, "#authButton").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui));
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
@@ -124,7 +124,7 @@ public class LoginScene extends AbstractScene {
 
                     hideOverlay(0, (event) -> {
                         if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
-                            contextHelper.runCallback(this::loginWithGui).run();
+                            contextHelper.runCallback(this::loginWithGui);
                     });
                 }), null);
             }, (event) -> LauncherEngine.exitLauncher(0));
