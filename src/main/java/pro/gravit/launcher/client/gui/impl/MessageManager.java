@@ -132,12 +132,12 @@ public class MessageManager {
             AtomicReference<DialogStage> stage = new AtomicReference<>(null);
             ContextHelper.runInFxThreadStatic(() -> {
                 stage.set(new DialogStage(application, header, dialog));
+                stage.get().show();
             });
             dialog.setOnClose(() -> {
                 stage.get().close();
                 stage.get().stage.setScene(null);
             });
-            stage.get().show();
         }
     }
 }

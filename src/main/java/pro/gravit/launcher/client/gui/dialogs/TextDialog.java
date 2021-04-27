@@ -1,8 +1,10 @@
 package pro.gravit.launcher.client.gui.dialogs;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 
@@ -15,8 +17,8 @@ public class TextDialog extends AbstractDialog {
     private final Consumer<String> onAccept;
     private final Runnable onClose;
 
-    private Text textHeader;
-    private Text textDescription;
+    private Label textHeader;
+    private Label textDescription;
     private TextField textField;
     public TextDialog(JavaFXApplication application, String header, String text, Consumer<String> onAccept, Runnable onClose) {
         super("dialogs/text/dialog.fxml", application);
@@ -40,12 +42,12 @@ public class TextDialog extends AbstractDialog {
 
     @Override
     protected void doInit() throws Exception {
-        textHeader = LookupHelper.lookup(layout, "#headingDialog");
-        textDescription = LookupHelper.lookup(layout, "#textDialog");
+        textHeader = LookupHelper.lookup(layout, "#dialogHeader");
+        textDescription = LookupHelper.lookup(layout, "#dialogDescription");
         textField = LookupHelper.lookup(layout, "#dialogInput");
         textHeader.setText(header);
         textDescription.setText(text);
-        LookupHelper.<Button>lookup(layout, "#close").setOnAction((e) -> {
+        LookupHelper.<Button>lookup(layout, "#exit").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {
@@ -53,7 +55,7 @@ public class TextDialog extends AbstractDialog {
             }
             onClose.run();
         });
-        LookupHelper.<Button>lookup(layout, "#apply").setOnAction((e) -> {
+        LookupHelper.<Button>lookup(layout, "#dialogSend").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {

@@ -2,17 +2,15 @@
 
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.geometry.Point3D?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
 
-<Pane styleClass="dialog" prefHeight="200.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<Pane prefHeight="221.0" prefWidth="589.0" styleClass="dialog" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
@@ -20,41 +18,35 @@
       <URL value="@../dialogs.css" />
       <URL value="@../../global.css" />
    </stylesheets>
-   <Text id="headingDialog" layoutX="84.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.components.dialogTextInput.headingDialog" textAlignment="CENTER" wrappingWidth="302.99999821186066" />
-   <TextField id="dialogInput" layoutX="62.0" layoutY="85.0" prefHeight="51.0" prefWidth="303.0" promptText="%runtime.scenes.components.dialogTextInput.2fa" styleClass="dialogInput">
-      <font>
-         <Font size="16.0" />
-      </font>
-   </TextField>
-   <Button id="apply" alignment="BASELINE_CENTER" contentDisplay="CENTER" layoutX="365.0" layoutY="85.0" prefHeight="50.0" prefWidth="50.0" textFill="WHITE">
-      <font>
-         <Font name="System Bold" size="30.0" />
-      </font>
-      <opaqueInsets>
-         <Insets />
-      </opaqueInsets>
-      <graphic>
-         <SVGPath content="M26.2812 0.28125L9 17.5625L1.71875 10.2812L0.28125 11.7188L8.28125 19.7188L9 20.4062L9.71875 19.7188L27.7188 1.71875L26.2812 0.28125Z" fill="WHITE">
-            <rotationAxis>
-               <Point3D />
-            </rotationAxis>
-         </SVGPath>
-      </graphic>
-      <tooltip>
-         <Tooltip id="applyTooltip" text="%runtime.scenes.components.dialogTextInput.applyTooltip" />
-      </tooltip>
-   </Button>
-   <Hyperlink id="hylink" alignment="CENTER_RIGHT" layoutX="57.0" layoutY="137.0" prefHeight="22.0" prefWidth="359.0" text="%runtime.scenes.components.dialogTextInput.forgot2fa" textAlignment="CENTER">
-      <font>
-         <Font size="11.0" />
-      </font>
-   </Hyperlink>
-   <Button id="close" alignment="CENTER" contentDisplay="CENTER" layoutX="414.0" layoutY="15.0" prefHeight="40.0" prefWidth="40.0" textAlignment="CENTER" textFill="#464646">
-      <graphic>
-         <SVGPath id="icons" content="M5 5V27H27V5H5ZM7 7H25V25H7V7ZM11.6875 10.3125L10.2812 11.7188L14.5625 16L10.2188 20.3438L11.625 21.75L15.9688 17.4062L20.2812 21.7188L21.6875 20.3125L17.375 16L21.625 11.75L20.2188 10.3438L15.9688 14.5938L11.6875 10.3125Z&#10;" />
-      </graphic>
-      <tooltip>
-         <Tooltip id="closeTooltip" text="%runtime.scenes.components.dialogTextInput.closeTooltip" />
-      </tooltip>
-   </Button>
+   <Button id="exit" alignment="CENTER" contentDisplay="CENTER" layoutX="548.5" prefHeight="32.0" prefWidth="32.0" styleClass="icon-button" textAlignment="CENTER">
+                  <graphic>
+                     <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" fill="#A4B3BA" />
+                  </graphic>
+                  <tooltip>
+                     <Tooltip id="closeTooltip" text="%runtime.scenes.console.console.closeTooltip" />
+                  </tooltip>
+               </Button>
+   <Label id="dialogHeader" alignment="CENTER" prefHeight="55.0" prefWidth="589.0" styleClass="dialogHeader" text="Label" />
+   <Label id="dialogDescription" alignment="TOP_LEFT" layoutX="82.0" layoutY="59.0" prefHeight="111.0" prefWidth="424.0" styleClass="dialogText" text="Label" />
+   <Pane id="cmdinput" layoutY="163.0" prefHeight="58.0" prefWidth="589.0">
+            <children>
+               <TextField id="dialogInput" layoutX="2.0" prefHeight="56.0" prefWidth="589.0" promptText="%runtime.scenes.console.console.commandInput">
+                  <font>
+                     <Font size="16.0" />
+                  </font>
+               </TextField>
+               <Button id="dialogSend" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="330.0" prefHeight="56.0" prefWidth="259.0" styleClass="dialogSendButton" text="%runtime.scenes.console.console.send" textFill="WHITE">
+                  <opaqueInsets>
+                     <Insets />
+                  </opaqueInsets>
+                  <graphic>
+                     <SVGPath content="M0.876191 0L0 0.92L6.26667 7.5L0 14.08L0.876191 15L7.58095 7.96L8 7.5L7.58095 7.04L0.876191 0Z" fill="#323232">
+                     </SVGPath>
+                  </graphic>
+                  <tooltip>
+                     <Tooltip id="sendTooltip" text="%runtime.scenes.console.console.sendTooltip" />
+                  </tooltip>
+               </Button>
+            </children>
+         </Pane>
 </Pane>

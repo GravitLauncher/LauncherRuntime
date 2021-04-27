@@ -59,7 +59,20 @@
 }
 
 .dialogInput {
-    -fx-background-color: #eee;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
+}
+
+.dialogSendButton {
+    -fx-font-size: 13pt;
+    -fx-background-color: #fff;
+    -fx-text-fill: #323232;
+    -fx-background-radius: 0;
+    -fx-background-color: #fff;
+    
+}
+.dialogSendButton:hover,
+.dialogSendButton:pressed {
+    -fx-background-color: #EAEAEA;
 }
 
 .dialog {
