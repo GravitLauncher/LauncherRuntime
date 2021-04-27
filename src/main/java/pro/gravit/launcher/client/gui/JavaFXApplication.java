@@ -49,10 +49,12 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
+    private static AtomicBoolean IS_NOGUI = new AtomicBoolean(false);
     private static Path runtimeDirectory = null;
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newWorkStealingPool(4);
@@ -110,7 +112,9 @@ public class JavaFXApplication extends Application {
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
-        registerCommands();
+        if(!IS_NOGUI.get()) {
+            registerCommands();
+        }
     }
 
     @Override
@@ -165,8 +169,10 @@ public class JavaFXApplication extends Application {
             gui = new GuiObjectsContainer(this);
             gui.init();
             //
-            mainStage.setScene(gui.loginScene);
-            mainStage.show();
+            if(!IS_NOGUI.get()) {
+                mainStage.setScene(gui.loginScene);
+                mainStage.show();
+            }
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
             AuthRequest.registerProviders();
@@ -241,6 +247,10 @@ public class JavaFXApplication extends Application {
             runtimeSettings.profileSettings.put(uuid, settings);
         }
         return settings;
+    }
+
+    public static void setNoGUIMode(boolean isNogui) {
+        IS_NOGUI.set(isNogui);
     }
 
     public void setMainScene(AbstractScene scene) throws Exception {
