@@ -40,7 +40,7 @@
                      <Insets />
                   </opaqueInsets>
                   <graphic>
-                     <SVGPath content="M0.876191 0L0 0.92L6.26667 7.5L0 14.08L0.876191 15L7.58095 7.96L8 7.5L7.58095 7.04L0.876191 0Z" fill="#323232">
+                     <SVGPath content="M0.0909119 16.1562L18.6364 8.5L0.0909119 0.84375V6.79861L13.3377 8.5L0.0909119 10.2014V16.1562Z" fill="#A4B3BA">
                      </SVGPath>
                   </graphic>
                   <tooltip>

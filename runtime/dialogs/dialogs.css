@@ -63,11 +63,15 @@
 }
 
 .dialogSendButton {
-    -fx-font-size: 13pt;
-    -fx-background-color: #fff;
-    -fx-text-fill: #323232;
-    -fx-background-radius: 0;
-    -fx-background-color: #fff;
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-line-height: 14px;
+    -fx-text-align: center;
+    -fx-letter-spacing: 0.25px;
+    -fx-text-fill: #A4B3BA;
+    -fx-background-color: transparent;
     
 }
 .dialogSendButton:hover,
