@@ -51,8 +51,6 @@ public class JavaRuntimeModule extends LauncherModule {
         registerEvent(this::preGuiPhase, ClientPreGuiPhase.class);
         registerEvent(this::engineInitPhase, ClientEngineInitPhase.class);
         registerEvent(this::exitPhase, ClientExitPhase.class);
-        registerEvent(this::clientRunPhase, ClientProcessPreInvokeMainClassEvent.class);
-        registerEvent(this::clientInitPhase, ClientProcessInitPhase.class);
     }
 
     private void preGuiPhase(ClientPreGuiPhase phase) {
