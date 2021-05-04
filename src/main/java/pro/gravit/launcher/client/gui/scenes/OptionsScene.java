@@ -91,7 +91,6 @@ public class OptionsScene extends AbstractScene {
                             view.disable(optionalFile, this::callWatcher);
                     });
             watchers.put(optionalFile, setCheckBox);
-
         }
     }
 
