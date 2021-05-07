@@ -30,6 +30,7 @@ import java.util.function.Consumer;
 
 public class OptionsScene extends AbstractScene {
     private Pane componentList;
+    private OptionalView optionalView;
 
     public OptionsScene(JavaFXApplication application) {
         super("scenes/options/options.fxml", application);
@@ -52,6 +53,7 @@ public class OptionsScene extends AbstractScene {
                 save.setVisible(true);
                 save.setOnAction((e) -> {
                     try {
+                        application.stateService.setOptionalView(profile, optionalView);
                         switchScene(application.gui.serverInfoScene);
                     } catch (Exception exception) {
                         errorHandle(exception);
@@ -60,6 +62,13 @@ public class OptionsScene extends AbstractScene {
                 serverButtonContainer.getChildren().add(pane);
             });
         });
+        LookupHelper.<Button>lookupIfPossible(header, "#back").ifPresent(x -> x.setOnAction((e) -> {
+            try {
+                switchScene(application.gui.serverInfoScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        }));
     }
 
     @Override
@@ -78,17 +87,18 @@ public class OptionsScene extends AbstractScene {
     }
 
     public void addProfileOptionals(OptionalView view) {
-        for (OptionalFile optionalFile : view.all) {
+        this.optionalView = new OptionalView(view);
+        for (OptionalFile optionalFile : optionalView.all) {
             watchers.clear();
             if (!optionalFile.visible)
                 continue;
 
-            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, view.enabled.contains(optionalFile),
+            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
                     optionalFile.subTreeLevel, (isSelected) -> {
                         if (isSelected)
-                            view.enable(optionalFile, true, this::callWatcher);
+                            optionalView.enable(optionalFile, true, this::callWatcher);
                         else
-                            view.disable(optionalFile, this::callWatcher);
+                            optionalView.disable(optionalFile, this::callWatcher);
                     });
             watchers.put(optionalFile, setCheckBox);
         }

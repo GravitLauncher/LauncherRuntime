@@ -61,6 +61,10 @@ public class StateService {
         return optionalViewMap;
     }
 
+    public void setOptionalView(ClientProfile profile, OptionalView view) {
+        optionalViewMap.put(profile, view);
+    }
+
     public void clearServerPingCallbacks()
     {
         serverPingReportCallbackMap.clear();
