@@ -40,6 +40,11 @@ public class ServerMenuScene extends AbstractScene {
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
+        ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
+        scrollPane.setOnScroll(e -> {
+            double offset = e.getDeltaY()/scrollPane.getWidth();
+            scrollPane.setHvalue(scrollPane.getHvalue()-offset);
+        });
         reset();
         isResetOnShow = true;
     }
