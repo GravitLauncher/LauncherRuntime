@@ -9,7 +9,6 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Line?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Font?>
@@ -17,7 +16,7 @@
 
 <!-- DrLeonardo Design for GravitLauncher-->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@update.css" />
         <URL value="@../../global.css" />
@@ -75,7 +74,7 @@
       </tooltip>
    </Button>
    <Line endX="292.0" endY="439.9999694824219" layoutX="158.0" layoutY="-3.0" opacity="0.28" startX="291.675537109375" startY="508.0" style="-fx-stroke: #F3F3F3;" />
-    <Label id="volume" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="730.0" layoutY="462.0" opacity="0.28" prefHeight="19.0" prefWidth="54.0" style="-fx-font-size: 13px; -fx-text-fill: #F3F3F3;" text="[240 MB]" textFill="#b3b8d5">
+    <Label id="volume" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="730.0" layoutY="462.0" opacity="0.28" prefHeight="19.0" prefWidth="63.0" style="-fx-font-size: 13px; -fx-text-fill: #F3F3F3;" text="[240 MB]" textFill="#b3b8d5">
         <font>
           <Font size="18.0" />
         </font>
@@ -83,9 +82,4 @@
    <Text layoutX="5.0" layoutY="477.0" opacity="0.28" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 13px; -fx-font-family: Open Sans; -fx-fill: #F3F3F3;" text="Проверка JAVA" textAlignment="CENTER" wrappingWidth="288.98719787597656" />
    <Text layoutX="285.0" layoutY="476.0" opacity="0.28" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 13px; -fx-font-family: Open Sans; -fx-fill: #F3F3F3;" text="Синхронизация" textAlignment="CENTER" wrappingWidth="159.93658447265625" />
    <Text layoutX="459.0" layoutY="476.0" opacity="0.28" strokeType="OUTSIDE" strokeWidth="0.0" style="-fx-font-size: 13px; -fx-font-family: Open Sans; -fx-fill: #F3F3F3;" text="Скачивание файлов" textAlignment="RIGHT" wrappingWidth="264.19775390625" />
-   <Circle id="phase1" fill="DODGERBLUE" layoutX="27.0" layoutY="24.0" opacity="0.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" styleClass="phasepassive" />
-   <Circle id="phase2" fill="DODGERBLUE" layoutX="34.0" layoutY="24.0" opacity="0.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" styleClass="phasepassive" />
-   <Circle id="phase3" fill="DODGERBLUE" layoutX="34.0" layoutY="31.0" opacity="0.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" styleClass="phasepassive" />
-   <Circle id="phase4" fill="DODGERBLUE" layoutX="33.0" layoutY="24.0" opacity="0.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" styleClass="phasepassive" />
-   <Circle id="phase5" fill="DODGERBLUE" layoutX="26.0" layoutY="24.0" opacity="0.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" styleClass="phasepassive" />
 </Pane>

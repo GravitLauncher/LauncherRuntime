@@ -24,6 +24,7 @@ import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
+import pro.gravit.launcher.client.gui.utils.RuntimeCryptedFile;
 import pro.gravit.launcher.debug.DebugMain;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
@@ -34,8 +35,12 @@ import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.enfs.EnFS;
+import pro.gravit.utils.enfs.dir.CipherFile;
+import pro.gravit.utils.enfs.dir.FileEntry;
+import pro.gravit.utils.enfs.dir.URLFile;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
+import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -43,6 +48,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -140,10 +146,24 @@ public class JavaFXApplication extends Application {
                 config.runtime.forEach((name, digest) -> {
                     EnFS.main.newDirectories(enfsDirectory.resolve(name).getParent());
                     try {
-                        EnFS.main.addFile(enfsDirectory.resolve(name), Launcher.getResourceURL(name));
+                        FileEntry entry;
+                        if(config.runtimeEncryptKey == null) {
+                            entry = new URLFile(Launcher.getResourceURL(name));
+                        } else {
+                            String encodedName = "runtime/"+SecurityHelper.toHex(digest);
+                            entry = new RuntimeCryptedFile(() -> {
+                                try {
+                                    InputStream inputStream = IOHelper.newInput(IOHelper.getResourceURL(encodedName));
+                                    return inputStream;
+                                } catch (IOException e) {
+                                    throw new RuntimeException(e);
+                                }
+                            }, SecurityHelper.fromHex(config.runtimeEncryptKey));
+                        }
+                        EnFS.main.addFile(enfsDirectory.resolve(name), entry);
                         LogHelper.debug("Pushed %s", enfsDirectory.resolve(name).toString());
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        LogHelper.error(e);
                     }
                 });
             }

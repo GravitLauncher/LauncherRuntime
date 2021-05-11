@@ -33,7 +33,6 @@ public class UpdateScene extends AbstractScene {
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
     private ProgressBar progressBar;
-    private Circle[] phases;
     private Text speed;
     private Label volume;
     private TextArea logOutput;
@@ -43,10 +42,6 @@ public class UpdateScene extends AbstractScene {
     private Text speedtext;
     private Text speederr;
     private long totalSize;
-    private int currentPhase = 0;
-    private double phaseOffset;
-    private double progressRatio = 1.0;
-    private double phaseRatio;
 
     public UpdateScene(JavaFXApplication application) {
         super("scenes/update/update.fxml", application);
@@ -55,15 +50,6 @@ public class UpdateScene extends AbstractScene {
     @Override
     protected void doInit() {
         progressBar = LookupHelper.lookup(layout, "#progress");
-        phases = new Circle[5];
-        for (int i = 1; i <= 5; ++i) {
-            Circle circle = LookupHelper.lookup(layout, String.format("#phase%d", i));
-            phases[i - 1] = circle;
-            phaseOffset = (circle.getRadius() * 2.0) / progressBar.getPrefWidth();
-            progressRatio -= phaseOffset;
-        }
-       
-        phaseRatio = progressRatio / 4.0;
         speed = LookupHelper.lookup(layout, "#speed");
         speederr = LookupHelper.lookup(layout, "#speedErr");
         speedtext = LookupHelper.lookup(layout, "#speed-text");
@@ -216,19 +202,10 @@ public class UpdateScene extends AbstractScene {
         logOutput.appendText(string.concat("\n"));
     }
 
-    public void initNewPhase(String name) {
-        currentStatus.setText(name);
-        phases[currentPhase].getStyleClass().add("phaseActive");
-        DoubleProperty property = progressBar.progressProperty();
-        property.set(phaseOffset + (phaseOffset + phaseRatio) * currentPhase);
-        LogHelper.debug("NewPhase %f", progressBar.progressProperty().doubleValue());
-        currentPhase++;
-    }
-
     private void updateProgress(long oldValue, long newValue) {
         double add = (double) (newValue - oldValue) / (double) totalSize; // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
-        property.set(property.get() + add * phaseRatio);
+        property.set(property.get() + add);
         long lastTime = lastUpdateTime.get();
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastTime >= 130) {
@@ -260,18 +237,11 @@ public class UpdateScene extends AbstractScene {
         speed.setStyle("-fx-opacity: 1");
         speedtext.setStyle("-fx-opacity: 1");
         speederr.setStyle("-fx-opacity: 0");
-       
-        for (Circle circle : phases) {
-            circle.getStyleClass().removeAll("phaseActive");
-            circle.getStyleClass().removeAll("phaseError");
-        }
-        currentPhase = 0;
     }
 
     @Override
     public void errorHandle(Throwable e) {
         addLog(String.format("Exception %s: %s", e.getClass(), e.getMessage() == null ? "" : e.getMessage()));
-        phases[currentPhase].getStyleClass().add("phaseError");
         progressBar.getStyleClass().add("progressError");
         speed.setStyle("-fx-opacity: 0");
         speedtext.setStyle("-fx-opacity: 0");
