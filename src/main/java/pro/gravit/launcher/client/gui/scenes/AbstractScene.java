@@ -1,17 +1,22 @@
 package pro.gravit.launcher.client.gui.scenes;
 
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
+import pro.gravit.launcher.client.JavaRuntimeModule;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
@@ -20,6 +25,9 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.util.PropertyResourceBundle;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -176,8 +184,36 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         } else {
             LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
             LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#lang").ifPresent((b) -> {
+
+                b.setContextMenu(makeLangContextMenu());
+                b.setOnMousePressed((e) -> {
+                    if (!e.isPrimaryButtonDown())
+                        return;
+                    b.getContextMenu().show(b, e.getScreenX(), e.getScreenY());
+                });
+            });
         }
         currentStage.enableMouseDrag(layout);
+    }
+
+    private ContextMenu makeLangContextMenu() {
+        ContextMenu contextMenu = new ContextMenu();
+        contextMenu.getStyleClass().add("langChoice");
+        for(RuntimeSettings.LAUNCHER_LOCALE locale : RuntimeSettings.LAUNCHER_LOCALE.values()) {
+            MenuItem item = new MenuItem(locale.displayName);
+            item.setOnAction(e -> {
+                try {
+                    application.updateLocaleResources(locale.name);
+                    application.runtimeSettings.locale = locale;
+                    application.gui.reload();
+                } catch (Exception exception) {
+                    errorHandle(exception);
+                }
+            });
+            contextMenu.getItems().add(item);
+        }
+        return contextMenu;
     }
 
     protected void switchScene(AbstractScene scene) throws Exception {

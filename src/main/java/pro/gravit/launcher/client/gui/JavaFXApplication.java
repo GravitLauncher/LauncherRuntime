@@ -150,15 +150,14 @@ public class JavaFXApplication extends Application {
         // System loading
         if (runtimeSettings.locale == null)
             runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
-        try (InputStream input = getResource(String.format("runtime_%s.properties", runtimeSettings.locale.name))) {
-            resources = new PropertyResourceBundle(input);
+        try {
+            updateLocaleResources(runtimeSettings.locale.name);
         } catch (FileNotFoundException e)
         {
             JavaRuntimeModule.noLocaleAlert(runtimeSettings.locale.name);
             Platform.exit();
         }
         try {
-            fxmlFactory = new FXMLFactory(resources, workers);
             mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
             // Overlay loading
             gui = new GuiObjectsContainer(this);
@@ -177,6 +176,13 @@ public class JavaFXApplication extends Application {
             JavaRuntimeModule.errorHandleAlert(e);
             Platform.exit();
         }
+    }
+
+    public void updateLocaleResources(String locale) throws IOException {
+        try (InputStream input = getResource(String.format("runtime_%s.properties", locale))) {
+            resources = new PropertyResourceBundle(input);
+        }
+        fxmlFactory = new FXMLFactory(resources, workers);
     }
 
     private void registerCommands() {

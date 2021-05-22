@@ -47,27 +47,6 @@ public class SettingsScene extends AbstractScene {
             }
         });
 
-        {
-            Button langButton = LookupHelper.lookup(header, "#controls", "#lang");
-            ContextMenu langChoice = langButton.getContextMenu();
-            RuntimeSettings.LAUNCHER_LOCALE[] locales = RuntimeSettings.LAUNCHER_LOCALE.values();
-            MenuItem[] items = new MenuItem[locales.length];
-            for (int i = 0; i < locales.length; ++i) {
-                items[i] = new MenuItem(locales[i].displayName);
-                final int finalI = i;
-                items[i].setOnAction((e) -> {
-                    application.runtimeSettings.locale = locales[finalI];
-                    application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.langChanged.head"), application.getTranslation("runtime.scenes.settings.langChanged.description"));
-                });
-            }
-            langChoice.getItems().addAll(items);
-            langButton.setOnMousePressed((e) -> {
-                if (!e.isPrimaryButtonDown())
-                    return;
-                langChoice.show(langButton, e.getScreenX(), e.getScreenY());
-            });
-        }
-
         ramSlider = LookupHelper.lookup(layout, "#ramSlider");
         ramLabel = LookupHelper.lookup(layout, "#ramLabel");
         try {
