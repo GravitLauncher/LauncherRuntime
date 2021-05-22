@@ -22,6 +22,7 @@ import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
+import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
@@ -31,6 +32,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class LoginScene extends AbstractScene {
@@ -50,6 +52,7 @@ public class LoginScene extends AbstractScene {
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
         authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod());
+        authMethods.put(AuthWebViewDetails.class, new WebAuthMethod());
     }
 
     @Override
@@ -222,10 +225,10 @@ public class LoginScene extends AbstractScene {
 
     private void loginWithGui() {
         GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(0);
-        LoginAndPasswordResult result = authMethod.auth(details);
-        boolean savePassword = savePasswordCheckBox.isSelected();
-        login(result.login, result.password, authAvailability, null, savePassword);
-
+        authMethod.auth(details).thenAccept((result) -> {
+            boolean savePassword = savePasswordCheckBox.isSelected();
+            login(result.login, result.password, authAvailability, null, savePassword);
+        });
     }
 
     private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
@@ -332,7 +335,7 @@ public class LoginScene extends AbstractScene {
         public abstract void prepare();
         public abstract void reset();
         public abstract void show(T details);
-        public abstract LoginAndPasswordResult auth(T details);
+        public abstract CompletableFuture<LoginAndPasswordResult> auth(T details);
         public abstract void hide(T details);
     }
 
@@ -349,6 +352,7 @@ public class LoginScene extends AbstractScene {
     public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordDetails> {
         private TextField loginField;
         private TextField passwordField;
+        private Pane textAuthPane;
         @Override
         public void prepare() {
             loginField = LookupHelper.lookup(layout, "#auth", "#login");
@@ -369,6 +373,7 @@ public class LoginScene extends AbstractScene {
                 passwordField.getStyleClass().add("hasSaved");
                 passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             }
+            textAuthPane = LookupHelper.lookup(layout, "#auth","#loginInputs");
         }
 
         @Override
@@ -381,11 +386,11 @@ public class LoginScene extends AbstractScene {
 
         @Override
         public void show(AuthPasswordDetails details) {
-
+            textAuthPane.setVisible(true);
         }
 
         @Override
-        public LoginAndPasswordResult auth(AuthPasswordDetails details) {
+        public CompletableFuture<LoginAndPasswordResult> auth(AuthPasswordDetails details) {
             String login = loginField.getText();
             AuthRequest.AuthPasswordInterface password;
             if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
@@ -395,12 +400,50 @@ public class LoginScene extends AbstractScene {
                 String rawPassword = passwordField.getText();
                 password = authService.makePassword(rawPassword);
             }
-            return new LoginAndPasswordResult(login, password);
+            return CompletableFuture.completedFuture(new LoginAndPasswordResult(login, password));
         }
 
         @Override
         public void hide(AuthPasswordDetails details) {
+            textAuthPane.setVisible(false);
+        }
+    }
 
+    public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
+        private Pane webAuthPane;
+        @Override
+        public void prepare() {
+
+        }
+
+        @Override
+        public void reset() {
+
+        }
+
+        @Override
+        public void show(AuthWebViewDetails details) {
+            webAuthPane.setVisible(true);
+        }
+
+        @Override
+        public CompletableFuture<LoginAndPasswordResult> auth(AuthWebViewDetails details) {
+            CompletableFuture<LoginAndPasswordResult> result = new CompletableFuture<>();
+            try {
+                showOverlay(application.gui.webAuthOverlay, (e) -> {
+                    application.gui.webAuthOverlay.follow(details.url, details.redirectUrl, (redirectUrl) -> {
+                        result.complete(new LoginAndPasswordResult(null, new AuthOAuthPassword(redirectUrl)));
+                    });
+                });
+            } catch (Exception e) {
+                errorHandle(e);
+            }
+            return result;
+        }
+
+        @Override
+        public void hide(AuthWebViewDetails details) {
+            webAuthPane.setVisible(false);
         }
     }
 }

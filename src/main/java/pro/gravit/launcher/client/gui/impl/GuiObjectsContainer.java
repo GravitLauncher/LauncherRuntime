@@ -25,6 +25,7 @@ public class GuiObjectsContainer {
     public OptionsScene optionsScene;
     public SettingsScene settingsScene;
     public ConsoleScene consoleScene;
+    public WebAuthOverlay webAuthOverlay;
 
     public ConsoleStage consoleStage;
 
@@ -44,6 +45,8 @@ public class GuiObjectsContainer {
 
         updateScene = registerScene(UpdateScene.class);
         debugScene = registerScene(DebugScene.class);
+
+        webAuthOverlay = registerOverlay(WebAuthOverlay.class);
     }
 
     public void reload() throws Exception {
