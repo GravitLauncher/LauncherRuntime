@@ -22,6 +22,29 @@
 
 }
 
+#otherWelcome {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-font-size: 14px;
+    -fx-line-height: 19px;
+    -fx-text-align: center;
+    -fx-letter-spacing: 0.25px;
+}
+
+#webAuth {
+    -fx-font-family: Open Sans;
+    -fx-font-style: normal;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-line-height: 16px;
+    -fx-text-align: center;
+    -fx-text-fill: #FFFFFF;
+    -fx-letter-spacing: 0.25px;
+    -fx-background-color: #09BC6A;
+    -fx-background-radius: 5px;
+}
+
 #playerName {
     -fx-font-family: Open Sans;
     -fx-font-style: normal;

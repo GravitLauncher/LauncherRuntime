@@ -21,23 +21,22 @@ import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
+import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
 import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
+import pro.gravit.utils.ProviderMap;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class LoginScene extends AbstractScene {
+    public Map<Class<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>, AbstractAuthMethod<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>> authMethods = new HashMap<>(8);
     public boolean isLoginStarted;
     private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
-    private TextField loginField;
-    private TextField passwordField;
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
     private Pane authActive;
@@ -46,33 +45,19 @@ public class LoginScene extends AbstractScene {
     private VBox authList;
     private ToggleGroup authToggleGroup;
     private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
+    private AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> authMethod;
 
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
+        authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod());
     }
 
     @Override
     public void doInit() {
         authActive = LookupHelper.lookup(layout, "#authActive");
         authButton = LookupHelper.lookup(authActive, "#authButton");
-        loginField = LookupHelper.lookup(layout, "#auth", "#login");
-        if (application.runtimeSettings.login != null) {
-            loginField.setText(application.runtimeSettings.login);
-            showAuthButton();;
-        }
-        loginField.textProperty().addListener((e) -> {
-            if(!loginField.getText().isEmpty()) {
-                showAuthButton();
-            }
-            else {
-                hideAuthButton();
-            }
-        });
-        passwordField = LookupHelper.lookup(layout, "#auth", "#password");
         savePasswordCheckBox = LookupHelper.lookup(layout , "#leftPane", "#savePassword");
         if (application.runtimeSettings.password != null) {
-            passwordField.getStyleClass().add("hasSaved");
-            passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
         }
         autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
@@ -87,6 +72,7 @@ public class LoginScene extends AbstractScene {
         authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
         authToggleGroup = new ToggleGroup();
         LookupHelper.<ButtonBase>lookup(authActive, "#authButton").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui));
+        authMethods.forEach((k,v) -> v.prepare());
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
@@ -120,11 +106,11 @@ public class LoginScene extends AbstractScene {
                     for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
                         if(application.runtimeSettings.lastAuth == null) {
                             if(authAvailability.name.equals("std") || this.authAvailability == null) {
-                                this.authAvailability = authAvailability;
+                                changeAuthAvailability(authAvailability);
                             }
                         }
                         else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
-                            this.authAvailability = authAvailability;
+                            changeAuthAvailability(authAvailability);
                         addAuthAvailability(authAvailability);
                     }
 
@@ -137,6 +123,13 @@ public class LoginScene extends AbstractScene {
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public void changeAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
+        LogHelper.info("Selected auth: %s", authAvailability.name);
+        this.authAvailability = authAvailability;
+        this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(authAvailability.getClass());
+    }
+
     public void addAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
         RadioButton radio = new RadioButton();
         radio.setToggleGroup(authToggleGroup);
@@ -146,8 +139,7 @@ public class LoginScene extends AbstractScene {
             radio.fire();
         }
         radio.setOnAction((e) -> {
-            LogHelper.info("Selected auth: %s", authAvailability.name);
-            this.authAvailability = authAvailability;
+            changeAuthAvailability(authAvailability);
         });
         LogHelper.info("Added %s: %s", authAvailability.name, authAvailability.displayName);
         authList.getChildren().add(radio);
@@ -218,10 +210,9 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void reset() {
-        passwordField.getStyleClass().removeAll("hasSaved");
-        passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password"));
-        passwordField.setText("");
-        loginField.setText("");
+        if(authMethod != null) {
+            authMethod.reset();
+        }
     }
 
     @Override
@@ -230,17 +221,10 @@ public class LoginScene extends AbstractScene {
     }
 
     private void loginWithGui() {
-        String login = loginField.getText();
-        AuthRequest.AuthPasswordInterface password;
-        if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
-                application.getTranslation("runtime.scenes.login.password.saved"))) {
-            password = application.runtimeSettings.password;
-        } else {
-            String rawPassword = passwordField.getText();
-            password = authService.makePassword(rawPassword);
-        }
+        GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(0);
+        LoginAndPasswordResult result = authMethod.auth(details);
         boolean savePassword = savePasswordCheckBox.isSelected();
-        login(login, password, authAvailability, null, savePassword);
+        login(result.login, result.password, authAvailability, null, savePassword);
 
     }
 
@@ -342,5 +326,81 @@ public class LoginScene extends AbstractScene {
         application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.password = null;
         application.runtimeSettings.login = null;
+    }
+
+    private static abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> {
+        public abstract void prepare();
+        public abstract void reset();
+        public abstract void show(T details);
+        public abstract LoginAndPasswordResult auth(T details);
+        public abstract void hide(T details);
+    }
+
+    public static class LoginAndPasswordResult {
+        public final String login;
+        public final AuthRequest.AuthPasswordInterface password;
+
+        public LoginAndPasswordResult(String login, AuthRequest.AuthPasswordInterface password) {
+            this.login = login;
+            this.password = password;
+        }
+    }
+
+    public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordDetails> {
+        private TextField loginField;
+        private TextField passwordField;
+        @Override
+        public void prepare() {
+            loginField = LookupHelper.lookup(layout, "#auth", "#login");
+            if (application.runtimeSettings.login != null) {
+                loginField.setText(application.runtimeSettings.login);
+                showAuthButton();;
+            }
+            loginField.textProperty().addListener((e) -> {
+                if(!loginField.getText().isEmpty()) {
+                    showAuthButton();
+                }
+                else {
+                    hideAuthButton();
+                }
+            });
+            passwordField = LookupHelper.lookup(layout, "#auth", "#password");
+            if (application.runtimeSettings.password != null) {
+                passwordField.getStyleClass().add("hasSaved");
+                passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
+            }
+        }
+
+        @Override
+        public void reset() {
+            passwordField.getStyleClass().removeAll("hasSaved");
+            passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password"));
+            passwordField.setText("");
+            loginField.setText("");
+        }
+
+        @Override
+        public void show(AuthPasswordDetails details) {
+
+        }
+
+        @Override
+        public LoginAndPasswordResult auth(AuthPasswordDetails details) {
+            String login = loginField.getText();
+            AuthRequest.AuthPasswordInterface password;
+            if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
+                    application.getTranslation("runtime.scenes.login.password.saved"))) {
+                password = application.runtimeSettings.password;
+            } else {
+                String rawPassword = passwordField.getText();
+                password = authService.makePassword(rawPassword);
+            }
+            return new LoginAndPasswordResult(login, password);
+        }
+
+        @Override
+        public void hide(AuthPasswordDetails details) {
+
+        }
     }
 }
