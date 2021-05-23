@@ -16,6 +16,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
+import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
@@ -81,6 +82,9 @@ public class LoginScene extends AbstractScene {
             LauncherRequest launcherRequest = new LauncherRequest();
             if(!application.isDebugMode())
             processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
+                if(result.launcherExtendedToken != null) {
+                    Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
+                }
                 if (result.needUpdate) {
                     try {
                         LogHelper.debug("Start update processing");
@@ -128,9 +132,9 @@ public class LoginScene extends AbstractScene {
 
     @SuppressWarnings("unchecked")
     public void changeAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
-        LogHelper.info("Selected auth: %s", authAvailability.name);
         this.authAvailability = authAvailability;
-        this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(authAvailability.getClass());
+        this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(authAvailability.details.get(0).getClass());
+        LogHelper.info("Selected auth: %s | method %s", authAvailability.name, authMethod == null ? null : authMethod.getClass());
     }
 
     public void addAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
@@ -237,15 +241,15 @@ public class LoginScene extends AbstractScene {
         AuthRequest authRequest;
         if(totp == null)
         {
-            authRequest = authService.makeAuthRequest(login, password, "std");
+            authRequest = authService.makeAuthRequest(login, password, authId.name);
         }
         else
         {
             AuthRequest.AuthPasswordInterface auth2FAPassword = authService.make2FAPassword(password, totp);
-            authRequest = authService.makeAuthRequest(login, auth2FAPassword, "std");
+            authRequest = authService.makeAuthRequest(login, auth2FAPassword, authId.name);
         }
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
-            application.stateService.setAuthResult(result);
+            application.stateService.setAuthResult(authId.name, result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
                 if(password instanceof AuthAESPassword) //TODO: Check if save possibly

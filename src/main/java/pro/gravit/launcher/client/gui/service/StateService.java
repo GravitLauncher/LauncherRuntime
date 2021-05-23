@@ -29,9 +29,12 @@ public class StateService {
     }
     private final Map<String, OnServerPingReportCallback> serverPingReportCallbackMap = new HashMap<>();
 
-    public void setAuthResult(AuthRequestEvent rawAuthResult) {
+    public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if (rawAuthResult.session != null)
+        if(rawAuthResult.oauth != null) {
+            Request.setOAuth(authId, rawAuthResult.oauth);
+        }
+        else if (rawAuthResult.session != null)
             Request.setSession(rawAuthResult.session);
     }
 

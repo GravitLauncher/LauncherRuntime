@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public class WebAuthOverlay extends AbstractOverlay {
     private WebView webView;
-    protected WebAuthOverlay(JavaFXApplication application) {
+    public WebAuthOverlay(JavaFXApplication application) {
         super("overlay/webauth/webauth.fxml", application);
     }
 

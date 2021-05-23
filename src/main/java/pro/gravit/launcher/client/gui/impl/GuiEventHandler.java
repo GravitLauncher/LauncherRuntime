@@ -31,7 +31,7 @@ public class GuiEventHandler implements ClientWebSocketService.EventHandler {
             } else if (event instanceof AuthRequestEvent) {
                 boolean isNextScene = application.getCurrentScene() instanceof LoginScene;
                 LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
-                application.stateService.setAuthResult((AuthRequestEvent) event);
+                application.stateService.setAuthResult(null, (AuthRequestEvent) event);
                 if (isNextScene && ((LoginScene) application.getCurrentScene()).isLoginStarted)
                     ((LoginScene) application.getCurrentScene()).onGetProfiles();
             }
