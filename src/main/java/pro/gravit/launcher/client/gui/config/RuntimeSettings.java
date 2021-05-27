@@ -36,6 +36,12 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public boolean disableJavaDownload;
     @LauncherNetworkAPI
+    public String oauthAccessToken;
+    @LauncherNetworkAPI
+    public String oauthRefreshToken;
+    @LauncherNetworkAPI
+    public long oauthExpire;
+    @LauncherNetworkAPI
     public Map<UUID, ProfileSettings> profileSettings = new HashMap<>();
 
     public static RuntimeSettings getDefault() {

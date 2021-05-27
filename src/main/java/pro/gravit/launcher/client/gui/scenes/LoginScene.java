@@ -22,6 +22,7 @@ import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
+import pro.gravit.launcher.request.auth.RefreshTokenRequest;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
 import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.*;
@@ -80,6 +81,26 @@ public class LoginScene extends AbstractScene {
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
+            GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
+            processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
+                this.auth = auth.list;
+                authList.setVisible(auth.list.size() != 1);
+                for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
+                    if(application.runtimeSettings.lastAuth == null) {
+                        if(authAvailability.name.equals("std") || this.authAvailability == null) {
+                            changeAuthAvailability(authAvailability);
+                        }
+                    }
+                    else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
+                        changeAuthAvailability(authAvailability);
+                    addAuthAvailability(authAvailability);
+                }
+
+                hideOverlay(0, (event) -> {
+                    if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
+                        contextHelper.runCallback(this::loginWithGui);
+                });
+            }), null);
             if(!application.isDebugMode())
             processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                 if(result.launcherExtendedToken != null) {
@@ -106,26 +127,6 @@ public class LoginScene extends AbstractScene {
                     }
                 }
                 LogHelper.dev("Launcher update processed");
-                GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
-                processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
-                    this.auth = auth.list;
-                    authList.setVisible(auth.list.size() != 1);
-                    for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
-                        if(application.runtimeSettings.lastAuth == null) {
-                            if(authAvailability.name.equals("std") || this.authAvailability == null) {
-                                changeAuthAvailability(authAvailability);
-                            }
-                        }
-                        else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
-                            changeAuthAvailability(authAvailability);
-                        addAuthAvailability(authAvailability);
-                    }
-
-                    hideOverlay(0, (event) -> {
-                        if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
-                            contextHelper.runCallback(this::loginWithGui);
-                    });
-                }), null);
             }, (event) -> LauncherEngine.exitLauncher(0));
         }
     }
@@ -237,7 +238,35 @@ public class LoginScene extends AbstractScene {
 
     private final List<Integer> authFlow = new ArrayList<>();
     private CompletableFuture<LoginAndPasswordResult> authFuture;
+    private boolean tryOAuthLogin() {
+        if(application.runtimeSettings.lastAuth != null && authAvailability.name.equals(application.runtimeSettings.lastAuth.name) && application.runtimeSettings.oauthAccessToken != null) {
+            if(application.runtimeSettings.oauthExpire != 0 && application.runtimeSettings.oauthExpire < System.currentTimeMillis()) {
+                RefreshTokenRequest request = new RefreshTokenRequest(authAvailability.name, application.runtimeSettings.oauthRefreshToken);
+                processing(request, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
+                    application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
+                    application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
+                    application.runtimeSettings.oauthExpire = result.oauth.expire == 0 ? 0 : System.currentTimeMillis() + result.oauth.expire;
+                    Request.setOAuth(authAvailability.name, result.oauth);
+                    AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
+                    LogHelper.info("Login with OAuth AccessToken");
+                    login(null, password, authAvailability,  savePasswordCheckBox.isSelected());
+                }, (error) -> {
+                    application.runtimeSettings.oauthAccessToken = null;
+                    application.runtimeSettings.oauthRefreshToken = null;
+                    loginWithGui();
+                });
+                return true;
+            }
+            Request.setOAuth(authAvailability.name, new AuthRequestEvent.OAuthRequestEvent(application.runtimeSettings.oauthAccessToken, application.runtimeSettings.oauthRefreshToken, application.runtimeSettings.oauthExpire), application.runtimeSettings.oauthExpire);
+            AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
+            LogHelper.info("Login with OAuth AccessToken");
+            login(null, password, authAvailability, savePasswordCheckBox.isSelected());
+            return true;
+        }
+        return false;
+    }
     private void loginWithGui() {
+        if(tryOAuthLogin()) return;
         for(int i : authFlow) {
             GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
             if(authFuture == null) authFuture = authMethod.auth(details);
@@ -291,8 +320,13 @@ public class LoginScene extends AbstractScene {
             application.stateService.setAuthResult(authId.name, result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
-                if(password instanceof AuthAESPassword) //TODO: Check if save possibly
+                if(result.oauth == null) {
                     application.runtimeSettings.password = password;
+                } else {
+                    application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
+                    application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
+                    application.runtimeSettings.oauthExpire = Request.getTokenExpiredTime();
+                }
                 application.runtimeSettings.lastAuth = authId;
             }
             if(result.playerProfile != null && result.playerProfile.skin != null) {
@@ -330,6 +364,9 @@ public class LoginScene extends AbstractScene {
             });
 
         }, (error) -> {
+            if(savePassword) {
+                application.runtimeSettings.oauthAccessToken = null;
+            }
             if(error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
                 authFuture = null;

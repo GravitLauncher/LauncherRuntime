@@ -28,6 +28,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.PropertyResourceBundle;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -133,6 +134,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
+
     protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onException, onError);
     }
