@@ -130,11 +130,19 @@ public class LoginScene extends AbstractScene {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public void changeAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
         this.authAvailability = authAvailability;
-        this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(authAvailability.details.get(0).getClass());
+        authFlow.clear();
+        authFlow.add(0);
+        updateAuthMethod(authAvailability.details.get(0));
         LogHelper.info("Selected auth: %s | method %s", authAvailability.name, authMethod == null ? null : authMethod.getClass());
+    }
+
+    @SuppressWarnings("unchecked")
+    public void updateAuthMethod(GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details) {
+        if(this.authMethod != null) this.authMethod.hide();
+        this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(details.getClass());
+        this.authMethod.show(details);
     }
 
     public void addAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
@@ -227,27 +235,58 @@ public class LoginScene extends AbstractScene {
         return "login";
     }
 
+    private final List<Integer> authFlow = new ArrayList<>();
+    private CompletableFuture<LoginAndPasswordResult> authFuture;
     private void loginWithGui() {
-        GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(0);
-        authMethod.auth(details).thenAccept((result) -> {
+        for(int i : authFlow) {
+            GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
+            if(authFuture == null) authFuture = authMethod.auth(details);
+            else {
+                authFuture = authFuture.thenApply(e -> {
+                    authMethod.show(details);
+                    return e;
+                }).thenCombine(authMethod.auth(details), (first, second) -> {
+                    AuthRequest.AuthPasswordInterface password;
+                    String login = null;
+                    if(first.login != null) {
+                        login = first.login;
+                    }
+                    if(second.login != null) {
+                        login = second.login;
+                    }
+                    if(first.password instanceof AuthMultiPassword) {
+                        password = first.password;
+                        ((AuthMultiPassword)password).list.add(second.password);
+                    }
+                    else if(first.password instanceof Auth2FAPassword) {
+                        password = new AuthMultiPassword();
+                        ((AuthMultiPassword)password).list.add(((Auth2FAPassword)first.password).firstPassword);
+                        ((AuthMultiPassword)password).list.add(((Auth2FAPassword)first.password).secondPassword);
+                        ((AuthMultiPassword)password).list.add(second.password);
+                    }
+                    else {
+                        password = new Auth2FAPassword();
+                        ((Auth2FAPassword)password).firstPassword = first.password;
+                        ((Auth2FAPassword)password).secondPassword = second.password;
+                    }
+                    return new LoginAndPasswordResult(login, password);
+                });
+            }
+            authFuture = authFuture.thenApply(e -> {
+                authMethod.hide();
+                return e;
+            });
+        }
+        authFuture.thenAccept(e -> {
             boolean savePassword = savePasswordCheckBox.isSelected();
-            login(result.login, result.password, authAvailability, null, savePassword);
+            login(e.login, e.password, authAvailability, savePassword);
         });
     }
 
-    private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, String totp, boolean savePassword) {
+    private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, boolean savePassword) {
         isLoginStarted = true;
         LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
-        AuthRequest authRequest;
-        if(totp == null)
-        {
-            authRequest = authService.makeAuthRequest(login, password, authId.name);
-        }
-        else
-        {
-            AuthRequest.AuthPasswordInterface auth2FAPassword = authService.make2FAPassword(password, totp);
-            authRequest = authService.makeAuthRequest(login, auth2FAPassword, authId.name);
-        }
+        AuthRequest authRequest = authService.makeAuthRequest(login, password, authId.name);
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             application.stateService.setAuthResult(authId.name, result);
             if (savePassword) {
@@ -291,18 +330,20 @@ public class LoginScene extends AbstractScene {
             });
 
         }, (error) -> {
-            if(totp != null) {
-                application.messageManager.createNotification(application.getTranslation("runtime.scenes.login.dialog2fa.header"), error);
-                return;
+            if(error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
+                authFlow.clear();
+                authFuture = null;
+                authFlow.add(0);
+                authFlow.add(1);
+                loginWithGui();
             }
-            if(error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE))
-            {
-                this.hideOverlay(0, null); //Force hide overlay
-                application.messageManager.showTextDialog(application.getTranslation("runtime.scenes.login.dialog2fa.header"), (result) -> {
-                    login(login, password, authId, result, savePassword);
-                }, null, true);
-            } else {
-                errorHandle(new RequestException(error));
+            else if(error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
+                authFlow.clear();
+                authFuture = null;
+                for(String s : error.substring(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length()+1).split("\\.") ) {
+                    authFlow.add(Integer.parseInt(s));
+                }
+                loginWithGui();
             }
         });
     }
@@ -340,7 +381,7 @@ public class LoginScene extends AbstractScene {
         public abstract void reset();
         public abstract void show(T details);
         public abstract CompletableFuture<LoginAndPasswordResult> auth(T details);
-        public abstract void hide(T details);
+        public abstract void hide();
     }
 
     public static class LoginAndPasswordResult {
@@ -408,7 +449,7 @@ public class LoginScene extends AbstractScene {
         }
 
         @Override
-        public void hide(AuthPasswordDetails details) {
+        public void hide() {
             textAuthPane.setVisible(false);
         }
     }
@@ -436,7 +477,7 @@ public class LoginScene extends AbstractScene {
             try {
                 showOverlay(application.gui.webAuthOverlay, (e) -> {
                     application.gui.webAuthOverlay.follow(details.url, details.redirectUrl, (redirectUrl) -> {
-                        result.complete(new LoginAndPasswordResult(null, new AuthOAuthPassword(redirectUrl)));
+                        result.complete(new LoginAndPasswordResult(null, new AuthCodePassword(redirectUrl)));
                     });
                 });
             } catch (Exception e) {
@@ -446,7 +487,7 @@ public class LoginScene extends AbstractScene {
         }
 
         @Override
-        public void hide(AuthWebViewDetails details) {
+        public void hide() {
             webAuthPane.setVisible(false);
         }
     }
