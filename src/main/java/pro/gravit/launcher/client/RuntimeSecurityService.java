@@ -45,6 +45,7 @@ public class RuntimeSecurityService {
             try {
                 application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
                         .thenAccept((event1) -> {
+                            Request.addExtendedToken("publicKey", event1.extendedToken);
                             if(!event1.needHardwareInfo)
                             {
                                 LogHelper.info("Advanced security level success completed");
@@ -79,6 +80,7 @@ public class RuntimeSecurityService {
             reportRequest.hardware = info;
             try {
                 application.service.request(reportRequest).thenAccept((event) -> {
+                    Request.addExtendedToken("hardware", event.extendedToken);
                     LogHelper.info("Advanced security level success completed");
                     notifyWaitObject(true);
                 }).exceptionally((exc) -> {
