@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scenes;
+package pro.gravit.launcher.client.gui.scenes.serevrmenu;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Labeled;
@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.management.PingServerRequest;

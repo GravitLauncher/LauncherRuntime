@@ -1,7 +1,7 @@
 package pro.gravit.launcher.client.gui.impl;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.scenes.LoginScene;
+import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.events.NotificationEvent;
 import pro.gravit.launcher.events.RequestEvent;
 import pro.gravit.launcher.events.request.AuthRequestEvent;

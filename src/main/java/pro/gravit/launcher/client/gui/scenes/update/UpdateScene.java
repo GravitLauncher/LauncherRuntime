@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scenes;
+package pro.gravit.launcher.client.gui.scenes.update;
 
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
@@ -9,6 +9,7 @@ import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;

@@ -1,6 +1,6 @@
 package pro.gravit.launcher.client.gui.commands;
 
-import pro.gravit.launcher.client.gui.scenes.ConsoleScene;
+import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.utils.command.Command;
 import pro.gravit.utils.helper.LogHelper;
 

@@ -3,6 +3,14 @@ package pro.gravit.launcher.client.gui.impl;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.overlays.*;
 import pro.gravit.launcher.client.gui.scenes.*;
+import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
+import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
+import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
+import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
+import pro.gravit.launcher.client.gui.scenes.serevrmenu.ServerMenuScene;
+import pro.gravit.launcher.client.gui.scenes.serverinfo.ServerInfoScene;
+import pro.gravit.launcher.client.gui.scenes.settings.SettingsScene;
+import pro.gravit.launcher.client.gui.scenes.update.UpdateScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.utils.helper.LogHelper;
 
