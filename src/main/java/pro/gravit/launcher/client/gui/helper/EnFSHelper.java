@@ -12,12 +12,12 @@ import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class EnFSHelper {
     public static Path initEnFS(LauncherConfig config) throws IOException {
-        LogHelper.error("AAA");
         Path enfsDirectory = Paths.get("aone");
         EnFS.main.newDirectory(enfsDirectory);
         config.runtime.forEach((name, digest) -> {
@@ -44,5 +44,11 @@ public class EnFSHelper {
             }
         });
         return enfsDirectory;
+    }
+
+    public static URL getURL(String name) throws IOException {
+        try(InputStream stream = EnFS.main.getInputStream(Paths.get(name))) {
+            return new URL("enfs", null, -1, name);
+        }
     }
 }
