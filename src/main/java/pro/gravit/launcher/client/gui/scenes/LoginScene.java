@@ -364,8 +364,9 @@ public class LoginScene extends AbstractScene {
             });
 
         }, (error) -> {
-            if(savePassword) {
+            if(error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                 application.runtimeSettings.oauthAccessToken = null;
+                application.runtimeSettings.oauthRefreshToken = null;
             }
             if(error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
