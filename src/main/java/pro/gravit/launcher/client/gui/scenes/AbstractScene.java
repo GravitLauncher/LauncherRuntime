@@ -18,11 +18,13 @@ import pro.gravit.launcher.client.JavaRuntimeModule;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
+import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
@@ -195,6 +197,11 @@ public abstract class AbstractScene extends AbstractVisualComponent {
                     b.getContextMenu().show(b, e.getScreenX(), e.getScreenY());
                 });
             });
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth").ifPresent(b -> b.setOnAction((e) ->
+                    application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
+                            application.getTranslation("runtime.scenes.settings.exitDialog.description"), this::userExit
+                                    , () -> {
+                            }, true)));
         }
         currentStage.enableMouseDrag(layout);
     }
@@ -216,6 +223,27 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             contextMenu.getItems().add(item);
         }
         return contextMenu;
+    }
+
+    protected void userExit() {
+        processRequest(application.getTranslation("runtime.scenes.settings.exitDialog.processing"),
+                new ExitRequest(), (event) -> {
+                    // Exit to main menu
+                    ContextHelper.runInFxThreadStatic(() -> {
+                        hideOverlay(0, null);
+                        application.gui.loginScene.clearPassword();
+                        application.gui.loginScene.reset();
+                        try {
+                            application.saveSettings();
+                            application.stateService.exit();
+                            switchScene(application.gui.loginScene);
+                        } catch (Exception ex) {
+                            errorHandle(ex);
+                        }
+                    });
+                }, (event) -> {
+
+                });
     }
 
     protected void switchScene(AbstractScene scene) throws Exception {

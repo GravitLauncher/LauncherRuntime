@@ -412,6 +412,8 @@ public class LoginScene extends AbstractScene {
         application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.password = null;
         application.runtimeSettings.login = null;
+        application.runtimeSettings.oauthAccessToken = null;
+        application.runtimeSettings.oauthRefreshToken = null;
     }
 
     private static abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> {

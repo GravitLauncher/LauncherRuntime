@@ -66,28 +66,6 @@ public class ServerInfoScene extends AbstractScene {
                 errorHandle(exception);
             }
         });
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#deauth").setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
-                        application.getTranslation("runtime.scenes.settings.exitDialog.description"), () ->
-                                processRequest(application.getTranslation("runtime.scenes.settings.exitDialog.processing"),
-                                        new ExitRequest(), (event) -> {
-                                            // Exit to main menu
-                                            ContextHelper.runInFxThreadStatic(() -> {
-                                                hideOverlay(0, null);
-                                                application.gui.loginScene.clearPassword();
-                                                application.gui.loginScene.reset();
-                                                try {
-                                                    application.saveSettings();
-                                                    application.stateService.exit();
-                                                    switchScene(application.gui.loginScene);
-                                                } catch (Exception ex) {
-                                                    errorHandle(ex);
-                                                }
-                                            });
-                                        }, (event) -> {
-
-                                        }), () -> {
-                        }, true));
         reset();
     }
 
