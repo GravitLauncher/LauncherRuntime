@@ -126,7 +126,7 @@ public class SettingsScene extends AbstractScene {
     @Override
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
-        javaSelector = new JavaSelectorComponent(layout, profileSettings);
+        javaSelector = new JavaSelectorComponent(layout, profileSettings, application.stateService.getProfile());
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();

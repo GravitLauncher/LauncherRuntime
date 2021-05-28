@@ -4,6 +4,7 @@ import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
+import pro.gravit.launcher.client.gui.helper.JavaVersionsHelper;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.auth.AuthRequest;
@@ -87,7 +88,11 @@ public class RuntimeSettings extends UserSettings {
 
         public static ProfileSettings getDefault(ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
-            settings.ram = 1024;
+            settings.ram = 2048;
+            ClientLauncherWrapper.JavaVersion version = JavaVersionsHelper.getRecommendJavaVersion(profile);
+            if(version != null) {
+                settings.javaPath = version.jvmDir.toString();
+            }
             return settings;
         }
 
