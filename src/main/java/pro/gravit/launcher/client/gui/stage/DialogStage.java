@@ -18,6 +18,9 @@ public class DialogStage extends AbstractStage {
         stage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
+        stage.setOnCloseRequest(e -> {
+            e.consume();
+        });
         // Icons
         try {
             Image icon = new Image(JavaFXApplication.getResourceURL("favicon.png").toString());
@@ -28,6 +31,10 @@ public class DialogStage extends AbstractStage {
         setScene(dialog);
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
+        if(bounds.getMaxX() == 0 || bounds.getMaxY() == 0) {
+            bounds = screen.getBounds();
+        }
+        LogHelper.info("Bounds: X: %f Y: %f", bounds.getMaxX(), bounds.getMaxY());
         LookupHelper.Point2D coords = dialog.getOutSceneCoords(bounds);
         stage.setX(coords.x);
         stage.setY(coords.y);

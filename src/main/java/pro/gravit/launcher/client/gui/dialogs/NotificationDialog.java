@@ -92,6 +92,7 @@ public class NotificationDialog extends AbstractDialog {
             slotsInfo.remove(positionSlot);
         }
         this.positionInfo = position;
+        LogHelper.info("Notification position: %s", position);
         if(position == null) return;
         NotificationSlotsInfo slotsInfo = slots.get(position);
         if(slotsInfo == null) {
@@ -116,7 +117,10 @@ public class NotificationDialog extends AbstractDialog {
 
     @Override
     public LookupHelper.Point2D getOutSceneCoords(Rectangle2D bounds) {
-        if(positionInfo == null) return super.getOutSceneCoords(bounds);
+        if(positionInfo == null) {
+            LogHelper.info("Notification position: using central");
+            return super.getOutSceneCoords(bounds);
+        }
         return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0, 30 + positionOffset, bounds.getMaxX(), bounds.getMaxY());
     }
 

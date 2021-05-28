@@ -4,15 +4,11 @@ import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
-import pro.gravit.launcher.client.events.client.ClientProcessInitPhase;
-import pro.gravit.launcher.client.events.client.ClientProcessPreInvokeMainClassEvent;
-import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.RuntimeProvider;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
 import pro.gravit.utils.Version;
-import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -66,28 +62,6 @@ public class JavaRuntimeModule extends LauncherModule {
 
     private void engineInitPhase(ClientEngineInitPhase initPhase) {
         JavaRuntimeModule.engine = initPhase.engine;
-    }
-
-    private void clientInitPhase(ClientProcessInitPhase initPhase) {
-        JavaFXApplication.setNoGUIMode(true);
-        JavaRuntimeModule.engine = initPhase.clientInstance;
-    }
-
-    private void clientRunPhase(ClientProcessPreInvokeMainClassEvent initPhase) {
-        provider = new StdJavaRuntimeProvider();
-        try {
-            provider.preLoad();
-            provider.init(true);
-            CommonHelper.newThread("JavaFX Client Thread", true, () -> {
-                try {
-                    provider.run(new String[0]);
-                } catch (Exception e) {
-                    LogHelper.error(e);
-                }
-            }).start();
-        } catch (Exception e) {
-            LogHelper.error(e);
-        }
     }
 
     private void exitPhase(ClientExitPhase exitPhase) {

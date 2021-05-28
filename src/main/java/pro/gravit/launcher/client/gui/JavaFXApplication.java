@@ -47,7 +47,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
-    private static AtomicBoolean IS_NOGUI = new AtomicBoolean(false);
+    private static final AtomicBoolean IS_NOGUI = new AtomicBoolean(false);
     private static Path runtimeDirectory = null;
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newWorkStealingPool(4);
@@ -153,6 +153,8 @@ public class JavaFXApplication extends Application {
             if(!IS_NOGUI.get()) {
                 mainStage.setScene(gui.loginScene);
                 mainStage.show();
+            } else {
+                Platform.setImplicitExit(false);
             }
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
