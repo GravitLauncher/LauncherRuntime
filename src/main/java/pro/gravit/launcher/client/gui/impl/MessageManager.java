@@ -46,7 +46,7 @@ public class MessageManager {
                 dialog.currentStage = scene.currentStage;
                 dialog.init();
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                scene.errorHandle(e);
             }
         }
         Pane dialogRoot = (Pane) dialog.getFxmlRoot();
