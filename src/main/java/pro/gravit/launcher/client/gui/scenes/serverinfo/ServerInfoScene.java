@@ -111,9 +111,11 @@ public class ServerInfoScene extends AbstractScene {
     }
 
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, jvmDir != null ? jvmDir : Paths.get(System.getProperty("java.home")), clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
-                application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir,
+                jvmDir != null ? jvmDir : ( profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath) ),
+                clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
+                application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = profileSettings.ram;
         if (clientLauncherProcess.params.ram > 0) {
             clientLauncherProcess.jvmArgs.add("-Xms" + clientLauncherProcess.params.ram + 'M');

@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.config;
 
+import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
@@ -81,6 +82,8 @@ public class RuntimeSettings extends UserSettings {
         public boolean fullScreen;
         @LauncherNetworkAPI
         public boolean autoEnter;
+        @LauncherNetworkAPI
+        public String javaPath;
 
         public static ProfileSettings getDefault(ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
@@ -99,12 +102,14 @@ public class RuntimeSettings extends UserSettings {
         public boolean debug;
         public boolean fullScreen;
         public boolean autoEnter;
+        public String javaPath;
 
         public ProfileSettingsView(ProfileSettings settings) {
             ram = settings.ram;
             debug = settings.debug;
             fullScreen = settings.fullScreen;
             autoEnter = settings.autoEnter;
+            javaPath = settings.javaPath;
             this.settings = settings;
         }
 
@@ -113,6 +118,7 @@ public class RuntimeSettings extends UserSettings {
             settings.debug = debug;
             settings.autoEnter = autoEnter;
             settings.fullScreen = fullScreen;
+            settings.javaPath = javaPath;
         }
     }
 }

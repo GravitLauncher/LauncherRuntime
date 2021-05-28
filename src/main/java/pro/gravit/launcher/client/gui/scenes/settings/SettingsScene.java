@@ -29,6 +29,7 @@ public class SettingsScene extends AbstractScene {
     private Label ramLabel;
     private Slider ramSlider;
     private RuntimeSettings.ProfileSettingsView profileSettings;
+    private JavaSelectorComponent javaSelector;
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -125,6 +126,7 @@ public class SettingsScene extends AbstractScene {
     @Override
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
+        javaSelector = new JavaSelectorComponent(layout, profileSettings);
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();
