@@ -7,7 +7,7 @@ import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
-import pro.gravit.launcher.client.gui.scenes.serevrmenu.ServerMenuScene;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.scenes.serverinfo.ServerInfoScene;
 import pro.gravit.launcher.client.gui.scenes.settings.SettingsScene;
 import pro.gravit.launcher.client.gui.scenes.update.UpdateScene;

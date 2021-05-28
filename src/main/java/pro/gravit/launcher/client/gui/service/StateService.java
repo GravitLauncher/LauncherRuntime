@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.service;
 
+import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.PingServerRequestEvent;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
@@ -48,6 +49,17 @@ public class StateService {
             PingServerReportRequest.PingServerReport report = serverPingReport.get(name);
             callback.onServerPingReport(report);
         });
+    }
+
+    public void addServerSocketPing(ClientProfile.ServerProfile profile, ServerPinger.Result result) {
+        PingServerReportRequest.PingServerReport report = new PingServerReportRequest.PingServerReport(profile.name, result.maxPlayers, result.onlinePlayers);
+        if(this.serverPingReport != null) {
+            this.serverPingReport.put(profile.name, report);
+        }
+        OnServerPingReportCallback cb = serverPingReportCallbackMap.get(profile.name);
+        if(cb != null) {
+            cb.onServerPingReport(report);
+        }
     }
 
     public void addServerPingCallback(String name, OnServerPingReportCallback callback)

@@ -16,7 +16,7 @@
          <Label id="nameServer" alignment="CENTER" layoutY="265.0" prefHeight="29.0" prefWidth="189.0" text="SERVERNAME" textAlignment="CENTER" />
          <Pane layoutX="115.0" layoutY="8.0" prefHeight="35.0" prefWidth="48.0" style="-fx-background-color: #09BC6A; -fx-background-radius: 10px;">
             <children>
-               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" style="-fx-text-fill: #ffffff;" text="21" />
+               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" style="-fx-text-fill: #ffffff;" text="--" />
             </children>
          </Pane>
          <Label id="genreServer" alignment="CENTER" layoutY="290.0" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" />

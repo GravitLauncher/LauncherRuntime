@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scenes.serevrmenu;
+package pro.gravit.launcher.client.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Labeled;
@@ -9,13 +9,14 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
+import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.management.PingServerRequest;
+import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class ServerMenuScene extends AbstractScene {
                 }
             });
             application.stateService.addServerPingCallback(profile.getDefaultServerProfile().name, (report) -> {
-                LookupHelper.<Text>lookup(pane, "#online").setText(String.valueOf(report.playersOnline));
+                LookupHelper.<Labeled>lookup(pane, "#online").setText(String.valueOf(report.playersOnline));
             });
             return pane;
         });
@@ -146,6 +147,19 @@ public class ServerMenuScene extends AbstractScene {
                         application.stateService.setServerPingReport(event.serverMap);
                     });
                 }
+                CommonHelper.newThread("SererPinger", true, () -> {
+                    for(ClientProfile profile : lastProfiles) {
+                        ClientProfile.ServerProfile serverProfile = profile.getDefaultServerProfile();
+                        if(!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
+                        try {
+                            ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
+                            ServerPinger.Result result = pinger.ping();
+                            application.stateService.addServerSocketPing(serverProfile, result);
+                        } catch (IOException e) {
+                            LogHelper.error(e);
+                        }
+                    }
+                }).start();
             }).exceptionally((ex) -> {
                 errorHandle(ex.getCause());
                 return null;
