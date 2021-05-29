@@ -303,6 +303,15 @@ public class LoginScene extends AbstractScene {
         authFuture.thenAccept(e -> {
             boolean savePassword = savePasswordCheckBox.isSelected();
             login(e.login, e.password, authAvailability, savePassword);
+        }).exceptionally((e) -> {
+            e = e.getCause();
+            if(e instanceof AbstractAuthMethod.UserAuthCanceledException) {
+                authFuture = null;
+                isLoginStarted = false;
+                return null;
+            }
+            errorHandle(e);
+            return  null;
         });
     }
 

@@ -15,4 +15,17 @@ public abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEve
     public abstract CompletableFuture<LoginScene.LoginAndPasswordResult> auth(T details);
 
     public abstract CompletableFuture<Void> hide();
+
+    public static class UserAuthCanceledException extends RuntimeException {
+        public UserAuthCanceledException() {
+        }
+
+        public UserAuthCanceledException(String message) {
+            super(message);
+        }
+
+        public UserAuthCanceledException(String message, Throwable cause) {
+            super(message, cause);
+        }
+    }
 }

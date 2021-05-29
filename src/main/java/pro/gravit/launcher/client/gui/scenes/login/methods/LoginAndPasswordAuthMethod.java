@@ -67,6 +67,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     public static class LoginAndPasswordOverlay extends AbstractOverlay {
+        private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
         private TextField password;
         private LoginAuthButtonComponent authButton;
@@ -91,6 +92,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             });
             LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
                 accessor.hideOverlay(0, null);
+                future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
             });
             login.textProperty().addListener(l -> {
                 authButton.setActive(!login.getText().isEmpty());
