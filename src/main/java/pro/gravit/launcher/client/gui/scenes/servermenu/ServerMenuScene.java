@@ -147,7 +147,7 @@ public class ServerMenuScene extends AbstractScene {
                         application.stateService.setServerPingReport(event.serverMap);
                     });
                 }
-                CommonHelper.newThread("SererPinger", true, () -> {
+                CommonHelper.newThread("ServerPinger", true, () -> {
                     for(ClientProfile profile : lastProfiles) {
                         ClientProfile.ServerProfile serverProfile = profile.getDefaultServerProfile();
                         if(!serverProfile.socketPing || serverProfile.serverAddress == null) continue;

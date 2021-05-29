@@ -1,6 +1,8 @@
 package pro.gravit.launcher.client.gui.scenes.login;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -9,16 +11,17 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.LauncherEngine;
-import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.scenes.login.methods.AbstractAuthMethod;
+import pro.gravit.launcher.client.gui.scenes.login.methods.LoginAndPasswordAuthMethod;
 import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.LauncherRequestEvent;
-import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
@@ -29,7 +32,6 @@ import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
-import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -44,8 +46,7 @@ public class LoginScene extends AbstractScene {
     private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
-    private Pane authActive;
-    private Button authButton;
+    private LoginAuthButtonComponent authButton;
     private final AuthService authService = new AuthService(application);
     private VBox authList;
     private ToggleGroup authToggleGroup;
@@ -54,14 +55,14 @@ public class LoginScene extends AbstractScene {
 
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
-        authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod());
-        authMethods.put(AuthWebViewDetails.class, new WebAuthMethod());
+        LoginSceneAccessor accessor = new LoginSceneAccessor();
+        authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod(accessor));
+        //authMethods.put(AuthWebViewDetails.class, new WebAuthMethod());
     }
 
     @Override
     public void doInit() {
-        authActive = LookupHelper.lookup(layout, "#authActive");
-        authButton = LookupHelper.lookup(authActive, "#authButton");
+        authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, (e) -> contextHelper.runCallback(this::loginWithGui));
         savePasswordCheckBox = LookupHelper.lookup(layout , "#leftPane", "#savePassword");
         if (application.runtimeSettings.password != null) {
             LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
@@ -77,7 +78,6 @@ public class LoginScene extends AbstractScene {
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
         authToggleGroup = new ToggleGroup();
-        LookupHelper.<ButtonBase>lookup(authActive, "#authButton").setOnAction((e) -> contextHelper.runCallback(this::loginWithGui));
         authMethods.forEach((k,v) -> v.prepare());
         // Verify Launcher
         {
@@ -162,31 +162,24 @@ public class LoginScene extends AbstractScene {
         authList.getChildren().add(radio);
     }
 
-    public void showAuthButton() {
-        authActive.setVisible(true);
-    }
-
-    public void hideAuthButton() {
-        authActive.setVisible(false);
-    }
-
     private volatile boolean processingEnabled = false;
 
     public<T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
-        LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton, layout);
+        LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton.getLayout(), layout);
         LogHelper.debug("X: %f, Y: %f",authAbsPosition.x, authAbsPosition.y);
-        double authLayoutX = authButton.getLayoutX();
-        double authLayoutY = authButton.getLayoutY();
+        double authLayoutX = authButton.getLayout().getLayoutX();
+        double authLayoutY = authButton.getLayout().getLayoutY();
         String oldText = authButton.getText();
         if(!processingEnabled) {
             contextHelper.runInFxThread(() -> {
                 disable();
-                authActive.getChildren().remove(authButton);
-                root.getChildren().add(authButton);
-                authButton.setLayoutX(authAbsPosition.x);
-                authButton.setLayoutY(authAbsPosition.y);
+                layout.getChildren().remove(authButton.getLayout());
+                root.getChildren().add(authButton.getLayout());
+                authButton.getLayout().setLayoutX(authAbsPosition.x);
+                authButton.getLayout().setLayoutY(authAbsPosition.y);
             });
+            authButton.disable();
             processingEnabled = true;
         }
         contextHelper.runInFxThread(() -> {
@@ -196,12 +189,13 @@ public class LoginScene extends AbstractScene {
             if(!processingEnabled) return;
             contextHelper.runInFxThread(() -> {
                 enable();
-                root.getChildren().remove(authButton);
-                authActive.getChildren().add(authButton);
-                authButton.setLayoutX(authLayoutX);
-                authButton.setLayoutY(authLayoutY);
+                root.getChildren().remove(authButton.getLayout());
+                layout.getChildren().add(authButton.getLayout());
+                authButton.getLayout().setLayoutX(authLayoutX);
+                authButton.getLayout().setLayoutY(authLayoutY);
                 authButton.setText(oldText);
             });
+            authButton.enable();
             processingEnabled = false;
         };
         try {
@@ -254,7 +248,11 @@ public class LoginScene extends AbstractScene {
                 }, (error) -> {
                     application.runtimeSettings.oauthAccessToken = null;
                     application.runtimeSettings.oauthRefreshToken = null;
-                    loginWithGui();
+                    try {
+                        loginWithGui();
+                    } catch (Exception e) {
+                        errorHandle(e);
+                    }
                 });
                 return true;
             }
@@ -266,16 +264,14 @@ public class LoginScene extends AbstractScene {
         }
         return false;
     }
-    private void loginWithGui() {
+    private void loginWithGui() throws Exception {
         if(tryOAuthLogin()) return;
         for(int i : authFlow) {
             GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
-            if(authFuture == null) authFuture = authMethod.auth(details);
+            if(authFuture == null) authFuture = authMethod.show(details).thenCompose((e) -> authMethod.auth(details));
             else {
-                authFuture = authFuture.thenApply(e -> {
-                    authMethod.show(details);
-                    return e;
-                }).thenCombine(authMethod.auth(details), (first, second) -> {
+                authFuture = authFuture.thenCompose(e -> authMethod.show(details).thenApply(x -> e));
+                authFuture = authFuture.thenCompose(first -> authMethod.auth(details).thenApply(second -> {
                     AuthRequest.AuthPasswordInterface password;
                     String login = null;
                     if(first.login != null) {
@@ -300,12 +296,9 @@ public class LoginScene extends AbstractScene {
                         ((Auth2FAPassword)password).secondPassword = second.password;
                     }
                     return new LoginAndPasswordResult(login, password);
-                });
+                }));
             }
-            authFuture = authFuture.thenApply(e -> {
-                authMethod.hide();
-                return e;
-            });
+            authFuture = authFuture.thenCompose(e -> authMethod.hide().thenApply(x -> e));
         }
         authFuture.thenAccept(e -> {
             boolean savePassword = savePasswordCheckBox.isSelected();
@@ -374,7 +367,11 @@ public class LoginScene extends AbstractScene {
                 authFuture = null;
                 authFlow.add(0);
                 authFlow.add(1);
-                loginWithGui();
+                try {
+                    loginWithGui();
+                } catch (Exception e) {
+                    errorHandle(e);
+                }
             }
             else if(error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
                 authFlow.clear();
@@ -382,7 +379,11 @@ public class LoginScene extends AbstractScene {
                 for(String s : error.substring(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length()+1).split("\\.") ) {
                     authFlow.add(Integer.parseInt(s));
                 }
-                loginWithGui();
+                try {
+                    loginWithGui();
+                } catch (Exception e) {
+                    errorHandle(e);
+                }
             }
         });
     }
@@ -417,14 +418,6 @@ public class LoginScene extends AbstractScene {
         application.runtimeSettings.oauthRefreshToken = null;
     }
 
-    private static abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> {
-        public abstract void prepare();
-        public abstract void reset();
-        public abstract void show(T details);
-        public abstract CompletableFuture<LoginAndPasswordResult> auth(T details);
-        public abstract void hide();
-    }
-
     public static class LoginAndPasswordResult {
         public final String login;
         public final AuthRequest.AuthPasswordInterface password;
@@ -435,101 +428,22 @@ public class LoginScene extends AbstractScene {
         }
     }
 
-    public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordDetails> {
-        private TextField loginField;
-        private TextField passwordField;
-        private Pane textAuthPane;
-        @Override
-        public void prepare() {
-            loginField = LookupHelper.lookup(layout, "#auth", "#login");
-            if (application.runtimeSettings.login != null) {
-                loginField.setText(application.runtimeSettings.login);
-                showAuthButton();;
-            }
-            loginField.textProperty().addListener((e) -> {
-                if(!loginField.getText().isEmpty()) {
-                    showAuthButton();
-                }
-                else {
-                    hideAuthButton();
-                }
-            });
-            passwordField = LookupHelper.lookup(layout, "#auth", "#password");
-            if (application.runtimeSettings.password != null) {
-                passwordField.getStyleClass().add("hasSaved");
-                passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
-            }
-            textAuthPane = LookupHelper.lookup(layout, "#auth","#loginInputs");
+    public class LoginSceneAccessor {
+        public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
+            LoginScene.this.showOverlay(overlay, onFinished);
+        }
+        public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished) {
+            LoginScene.this.hideOverlay(delay, onFinished);
+        }
+        public AuthService getAuthService() {
+            return authService;
+        }
+        public JavaFXApplication getApplication() {
+            return application;
         }
 
-        @Override
-        public void reset() {
-            passwordField.getStyleClass().removeAll("hasSaved");
-            passwordField.setPromptText(application.getTranslation("runtime.scenes.login.password"));
-            passwordField.setText("");
-            loginField.setText("");
-        }
-
-        @Override
-        public void show(AuthPasswordDetails details) {
-            textAuthPane.setVisible(true);
-        }
-
-        @Override
-        public CompletableFuture<LoginAndPasswordResult> auth(AuthPasswordDetails details) {
-            String login = loginField.getText();
-            AuthRequest.AuthPasswordInterface password;
-            if (passwordField.getText().isEmpty() && passwordField.getPromptText().equals(
-                    application.getTranslation("runtime.scenes.login.password.saved"))) {
-                password = application.runtimeSettings.password;
-            } else {
-                String rawPassword = passwordField.getText();
-                password = authService.makePassword(rawPassword);
-            }
-            return CompletableFuture.completedFuture(new LoginAndPasswordResult(login, password));
-        }
-
-        @Override
-        public void hide() {
-            textAuthPane.setVisible(false);
-        }
-    }
-
-    public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
-        private Pane webAuthPane;
-        @Override
-        public void prepare() {
-
-        }
-
-        @Override
-        public void reset() {
-
-        }
-
-        @Override
-        public void show(AuthWebViewDetails details) {
-            webAuthPane.setVisible(true);
-        }
-
-        @Override
-        public CompletableFuture<LoginAndPasswordResult> auth(AuthWebViewDetails details) {
-            CompletableFuture<LoginAndPasswordResult> result = new CompletableFuture<>();
-            try {
-                showOverlay(application.gui.webAuthOverlay, (e) -> {
-                    application.gui.webAuthOverlay.follow(details.url, details.redirectUrl, (redirectUrl) -> {
-                        result.complete(new LoginAndPasswordResult(null, new AuthCodePassword(redirectUrl)));
-                    });
-                });
-            } catch (Exception e) {
-                errorHandle(e);
-            }
-            return result;
-        }
-
-        @Override
-        public void hide() {
-            webAuthPane.setVisible(false);
+        public void errorHandle(Throwable e) {
+            LoginScene.this.errorHandle(e);
         }
     }
 }
