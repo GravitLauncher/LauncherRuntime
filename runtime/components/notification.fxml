@@ -1,25 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Text?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" style="-fx-background-radius: 10px 0px 0px 10px;" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<!-- DrLeonardo refactor -->
+
+<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- Отступы-->
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
-   <stylesheets>
-      <URL value="@components.css" />
-      <URL value="@../global.css" />
-   </stylesheets>
-   <ImageView fitHeight="63.0" fitWidth="66.0" layoutX="7.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+
+   <!-- Картинка уведомления-->
+   <ImageView fitHeight="63.0" fitWidth="66.0" layoutX="11.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
       <image>
          <Image url="@../images/preloader/logo.png" />
       </image>
    </ImageView>
-   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="76.0" layoutY="37.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Ваш кот очень пушмястый" wrappingWidth="219.79296875" />
-   <Text id="notificationText" fontSmoothingType="LCD" layoutX="76.0" layoutY="59.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Он очень мягкий)" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
+
+   <!-- Текст уведомления-->
+   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="78.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-head" text="ВОЕНКОМАТ" wrappingWidth="219.79296875">
+      <font>
+         <Font name="System Bold" size="12.0" />
+      </font></Text>
+   <Text id="notificationText" fontSmoothingType="LCD" layoutX="78.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-desc" text="Вам повестка!" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
+
+   <!-- Подключение стилей-->
+   <stylesheets>
+      <URL value="@components.css" />
+      <URL value="@../styles/global.css" />
+      <URL value="@../styles/variables.css" />
+   </stylesheets>
+
 </Pane>

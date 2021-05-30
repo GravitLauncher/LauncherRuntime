@@ -16,7 +16,7 @@
 <Pane prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@serverinfo.css" />
-        <URL value="@../../global.css" />
+        <URL value="@../../styles/global.css" />
     </stylesheets>
      <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0">
       <Pane id="header" prefHeight="100.0" prefWidth="900.0">

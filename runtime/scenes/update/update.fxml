@@ -19,7 +19,7 @@
 <Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@update.css" />
-        <URL value="@../../global.css" />
+        <URL value="@../../styles/global.css" />
     </stylesheets>
     <Text id="headingUpdate" layoutX="20.0" layoutY="57.0" strokeType="OUTSIDE" strokeWidth="0.0" text="%runtime.scenes.update.headingUpdate" wrappingWidth="435.7734069824219" />
    <Pane layoutX="34.0" layoutY="317.0" prefHeight="96.0" prefWidth="96.0" styleClass="blackbox">

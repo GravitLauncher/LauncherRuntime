@@ -1,4 +1,8 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@700&display=swap");
+@import "./variables.css";
 
 Button,
 CheckBox,
@@ -7,10 +11,72 @@ RadioButton {
     -fx-cursor: hand;
 }
 
+/*-- Шрифты --*/
+.root {
+    -fx-font-family: "Open Sans";
+}
+
+/*-- Вид блоков --*/
+.blocks {
+    -fx-padding: 10px;
+    -fx-background-color: -fx-white;
+    -fx-background-radius: 0;
+}
+
+/*-- Скругление блоков и кнопок --*/
+.b-5 {
+    -fx-border-radius: 5px;
+}
+.b-10 {
+    -fx-border-radius: 10px;
+}
+.b-20 {
+    -fx-border-radius: 20px;
+}
+
+/*-- Управление прозрачностью --*/
+.transparent {
+    -fx-background-color: transparent;
+    -fx-background-size: cover;
+}
+
+/*-- Импорт фона --*/
+#layout {
+    -fx-background-image: url('../images/background.png');
+}
+.blur {
+    -fx-background-image: url('../images/background-blur.png') !important;
+}
+
+/*-- Иконки --*/
+.header-button {
+    -fx-fill: transparent;
+    -fx-stroke: -fx-header;
+}
+.header-button-text {
+    -fx-font-size: 10px;
+    -fx-fill: -fx-header;
+    -fx-align-items: center;
+    -fx-font-weight: bold;
+}
+.header-button:hover,
+.icon-button:hover {
+    -fx-opacity: 0.6;
+}
+.icon-button {
+    -fx-background-position: center;
+    -fx-background-radius: 0;
+    -fx-background-color: transparent;
+}
+.icon-button-color {
+    -fx-fill: -fx-header;
+}
+
+
 #serverImage {
     -fx-background-color: transparent;
     -fx-background-size: cover;
-    -fx-background-image: url('images/servers/imageExample.png');
+    -fx-background-image: url('../images/servers/imageExample.png');
 }
 
 .whiteBox {
@@ -21,7 +87,7 @@ RadioButton {
 .check-box {
     -fx-background-color: transparent;
     -fx-text-fill: #606060;
-    -fx-background-image: url('images/icons/checkbox_off.png');
+    -fx-background-image: url('../images/icons/checkbox_off.png');
     -fx-background-repeat: no-repeat;
     -fx-label-padding: 0 0 0 10px;
     -fx-padding: 0 0 0 0px;
@@ -38,13 +104,14 @@ RadioButton {
     -fx-background-color: transparent;
 }
 
+
 .check-box .box {
     -fx-background-color: transparent;
 }
 
 .check-box:selected {
     -fx-background-color: transparent;
-    -fx-background-image: url('images/icons/checkbox_on.png');
+    -fx-background-image: url('../images/icons/checkbox_on.png');
     -fx-background-repeat: no-repeat;
 }
 
@@ -56,33 +123,8 @@ RadioButton {
     -fx-background-color: transparent;
 }
 
-.text-input {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-line-height: 19px;
-    -fx-text-fill: #000000;
-    -fx-align-items: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-indent: 20px;
-    -fx-text-box-border: transparent;
-    -fx-background-color: transparent;
-}
 
-.logoText {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 10px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 14px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: center;
-    -fx-fill: rgba(53, 53, 53, 0.38);
-}
-.logoTextBlack {
-    -fx-fill: #000000;
-}
+
 
 .InputError {
     -fx-background-radius: 0;
@@ -113,11 +155,8 @@ RadioButton {
 .scroll-bar:vertical {
     -fx-background-color: transparent;
 }
-.blackbox{
-    -fx-background-color: rgba(224, 224, 224, 0.28);
-    -fx-background-radius:10px;
-    
-}
+
+
 .increment-button,
 .decrement-button,
 .increment-arrow,
@@ -172,15 +211,7 @@ RadioButton {
     -fx-text-fill: white;
 }
 
-.icon-button {
-    -fx-background-position: center;
-    -fx-background-radius: 0;
-    -fx-background-color: transparent;
-}
 
-.icon-button:hover {
-    -fx-opacity: 0.8;
-}
 #iconsError{
     -fx-fill: #FF6F80;
 }
@@ -190,10 +221,7 @@ RadioButton {
     -fx-background-color:transparent;
     
 }
-#close,
-#hide{
-    -fx-background-color:transparent;
-}
+
 #deny {
     -fx-background-radius: 0;
     
@@ -239,14 +267,4 @@ RadioButton {
 }
 
 
-/*-- DrLeonardo Design for GravitLauncher --*/
-
-
-/*-- JCat Fixes --*/
-
-.hyperlink:focused {
-    -fx-border-width: 0;
-}
-
-
-/*-- End JCat Fixes --*/
+/*-- DrLeonardo styles refactor --*/

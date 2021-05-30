@@ -83,8 +83,8 @@ public class ServerMenuScene extends AbstractScene {
             LookupHelper.<ImageView>lookupIfPossible(pane, "#serverLogo").ifPresent((a) -> {
                 try {
                     javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(a.getFitWidth(), a.getFitHeight());
-                    clip.setArcWidth(10.0);
-                    clip.setArcHeight(10.0);
+                    clip.setArcWidth(20.0);
+                    clip.setArcHeight(20.0);
                     a.setClip(clip);
                 } catch (Throwable e) {
                     LogHelper.error(e);
