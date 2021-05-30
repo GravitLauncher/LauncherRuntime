@@ -69,7 +69,7 @@
          </Pane>
       </children></Pane>
    <stylesheets>
-      <URL value="@../../global.css" />
+      <URL value="@../../styles/global.css" />
       <URL value="@console.css" />
    </stylesheets>
 </Pane>

@@ -1,93 +1,80 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
+@import "../styles/global.css";
+
+/*-- Уведомления --*/
+.text-font-head {
+    -fx-text-fill: -fx-black2C;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+.text-font-desc {
+    -fx-text-fill: -fx-black2C;
+    -fx-font-size: 10px;
+}
 #notificationPane {
-   -fx-border-radius: 10px;
-    -fx-padding: 10;
--fx-border-color: white;
--fx-background-color:#fff;
+    -fx-background-radius: 10px 0px 0px 10px;
 }
 
-#serverButtonSelected,
-#serverButtonPressed {
-    -fx-background-color: rgba(243, 243, 243, 0.1);
-}
-
+/*-- Блок сервера --*/
 .serverButtons {
-    -fx-background-color: transparent;
+    -fx-background-color: -fx-grayTr;
     -fx-background-radius: 20px;
 }
-
+#serverButton {
+    -fx-background-radius: 20px;
+    -fx-cursor: hand;
+}
+#serverButton:hover {
+    -fx-background-color: -fx-grayTr-hover;
+}
+#serverButtonSelected,
+#serverButtonPressed {
+    -fx-background-color: -fx-grayTr-hover;
+}
 .serverButtonsActive {
-    -fx-background-color: rgba(5, 5, 5, 0.1);
+    -fx-background-color: -fx-grayTr-hover;
+}
+#serverLogo {
+    -fx-background-position: center;
 }
 
+
+/*-- Информация о сервере --*/
+#nameServer {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 20px;
+    -fx-wrap-text: false;
+    -fx-font-weight: bold;
+}
+#nameServer:hover {
+    -fx-fill: -fx-black2C-hover;
+}
+#genreServer {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 12px;
+}
+
+
+/*-- Индикатор онлайна --*/
+#block-online {
+    -fx-background-color: -fx-green;
+    -fx-background-radius: 5px;
+}
 #online {
-    -fx-fill: #FFDE6B;
+    -fx-text-fill: -fx-white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
-#serverLogo {
-    -fx-background-position: center;
-    -fx-background-radius: 10px;
-}
 
-#nameServer {
-    -fx-fill: #2C2C2C;
-    -fx-text-fill: #2C2C2C;
-    -fx-font-size: 20px;
-    -fx-wrap-text: false;
-    -fx-font-weight: bold;
-}
-
-#nameServer:hover {
-    -fx-fill: #7C4DFF;
-    -fx-font-size: 20px;
-    -fx-font-weight: bold;
-    -fx-wrap-text: false;
-}
-
-#genreServer {
-    -fx-fill: #808080;
-    -fx-font-size: 12px;
-}
-
-#notificationHeading {
-    -fx-font-family: Roboto;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-line-height: 15px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-indent: 20px;
-    -fx-text-fill: #000000;
-}
-
-#notificationText {
-    -fx-font-family: Roboto;
-    -fx-font-style: normal;
-    -fx-font-weight: normal;
-    -fx-font-size: 10px;
-    -fx-line-height: 12px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-indent: 20px;
-    -fx-text-fill: #2C2C2C;
-}
-
-#line {
-    -fx-stroke: #C7C7C7;
-}
+/*-- Кнопка сохранить (для всех сцен) --*/
 #save {
-    -fx-font-family: Roboto;
-    -fx-font-style: normal;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
-    -fx-line-height: 28px;
     -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #FFFFFF;
-    -fx-background-color: #6B36FF;
-    -fx-background-radius: 10px;
+    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-violet;
 }
 
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/

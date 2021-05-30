@@ -1,161 +1,140 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
-/* Backgrounds */
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
 
-#loginPane,
-#serverPaneLayout {
+/*-- Вертикальная полоса на главной сцене --*/
+.vline{
+    -fx-background-color: -fx-grayTr;
+}
+
+/*-- Ввод данных --*/
+#login,
+#password {
     -fx-background-color: transparent;
-}
-
-#password,
-#login {
-    -fx-background-radius: 0;
-    /* ********************* */
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
+    -fx-background-radius: 0 ;
     -fx-font-size: 14px;
-    -fx-line-height: 19px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-indent: 20px;
-    -fx-color: #2C2C2C;
-
-}
-
-#otherWelcome {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: normal;
-    -fx-font-size: 14px;
-    -fx-line-height: 19px;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-}
-
-#webAuth {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
+    -fx-text-fill: -fx-header;
     -fx-font-weight: bold;
-    -fx-font-size: 12px;
-    -fx-line-height: 16px;
-    -fx-text-align: center;
-    -fx-text-fill: #FFFFFF;
-    -fx-letter-spacing: 0.25px;
-    -fx-background-color: #09BC6A;
-    -fx-background-radius: 5px;
+    -fx-cursor: text;
+}
+#password:focused,
+#login:focused {
+    -fx-text-fill: -fx-black2C;
 }
 
-#playerName {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 24px;
-    -fx-line-height: 33px;
-    -fx-align-items: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-indent: 10px;
-}
-#welcome {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: normal;
-    -fx-font-size: 12px;
-    -fx-line-height: 16px;
-    -fx-align-items: center;
-    -fx-letter-spacing: 0.25px;
-}
-
-#goAuth {
-    -fx-background-color: transparent;
-    -fx-background-repeat: no-repeat;
-    -fx-text-fill: #fff;
-    -fx-font-weight: bold;
-    -fx-font-size: 11pt;
-}
-
-#logo {
-    -fx-fill: #323232;
-}
-
-#auth_on:hover,
-#auth_on:pressed {
-    -fx-effect: dropshadow( three-pass-box, rgba(0, 0, 0, 0.6), 8, 0.0, 0, 0);
-}
-
+/*-- Чекбоксы --*/
 #savePassword,
 #autoenter {
-    -fx-font-size: 8pt;
+    -fx-font-size: 7pt;
     -fx-background-image: url('../../images/icons/checkbox_off.png');
-    -fx-text-fill: #5E5E5E;
+    -fx-text-fill: -fx-black2C;
 }
 #savePassword:selected,
 #autoenter:selected {
     -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
 
-#authRadio {
-    -fx-background-image: url('../../images/icons/checkbox_off.png');
-    -fx-text-fill: #5E5E5E;
+/*-- Метод авторизации --*/
+.authList {
+    -fx-background-color: -fx-grayTr;
 }
 
-#authRadio:selected {
-    -fx-background-image: url('../../images/icons/checkbox_on.png');
-}
-
-#forgotPass {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
+/*-- Ссылки --*/
+.createAccount-text {
     -fx-font-weight: bold;
     -fx-font-size: 9px;
-    -fx-line-height: 12px;
-    -fx-align-items: center;
-    -fx-text-align: right;
-    -fx-letter-spacing: 0.25px;
+    -fx-text-align: left;
+    -fx-fill: -fx-green;
 }
-
-#forgotPass:hover,
-#forgotPass:pressed {
-    -fx-text-fill: #606060;
+.createAccount-text:hover,
+.createAccount-text:pressed {
+    -fx-fill: -fx-green-hover;
     -fx-cursor: hand;
 }
-
-#createAccount {
-    -fx-font-size: 9pt;
-    -fx-text-fill: #09BC6A;
-    -fx-font-family: Open Sans;
+.forgotPass {
+    -fx-font-weight: bold;
     -fx-font-size: 9px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 12px;
-    -fx-letter-spacing: 0.25px;
+    -fx-text-align: right;
+    -fx-fill: -fx-grayD;
+}
+.forgotPass:hover,
+.forgotPass:pressed {
+    -fx-fill: -fx-black2C-hover;
+    -fx-cursor: hand;
+}
+.textLogin {
+    -fx-fill: -fx-grayD;
+    -fx-font-size: 9px;
     -fx-text-align: left;
 }
-
-#textLogin {
-    -fx-font-size: 10pt;
-    -fx-text-fill: #fff;
+.hyperlink:focused {
+    -fx-border-width: 0;
+}
+.rectangle {
+    -fx-stroke: -fx-black2C;
 }
 
-#createAccount:hover,
-#createAccount:pressed {
-    -fx-text-fill: #FFC700;
-    -fx-cursor: hand;
+/*-- Приветствие --*/
+#welcome {
+    -fx-font-size: 12px;
+    -fx-align-items: center;
 }
-
-#authButton {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 24px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 28px;
-    -fx-letter-spacing: 0.25px;
+#otherWelcome {
+    -fx-font-size: 14px;
     -fx-text-align: center;
-    -fx-text-fill: #ffffff;
-    -fx-background-color: transparent;
 }
 
-#authList {
-    -fx-background-color: rgba(224, 224, 224, 0.28);
-    -fx-background-radius: 20px;
+/*-- Веб авторизация --*/
+#webAuth {
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-text-align: center;
+    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-green;
 }
-/*-- DrLeonardo Design for GravitLauncher --*/
+
+/*-- Кнопка входа --*/
+.auth {
+     -fx-fill: -fx-green;
+}
+.logo {
+    -fx-fill: -fx-black2C;
+}
+#authBorder {
+    -fx-fill: -fx-greenTr;
+}
+#logoBorder {
+    -fx-fill: -fx-grayLTr;
+}
+#authButton {
+    -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: -fx-white;
+}
+
+/*-- Надпись названия продукта --*/
+#logoVersion,
+#logoProduct,
+#logoName {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-fill: -fx-grayDTr;
+}
+.logoTextGray {
+    -fx-fill: -fx-grayD !important;
+}
+
+/*-- Приветствие игрока --*/
+#playerName {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-align-items: center;
+}
+#welcome {
+    -fx-font-size: 14px;
+    -fx-align-items: center;
+}
+
+/*-- DrLeonardo styles refactor --*/

@@ -19,7 +19,7 @@
 <Pane fx:id="debugPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <ImageView fitHeight="500.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
       <image>
-         <Image url="@../../images/fon.png" />
+         <Image url="@../../images/background.png" />
       </image>
    </ImageView>
    <Pane prefHeight="500.0" prefWidth="900.0">
@@ -98,6 +98,6 @@
 </Pane>
    <stylesheets>
       <URL value="@debug.css" />
-      <URL value="@../../global.css" />
+      <URL value="@../../styles/global.css" />
    </stylesheets>
 </Pane>

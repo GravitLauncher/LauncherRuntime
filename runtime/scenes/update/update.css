@@ -6,7 +6,7 @@
 #overlay {
     -fx-background-color: transparent;
     -fx-background-size: cover;
-    -fx-background-image: url('../../images/fon.png');
+    -fx-background-image: url('../../images/background.png');
 }
 
 #headingUpdate {

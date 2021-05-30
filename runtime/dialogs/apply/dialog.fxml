@@ -15,8 +15,8 @@
         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
     </padding>
     <stylesheets>
-      <URL value="@../dialogs.css" />
-      <URL value="@../../global.css" />
+        <URL value="@../dialogs.css" />
+        <URL value="@../../styles/global.css" />
     </stylesheets>
     <Label id="headingDialog" alignment="CENTER" contentDisplay="CENTER" layoutY="3.0" prefHeight="55.0" prefWidth="589.0" styleClass="dialogHeader" text="%runtime.dialogs.apply.headingDialog" textAlignment="CENTER" />
     <Label id="textDialog" alignment="TOP_LEFT" layoutX="81.0" layoutY="59.0" prefHeight="111.0" prefWidth="424.0" styleClass="dialogText" textAlignment="JUSTIFY" />

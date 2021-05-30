@@ -1,0 +1,12 @@
+/*-- DrLeonardo styles refactor --*/
+
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
+
+#web-description {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/*-- DrLeonardo styles refactor --*/

@@ -16,13 +16,13 @@
 <Pane fx:id="optionsPane" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <stylesheets>
         <URL value="@options.css" />
-        <URL value="@../../global.css" />
+        <URL value="@../../styles/global.css" />
     </stylesheets>
    <Pane id="layout">
       <children>
           <ImageView fitHeight="500.0" fitWidth="900.0" pickOnBounds="true" preserveRatio="true">
             <image>
-               <Image url="@../../images/fon.png" />
+               <Image url="@../../images/background.png" />
             </image>
          </ImageView>
          <Pane id="header" prefHeight="100.0" prefWidth="900.0">

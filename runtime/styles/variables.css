@@ -1,0 +1,32 @@
+/*-- DrLeonardo styles refactor --*/
+
+/*-- Var library colors --*/
+
+* {
+    -fx-black: rgba(224, 224, 224, 0.28);
+    -fx-green: #09BC6A;
+    -fx-green-hover: #15D37C;
+    -fx-greenTr: rgba(9, 188, 106, 0.12);
+    -fx-black2C: #2C2C2C;
+    -fx-black2C-hover: #626262;
+    -fx-white: #FFFFFF;
+    -fx-whiteG: #FAFAFF;
+    -fx-grayTr: rgba(224, 224, 224, 0.28);
+    -fx-grayTr-hover: rgba(178, 178, 178, 0.28);
+    -fx-grayDTr: rgba(53, 53, 53, 0.38);
+    -fx-grayLTr: rgba(182, 182, 182, 0.12);
+    -fx-grayD: #5E5E5E;
+    -fx-red: #F5223B;
+    -fx-redTr: rgba(245, 34, 59, 0.12);
+    -fx-gray: #F2F2F2;
+    -fx-black32: #323232;
+    -fx-violet: #6B36FF;
+    -fx-violet-hover: #875CFF;
+    -fx-header: #A4B3BA;
+    -fx-header-hover: #D0D6D9;
+
+    -fx-violetGR: linear-gradient(#8D4CE0 10.39%, #5D35B9 68.07%, #FAFAFF 68.07%);
+    -fx-ramGR: linear-gradient(#09BC6A 46.73%, #6B36FF 99.96%);
+}
+
+/*-- DrLeonardo styles refactor --*/

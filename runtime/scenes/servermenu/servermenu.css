@@ -1,104 +1,22 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
-#serverlist {
-    -fx-background-color: transparent;
-}
+@import "../../styles/global.css";
 
-#serverlist>.viewport {
-    -fx-background-color: transparent;
-}
-
-#serverdesc {
-    -fx-background-color: transparent;
-}
-
-#serverdesc>.viewport {
-    -fx-background-color: transparent;
-}
-
-#serverinfo {
-    -fx-background-color: transparent;
-}
-
-#serverinfo>.viewport {
-    -fx-background-color: transparent;
-}
-
-#servercontainer {
-    -fx-background-color: transparent;
-}
-
-.serverentrance {
-    -fx-background-color: transparent;
-}
-
-#serverMenu {
-    -fx-background-color: transparent;
-}
-
+/*-- Информация игрока --*/
 #nickname {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
-    -fx-line-height: 19px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #2C2C2C;
+    -fx-text-fill: -fx-black2C;
 }
-
 #money {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
     -fx-font-weight: normal;
     -fx-font-size: 12px;
-    -fx-line-height: 16px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #6D6D6D;
+    -fx-text-fill: -fx-black2C;
 }
-
-#heading {
-    -fx-font-size: 16pt;
-    -fx-fill: #323232;
-}
-#headingOnline {
-    -fx-font-size: 16pt;
-    -fx-fill: #323232;
-}
-
-
-#servertext {
-    -fx-font-size: 10pt;
-    -fx-text-fill: #333333;
-}
-
 #avatar {
     -fx-background-position: center;
     -fx-background-color: transparent;
     -fx-font-smoothing-type: lcd;
-    -fx-background-image: url('../../images/icons/default.png');
 }
 
-#clientLaunch {
-    -fx-background-radius: 0;
-    -fx-background-color: #7C4DFF;
-    -fx-background-size: cover;
-    -fx-text-fill: #fff;
-    -fx-background-insets: 0;
-}
-
-#clientSettings {
-    -fx-background-radius: 0;
-    -fx-background-color: #7C4DFF;
-    -fx-background-size: cover;
-    -fx-font-size: 13pt;
-    -fx-background-insets: 0;
-}
-
-#clientLaunch:pressed,
-#clientLaunch:hover,
-#clientSettings:hover,
-#clientSettings:pressed {
-    -fx-background-color: #6B36FF;
-}
-
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
