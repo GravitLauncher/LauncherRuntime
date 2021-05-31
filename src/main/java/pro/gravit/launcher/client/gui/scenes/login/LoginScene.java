@@ -218,6 +218,7 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void errorHandle(Throwable e) {
+        super.errorHandle(e);
         Pane root = (Pane) scene.getRoot();
         double authLayoutX = authButton.getLayout().getLayoutX();
         double authLayoutY = authButton.getLayout().getLayoutY();
@@ -234,7 +235,6 @@ public class LoginScene extends AbstractScene {
         authButton.enable();
         processingEnabled = false;
         errorEnabled = true;
-        super.errorHandle(e);
     }
 
     @Override
