@@ -63,7 +63,7 @@ public class LoginScene extends AbstractScene {
     @Override
     public void doInit() {
         authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, (e) -> contextHelper.runCallback(this::loginWithGui));
-        savePasswordCheckBox = LookupHelper.lookup(layout , "#leftPane", "#savePassword");
+        savePasswordCheckBox = LookupHelper.lookup(layout, "#leftPane", "#savePassword");
         if (application.runtimeSettings.password != null) {
             LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
         }
@@ -71,14 +71,14 @@ public class LoginScene extends AbstractScene {
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(header,  "#controls", "#links", "#registerPane","#createAccount").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header, "#controls", "#links", "#registerPane", "#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
         if (application.guiModuleConfig.forgotPassURL != null)
-            LookupHelper.<Text>lookup(header,  "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
         authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
         authToggleGroup = new ToggleGroup();
-        authMethods.forEach((k,v) -> v.prepare());
+        authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
         {
             LauncherRequest launcherRequest = new LauncherRequest();
@@ -87,12 +87,11 @@ public class LoginScene extends AbstractScene {
                 this.auth = auth.list;
                 authList.setVisible(auth.list.size() != 1);
                 for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
-                    if(application.runtimeSettings.lastAuth == null) {
-                        if(authAvailability.name.equals("std") || this.authAvailability == null) {
+                    if (application.runtimeSettings.lastAuth == null) {
+                        if (authAvailability.name.equals("std") || this.authAvailability == null) {
                             changeAuthAvailability(authAvailability);
                         }
-                    }
-                    else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
+                    } else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
                         changeAuthAvailability(authAvailability);
                     addAuthAvailability(authAvailability);
                 }
@@ -102,33 +101,33 @@ public class LoginScene extends AbstractScene {
                         contextHelper.runCallback(this::loginWithGui);
                 });
             }), null);
-            if(!application.isDebugMode())
-            processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
-                if(result.launcherExtendedToken != null) {
-                    Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
-                }
-                if (result.needUpdate) {
-                    try {
-                        LogHelper.debug("Start update processing");
-                        application.securityService.update(result);
-                        LogHelper.debug("Exit with Platform.exit");
-                        Platform.exit();
-                        return;
-                    } catch (Throwable e) {
-                        contextHelper.runInFxThread(() -> {
-                            getCurrentOverlay().errorHandle(e);
-                        });
+            if (!application.isDebugMode())
+                processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
+                    if (result.launcherExtendedToken != null) {
+                        Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
+                    }
+                    if (result.needUpdate) {
                         try {
-                            Thread.sleep(1500);
-                            LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
+                            LogHelper.debug("Start update processing");
+                            application.securityService.update(result);
+                            LogHelper.debug("Exit with Platform.exit");
                             Platform.exit();
-                        } catch (Throwable ex) {
-                            LauncherEngine.exitLauncher(0);
+                            return;
+                        } catch (Throwable e) {
+                            contextHelper.runInFxThread(() -> {
+                                getCurrentOverlay().errorHandle(e);
+                            });
+                            try {
+                                Thread.sleep(1500);
+                                LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
+                                Platform.exit();
+                            } catch (Throwable ex) {
+                                LauncherEngine.exitLauncher(0);
+                            }
                         }
                     }
-                }
-                LogHelper.dev("Launcher update processed");
-            }, (event) -> LauncherEngine.exitLauncher(0));
+                    LogHelper.dev("Launcher update processed");
+                }, (event) -> LauncherEngine.exitLauncher(0));
         }
     }
 
@@ -142,7 +141,7 @@ public class LoginScene extends AbstractScene {
 
     @SuppressWarnings("unchecked")
     public void updateAuthMethod(GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details) {
-        if(this.authMethod != null) this.authMethod.hide();
+        if (this.authMethod != null) this.authMethod.hide();
         this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(details.getClass());
         this.authMethod.show(details);
     }
@@ -152,7 +151,7 @@ public class LoginScene extends AbstractScene {
         radio.setToggleGroup(authToggleGroup);
         radio.setId("authRadio");
         radio.setText(authAvailability.displayName);
-        if(this.authAvailability == authAvailability) {
+        if (this.authAvailability == authAvailability) {
             radio.fire();
         }
         radio.setOnAction((e) -> {
@@ -164,14 +163,14 @@ public class LoginScene extends AbstractScene {
 
     private volatile boolean processingEnabled = false;
 
-    public<T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
+    public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
         LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton.getLayout(), layout);
-        LogHelper.debug("X: %f, Y: %f",authAbsPosition.x, authAbsPosition.y);
+        LogHelper.debug("X: %f, Y: %f", authAbsPosition.x, authAbsPosition.y);
         double authLayoutX = authButton.getLayout().getLayoutX();
         double authLayoutY = authButton.getLayout().getLayoutY();
         String oldText = authButton.getText();
-        if(!processingEnabled) {
+        if (!processingEnabled) {
             contextHelper.runInFxThread(() -> {
                 disable();
                 layout.getChildren().remove(authButton.getLayout());
@@ -186,7 +185,7 @@ public class LoginScene extends AbstractScene {
             authButton.setText(text);
         });
         Runnable processingOff = () -> {
-            if(!processingEnabled) return;
+            if (!processingEnabled) return;
             contextHelper.runInFxThread(() -> {
                 enable();
                 root.getChildren().remove(authButton.getLayout());
@@ -221,7 +220,7 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void reset() {
-        if(authMethod != null) {
+        if (authMethod != null) {
             authMethod.reset();
         }
     }
@@ -233,9 +232,10 @@ public class LoginScene extends AbstractScene {
 
     private final List<Integer> authFlow = new ArrayList<>();
     private CompletableFuture<LoginAndPasswordResult> authFuture;
+
     private boolean tryOAuthLogin() {
-        if(application.runtimeSettings.lastAuth != null && authAvailability.name.equals(application.runtimeSettings.lastAuth.name) && application.runtimeSettings.oauthAccessToken != null) {
-            if(application.runtimeSettings.oauthExpire != 0 && application.runtimeSettings.oauthExpire < System.currentTimeMillis()) {
+        if (application.runtimeSettings.lastAuth != null && authAvailability.name.equals(application.runtimeSettings.lastAuth.name) && application.runtimeSettings.oauthAccessToken != null) {
+            if (application.runtimeSettings.oauthExpire != 0 && application.runtimeSettings.oauthExpire < System.currentTimeMillis()) {
                 RefreshTokenRequest request = new RefreshTokenRequest(authAvailability.name, application.runtimeSettings.oauthRefreshToken);
                 processing(request, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
                     application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
@@ -244,7 +244,7 @@ public class LoginScene extends AbstractScene {
                     Request.setOAuth(authAvailability.name, result.oauth);
                     AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
                     LogHelper.info("Login with OAuth AccessToken");
-                    login(null, password, authAvailability,  savePasswordCheckBox.isSelected());
+                    login(null, password, authAvailability, savePasswordCheckBox.isSelected());
                 }, (error) -> {
                     application.runtimeSettings.oauthAccessToken = null;
                     application.runtimeSettings.oauthRefreshToken = null;
@@ -264,36 +264,35 @@ public class LoginScene extends AbstractScene {
         }
         return false;
     }
+
     private void loginWithGui() throws Exception {
-        if(tryOAuthLogin()) return;
-        for(int i : authFlow) {
+        if (tryOAuthLogin()) return;
+        for (int i : authFlow) {
             GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
-            if(authFuture == null) authFuture = authMethod.show(details).thenCompose((e) -> authMethod.auth(details));
+            if (authFuture == null) authFuture = authMethod.show(details).thenCompose((e) -> authMethod.auth(details));
             else {
                 authFuture = authFuture.thenCompose(e -> authMethod.show(details).thenApply(x -> e));
                 authFuture = authFuture.thenCompose(first -> authMethod.auth(details).thenApply(second -> {
                     AuthRequest.AuthPasswordInterface password;
                     String login = null;
-                    if(first.login != null) {
+                    if (first.login != null) {
                         login = first.login;
                     }
-                    if(second.login != null) {
+                    if (second.login != null) {
                         login = second.login;
                     }
-                    if(first.password instanceof AuthMultiPassword) {
+                    if (first.password instanceof AuthMultiPassword) {
                         password = first.password;
-                        ((AuthMultiPassword)password).list.add(second.password);
-                    }
-                    else if(first.password instanceof Auth2FAPassword) {
+                        ((AuthMultiPassword) password).list.add(second.password);
+                    } else if (first.password instanceof Auth2FAPassword) {
                         password = new AuthMultiPassword();
-                        ((AuthMultiPassword)password).list.add(((Auth2FAPassword)first.password).firstPassword);
-                        ((AuthMultiPassword)password).list.add(((Auth2FAPassword)first.password).secondPassword);
-                        ((AuthMultiPassword)password).list.add(second.password);
-                    }
-                    else {
+                        ((AuthMultiPassword) password).list.add(((Auth2FAPassword) first.password).firstPassword);
+                        ((AuthMultiPassword) password).list.add(((Auth2FAPassword) first.password).secondPassword);
+                        ((AuthMultiPassword) password).list.add(second.password);
+                    } else {
                         password = new Auth2FAPassword();
-                        ((Auth2FAPassword)password).firstPassword = first.password;
-                        ((Auth2FAPassword)password).secondPassword = second.password;
+                        ((Auth2FAPassword) password).firstPassword = first.password;
+                        ((Auth2FAPassword) password).secondPassword = second.password;
                     }
                     return new LoginAndPasswordResult(login, password);
                 }));
@@ -305,13 +304,13 @@ public class LoginScene extends AbstractScene {
             login(e.login, e.password, authAvailability, savePassword);
         }).exceptionally((e) -> {
             e = e.getCause();
-            if(e instanceof AbstractAuthMethod.UserAuthCanceledException) {
+            if (e instanceof AbstractAuthMethod.UserAuthCanceledException) {
                 authFuture = null;
                 isLoginStarted = false;
                 return null;
             }
             errorHandle(e);
-            return  null;
+            return null;
         });
     }
 
@@ -323,7 +322,7 @@ public class LoginScene extends AbstractScene {
             application.stateService.setAuthResult(authId.name, result);
             if (savePassword) {
                 application.runtimeSettings.login = login;
-                if(result.oauth == null) {
+                if (result.oauth == null) {
                     application.runtimeSettings.password = password;
                 } else {
                     application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
@@ -332,7 +331,7 @@ public class LoginScene extends AbstractScene {
                 }
                 application.runtimeSettings.lastAuth = authId;
             }
-            if(result.playerProfile != null && result.playerProfile.skin != null) {
+            if (result.playerProfile != null && result.playerProfile.skin != null) {
                 try {
                     application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.skin.url));
                     application.skinManager.getSkin(result.playerProfile.username); //Cache skin
@@ -341,13 +340,14 @@ public class LoginScene extends AbstractScene {
             }
             contextHelper.runInFxThread(() -> {
                 Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
-                if(player.isPresent()) {
+                if (player.isPresent()) {
                     LookupHelper.<Labeled>lookupIfPossible(player.get(), "#playerName").ifPresent(l -> l.setText(result.playerProfile.username.toUpperCase(Locale.ROOT)));
                     LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
                             (h) -> {
                                 try {
                                     Image image = application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight());
-                                    h.setImage(image);
+                                    if (image != null)
+                                        h.setImage(image);
                                 } catch (Throwable e) {
                                     LogHelper.warning("Skin head error");
                                 }
@@ -356,10 +356,10 @@ public class LoginScene extends AbstractScene {
                     player.get().setVisible(true);
                     disable();
                     fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {
-                        enable();
-                        onGetProfiles();
-                        player.get().setVisible(false);
-                    }
+                                enable();
+                                onGetProfiles();
+                                player.get().setVisible(false);
+                            }
                     );
                 } else {
                     onGetProfiles();
@@ -367,11 +367,11 @@ public class LoginScene extends AbstractScene {
             });
 
         }, (error) -> {
-            if(error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
+            if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
             }
-            if(error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
+            if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
                 authFuture = null;
                 authFlow.add(0);
@@ -381,11 +381,10 @@ public class LoginScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
-            }
-            else if(error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
+            } else if (error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
                 authFlow.clear();
                 authFuture = null;
-                for(String s : error.substring(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length()+1).split("\\.") ) {
+                for (String s : error.substring(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length() + 1).split("\\.")) {
                     authFlow.add(Integer.parseInt(s));
                 }
                 try {
@@ -441,12 +440,15 @@ public class LoginScene extends AbstractScene {
         public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
             LoginScene.this.showOverlay(overlay, onFinished);
         }
+
         public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished) {
             LoginScene.this.hideOverlay(delay, onFinished);
         }
+
         public AuthService getAuthService() {
             return authService;
         }
+
         public JavaFXApplication getApplication() {
             return application;
         }
