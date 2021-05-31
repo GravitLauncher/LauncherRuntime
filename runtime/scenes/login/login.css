@@ -96,7 +96,10 @@
 
 /*-- Кнопка входа --*/
 .auth {
-     -fx-fill: -fx-green;
+    -fx-fill: -fx-green;
+}
+.authButtonError {
+    -fx-fill: -fx-red;
 }
 .logo {
     -fx-fill: -fx-black2C;
