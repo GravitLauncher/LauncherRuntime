@@ -282,6 +282,7 @@ public class LoginScene extends AbstractScene {
                         ((AuthMultiPassword) password).list.add(second.password);
                     } else if (first.password instanceof Auth2FAPassword) {
                         password = new AuthMultiPassword();
+                        ((AuthMultiPassword) password).list = new ArrayList<>();
                         ((AuthMultiPassword) password).list.add(((Auth2FAPassword) first.password).firstPassword);
                         ((AuthMultiPassword) password).list.add(((Auth2FAPassword) first.password).secondPassword);
                         ((AuthMultiPassword) password).list.add(second.password);
@@ -316,6 +317,7 @@ public class LoginScene extends AbstractScene {
         AuthRequest authRequest = authService.makeAuthRequest(login, password, authId.name);
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             application.stateService.setAuthResult(authId.name, result);
+            authFuture = null;
             if (savePassword) {
                 application.runtimeSettings.login = login;
                 if (result.oauth == null) {
