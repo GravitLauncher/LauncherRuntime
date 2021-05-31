@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -163,6 +164,7 @@ public class LoginScene extends AbstractScene {
     }
 
     private volatile boolean processingEnabled = false;
+    private volatile boolean errorEnabled = false;
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
@@ -216,6 +218,22 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void errorHandle(Throwable e) {
+        Pane root = (Pane) scene.getRoot();
+        double authLayoutX = authButton.getLayout().getLayoutX();
+        double authLayoutY = authButton.getLayout().getLayoutY();
+        if (!processingEnabled) return;
+        contextHelper.runInFxThread(() -> {
+            enable();
+            root.getChildren().remove(authButton.getLayout());
+            layout.getChildren().add(authButton.getLayout());
+            authButton.getLayout().setLayoutX(authLayoutX);
+            authButton.getLayout().setLayoutY(authLayoutY);
+            authButton.setText("ERROR");
+            authButton.setError();
+        });
+        authButton.enable();
+        processingEnabled = false;
+        errorEnabled = true;
         super.errorHandle(e);
     }
 

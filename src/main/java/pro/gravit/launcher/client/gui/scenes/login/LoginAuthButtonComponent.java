@@ -59,4 +59,16 @@ public class LoginAuthButtonComponent {
     public void setText(String text) {
         button.setText(text);
     }
+
+    public void setError() {
+        LookupHelper.lookup(authActive, "#authBorder").setStyle("-fx-fill: -fx-redTr");
+        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().removeAll("auth");
+        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().add("authButtonError");
+    }
+
+    public void unsetError() {
+        LookupHelper.lookup(authActive, "#authBorder").setStyle("-fx-fill: -fx-greenTr");
+        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().removeAll("authButtonError");
+        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().add("auth");
+    }
 }
