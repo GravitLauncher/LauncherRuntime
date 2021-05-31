@@ -23,6 +23,7 @@ import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.request.Request;
+import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
@@ -369,7 +370,7 @@ public class LoginScene extends AbstractScene {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
             }
-            if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
+            else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
                 authFuture = null;
                 authFlow.add(0);
@@ -390,6 +391,8 @@ public class LoginScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
+            } else {
+                errorHandle(new RequestException(error));
             }
         });
     }
