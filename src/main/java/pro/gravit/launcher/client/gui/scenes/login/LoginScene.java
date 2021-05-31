@@ -248,11 +248,7 @@ public class LoginScene extends AbstractScene {
                 }, (error) -> {
                     application.runtimeSettings.oauthAccessToken = null;
                     application.runtimeSettings.oauthRefreshToken = null;
-                    try {
-                        loginWithGui();
-                    } catch (Exception e) {
-                        errorHandle(e);
-                    }
+                    contextHelper.runInFxThread(this::loginWithGui);
                 });
                 return true;
             }
