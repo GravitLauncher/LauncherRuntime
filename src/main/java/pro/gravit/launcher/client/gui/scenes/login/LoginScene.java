@@ -362,6 +362,10 @@ public class LoginScene extends AbstractScene {
                     LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
                             (h) -> {
                                 try {
+                                    javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+                                    clip.setArcWidth(h.getFitWidth());
+                                    clip.setArcHeight(h.getFitHeight());
+                                    h.setClip(clip);
                                     Image image = application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight());
                                     if (image != null)
                                         h.setImage(image);
