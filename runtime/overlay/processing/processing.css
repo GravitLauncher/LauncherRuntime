@@ -1,0 +1,20 @@
+/*-- DrLeonardo styles refactor --*/
+
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
+
+#overlay > #description {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 16px;
+}
+
+#overlay > #description.error {
+    -fx-text-fill: -fx-red;
+}
+
+#overlay > .logo {
+    -fx-fill: -fx-black2C;
+    -fx-opacity: 0.03;
+}
+
+/*-- DrLeonardo styles refactor --*/
