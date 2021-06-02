@@ -8,11 +8,16 @@
     -fx-background-color: -fx-grayTr;
 }
 
+/*-- Ошибки --*/
+.authButtonError{
+    -fx-fill: -fx-red;
+}
+
 /*-- Ввод данных --*/
 #login,
 #password {
     -fx-background-color: transparent;
-    -fx-background-radius: 0 ;
+    -fx-background-radius: 0;
     -fx-font-size: 14px;
     -fx-text-fill: -fx-header;
     -fx-font-weight: bold;
