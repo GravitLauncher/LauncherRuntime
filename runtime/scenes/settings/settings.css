@@ -1,128 +1,92 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
-#settingsBackground {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-background-image: url('../../images/servermenu.png');
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
+
+/*-- Вывод данных --*/
+#settings-detail {
+    -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 20px;
 }
 
-#settingsPane {
-    -fx-background-color: transparent;
-}
-
-#settingsPane>#settingslist {
-    -fx-background-color: transparent;
-}
-
-#settingsPane>#settingslist>.viewport {
-    -fx-background-color: transparent;
-}
-
-#headingSettings {
-    -fx-fill: #323232;
-    -fx-font-weight: bold;
-    -fx-font-size: 14pt;
-}
-
-#settingsItem {
-    -fx-background-color: transparent;
-}
-
-#dirLabel {
-    -fx-background-color: #eee;
-}
-
+/* RAM настройки */
 #ramLabel {
     -fx-font-weight: bold;
-    -fx-font-size: 15px;
-    -fx-text-fill: #323232;
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-black2C;
 }
-
-#textLabel {
-    -fx-font-size: 15px;
-    -fx-text-fill: #323232;
-}
-
-
-/* RAM slider */
-
-.ramtext {
-    -fx-font-smoothing-type: lcd;
-    -fx-font-size: 14px;
-    -fx-background-color: #323232
-}
-
-#ramInfo,
-#patch {
-    -fx-font-smoothing-type: lcd;
-    -fx-font-size: 16px;
-    -fx-text-fill: #323232;
-}
-
-#ramSlider>.track {
-    -fx-background-color: linear-gradient(from 50% 50% to 100% 100%, #09BC6A, #6B36FF);
+#ramSlider > .track {
+    -fx-background-color: linear-gradient(from 50% 50% to 100% 100%, -fx-green, -fx-violet);
     -fx-pref-height: 4px;
 }
-
-#ramSlider>.thumb {
+#ramSlider > .thumb {
     -fx-background-image: url("../../images/icons/thumb.png");
     -fx-pref-width: 14px;
     -fx-pref-height: 14px;
 }
-
-#ramSlider>.colored-track {
-    -fx-background-color: #7C4DFF;
+#ramSlider > .colored-track {
+    -fx-background-color: -fx-violet-hover;
     -fx-pref-height: 4px;
 }
-
-#ramSlider>.animated-thumb {
+#ramSlider > .animated-thumb {
     -fx-background-color: transparent;
 }
-
-#ramSlider>.slider-value {
-    -fx-fill: white;
-    -fx-stroke: white;
+#ramSlider > .slider-value {
+    -fx-fill: -fx-white;
+    -fx-stroke: -fx-white;
+}
+.ramtext {
+    -fx-font-size: 14px;
+    -fx-background-color: -fx-grayD;
+}
+#ramInfo {
+    -fx-font-size: 16px;
+    -fx-text-fill: -fx-grayD;
 }
 
 
-/* Dir options */
-
-#changeDir {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: normal;
-    -fx-font-size: 10px;
-    -fx-line-height: 14px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #A4B3BA;
-    -fx-background-color: transparent;
-}
+/* Смена директорий */
 #folder {
-    -fx-background-color: #fff;
-    -fx-background-radius: 5px;
+    -fx-background-color: -fx-gray;
+    -fx-background-radius: 0 0 20 20;
+    -fx-cursor: hand;
 }
-
-#console {
-    -fx-background-radius: 0;
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-font-size: 13pt;
+#patch {
+    -fx-font-size: 14px;
+    -fx-fill: -fx-grayD;
 }
-
-#console:hover,
-#console:pressed {
-    -fx-background-color: rgba(254, 254, 255, 0.1);
+#patch:visited {
+    -fx-font-size: 14px;
+    -fx-fill: -fx-header;
 }
-
-#lang {
-    -fx-background-position: center;
-    -fx-background-radius: 0;
+#changeDir {
+    -fx-font-weight: bold;
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-header;
     -fx-background-color: transparent;
 }
-
-#lang:hover {
-    -fx-opacity: 0.8;
+#changeDir:hover,
+#changeDir:pressed {
+    -fx-text-fill: -fx-header-hover;
 }
 
 
-/*-- DrLeonardo Design for GravitLauncher --*/
+/* Описание Java */
+#javaSelect {
+    -fx-background-color: -fx-grayLTr;
+}
+#javaSelect > #javaHeader {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-fill: -fx-black2C;
+}
+#javaSelect > .javaDesc {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 10px;
+}
+#javaSelect > #javaPath {
+    -fx-font-size: 8px;
+    -fx-fill: -fx-grayD;
+}
+
+/*-- DrLeonardo styles refactor --*/

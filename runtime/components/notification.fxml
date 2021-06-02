@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
 
    <!-- Отступы-->
    <padding>
@@ -23,11 +23,8 @@
    </ImageView>
 
    <!-- Текст уведомления-->
-   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="78.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-head" text="ВОЕНКОМАТ" wrappingWidth="219.79296875">
-      <font>
-         <Font name="System Bold" size="12.0" />
-      </font></Text>
-   <Text id="notificationText" fontSmoothingType="LCD" layoutX="78.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-desc" text="Вам повестка!" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
+   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="78.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-head" text="%runtime.scenes.components.notification.notificationHeading" wrappingWidth="219.7" />
+   <Text id="notificationText" fontSmoothingType="LCD" layoutX="78.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-desc" text="%runtime.scenes.components.notification.notificationText" textAlignment="JUSTIFY" wrappingWidth="219.7" />
 
    <!-- Подключение стилей-->
    <stylesheets>

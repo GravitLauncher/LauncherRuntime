@@ -1,6 +1,7 @@
 /*-- DrLeonardo styles refactor --*/
 
 @import "../styles/global.css";
+@import "../styles/variables.css";
 
 /*-- Уведомления --*/
 .text-font-head {
@@ -71,10 +72,24 @@
 /*-- Кнопка сохранить (для всех сцен) --*/
 #save {
     -fx-font-weight: bold;
-    -fx-font-size: 24px;
+    -fx-font-size: 18px;
     -fx-text-align: center;
     -fx-text-fill: -fx-white;
     -fx-background-color: -fx-violet;
+    -fx-background-radius: 10px;
 }
-
+#save:hover {
+    -fx-background-color: -fx-violet-hover;
+}
+#reset {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-align: center;
+    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-red;
+    -fx-background-radius: 5px;
+}
+#reset:hover {
+    -fx-background-color: -fx-red-hover;
+}
 /*-- DrLeonardo styles refactor --*/

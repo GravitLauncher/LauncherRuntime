@@ -1,22 +1,6 @@
 /*-- DrLeonardo styles refactor --*/
 
 @import "../../styles/global.css";
-
-/*-- Информация игрока --*/
-#nickname {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-text-fill: -fx-black2C;
-}
-#money {
-    -fx-font-weight: normal;
-    -fx-font-size: 12px;
-    -fx-text-fill: -fx-black2C;
-}
-#avatar {
-    -fx-background-position: center;
-    -fx-background-color: transparent;
-    -fx-font-smoothing-type: lcd;
-}
+@import "../../styles/variables.css";
 
 /*-- DrLeonardo styles refactor --*/

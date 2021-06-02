@@ -36,8 +36,9 @@
 }
 
 /*-- Метод авторизации --*/
-.authList {
+#authList {
     -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 10px;
 }
 
 /*-- Ссылки --*/
@@ -96,10 +97,7 @@
 
 /*-- Кнопка входа --*/
 .auth {
-    -fx-fill: -fx-green;
-}
-.authButtonError {
-    -fx-fill: -fx-red;
+     -fx-fill: -fx-green;
 }
 .logo {
     -fx-fill: -fx-black2C;

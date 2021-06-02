@@ -1,99 +1,81 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
+@import "../styles/global.css";
+@import "../styles/variables.css";
 
-.dialogText {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 12px;
-    -fx-font-style: normal;
-    -fx-font-weight: 400;
-    -fx-line-height: 16px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: left;
-}
-.dialogHeader {
-    -fx-font-family: Open Sans;
-    -fx-font-size: 14px;
-    -fx-font-style: normal;
-    -fx-font-weight: 700;
-    -fx-line-height: 19px;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-align: center;
-}
-
-.dialogButton {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 3px;
-    -fx-line-height: 11px;
-    -fx-align-items: center;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #A4B3BA;
-    -fx-background-radius: 3px, 1px, 2px, 1px;
-    -fx-background-color: transparent;
-    -fx-font-size:8px;
-}
-
-#save {
-    -fx-background-color: #6B36FF;
-    -fx-background-radius: 10px;
-    -fx-font-family: Roboto;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 24px;
-    -fx-line-height: 28px;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #FFFFFF;
-}
-.dialogRedButton {
-    -fx-background-color: transparent;
-    -fx-text-fill: #FF6F80;
-    -fx-font-size:8px;
-}
-
-
-#dialogBackground {
-    -fx-background-color: transparent;
-}
-
-.dialogInput {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
-}
-
-.dialogSendButton {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
-    -fx-font-weight: bold;
-    -fx-font-size: 10px;
-    -fx-line-height: 14px;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #A4B3BA;
-    -fx-background-color: transparent;
-    
-}
-.dialogSendButton:hover,
-.dialogSendButton:pressed {
-    -fx-background-color: #EAEAEA;
-}
-
+/*-- Блок диалога --*/
 .dialog {
-    -fx-background-color: #fff;
-    -fx-border-color: #fff;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
-    -fx-border-radius:10px;
-    -fx-background-radius:10px;
+    -fx-background-color: -fx-white;
+    -fx-border-color: -fx-white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 30, 0.1, 0.0, 0.0);
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
 }
 
-#forgot2fa {
-    -fx-font-size: 8pt;
-    -fx-text-fill: #A9A9A9;
+/*-- Текст диалога --*/
+.dialogText {
+    -fx-font-size: 12px;
+    -fx-text-align: left;
+    -fx-text-fill: -fx-black2C;
 }
 
-#line {
-    -fx-stroke: #C7C7C7;
+/*-- Кнопки диалога --*/
+.apply-button {
+    -fx-fill: transparent;
+    -fx-stroke: -fx-header;
+    -fx-stroke-width: 1px;
+}
+.apply-button:hover,
+.apply-Button:pressed {
+    -fx-fill: -fx-greenTr;
+    -fx-stroke: -fx-green;
+}
+.deny-button-text,
+.apply-button-text {
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-header;
+    -fx-fill: -fx-header;
+    -fx-align-items: center;
+    -fx-font-weight: bold;
+}
+.apply-button-text:hover,
+.apply-Button-text:pressed {
+    -fx-text-fill: -fx-green;
 }
 
-/*-- DrLeonardo Design for GravitLauncher --*/
+.deny-button {
+    -fx-fill: transparent;
+    -fx-stroke: -fx-red;
+    -fx-stroke-width: 1px;
+}
+.deny-button:hover,
+.deny-Button:pressed {
+    -fx-fill: -fx-redTr;
+    -fx-stroke: -fx-red;
+}
+.deny-button-text:hover,
+.deny-Button-text:pressed {
+    -fx-text-fill: -fx-red;
+}
+
+/*-- Ввод данных --*/
+#dialogInput {
+    -fx-background-color: -fx-whiteG;
+    -fx-background-radius: 0 0 20 20;
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 10px;
+    -fx-text-fill: -fx-header;
+    -fx-font-weight: bold;
+    -fx-cursor: text;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.1, 0.0, 0.0);
+}
+#dialogInput:focused {
+    -fx-text-fill: -fx-black2C;
+}
+.InputError {
+    -fx-background-radius: 0;
+    -fx-background-color: -fx-whiteG;
+    -fx-text-fill: -fx-red;
+}
+
+/*-- DrLeonardo styles refactor --*/

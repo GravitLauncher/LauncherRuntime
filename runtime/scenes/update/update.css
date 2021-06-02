@@ -1,115 +1,77 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
-@font-face {
-    font-family: 'tt-norms';
-    src: url('../../fonts/tt-norms.ttf');
-}
-#overlay {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-background-image: url('../../images/background.png');
-}
+/*-- DrLeonardo styles refactor --*/
 
-#headingUpdate {
-    -fx-fill: #323232;
-    -fx-font-weight: bold;
-    -fx-font-size: 14pt;
-}
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
 
+/*-- Информация о загрузке --*/
 #outputUpdate {
-    -fx-background-radius: 0;
-    -fx-font-family: monospace;
-    -fx-font-weight: 400;
-    -fx-fill: grey;
-    -fx-font-size: 12pt;
+    -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 20px;
+    -fx-fill: fx-black2C;
+    -fx-padding: 7 0 0 10px;
+    -fx-font-size: 12px;
 }
-
 #description {
     -fx-alignment: top-left;
     -fx-wrap-text: true;
+    -fx-font-size: 10px;
 }
-
 #description.error {
-    -fx-text-fill: #AB2727;
+    -fx-text-fill: -fx-red;
 }
 
+/*-- Вывод данных --*/
+#update-detail {
+    -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 20px;
+}
+#update-detail > .speed {
+    -fx-fill: -fx-updateGR;
+    -fx-text-align: center;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+#update-detail > .speed-text {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+#update-detail > .speedError {
+    -fx-fill: -fx-red;
+    -fx-font-size: 18px;
+}
 
-/* Progress bar */
-
+/* Прогресс бар */
 .progress-bar {
     -fx-indeterminate-bar-flip: false;
-    -fx-background-color: #F3F3F3;
+    -fx-background-color: -fx-whiteG;
 }
-
 .progress-indicator {
     -fx-background-color: transparent;
 }
-
 .progress-indicator .indicator {
     -fx-background-color: transparent;
 }
-
-.progress-bar>.bar {
-    
-    
-    -fx-background-color: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #5D35B9);
+.progress-bar > .bar {
+    -fx-background-color: -fx-updateGR;
     -fx-background-insets: 0;
     -fx-background-radius: 0;
     -fx-padding: 0;
 }
-
-.progress-bar>.track {
+.progress-bar > .track {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-background-radius: 3px;
 }
-
-
-/* Phases */
-
-.phasepassive {
-    -fx-fill: #F3F3F3;
-    -fx-stroke-width: 1px;
-    -fx-stroke: #7C4DFF;
-}
-
-.phaseActive {
-    -fx-fill: #7C4DFF;
-}
-
-.phaseError {
-    -fx-fill: #AB2727;
-}
-
-.speed{
-    -fx-fill: linear-gradient(#8D4CE0 42.72%, #5D35B9 100%);
-    -fx-font-size: 17pt;
-    -fx-font-weight: bold;
-}
-.speed-text{
-    -fx-font-size: 11pt;
-    -fx-font-weight: bold;
-}
-
-#phases,
-#file {
-    -fx-text-fill: #323232;
-    -fx-font-size: 14pt;
-}
-
-.speedError{
-    -fx-fill:#FF6F80; 
-}
 .progressError>.bar{
-    -fx-background-color: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #B93639);
+    -fx-background-color: -fx-errorGR;
 }
-/* buttons */
-.invisible{
-    -fx-opacity:0;
-}.visible{
-    -fx-opacity:1;
+.progress-lines {
+    -fx-stroke: -fx-gray;
 }
-#reload,
-#cancel{
-    -fx-background-color:transparent;
+.progress-text {
+    -fx-text-fill: -fx-gray;
+    -fx-fill: -fx-gray;
+    -fx-font-size: 13px;
 }
-/*-- DrLeonardo Design for GravitLauncher --*/
+
+/*-- DrLeonardo styles refactor --*/
