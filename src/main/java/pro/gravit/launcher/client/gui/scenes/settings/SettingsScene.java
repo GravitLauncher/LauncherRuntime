@@ -185,9 +185,9 @@ public class SettingsScene extends AbstractScene {
 
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         componentList.getChildren().add(container);
-        container.getStyleClass().add("optContainer");
-        checkBox.getStyleClass().add("optCheckbox");
-        desc.getStyleClass().add("optDescription");
+        container.getStyleClass().add("settings-container");
+        checkBox.getStyleClass().add("settings-checkbox");
+        desc.getStyleClass().add("settings-description");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
     }
     public void updateRamLabel()

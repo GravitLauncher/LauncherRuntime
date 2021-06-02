@@ -4,9 +4,11 @@ import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.Launcher;
@@ -107,21 +109,22 @@ public class OptionsScene extends AbstractScene {
     }
 
     public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
-        FlowPane container = new FlowPane();
+        VBox container = new VBox();
         CheckBox checkBox = new CheckBox();
         checkBox.setSelected(value);
         checkBox.setText(name);
-        Text desc = new Text();
+        Label desc = new Label();
+        desc.setWrapText(true);
         desc.setText(description);
         container.getChildren().add(checkBox);
-        container.getChildren().add(desc);
+        container.getChildren().add(new StackPane(desc));
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         componentList.getChildren().add(container);
-        container.getStyleClass().add("optContainer");
-        checkBox.getStyleClass().add("optCheckbox");
-        desc.getStyleClass().add("optDescription");
+        container.getStyleClass().add("optional-container");
+        checkBox.getStyleClass().add("optional-checkbox");
+        desc.getStyleClass().add("optional-description");
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
-        VBox.setMargin(container, new Insets(0, 0, 0, 50 * padding));
+        VBox.setMargin(container, new Insets(0, 0, 0, 0));
         return checkBox::setSelected;
     }
 

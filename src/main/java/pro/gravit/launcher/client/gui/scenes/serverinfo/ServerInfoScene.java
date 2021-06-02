@@ -83,7 +83,7 @@ public class ServerInfoScene extends AbstractScene {
             contextHelper.runInFxThread(() -> {
                 Button save = LookupHelper.lookup(pane,  "#save");
                 save.setVisible(true);
-                save.setText("GAME");
+                save.setText(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"));
                 save.setOnAction((e) -> launchClient());
                 serverButtonContainer.getChildren().add(pane);
             });

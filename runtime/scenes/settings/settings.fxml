@@ -92,9 +92,17 @@
                         <padding>
                             <Insets bottom="5.0" left="5.0" right="10.0" top="5.0" />
                         </padding>
-                        <opaqueInsets>
-                            <Insets />
-                        </opaqueInsets>
+                        <children>
+                            <Pane maxWidth="604.0" prefWidth="604.0">
+                                <children>
+                                    <CheckBox id="settings" layoutX="15.0" layoutY="11.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="589.0" styleClass="optional-checkbox" text="CheckBox" />
+                                    <Label id="textSettings" alignment="TOP_LEFT" layoutX="44.0" layoutY="31.0" maxWidth="590.0" prefHeight="17.0" prefWidth="561.0" styleClass="optional-description" text="LabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabel" textOverrun="CLIP" wrapText="true" />
+                                </children>
+                                <padding>
+                                    <Insets top="10.0" />
+                                </padding>
+                            </Pane>
+                        </children>
                     </VBox>
                 </content>
             </ScrollPane>
@@ -131,9 +139,9 @@
    <Pane id="javaSelect" layoutX="241.0" layoutY="325.0" prefHeight="93.0" prefWidth="624.0">
       <children>
           <ComboBox id="javaCombo" layoutX="23.0" layoutY="32.0" prefHeight="36.0" prefWidth="216.0" styleClass="combo-box" />
-          <Label id="javaHeader" layoutX="22.0" layoutY="11.0" prefHeight="18.0" prefWidth="216.0" text="%runtime.scenes.settings.javaHeader" />
-          <Text layoutX="246.0" layoutY="46.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="javaDesc" text="%runtime.scenes.settings.javaDesc" wrappingWidth="356" />
-          <Label id="javaPath" layoutX="22.0" layoutY="67.0" prefHeight="18.0" prefWidth="568.0" text="C:/Users" />
+          <Label id="javaHeader" layoutX="24.0" layoutY="6.0" prefHeight="20.0" prefWidth="568.0" text="%runtime.scenes.settings.javaHeader" />
+          <Text layoutX="246.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="javaDesc" text="%runtime.scenes.settings.javaDesc" textOrigin="CENTER" wrappingWidth="356" />
+          <Label id="javaPath" layoutX="23.0" layoutY="68.0" prefHeight="18.0" prefWidth="568.0" text="C:/Users" />
       </children>
    </Pane>
 

@@ -16,7 +16,7 @@
     -fx-text-fill: -fx-black2C;
 }
 #ramSlider > .track {
-    -fx-background-color: linear-gradient(from 50% 50% to 100% 100%, -fx-green, -fx-violet);
+    -fx-background-color: -fx-ramGR;
     -fx-pref-height: 4px;
 }
 #ramSlider > .thumb {
@@ -44,6 +44,23 @@
     -fx-text-fill: -fx-grayD;
 }
 
+/*-- Чекбоксы --*/
+.settings-description {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 12px;
+    -fx-wrap-text: true;
+    -fx-label-padding: 0 0 15 30px;
+}
+.settings-checkbox {
+    -fx-label-padding: 0 0 10 10px;
+    -fx-padding: 0 0 15 0px;
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.settings-container {
+    -fx-background-color: transparent;
+}
 
 /* Смена директорий */
 #folder {
@@ -82,10 +99,10 @@
 }
 #javaSelect > .javaDesc {
     -fx-fill: -fx-black2C;
-    -fx-font-size: 10px;
+    -fx-font-size: 12px;
 }
 #javaSelect > #javaPath {
-    -fx-font-size: 8px;
+    -fx-font-size: 10px;
     -fx-fill: -fx-grayD;
 }
 

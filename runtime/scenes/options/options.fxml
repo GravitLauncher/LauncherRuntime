@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="optionsPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="optionsPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <Pane id="header" prefHeight="100.0" prefWidth="900.0">
@@ -59,14 +59,22 @@
     <!-- Блок модов-->
     <Pane id="options-detail" layoutX="241.0" layoutY="119.0" prefHeight="340.0" prefWidth="624.0">
         <children>
-            <ScrollPane id="optionslist" layoutY="1.0" prefHeight="339.0" prefWidth="624.0">
-                <VBox fx:id="componentList" spacing="10.0">
+            <ScrollPane id="optionslist" hbarPolicy="NEVER" layoutY="1.0" minWidth="600" prefHeight="340.0" prefWidth="624.0">
+                <VBox fx:id="componentList" prefWidth="622.0" spacing="10.0">
                     <padding>
                         <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
                     </padding>
-                    <opaqueInsets>
-                        <Insets />
-                    </opaqueInsets>
+               <children>
+                  <Pane maxWidth="600.0" prefHeight="60.0" prefWidth="598.0">
+                     <children>
+                        <CheckBox id="options" layoutY="4.0" mnemonicParsing="false" prefHeight="20.0" prefWidth="582.0" styleClass="optional-checkbox" text="CheckBox" />
+                         <Label id="textOptions" alignment="TOP_LEFT" layoutY="28.0" maxWidth="590.0" prefHeight="17.0" prefWidth="590.0" styleClass="optional-description" text="LabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabelLabel" textOverrun="CLIP" wrapText="true" />
+                     </children>
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding>
+                  </Pane>
+               </children>
                 </VBox>
             </ScrollPane>
         </children>

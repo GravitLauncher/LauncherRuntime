@@ -218,23 +218,7 @@ RadioButton {
 .check-box:selected .box {
     -fx-background-color: transparent;
 }
-/* check-box элементы (динамические) */
-.optContainer {
-    -fx-background-color: transparent;
-    -fx-padding: 10 10 0 10px;
-}
-.optDescription {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 10px;
-    -fx-pref-width: 500px;
-}
-.optCheckbox {
-    -fx-label-padding: -12 0 0 10px;
-    -fx-padding: 5 0 0 0px;
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-pref-width: 500px;
-}
+
 
 /* Скролл панели */
 #scroll-pane {
