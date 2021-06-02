@@ -1,74 +1,20 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
-#layout {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-background-image: url('../../images/background.png');
-    -fx-background-radius: 10px;
-}
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
 
-#consolePane {
-       -fx-border-radius: 20;
-    -fx-background-radius: 20;
--fx-background-color:#fff;
-}
-
-
-/* Outputs */
-
-#output {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
-    -fx-font-family: monospace;
-    -fx-font-size: 8pt;
-    -fx-padding: 10 10 10 10px;
-}
-
-#output .content,
-#output .content {
-    
-    -fx-background-radius: 0;
-}
-
-#send {
-    -fx-font-family: Open Sans;
-    -fx-font-style: normal;
+/*-- Ввод данных --*/
+#commandInput {
+    -fx-background-color: -fx-whiteG;
+    -fx-background-radius: 0 0 10 10;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-header;
     -fx-font-weight: bold;
-    -fx-font-size: 10px;
-    -fx-line-height: 14px;
-    -fx-text-align: center;
-    -fx-letter-spacing: 0.25px;
-    -fx-text-fill: #A4B3BA;
-    -fx-background-color: transparent;
-    
+    -fx-cursor: text;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.1, 0.0, 0.0);
+}
+#commandInput:focused {
+    -fx-text-fill: -fx-black2C;
 }
 
-#send:hover,
-#send:pressed {
-    -fx-background-color: #EAEAEA;
-}
-
-#wiki {
-    -fx-background-radius: 0;
-    -fx-pref-width: 50px;
-    -fx-pref-height: 50px;
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-font-size: 13pt;
-}
-
-#wiki:hover,
-#wiki:pressed {
-    -fx-background-color: rgba(254, 254, 255, 0.1);
-}
-
-.commandInputClass {
-    -fx-background-radius: 0;
-    -fx-background-color: #fff;
-    
-}
-#cmdinput{
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.4), 10, 0.1, 0.0, 0.0);
-}
-
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/

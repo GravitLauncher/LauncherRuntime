@@ -36,8 +36,9 @@
 }
 
 /*-- Метод авторизации --*/
-.authList {
+#authList {
     -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 10px;
 }
 
 /*-- Ссылки --*/
