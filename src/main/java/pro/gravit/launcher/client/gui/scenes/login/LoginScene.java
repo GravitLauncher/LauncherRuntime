@@ -218,22 +218,6 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void errorHandle(Throwable e) {
-        Pane root = (Pane) scene.getRoot();
-        double authLayoutX = authButton.getLayout().getLayoutX();
-        double authLayoutY = authButton.getLayout().getLayoutY();
-        if (!processingEnabled) return;
-        contextHelper.runInFxThread(() -> {
-            enable();
-            root.getChildren().remove(authButton.getLayout());
-            layout.getChildren().add(authButton.getLayout());
-            authButton.getLayout().setLayoutX(authLayoutX);
-            authButton.getLayout().setLayoutY(authLayoutY);
-            authButton.setText("ERROR");
-            authButton.setError();
-        });
-        authButton.enable();
-        processingEnabled = false;
-        errorEnabled = true;
         super.errorHandle(e);
         Pane root = (Pane) scene.getRoot();
         double authLayoutX = authButton.getLayout().getLayoutX();
