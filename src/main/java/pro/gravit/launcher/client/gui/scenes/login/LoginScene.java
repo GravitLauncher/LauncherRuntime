@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -23,6 +24,7 @@ import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.request.Request;
+import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
@@ -71,7 +73,7 @@ public class LoginScene extends AbstractScene {
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(header, "#controls", "#links", "#registerPane", "#createAccount").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header, "#controls", "#registerPane", "#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
         if (application.guiModuleConfig.forgotPassURL != null)
             LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
@@ -162,6 +164,7 @@ public class LoginScene extends AbstractScene {
     }
 
     private volatile boolean processingEnabled = false;
+    private volatile boolean errorEnabled = false;
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
@@ -215,7 +218,39 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void errorHandle(Throwable e) {
+        Pane root = (Pane) scene.getRoot();
+        double authLayoutX = authButton.getLayout().getLayoutX();
+        double authLayoutY = authButton.getLayout().getLayoutY();
+        if (!processingEnabled) return;
+        contextHelper.runInFxThread(() -> {
+            enable();
+            root.getChildren().remove(authButton.getLayout());
+            layout.getChildren().add(authButton.getLayout());
+            authButton.getLayout().setLayoutX(authLayoutX);
+            authButton.getLayout().setLayoutY(authLayoutY);
+            authButton.setText("ERROR");
+            authButton.setError();
+        });
+        authButton.enable();
+        processingEnabled = false;
+        errorEnabled = true;
         super.errorHandle(e);
+        Pane root = (Pane) scene.getRoot();
+        double authLayoutX = authButton.getLayout().getLayoutX();
+        double authLayoutY = authButton.getLayout().getLayoutY();
+        if (!processingEnabled) return;
+        contextHelper.runInFxThread(() -> {
+            enable();
+            root.getChildren().remove(authButton.getLayout());
+            layout.getChildren().add(authButton.getLayout());
+            authButton.getLayout().setLayoutX(authLayoutX);
+            authButton.getLayout().setLayoutY(authLayoutY);
+            authButton.setText("ERROR");
+            authButton.setError();
+        });
+        authButton.enable();
+        processingEnabled = false;
+        errorEnabled = true;
     }
 
     @Override
@@ -248,11 +283,7 @@ public class LoginScene extends AbstractScene {
                 }, (error) -> {
                     application.runtimeSettings.oauthAccessToken = null;
                     application.runtimeSettings.oauthRefreshToken = null;
-                    try {
-                        loginWithGui();
-                    } catch (Exception e) {
-                        errorHandle(e);
-                    }
+                    contextHelper.runInFxThread(this::loginWithGui);
                 });
                 return true;
             }
@@ -286,6 +317,7 @@ public class LoginScene extends AbstractScene {
                         ((AuthMultiPassword) password).list.add(second.password);
                     } else if (first.password instanceof Auth2FAPassword) {
                         password = new AuthMultiPassword();
+                        ((AuthMultiPassword) password).list = new ArrayList<>();
                         ((AuthMultiPassword) password).list.add(((Auth2FAPassword) first.password).firstPassword);
                         ((AuthMultiPassword) password).list.add(((Auth2FAPassword) first.password).secondPassword);
                         ((AuthMultiPassword) password).list.add(second.password);
@@ -320,6 +352,7 @@ public class LoginScene extends AbstractScene {
         AuthRequest authRequest = authService.makeAuthRequest(login, password, authId.name);
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             application.stateService.setAuthResult(authId.name, result);
+            authFuture = null;
             if (savePassword) {
                 application.runtimeSettings.login = login;
                 if (result.oauth == null) {
@@ -375,7 +408,7 @@ public class LoginScene extends AbstractScene {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
             }
-            if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
+            else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
                 authFuture = null;
                 authFlow.add(0);
@@ -396,6 +429,8 @@ public class LoginScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
+            } else {
+                errorHandle(new RequestException(error));
             }
         });
     }

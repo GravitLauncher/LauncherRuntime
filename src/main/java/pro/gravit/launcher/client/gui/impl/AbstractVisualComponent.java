@@ -90,6 +90,8 @@ public abstract class AbstractVisualComponent {
         }
         if(message == null) {
             message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+        } else {
+            message = application.getTranslation("runtime.request.".concat(message), message);
         }
         LogHelper.error(e);
         application.messageManager.createNotification("Error", message);
