@@ -139,7 +139,8 @@
    <Pane id="javaSelect" layoutX="241.0" layoutY="325.0" prefHeight="93.0" prefWidth="624.0">
       <children>
           <ComboBox id="javaCombo" layoutX="23.0" layoutY="32.0" prefHeight="36.0" prefWidth="216.0" styleClass="combo-box" />
-          <Label id="javaHeader" layoutX="24.0" layoutY="6.0" prefHeight="20.0" prefWidth="568.0" text="%runtime.scenes.settings.javaHeader" />
+          <Label id="javaHeader" layoutX="24.0" layoutY="6.0" prefHeight="20.0" prefWidth="290.0" text="%runtime.scenes.settings.javaHeader" />
+          <Label id="javaError" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="313.0" layoutY="6.0" prefHeight="20.0" prefWidth="290.0" text="%runtime.scenes.settings.javaError" textAlignment="RIGHT" visible="false" />
           <Text layoutX="246.0" layoutY="51.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="javaDesc" text="%runtime.scenes.settings.javaDesc" textOrigin="CENTER" wrappingWidth="356" />
           <Label id="javaPath" layoutX="23.0" layoutY="68.0" prefHeight="18.0" prefWidth="568.0" text="C:/Users" />
       </children>

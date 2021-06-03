@@ -89,6 +89,12 @@
 
 
 /* Описание Java */
+#javaError {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-fill: -fx-red;
+    -fx-text-fill: -fx-red;
+}
 #javaSelect {
     -fx-background-color: -fx-grayLTr;
 }
