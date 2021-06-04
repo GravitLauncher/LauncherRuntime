@@ -10,12 +10,12 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
@@ -51,21 +51,22 @@ public class OptionsScene extends AbstractScene {
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ClientProfile profile = application.stateService.getProfile();
-        ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
-            contextHelper.runInFxThread(() -> {
-                Button save = LookupHelper.lookup(pane,  "#save");
-                save.setVisible(true);
-                save.setOnAction((e) -> {
-                    try {
-                        application.stateService.setOptionalView(profile, optionalView);
-                        switchScene(application.gui.serverInfoScene);
-                    } catch (Exception exception) {
-                        errorHandle(exception);
-                    }
-                });
-                serverButtonContainer.getChildren().add(pane);
-            });
+        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
+        serverButton.addTo(serverButtonContainer);
+        serverButton.enableSaveButton(null, (e) -> {
+            try {
+                application.stateService.setOptionalView(profile, optionalView);
+                switchScene(application.gui.serverInfoScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
         });
+        serverButton.enableResetButton(null, (e) -> {
+            componentList.getChildren().clear();
+            application.stateService.setOptionalView(profile, new OptionalView(profile));
+            addProfileOptionals(application.stateService.getOptionalView());
+        });
+        componentList.getChildren().clear();
         LookupHelper.<Button>lookupIfPossible(header, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverInfoScene);
