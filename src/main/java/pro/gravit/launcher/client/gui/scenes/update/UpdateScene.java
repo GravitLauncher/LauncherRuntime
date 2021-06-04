@@ -6,6 +6,7 @@ import javafx.scene.control.*;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
+import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
@@ -18,6 +19,7 @@ import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
 import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
 import pro.gravit.launcher.request.update.UpdateRequest;
+import pro.gravit.utils.Downloader;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -43,6 +45,7 @@ public class UpdateScene extends AbstractScene {
     private Text speedtext;
     private Text speederr;
     private long totalSize;
+    private Downloader downloader;
 
     public UpdateScene(JavaFXApplication application) {
         super("scenes/update/update.fxml", application);
@@ -64,7 +67,18 @@ public class UpdateScene extends AbstractScene {
                 (e) -> reset()
         );
         LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction(
-                (e) -> Platform.exit());
+                (e) -> {
+                    if(downloader != null) {
+                        downloader.cancel();
+                        downloader = null;
+                    } else {
+                        try {
+                            switchScene(application.gui.serverInfoScene);
+                        } catch (Exception exception) {
+                            errorHandle(exception);
+                        }
+                    }
+                });
     }
 
     private void deleteExtraDir(Path subDir, HashedDir subHDir, boolean deleteDir) throws IOException {
@@ -166,13 +180,11 @@ public class UpdateScene extends AbstractScene {
                     });
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
-                    AsyncDownloader asyncDownloader = new AsyncDownloader((d) -> {
-                        long old = totalDownloaded.getAndAdd(d);
-                        updateProgress(old, old + d);
-                    });
-                    List<List<AsyncDownloader.SizedFile>> tasks = asyncDownloader.sortFiles(adds, 4);
-                    CompletableFuture[] futures = asyncDownloader.runDownloadList(tasks, updateRequestEvent.url, dir, application.workers);
-                    CompletableFuture.allOf(futures).thenAccept((e) -> {
+                    Downloader downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, fullDiff -> {
+                        long old = totalDownloaded.getAndAdd(fullDiff);
+                        updateProgress(old, old + fullDiff);
+                    }, application.workers, 4);
+                    downloader.getFuture().thenAccept((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
                             deleteExtraDir(dir, diff.extra, diff.extra.flag);
@@ -185,7 +197,7 @@ public class UpdateScene extends AbstractScene {
                         return null;
                     });
 
-                } catch (IOException e) {
+                } catch (Exception e) {
                     ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                 }
             }).exceptionally((error) -> {
