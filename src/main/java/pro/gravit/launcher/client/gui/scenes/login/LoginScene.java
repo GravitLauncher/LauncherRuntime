@@ -145,7 +145,6 @@ public class LoginScene extends AbstractScene {
     public void updateAuthMethod(GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details) {
         if (this.authMethod != null) this.authMethod.hide();
         this.authMethod = (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(details.getClass());
-        this.authMethod.show(details);
     }
 
     public void addAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
@@ -320,9 +319,9 @@ public class LoginScene extends AbstractScene {
             login(e.login, e.password, authAvailability, savePassword);
         }).exceptionally((e) -> {
             e = e.getCause();
+            authFuture = null;
+            isLoginStarted = false;
             if (e instanceof AbstractAuthMethod.UserAuthCanceledException) {
-                authFuture = null;
-                isLoginStarted = false;
                 return null;
             }
             errorHandle(e);
