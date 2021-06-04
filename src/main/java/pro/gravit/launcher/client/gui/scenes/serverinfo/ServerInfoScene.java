@@ -157,19 +157,25 @@ public class ServerInfoScene extends AbstractScene {
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
-            switchScene(application.gui.updateScene);
-            if(isEnabledDownloadJava())
-            {
-                String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
-                Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                    downloadClients(profile, jvmDirPath, jvmHDir);
-                });
-            }
-            else
-            {
-                downloadClients(profile, null, null);
-            }
+            hideOverlay(0, (ev) -> {
+                try {
+                    switchScene(application.gui.updateScene);
+                } catch (Exception e) {
+                    errorHandle(e);
+                }
+                if(isEnabledDownloadJava())
+                {
+                    String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
+                    Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
+                    application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                        downloadClients(profile, jvmDirPath, jvmHDir);
+                    });
+                }
+                else
+                {
+                    downloadClients(profile, null, null);
+                }
+            });
         }), null);
     }
 }
