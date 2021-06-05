@@ -180,9 +180,19 @@ public class UpdateScene extends AbstractScene {
                     });
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
-                    Downloader downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, fullDiff -> {
-                        long old = totalDownloaded.getAndAdd(fullDiff);
-                        updateProgress(old, old + fullDiff);
+                    Downloader downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, new Downloader.DownloadCallback() {
+                        @Override
+                        public void apply(long fullDiff) {
+                            {
+                                long old = totalDownloaded.getAndAdd(fullDiff);
+                                updateProgress(old, old + fullDiff);
+                            }
+                        }
+
+                        @Override
+                        public void onComplete(Path path) {
+
+                        }
                     }, application.workers, 4);
                     downloader.getFuture().thenAccept((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
