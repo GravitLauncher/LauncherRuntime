@@ -125,7 +125,7 @@ public class OptionsScene extends AbstractScene {
         desc.getStyleClass().add("optional-description");
         Pane superContainer = new FlowPane(container);
         FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
-        VBox.setMargin(superContainer, new Insets(0, 0, 50*padding, 0));
+        VBox.setMargin(superContainer, new Insets(0, 0, 0, 50*padding));
         componentList.getChildren().add(superContainer);
         return checkBox::setSelected;
     }
