@@ -2,7 +2,9 @@
 
 <?import java.net.*?>
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.*?>
@@ -10,7 +12,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
      <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent">
 
          <!-- Вертикальная полоса -->
@@ -61,7 +63,7 @@
       </Pane>
 
          <!-- Способы авторизации -->
-         <ScrollPane id="authList" layoutX="622.0" layoutY="429.0" prefHeight="53.0" prefWidth="259.0">
+         <ScrollPane id="authList" hbarPolicy="NEVER" layoutX="728.0" layoutY="368.0" vbarPolicy="NEVER">
              <opaqueInsets>
                  <Insets />
              </opaqueInsets>
@@ -69,8 +71,14 @@
                  <Insets bottom="5.0" top="5.0" />
              </padding>
              <content>
-                 <VBox alignment="BOTTOM_RIGHT" prefHeight="43.0" prefWidth="247.0" />
+                 <VBox alignment="BOTTOM_RIGHT" />
              </content>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+         <effect>
+            <Blend />
+         </effect>
          </ScrollPane>
 
          <!-- Навбар -->

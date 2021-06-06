@@ -143,4 +143,35 @@
     -fx-align-items: center;
 }
 
+/*-- Стилизация radiobutton's--*/
+.radio-button {
+    -fx-background-radius: 5px;
+    -fx-text-fill: -fx-black2C;
+    -fx-label-padding: 0 0 0 10px;
+    -fx-padding: 10px;
+    -fx-font-size: 10px;
+    -fx-text-align: left;
+}
+.radio-button > .radio,
+.radio-button:focused > .radio  {
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+    -fx-background-image: url('../../images/icons/checkbox_off.png');
+    -fx-padding: 5px;
+}
+.radio-button:selected {
+    -fx-background-radius: 5px;
+    -fx-background-color: -fx-grayLDTr;
+    -fx-text-fill: -fx-black2C-hover;
+}
+.radio-button .radio:selected {
+    -fx-background-color: -fx-white;
+    -fx-background-image: null;
+}
+.radio-button:selected .dot {
+    -fx-background-insets: 0;
+    -fx-background-radius: 7px;
+    -fx-background-color: -fx-white;
+}
+
 /*-- DrLeonardo styles refactor --*/
