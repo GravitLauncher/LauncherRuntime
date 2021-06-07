@@ -40,6 +40,19 @@ public class ServerInfoScene extends AbstractScene {
     protected void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
+        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent(
+                (h) -> {
+                    try {
+                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+                        clip.setArcWidth(h.getFitWidth());
+                        clip.setArcHeight(h.getFitHeight());
+                        h.setClip(clip);
+                        h.setImage(originalAvatarImage);
+                    } catch (Throwable e) {
+                        LogHelper.warning("Skin head error");
+                    }
+                }
+        );
         LookupHelper.<Button>lookup(header, "#back").setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverMenuScene);

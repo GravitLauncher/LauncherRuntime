@@ -42,6 +42,19 @@ public class ServerMenuScene extends AbstractScene {
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
+        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent(
+                (h) -> {
+                    try {
+                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+                        clip.setArcWidth(h.getFitWidth());
+                        clip.setArcHeight(h.getFitHeight());
+                        h.setClip(clip);
+                        h.setImage(originalAvatarImage);
+                    } catch (Throwable e) {
+                        LogHelper.warning("Skin head error");
+                    }
+                }
+        );
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         scrollPane.setOnScroll(e -> {
             double offset = e.getDeltaY()/scrollPane.getWidth();
