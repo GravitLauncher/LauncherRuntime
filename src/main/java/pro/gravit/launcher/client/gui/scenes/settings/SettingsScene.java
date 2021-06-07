@@ -13,6 +13,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.launcher.profiles.ClientProfile;
@@ -136,20 +137,18 @@ public class SettingsScene extends AbstractScene {
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ClientProfile profile = application.stateService.getProfile();
-        ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
-            contextHelper.runInFxThread(() -> {
-                Button save = LookupHelper.lookup(pane,  "#save");
-                save.setVisible(true);
-                save.setOnAction((e) -> {
-                    try {
-                        profileSettings.apply();
-                        switchScene(application.gui.serverInfoScene);
-                    } catch (Exception exception) {
-                        errorHandle(exception);
-                    }
-                });
-                serverButtonContainer.getChildren().add(pane);
-            });
+        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
+        serverButton.addTo(serverButtonContainer);
+        serverButton.enableSaveButton(null, (e) -> {
+            try {
+                profileSettings.apply();
+                switchScene(application.gui.serverInfoScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        });
+        serverButton.enableResetButton(null, (e) -> {
+            //TODO
         });
         componentList.getChildren().clear();
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);

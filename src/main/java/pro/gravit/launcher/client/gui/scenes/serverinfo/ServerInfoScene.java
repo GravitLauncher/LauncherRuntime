@@ -14,6 +14,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.hasher.HashedDir;
@@ -31,6 +32,7 @@ import java.nio.file.Paths;
 public class ServerInfoScene extends AbstractScene {
     private ImageView avatar;
     private Image originalAvatarImage;
+    private ServerButtonComponent serverButton;
 
     public ServerInfoScene(JavaFXApplication application) {
         super("scenes/serverinfo/serverinfo.fxml", application);
@@ -92,15 +94,9 @@ public class ServerInfoScene extends AbstractScene {
         LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        ServerMenuScene.getServerButton(application, profile).thenAccept(pane -> {
-            contextHelper.runInFxThread(() -> {
-                Button save = LookupHelper.lookup(pane,  "#save");
-                save.setVisible(true);
-                save.setText(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"));
-                save.setOnAction((e) -> launchClient());
-                serverButtonContainer.getChildren().add(pane);
-            });
-        });
+        serverButton = ServerMenuScene.getServerButton(application, profile);
+        serverButton.addTo(serverButtonContainer);
+        serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"), (e) -> launchClient());
         ServerMenuScene.putAvatarToImageView(application, application.stateService.getUsername(), avatar);
     }
 
@@ -174,19 +170,25 @@ public class ServerInfoScene extends AbstractScene {
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
-            switchScene(application.gui.updateScene);
-            if(isEnabledDownloadJava())
-            {
-                String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
-                Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                    downloadClients(profile, jvmDirPath, jvmHDir);
-                });
-            }
-            else
-            {
-                downloadClients(profile, null, null);
-            }
+            hideOverlay(0, (ev) -> {
+                try {
+                    switchScene(application.gui.updateScene);
+                } catch (Exception e) {
+                    errorHandle(e);
+                }
+                if(isEnabledDownloadJava())
+                {
+                    String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
+                    Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
+                    application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                        downloadClients(profile, jvmDirPath, jvmHDir);
+                    });
+                }
+                else
+                {
+                    downloadClients(profile, null, null);
+                }
+            });
         }), null);
     }
 }

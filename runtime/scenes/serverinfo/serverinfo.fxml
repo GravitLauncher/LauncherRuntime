@@ -10,8 +10,8 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
-    <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" >
+<Pane prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+    <Pane id="serverImage" fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent">
 
         <!-- Навбар -->
       <Pane id="header" prefHeight="100.0" prefWidth="900.0">

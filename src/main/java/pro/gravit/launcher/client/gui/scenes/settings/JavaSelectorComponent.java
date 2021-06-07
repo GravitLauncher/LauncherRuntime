@@ -17,6 +17,7 @@ public class JavaSelectorComponent {
     private final ComboBox<ClientLauncherWrapper.JavaVersion> comboBox;
     private final List<String> javaPaths = new ArrayList<>();
     private final Label javaPath;
+    private final Label javaError;
     private final RuntimeSettings.ProfileSettingsView profileSettings;
     private final ClientProfile profile;
 
@@ -25,12 +26,15 @@ public class JavaSelectorComponent {
         this.profile = profile;
         comboBox.getItems().clear();
         javaPath = LookupHelper.lookup(layout, "#javaPath");
+        javaError = LookupHelper.lookup(layout, "#javaError");
         this.profileSettings = profileSettings;
         comboBox.setConverter(new JavaVersionConverter(profile));
         comboBox.setOnAction(e -> {
-            if(comboBox.getValue() == null) return;
-            javaPath.setText(comboBox.getValue().jvmDir.toAbsolutePath().toString());
+            ClientLauncherWrapper.JavaVersion version = comboBox.getValue();
+            if(version == null) return;
+            javaPath.setText(version.jvmDir.toAbsolutePath().toString());
             profileSettings.javaPath = javaPath.getText();
+            javaError.setVisible(isIncompatibleJava(version, profile));
         });
         for(ClientLauncherWrapper.JavaVersion version : JavaVersionsHelper.javaVersions) {
             comboBox.getItems().add(version);
@@ -38,6 +42,10 @@ public class JavaSelectorComponent {
                 comboBox.setValue(version);
             }
         }
+    }
+
+    public static boolean isIncompatibleJava(ClientLauncherWrapper.JavaVersion version, ClientProfile profile) {
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || ( !version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE );
     }
 
     public String getPath() {
@@ -55,9 +63,6 @@ public class JavaSelectorComponent {
         public String toString(ClientLauncherWrapper.JavaVersion object) {
             if(object == null) return "Unknown";
             String postfix = "";
-            if(object.version > profile.getMaxJavaVersion() || object.version < profile.getMinJavaVersion()) {
-                postfix = "[INCOMPATIBLE]";
-            }
             if(object.version == profile.getRecommendJavaVersion()) {
                 postfix = "[RECOMMENDED]";
             }
