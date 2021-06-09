@@ -19,6 +19,7 @@ import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.login.methods.AbstractAuthMethod;
 import pro.gravit.launcher.client.gui.scenes.login.methods.LoginAndPasswordAuthMethod;
+import pro.gravit.launcher.client.gui.scenes.login.methods.WebAuthMethod;
 import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
@@ -59,7 +60,7 @@ public class LoginScene extends AbstractScene {
         super("scenes/login/login.fxml", application);
         LoginSceneAccessor accessor = new LoginSceneAccessor();
         authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod(accessor));
-        //authMethods.put(AuthWebViewDetails.class, new WebAuthMethod());
+        authMethods.put(AuthWebViewDetails.class, new WebAuthMethod(accessor));
     }
 
     @Override
@@ -390,6 +391,11 @@ public class LoginScene extends AbstractScene {
             if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
+                try {
+                    loginWithGui();
+                } catch (Exception e) {
+                    errorHandle(e);
+                }
             }
             else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();

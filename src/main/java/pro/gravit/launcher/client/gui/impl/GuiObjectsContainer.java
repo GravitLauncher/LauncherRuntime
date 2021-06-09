@@ -6,6 +6,7 @@ import pro.gravit.launcher.client.gui.scenes.*;
 import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
+import pro.gravit.launcher.client.gui.scenes.login.methods.WebAuthMethod;
 import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.scenes.serverinfo.ServerInfoScene;
@@ -33,7 +34,6 @@ public class GuiObjectsContainer {
     public OptionsScene optionsScene;
     public SettingsScene settingsScene;
     public ConsoleScene consoleScene;
-    public WebAuthOverlay webAuthOverlay;
 
     public ConsoleStage consoleStage;
 
@@ -53,8 +53,6 @@ public class GuiObjectsContainer {
 
         updateScene = registerScene(UpdateScene.class);
         debugScene = registerScene(DebugScene.class);
-
-        webAuthOverlay = registerOverlay(WebAuthOverlay.class);
     }
 
     public void reload() throws Exception {
