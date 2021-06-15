@@ -33,7 +33,7 @@
          </children>
       </Pane>
 
-         <!-- Кнопка входа -->
+         <!-- Блок атворизации -->
       <Pane id="authButtonBlock" fx:id="auth" layoutX="22.0" layoutY="134.0">
          <children>
 
@@ -59,11 +59,12 @@
                   </Button>
                </children>
             </Pane>
+             
          </children>
       </Pane>
 
          <!-- Способы авторизации -->
-         <ScrollPane id="authList" hbarPolicy="NEVER" layoutX="728.0" layoutY="368.0" vbarPolicy="NEVER">
+         <ScrollPane id="authList" hbarPolicy="NEVER" layoutX="682.0" layoutY="448.0" prefHeight="36.0" prefWidth="202.0" vbarPolicy="NEVER">
              <opaqueInsets>
                  <Insets />
              </opaqueInsets>

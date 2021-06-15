@@ -27,6 +27,21 @@
 #login:focused {
     -fx-text-fill: -fx-black2C;
 }
+.field-auth {
+    -fx-font-size: 18px;
+    -fx-text-fill: -fx-black2C;
+    -fx-font-weight: bold;
+    -fx-cursor: text;
+}
+#1st,#2st,#3st,#4st,#5st,#6st {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0.0 5.0 0.0 5.0;
+    -fx-padding: 0;
+    -fx-hgap: 0;
+    -fx-vgap: 0;
+    -fx-background-radius: 0;
+}
+
 
 /*-- Чекбоксы --*/
 #savePassword,
@@ -104,6 +119,9 @@
 .auth {
      -fx-fill: -fx-green;
 }
+.auth2fa {
+    -fx-fill: -fx-white;
+}
 .logo {
     -fx-fill: -fx-black2C;
 }
@@ -133,6 +151,7 @@
 }
 
 /*-- Приветствие игрока --*/
+#text-2fa,
 #playerName {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
