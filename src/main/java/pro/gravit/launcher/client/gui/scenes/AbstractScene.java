@@ -12,6 +12,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.JavaRuntimeModule;
@@ -59,6 +60,10 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             scene.setFill(Color.TRANSPARENT);
         }
         layout = (Pane) LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
+        Rectangle rect = new Rectangle(layout.getPrefWidth(),layout.getPrefHeight());
+        rect.setArcHeight(15);
+        rect.setArcWidth(15);
+        layout.setClip(rect);
         header = (Pane) LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
         sceneBaseInit();
         super.init();
