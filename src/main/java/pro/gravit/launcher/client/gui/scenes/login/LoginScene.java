@@ -392,7 +392,7 @@ public class LoginScene extends AbstractScene {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
                 try {
-                    loginWithGui();
+                    contextHelper.runInFxThread(this::loginWithGui);
                 } catch (Exception e) {
                     errorHandle(e);
                 }
@@ -403,7 +403,7 @@ public class LoginScene extends AbstractScene {
                 authFlow.add(0);
                 authFlow.add(1);
                 try {
-                    loginWithGui();
+                    contextHelper.runInFxThread(this::loginWithGui);
                 } catch (Exception e) {
                     errorHandle(e);
                 }
@@ -414,11 +414,12 @@ public class LoginScene extends AbstractScene {
                     authFlow.add(Integer.parseInt(s));
                 }
                 try {
-                    loginWithGui();
+                    contextHelper.runInFxThread(this::loginWithGui);
                 } catch (Exception e) {
                     errorHandle(e);
                 }
             } else {
+                authFuture = null;
                 errorHandle(new RequestException(error));
             }
         });
