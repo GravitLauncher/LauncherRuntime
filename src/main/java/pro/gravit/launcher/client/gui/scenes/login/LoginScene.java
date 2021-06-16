@@ -388,6 +388,7 @@ public class LoginScene extends AbstractScene {
             });
 
         }, (error) -> {
+            authFuture = null;
             if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
@@ -399,7 +400,6 @@ public class LoginScene extends AbstractScene {
             }
             else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
-                authFuture = null;
                 authFlow.add(0);
                 authFlow.add(1);
                 try {
@@ -409,7 +409,6 @@ public class LoginScene extends AbstractScene {
                 }
             } else if (error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
                 authFlow.clear();
-                authFuture = null;
                 for (String s : error.substring(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length() + 1).split("\\.")) {
                     authFlow.add(Integer.parseInt(s));
                 }
@@ -419,7 +418,6 @@ public class LoginScene extends AbstractScene {
                     errorHandle(e);
                 }
             } else {
-                authFuture = null;
                 errorHandle(new RequestException(error));
             }
         });
