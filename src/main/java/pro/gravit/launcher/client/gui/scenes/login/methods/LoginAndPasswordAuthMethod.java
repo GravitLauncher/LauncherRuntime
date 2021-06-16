@@ -79,6 +79,11 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         }
 
         @Override
+        public String getName() {
+            return "loginandpassword";
+        }
+
+        @Override
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
             password = LookupHelper.lookup(layout, "#password");

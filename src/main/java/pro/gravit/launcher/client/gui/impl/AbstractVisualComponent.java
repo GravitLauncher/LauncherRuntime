@@ -49,6 +49,8 @@ public abstract class AbstractVisualComponent {
         return isInit;
     }
 
+    public abstract String getName();
+
     protected Parent getFxmlRoot() {
         try {
             return  (Parent) application.fxmlFactory.getAsync(sysFxmlPath).get();

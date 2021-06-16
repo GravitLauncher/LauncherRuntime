@@ -63,6 +63,10 @@ public abstract class AbstractStage {
         this.scene = visualComponent;
     }
 
+    public boolean isShowing() {
+        return stage.isShowing();
+    }
+
     public final boolean isNullScene() {
         return scene == null;
     }

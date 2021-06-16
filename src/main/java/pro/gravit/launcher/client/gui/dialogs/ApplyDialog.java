@@ -38,6 +38,11 @@ public class ApplyDialog extends AbstractDialog {
     }
 
     @Override
+    public String getName() {
+        return "apply";
+    }
+
+    @Override
     protected void doInit() throws Exception {
         textHeader = LookupHelper.lookup(layout, "#headingDialog");
         textDescription = LookupHelper.lookup(layout, "#textDialog");

@@ -262,6 +262,4 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     public static void runLater(double delay, EventHandler<ActionEvent> callback) {
         fade(null, delay, 0.0, 1.0, callback);
     }
-
-    public abstract String getName();
 }

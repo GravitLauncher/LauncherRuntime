@@ -68,6 +68,11 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         }
 
         @Override
+        public String getName() {
+            return "totp";
+        }
+
+        @Override
         protected void doInit() {
             Pane sub = (Pane) LookupHelper.<Button>lookup(layout, "#auth2fa", "#authButton").getGraphic();
             textFields = new TextField[6];

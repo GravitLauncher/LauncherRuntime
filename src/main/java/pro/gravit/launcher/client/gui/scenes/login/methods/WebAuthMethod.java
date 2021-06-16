@@ -70,6 +70,11 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         }
 
         @Override
+        public String getName() {
+            return "webView";
+        }
+
+        @Override
         protected void doInit() {
             Pane webViewPane = LookupHelper.lookup(layout, "#webview");
             webView = new WebView();

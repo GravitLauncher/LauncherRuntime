@@ -70,6 +70,24 @@ public class GuiObjectsContainer {
         }).get();
     }
 
+    public AbstractScene getSceneByName(String name) {
+        for(AbstractScene scene : scenes) {
+            if(name.equals(scene.getName())) {
+                return scene;
+            }
+        }
+        return null;
+    }
+
+    public AbstractOverlay getOverlayByName(String name) {
+        for(AbstractOverlay overlay : overlays) {
+            if(name.equals(overlay.getName())) {
+                return overlay;
+            }
+        }
+        return null;
+    }
+
 
     @SuppressWarnings("unchecked")
     public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {

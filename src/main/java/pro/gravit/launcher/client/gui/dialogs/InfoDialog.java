@@ -35,6 +35,11 @@ public class InfoDialog extends AbstractDialog {
     }
 
     @Override
+    public String getName() {
+        return "info";
+    }
+
+    @Override
     protected void doInit() throws Exception {
         textHeader = LookupHelper.lookup(layout, "#headingDialog");
         //textDescription = LookupHelper.lookup(layout, "#textDialog");

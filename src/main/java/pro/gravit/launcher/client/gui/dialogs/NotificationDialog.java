@@ -61,6 +61,11 @@ public class NotificationDialog extends AbstractDialog {
     }
 
     @Override
+    public String getName() {
+        return "notify";
+    }
+
+    @Override
     protected void doInit() throws Exception {
         textHeader = LookupHelper.lookup(layout, "#notificationHeading");
         textDescription = LookupHelper.lookup(layout, "#notificationText");

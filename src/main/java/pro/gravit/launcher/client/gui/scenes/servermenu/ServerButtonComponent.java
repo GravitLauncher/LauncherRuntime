@@ -36,6 +36,11 @@ public class ServerButtonComponent extends AbstractVisualComponent {
     }
 
     @Override
+    public String getName() {
+        return "serverButton";
+    }
+
+    @Override
     protected void doInit() throws Exception {
         LookupHelper.<Labeled>lookup(layout, "#nameServer").setText(profile.getTitle());
         LookupHelper.<Labeled>lookup(layout, "#genreServer").setText(profile.getVersion().toString());
