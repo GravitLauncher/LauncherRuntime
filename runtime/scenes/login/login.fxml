@@ -64,7 +64,7 @@
       </Pane>
 
          <!-- Способы авторизации -->
-         <ScrollPane id="authList" hbarPolicy="NEVER" layoutX="682.0" layoutY="448.0" prefHeight="36.0" prefWidth="202.0" vbarPolicy="NEVER">
+         <ScrollPane id="authList" hbarPolicy="NEVER" layoutX="728.0" layoutY="368.0" vbarPolicy="NEVER">
              <opaqueInsets>
                  <Insets />
              </opaqueInsets>
@@ -72,7 +72,7 @@
                  <Insets bottom="5.0" top="5.0" />
              </padding>
              <content>
-                 <VBox alignment="BOTTOM_RIGHT" />
+                 <VBox alignment="BOTTOM_LEFT" />
              </content>
          <cursor>
             <Cursor fx:constant="HAND" />

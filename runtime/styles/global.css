@@ -61,11 +61,11 @@ RadioButton {
 
 /*-- Импорт фона --*/
 #layout {
-    -fx-background-image: url('../images/background.jpg');
+    -fx-background-image: url('../images/background.png');
     -fx-background-size: cover;
 }
 .blur {
-    -fx-background-image: url('../images/background-blur.jpg') !important;
+    -fx-background-image: url('../images/background-blur.png') !important;
     -fx-background-size: cover;
 }
 
