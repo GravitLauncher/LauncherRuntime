@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.commands;
+package pro.gravit.launcher.client.gui.commands.runtime;
 
 import pro.gravit.launcher.client.gui.impl.MessageManager;
 import pro.gravit.utils.command.Command;

@@ -8,8 +8,6 @@ import pro.gravit.launcher.*;
 import pro.gravit.launcher.client.*;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientGuiPhase;
-import pro.gravit.launcher.client.gui.commands.runtime.DialogCommand;
-import pro.gravit.launcher.client.gui.commands.NotifyCommand;
 import pro.gravit.launcher.client.gui.commands.RuntimeCommand;
 import pro.gravit.launcher.client.gui.commands.VersionCommand;
 import pro.gravit.launcher.client.gui.config.GuiModuleConfig;
@@ -29,6 +27,7 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
+import pro.gravit.utils.command.CommandCategory;
 import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -105,9 +104,7 @@ public class JavaFXApplication extends Application {
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
-        if(!IS_NOGUI.get()) {
-            registerCommands();
-        }
+        registerCommands();
     }
 
     @Override
@@ -174,14 +171,17 @@ public class JavaFXApplication extends Application {
         fxmlFactory = new FXMLFactory(resources, workers);
     }
 
+    private CommandCategory runtimeCategory;
+
     private void registerCommands() {
-        BaseCommandCategory category = new BaseCommandCategory();
-        category.registerCommand("notify", new NotifyCommand(messageManager));
-        category.registerCommand("version", new VersionCommand());
-        category.registerCommand("runtime", new RuntimeCommand(this));
-        ConsoleManager.handler.registerCategory(new CommandHandler.Category(category, "runtime"));
+        runtimeCategory = new BaseCommandCategory();
+        runtimeCategory.registerCommand("version", new VersionCommand());
+        ConsoleManager.handler.registerCategory(new CommandHandler.Category(runtimeCategory, "runtime"));
     }
 
+    public void registerPrivateCommands() {
+        runtimeCategory.registerCommand("runtime", new RuntimeCommand(this));
+    }
 
 
     @Override

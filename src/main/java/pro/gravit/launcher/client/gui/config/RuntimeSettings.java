@@ -88,7 +88,10 @@ public class RuntimeSettings extends UserSettings {
 
         public static ProfileSettings getDefault(ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
-            settings.ram = 2048;
+            ClientProfile.ProfileDefaultSettings defaultSettings = profile.getSettings();
+            settings.ram = defaultSettings.ram;
+            settings.autoEnter = defaultSettings.autoEnter;
+            settings.fullScreen = defaultSettings.fullScreen;
             ClientLauncherWrapper.JavaVersion version = JavaVersionsHelper.getRecommendJavaVersion(profile);
             if(version != null) {
                 settings.javaPath = version.jvmDir.toString();
