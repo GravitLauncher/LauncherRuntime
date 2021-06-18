@@ -23,6 +23,7 @@ public class TriggerManager {
     public void process(ClientProfile profile, OptionalView view) {
         TriggerManagerContext context = new TriggerManagerContext(profile);
         for(OptionalFile optional : view.all) {
+            if(optional.triggersList == null) continue;
             boolean isRequired = false;
             int success = 0;
             int fail = 0;
