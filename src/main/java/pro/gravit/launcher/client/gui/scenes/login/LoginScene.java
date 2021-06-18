@@ -25,6 +25,7 @@ import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.LauncherRequestEvent;
+import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
@@ -429,6 +430,9 @@ public class LoginScene extends AbstractScene {
     public void onGetProfiles() {
         processing(new ProfilesRequest(), application.getTranslation("runtime.overlay.processing.text.profiles"), (profiles) -> {
             application.stateService.setProfilesResult(profiles);
+            for(ClientProfile profile : profiles.profiles) {
+                application.triggerManager.process(profile,application.stateService.getOptionalView(profile));
+            }
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);
                 application.securityService.startRequest();

@@ -2,18 +2,19 @@ package pro.gravit.launcher.client.gui.helper;
 
 import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.utils.helper.JavaHelper;
 
 import java.util.Collections;
 import java.util.List;
 
 public class JavaVersionsHelper {
-    public static final List<ClientLauncherWrapper.JavaVersion> javaVersions = Collections.unmodifiableList(ClientLauncherWrapper.findJava());
-    public static ClientLauncherWrapper.JavaVersion getRecommendJavaVersion(ClientProfile profile) {
+    public static final List<JavaHelper.JavaVersion> javaVersions = Collections.unmodifiableList(JavaHelper.findJava());
+    public static JavaHelper.JavaVersion getRecommendJavaVersion(ClientProfile profile) {
         int min = profile.getMinJavaVersion();
         int max = profile.getMaxJavaVersion();
         int recommend = profile.getRecommendJavaVersion();
-        ClientLauncherWrapper.JavaVersion result = null;
-        for(ClientLauncherWrapper.JavaVersion version : javaVersions) {
+        JavaHelper.JavaVersion result = null;
+        for(JavaHelper.JavaVersion version : javaVersions) {
             if(version.version < min || version.version > max) continue;
             if(result == null) {
                 result = version;

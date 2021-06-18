@@ -19,6 +19,7 @@ import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
+import pro.gravit.launcher.client.gui.utils.TriggerManager;
 import pro.gravit.launcher.debug.DebugMain;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
@@ -59,6 +60,7 @@ public class JavaFXApplication extends Application {
     public RuntimeSecurityService securityService;
     public SkinManager skinManager;
     public FXMLFactory fxmlFactory;
+    public TriggerManager triggerManager;
     private SettingsManager settingsManager;
     private PrimaryStage mainStage;
     private boolean debugMode;
@@ -104,6 +106,7 @@ public class JavaFXApplication extends Application {
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
+        triggerManager = new TriggerManager(this);
         registerCommands();
     }
 
@@ -225,9 +228,11 @@ public class JavaFXApplication extends Application {
 
     }
 
-
     public RuntimeSettings.ProfileSettings getProfileSettings() {
-        ClientProfile profile = stateService.getProfile();
+        return getProfileSettings(stateService.getProfile());
+    }
+
+    public RuntimeSettings.ProfileSettings getProfileSettings(ClientProfile profile) {
         if(profile == null) throw new NullPointerException("ClientProfile not selected");
         UUID uuid = profile.getUUID();
         RuntimeSettings.ProfileSettings settings = runtimeSettings.profileSettings.get(uuid);

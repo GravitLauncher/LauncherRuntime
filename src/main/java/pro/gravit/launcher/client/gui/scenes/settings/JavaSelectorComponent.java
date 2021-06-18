@@ -9,12 +9,13 @@ import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.JavaVersionsHelper;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.utils.helper.JavaHelper;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class JavaSelectorComponent {
-    private final ComboBox<ClientLauncherWrapper.JavaVersion> comboBox;
+    private final ComboBox<JavaHelper.JavaVersion> comboBox;
     private final List<String> javaPaths = new ArrayList<>();
     private final Label javaPath;
     private final Label javaError;
@@ -30,13 +31,13 @@ public class JavaSelectorComponent {
         this.profileSettings = profileSettings;
         comboBox.setConverter(new JavaVersionConverter(profile));
         comboBox.setOnAction(e -> {
-            ClientLauncherWrapper.JavaVersion version = comboBox.getValue();
+            JavaHelper.JavaVersion version = comboBox.getValue();
             if(version == null) return;
             javaPath.setText(version.jvmDir.toAbsolutePath().toString());
             profileSettings.javaPath = javaPath.getText();
             javaError.setVisible(isIncompatibleJava(version, profile));
         });
-        for(ClientLauncherWrapper.JavaVersion version : JavaVersionsHelper.javaVersions) {
+        for(JavaHelper.JavaVersion version : JavaVersionsHelper.javaVersions) {
             comboBox.getItems().add(version);
             if(profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                 comboBox.setValue(version);
@@ -44,7 +45,7 @@ public class JavaSelectorComponent {
         }
     }
 
-    public static boolean isIncompatibleJava(ClientLauncherWrapper.JavaVersion version, ClientProfile profile) {
+    public static boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
         return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || ( !version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE );
     }
 
@@ -52,7 +53,7 @@ public class JavaSelectorComponent {
         return comboBox.getValue().jvmDir.toAbsolutePath().toString();
     }
 
-    private static class JavaVersionConverter extends StringConverter<ClientLauncherWrapper.JavaVersion> {
+    private static class JavaVersionConverter extends StringConverter<JavaHelper.JavaVersion> {
         private final ClientProfile profile;
 
         private JavaVersionConverter(ClientProfile profile) {
@@ -60,7 +61,7 @@ public class JavaSelectorComponent {
         }
 
         @Override
-        public String toString(ClientLauncherWrapper.JavaVersion object) {
+        public String toString(JavaHelper.JavaVersion object) {
             if(object == null) return "Unknown";
             String postfix = "";
             if(object.version == profile.getRecommendJavaVersion()) {
@@ -70,7 +71,7 @@ public class JavaSelectorComponent {
         }
 
         @Override
-        public ClientLauncherWrapper.JavaVersion fromString(String string) {
+        public JavaHelper.JavaVersion fromString(String string) {
             return null;
         }
     }

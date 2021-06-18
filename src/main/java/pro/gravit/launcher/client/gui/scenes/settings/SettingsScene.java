@@ -142,6 +142,7 @@ public class SettingsScene extends AbstractScene {
         serverButton.enableSaveButton(null, (e) -> {
             try {
                 profileSettings.apply();
+                application.triggerManager.process(profile, application.stateService.getOptionalView());
                 switchScene(application.gui.serverInfoScene);
             } catch (Exception exception) {
                 errorHandle(exception);

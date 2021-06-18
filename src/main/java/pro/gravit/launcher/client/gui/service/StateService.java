@@ -94,47 +94,6 @@ public class StateService {
         {
             this.optionalViewMap.put(profile, new OptionalView(profile));
         }
-        //Triggers
-        this.optionalViewMap.forEach((profile, view) -> {
-            for (OptionalFile optionalFile : profile.getOptional()) {
-                if (optionalFile.triggers == null)
-                    continue;
-                if(optionalFile.permissions != 0 && rawAuthResult != null && rawAuthResult.permissions != null) {
-                    optionalFile.visible = (optionalFile.permissions & rawAuthResult.permissions.permissions) == optionalFile.permissions;
-                }
-
-                boolean anyTriggered = false;
-                boolean anyNeed = false;
-                boolean allNeedTriggered = false;
-
-                for (OptionalTrigger trigger : optionalFile.triggers) {
-                    boolean isTriggered = trigger.isTriggered();
-                    if (isTriggered)
-                        anyTriggered = true;
-                    if (trigger.need) {
-                        if (!anyNeed) {
-                            anyNeed = true;
-                            allNeedTriggered = isTriggered;
-                        } else {
-                            if (allNeedTriggered)
-                                allNeedTriggered = isTriggered;
-                        }
-                    }
-                }
-
-                if (!anyNeed) {
-                    if (anyTriggered)
-                        view.enable(optionalFile, false, null);
-                } else {
-                    if (allNeedTriggered) {
-                        view.enable(optionalFile, false, null);
-                    } else {
-                        optionalFile.visible = false;
-                        view.disable(optionalFile, null);
-                    }
-                }
-            }
-        });
     }
 
     public String getUsername() {
@@ -157,6 +116,10 @@ public class StateService {
 
     public OptionalView getOptionalView() {
         return this.optionalViewMap.get(this.profile);
+    }
+
+    public OptionalView getOptionalView(ClientProfile profile) {
+        return this.optionalViewMap.get(profile);
     }
 
     public PlayerProfile getPlayerProfile() {
