@@ -1,12 +1,9 @@
 package pro.gravit.launcher.client.gui;
 
 import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
-import pro.gravit.launcher.profiles.PlayerProfile;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import javax.imageio.ImageIO;
@@ -39,7 +36,7 @@ public class SkinManager {
 
         synchronized BufferedImage getFullImage() {
             Optional<BufferedImage> result = imageRef.get();
-            if(result == null) { // It is normal
+            if (result == null) { // It is normal
                 result = Optional.ofNullable(downloadSkin(url));
                 imageRef = new SoftReference<>(result);
             }
@@ -48,7 +45,7 @@ public class SkinManager {
 
         synchronized Image getFullFxImage() {
             Optional<Image> result = fxImageRef.get();
-            if(result == null) { // It is normal
+            if (result == null) { // It is normal
                 BufferedImage image = getFullImage();
                 result = Optional.ofNullable(convertToFxImage(image));
                 fxImageRef = new SoftReference<>(result);
@@ -58,9 +55,9 @@ public class SkinManager {
 
         synchronized BufferedImage getHeadImage() {
             Optional<BufferedImage> result = avatarRef.get();
-            if(result == null) { // It is normal
+            if (result == null) { // It is normal
                 BufferedImage image = getFullImage();
-                result = Optional.ofNullable(getHeadFromSkinImage(image));
+                result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
                 avatarRef = new SoftReference<>(result);
             }
             return result.orElse(null);
@@ -68,7 +65,7 @@ public class SkinManager {
 
         synchronized Image getHeadFxImage() {
             Optional<Image> result = fxAvatarRef.get();
-            if(result == null) { // It is normal
+            if (result == null) { // It is normal
                 BufferedImage image = getHeadImage();
                 result = Optional.ofNullable(convertToFxImage(image));
                 fxAvatarRef = new SoftReference<>(result);
@@ -76,6 +73,7 @@ public class SkinManager {
             return result.orElse(null);
         }
     }
+
     private final JavaFXApplication application;
     private final Map<String, SkinEntry> map = new ConcurrentHashMap<>();
 
@@ -89,25 +87,25 @@ public class SkinManager {
 
     public BufferedImage getSkin(String username) {
         SkinEntry entry = map.get(username);
-        if(entry == null) return null;
+        if (entry == null) return null;
         return entry.getFullImage();
     }
 
     public BufferedImage getSkinHead(String username) {
         SkinEntry entry = map.get(username);
-        if(entry == null) return null;
+        if (entry == null) return null;
         return entry.getHeadImage();
     }
 
     public Image getFxSkin(String username) {
         SkinEntry entry = map.get(username);
-        if(entry == null) return null;
+        if (entry == null) return null;
         return entry.getFullFxImage();
     }
 
     public Image getFxSkinHead(String username) {
         SkinEntry entry = map.get(username);
-        if(entry == null) return null;
+        if (entry == null) return null;
         return entry.getHeadFxImage();
     }
 
@@ -126,13 +124,28 @@ public class SkinManager {
         return convertToFxImage(scaleImage(image, width, height));
     }
 
+    public static BufferedImage sumBufferedImage(BufferedImage img1, BufferedImage img2) {
+        int wid = Math.max(img1.getWidth(), img2.getWidth());
+        int height = Math.max(img1.getHeight(), img2.getHeight());
+        BufferedImage result = new BufferedImage(wid, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = result.createGraphics();
+        Color oldColor = g2.getColor();
+        g2.setPaint(Color.WHITE);
+        g2.fillRect(0, 0, wid, height);
+        g2.setColor(oldColor);
+        g2.drawImage(img1, null, 0, 0);
+        g2.drawImage(img2, null, 0, 0);
+        g2.dispose();
+        return result;
+    }
+
     public Image getScaledFxSkinHead(String username, int width, int height) {
         BufferedImage image = getSkinHead(username);
         return convertToFxImage(scaleImage(image, width, height));
     }
 
     private static BufferedImage scaleImage(BufferedImage origImage, int width, int height) {
-        if(origImage == null) return null;
+        if (origImage == null) return null;
         java.awt.Image resized = origImage.getScaledInstance(width, height, java.awt.Image.SCALE_FAST);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
         Graphics2D graphics2D = image.createGraphics();
@@ -145,9 +158,19 @@ public class SkinManager {
         try {
             return ImageIO.read(url);
         } catch (IOException e) {
-            if(!(e instanceof FileNotFoundException)) LogHelper.error(e);
+            if (!(e instanceof FileNotFoundException)) LogHelper.error(e);
             return null;
         }
+    }
+
+    private static BufferedImage getHeadLayerFromSkinImage(BufferedImage image) {
+        int width = image.getWidth();
+        int renderScale = width / 64;
+        int size = 8 * renderScale;
+        int x_offset = 5 * 8 * renderScale;
+        int y_offset = 8 * renderScale;
+        LogHelper.debug("ShinHead debug: W: %d Scale: %d Offset: %d", width, renderScale, size);
+        return image.getSubimage(x_offset, y_offset, size, size);
     }
 
     private static BufferedImage getHeadFromSkinImage(BufferedImage image) {
@@ -159,11 +182,11 @@ public class SkinManager {
     }
 
     private static Image convertToFxImage(BufferedImage image) {
-        if(image == null) return null;
+        if (image == null) return null;
         try {
             return SwingFXUtils.toFXImage(image, null);
         } catch (Throwable e) {
-            if(LogHelper.isDebugEnabled()) {
+            if (LogHelper.isDebugEnabled()) {
                 LogHelper.error(e);
             }
             return convertToFxImageJava8(image);
