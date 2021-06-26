@@ -179,10 +179,14 @@ public class JavaFXApplication extends Application {
     private void registerCommands() {
         runtimeCategory = new BaseCommandCategory();
         runtimeCategory.registerCommand("version", new VersionCommand());
+        if(ConsoleManager.isConsoleUnlock) {
+            registerPrivateCommands();
+        }
         ConsoleManager.handler.registerCategory(new CommandHandler.Category(runtimeCategory, "runtime"));
     }
 
     public void registerPrivateCommands() {
+        if(runtimeCategory == null) return;
         runtimeCategory.registerCommand("runtime", new RuntimeCommand(this));
     }
 
