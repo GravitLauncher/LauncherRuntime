@@ -89,7 +89,7 @@
    </Pane>
 
     <!-- Прогрессбар-->
-    <ProgressBar id="progress" layoutY="437.0" prefHeight="68.0" prefWidth="900.0" progress="1.0" />
+    <ProgressBar id="progress" layoutY="437.0" prefHeight="68.0" prefWidth="900.0" progress="0.0" />
 
     <!-- Лог загрузки и ошибки-->
     <Line endX="291.675537109375" endY="437.0000305175781" layoutX="-4.0" layoutY="1.0" opacity="0.28" startX="291.675537109375" startY="504.0" styleClass="progress-lines" />
