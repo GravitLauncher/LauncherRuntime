@@ -125,6 +125,7 @@ public class UpdateScene extends AbstractScene {
                 lastUpdateTime.set(System.currentTimeMillis());
                 lastDownloaded.set(0);
                 totalSize = 0;
+                progressBar.progressProperty().setValue(0);
                 if (optionalsEnabled) {
                     for(OptionalAction action : view.getDisabledActions())
                     {
