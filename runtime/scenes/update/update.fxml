@@ -1,16 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.net.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Text?>
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <Pane id="header" prefHeight="100.0" prefWidth="900.0">
@@ -90,14 +94,7 @@
 
     <!-- Прогрессбар-->
     <ProgressBar id="progress" layoutY="437.0" prefHeight="68.0" prefWidth="900.0" progress="0.0" />
-
-    <!-- Лог загрузки и ошибки-->
-    <Line endX="291.675537109375" endY="437.0000305175781" layoutX="-4.0" layoutY="1.0" opacity="0.28" startX="291.675537109375" startY="504.0" styleClass="progress-lines" />
-    <Line endX="292.0" endY="439" layoutX="158.0" layoutY="-1.0" opacity="0.28" startX="291" startY="507.0" styleClass="progress-lines" />
-    <Label id="volume" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="719.0" layoutY="459.0" opacity="0.28" prefHeight="19.0" prefWidth="63.0" styleClass="progress-text" text="[240 MB]" />
-    <Text layoutX="1.0" layoutY="474.0" opacity="0.28" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="progress-text" text="Проверка JAVA" textAlignment="CENTER" wrappingWidth="285" />
-    <Text layoutX="289.0" layoutY="474.0" opacity="0.28" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="progress-text" text="Синхронизация" textAlignment="CENTER" wrappingWidth="159" />
-    <Text layoutX="452.0" layoutY="474.0" opacity="0.28" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="progress-text" text="Скачивание файлов" textAlignment="RIGHT" wrappingWidth="264" />
+    <Label id="volume" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="808.0" layoutY="414.0" opacity="0.28" prefHeight="19.0" prefWidth="78.0" text="[240 MB]" />
 
     <!-- Подключение стилей-->
     <stylesheets>

@@ -171,6 +171,7 @@ public class UpdateScene extends AbstractScene {
                                         LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
                                     }
                                 }
+                                Files.deleteIfExists(dir.resolve(path));
                                 adds.add(new AsyncDownloader.SizedFile(urlPath, path, file.size));
                                 break;
                             case DIR:
