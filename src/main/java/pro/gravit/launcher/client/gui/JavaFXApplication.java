@@ -219,7 +219,7 @@ public class JavaFXApplication extends Application {
     }
 
     private static URL getResourceEnFs(String name) throws IOException {
-        return EnFSHelper.getURL(enfsDirectory.resolve(name).toString());
+        return EnFSHelper.getURL(enfsDirectory.resolve(name).toString().replaceAll("\\\\", "/"));
         //return EnFS.main.getURL(enfsDirectory.resolve(name));
     }
 
