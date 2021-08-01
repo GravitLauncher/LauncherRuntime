@@ -164,8 +164,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             disablePane.setPrefWidth(root.getPrefWidth());
             int index = root.getChildren().indexOf(layout);
             root.getChildren().add(index+1, disablePane);
-            disablePane.setVisible(true);
         }
+        disablePane.setVisible(true);
     }
 
     public void enable() {
