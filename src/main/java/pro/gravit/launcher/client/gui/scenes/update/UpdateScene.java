@@ -182,7 +182,7 @@ public class UpdateScene extends AbstractScene {
                     });
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
-                    Downloader downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, new Downloader.DownloadCallback() {
+                    downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, new Downloader.DownloadCallback() {
                         @Override
                         public void apply(long fullDiff) {
                             {
