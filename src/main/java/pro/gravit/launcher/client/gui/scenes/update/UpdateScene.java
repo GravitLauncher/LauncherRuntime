@@ -195,7 +195,7 @@ public class UpdateScene extends AbstractScene {
                         public void onComplete(Path path) {
 
                         }
-                    }, application.workers, 4);
+                    }, null, 4);
                     downloader.getFuture().thenAccept((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
