@@ -25,10 +25,7 @@ public class GuiEventHandler implements ClientWebSocketService.EventHandler {
                 return false;
         }
         try {
-            if (event instanceof NotificationEvent) {
-                NotificationEvent e = (NotificationEvent) event;
-                ContextHelper.runInFxThreadStatic(() -> application.messageManager.createNotification(e.head, e.message));
-            } else if (event instanceof AuthRequestEvent) {
+            if (event instanceof AuthRequestEvent) {
                 boolean isNextScene = application.getCurrentScene() instanceof LoginScene;
                 LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
                 application.stateService.setAuthResult(null, (AuthRequestEvent) event);

@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.*;
+import pro.gravit.launcher.api.DialogService;
 import pro.gravit.launcher.client.*;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientGuiPhase;
@@ -16,6 +17,7 @@ import pro.gravit.launcher.client.gui.config.StdSettingsManager;
 import pro.gravit.launcher.client.gui.helper.EnFSHelper;
 import pro.gravit.launcher.client.gui.impl.*;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.service.RuntimeDialogService;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
@@ -143,6 +145,11 @@ public class JavaFXApplication extends Application {
         {
             JavaRuntimeModule.noLocaleAlert(runtimeSettings.locale.name);
             Platform.exit();
+        }
+        {
+            RuntimeDialogService dialogService = new RuntimeDialogService(messageManager);
+            DialogService.setDialogImpl(dialogService);
+            DialogService.setNotificationImpl(dialogService);
         }
         try {
             mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
