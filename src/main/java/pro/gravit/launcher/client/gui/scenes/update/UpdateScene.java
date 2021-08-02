@@ -253,8 +253,8 @@ public class UpdateScene extends AbstractScene {
         logOutput.clear();
         volume.setText("");
         speed.setText("0");
-       reload.setDisable(true);
-        reload.setStyle("-fx-opacity: 0");
+        //reload.setDisable(true);
+        //reload.setStyle("-fx-opacity: 0");
         cancel.setDisable(false);
         cancel.setStyle("-fx-opacity: 1");
         progressBar.getStyleClass().removeAll("progress");
@@ -272,8 +272,8 @@ public class UpdateScene extends AbstractScene {
         speedtext.setStyle("-fx-opacity: 0");
         speederr.setStyle("-fx-opacity: 1");
         LogHelper.error(e);
-        reload.setDisable(false);
-        reload.setStyle("-fx-opacity: 1");
+        //reload.setDisable(false);
+        //reload.setStyle("-fx-opacity: 1");
         cancel.setDisable(true);
         cancel.setStyle("-fx-opacity: 0");
     }

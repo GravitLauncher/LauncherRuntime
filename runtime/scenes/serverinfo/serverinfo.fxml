@@ -107,7 +107,7 @@
          </Label>
 
          <!-- Счет игрока -->
-         <Label id="money" layoutX="93.0" layoutY="50.0" prefHeight="20.0" prefWidth="282.0" text="100 МОНЕТ">
+         <Label id="money" visible="false" layoutX="93.0" layoutY="50.0" prefHeight="20.0" prefWidth="282.0" text="100 МОНЕТ">
              <padding>
                  <Insets left="10.0" />
              </padding>
