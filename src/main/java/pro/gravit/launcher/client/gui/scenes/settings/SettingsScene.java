@@ -149,7 +149,7 @@ public class SettingsScene extends AbstractScene {
             }
         });
         serverButton.enableResetButton(null, (e) -> {
-            //TODO
+            reset();
         });
         componentList.getChildren().clear();
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
