@@ -38,6 +38,11 @@ public class JavaRuntimeModule extends LauncherModule {
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
 
+    public static void noEnFSAlert() {
+        String message = "Запуск лаунчера невозможен из за ошибки расшифровки рантайма\nУстановите Java 11 с поддержкой JavaFX для исправления этой проблемы";
+        JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
+    }
+
     public static void errorHandleAlert(Throwable e)
     {
         String message = String.format("Произошла серьезная ошибка при инициализации интерфейса лаунчера.\nДля пользователей:\nОбратитесь к администрации своего проекта с скриншотом этого окна\nJava %d (x%d) Ошибка %s\nОписание: %s\nБолее подробную информацию можно получить из лога", JVMHelper.JVM_VERSION, JVMHelper.JVM_BITS, e.getClass().getName(), e.getMessage() == null ? "null" : e.getMessage());

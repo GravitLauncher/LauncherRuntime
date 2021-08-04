@@ -48,7 +48,7 @@ public class EnFSHelper {
 
     public static URL getURL(String name) throws IOException {
         try(InputStream stream = EnFS.main.getInputStream(Paths.get(name))) {
-            return new URL("enfs", null, -1, name);
+            return new URL("enfs", null, -1, name, new pro.gravit.utils.enfs.impl.Handler());
         }
     }
 }

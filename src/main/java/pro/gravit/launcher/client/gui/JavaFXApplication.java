@@ -134,6 +134,7 @@ public class JavaFXApplication extends Application {
         } catch (Throwable e) {
             if(!(e instanceof ClassNotFoundException)) {
                 LogHelper.error(e);
+                JavaRuntimeModule.noEnFSAlert();
             }
         }
         // System loading
@@ -141,9 +142,12 @@ public class JavaFXApplication extends Application {
             runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
         try {
             updateLocaleResources(runtimeSettings.locale.name);
-        } catch (FileNotFoundException e)
+        } catch (Throwable e)
         {
             JavaRuntimeModule.noLocaleAlert(runtimeSettings.locale.name);
+            if(!(e instanceof  FileNotFoundException)) {
+                LogHelper.error(e);
+            }
             Platform.exit();
         }
         {
