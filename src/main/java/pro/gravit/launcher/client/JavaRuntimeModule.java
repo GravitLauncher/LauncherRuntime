@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client;
 
+import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.client.events.ClientExitPhase;

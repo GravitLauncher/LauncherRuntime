@@ -131,10 +131,12 @@ public class JavaFXApplication extends Application {
             if(runtimeDirectory == null) {
                 enfsDirectory = EnFSHelper.initEnFS(config);
             }
+            if(!EnFSHelper.checkEnFSUrl()) {
+                JavaRuntimeModule.noEnFSAlert();
+            }
         } catch (Throwable e) {
             if(!(e instanceof ClassNotFoundException)) {
                 LogHelper.error(e);
-                JavaRuntimeModule.noEnFSAlert();
             }
         }
         // System loading
