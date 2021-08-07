@@ -28,6 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -182,6 +184,7 @@ public class UpdateScene extends AbstractScene {
                     });
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
+                    ExecutorService executor = Executors.newWorkStealingPool(4);
                     downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, new Downloader.DownloadCallback() {
                         @Override
                         public void apply(long fullDiff) {
@@ -195,7 +198,7 @@ public class UpdateScene extends AbstractScene {
                         public void onComplete(Path path) {
 
                         }
-                    }, null, 4);
+                    }, executor, 4);
                     downloader.getFuture().thenAccept((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
@@ -207,8 +210,9 @@ public class UpdateScene extends AbstractScene {
                     }).exceptionally((e) -> {
                         ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                         return null;
+                    }).thenAccept((e) -> {
+                        executor.shutdown();
                     });
-
                 } catch (Exception e) {
                     ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                 }
