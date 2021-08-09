@@ -1,23 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Text?>
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<!-- DrLeonardo refactor -->
+
+<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+
+   <!-- Отступы-->
    <padding>
       <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
    </padding>
+
+   <!-- Картинка уведомления-->
+   <ImageView fitHeight="63.0" fitWidth="66.0" layoutX="11.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
+      <image>
+         <Image url="@../images/preloader/logo.png" />
+      </image>
+   </ImageView>
+
+   <!-- Текст уведомления-->
+   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="78.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-head" text="%runtime.scenes.components.notification.notificationHeading" wrappingWidth="219.7" />
+   <Text id="notificationText" fontSmoothingType="LCD" layoutX="78.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-desc" text="%runtime.scenes.components.notification.notificationText" textAlignment="JUSTIFY" wrappingWidth="219.7" />
+
+   <!-- Подключение стилей-->
    <stylesheets>
       <URL value="@components.css" />
-      <URL value="@../global.css" />
+      <URL value="@../styles/global.css" />
+      <URL value="@../styles/variables.css" />
    </stylesheets>
-   <ImageView id="notificationIco" fitHeight="66.0" fitWidth="56.0" layoutX="13.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@../images/preloader/logo.png" />
-   </ImageView>
-   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="86.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ПОЗДРАВЛЯЕМ!" wrappingWidth="219.79297161102295" />
-   <Text id="notificationText" fontSmoothingType="LCD" layoutX="87.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Вас забанили!" textAlignment="JUSTIFY" wrappingWidth="219.79296875" />
+
 </Pane>

@@ -55,7 +55,17 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
     public void preLoad() {
     }
 
+    protected void registerPrivateCommands() {
+        JavaFXApplication application = JavaFXApplication.getInstance();
+        if(application != null) {
+            application.registerPrivateCommands();
+        }
+    }
+
     @Override
     public void init(boolean clientInstance) {
+        if(clientInstance) {
+            JavaFXApplication.setNoGUIMode(true);
+        }
     }
 }

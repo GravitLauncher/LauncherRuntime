@@ -1,138 +1,95 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
-#dialogBackground {
-    -fx-background-color: transparent;
+@import "../styles/global.css";
+@import "../styles/variables.css";
+
+/*-- Уведомления --*/
+.text-font-head {
+    -fx-text-fill: -fx-black2C;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
 }
-
+.text-font-desc {
+    -fx-text-fill: -fx-black2C;
+    -fx-font-size: 10px;
+}
 #notificationPane {
-    -fx-background-color: #fff;
+    -fx-background-radius: 10px 0px 0px 10px;
 }
 
+/*-- Блок сервера --*/
+.serverButtons {
+    -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 20px;
+}
+#serverButton {
+    -fx-background-radius: 20px;
+    -fx-cursor: hand;
+}
+#serverButton:hover {
+    -fx-background-color: -fx-grayTr-hover;
+}
 #serverButtonSelected,
 #serverButtonPressed {
-    -fx-background-color: rgba(243, 243, 243, 0.1);
+    -fx-background-color: -fx-grayTr-hover;
 }
-
-.serverButtons {
-    -fx-background-color: transparent;
-}
-
 .serverButtonsActive {
-    -fx-background-color: rgba(5, 5, 5, 0.1);
+    -fx-background-color: -fx-grayTr-hover;
+}
+#serverLogo {
+    -fx-background-position: center;
 }
 
+
+/*-- Информация о сервере --*/
+#nameServer {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 20px;
+    -fx-wrap-text: false;
+    -fx-font-weight: bold;
+}
+#nameServer:hover {
+    -fx-fill: -fx-black2C-hover;
+}
+#genreServer {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 12px;
+}
+
+
+/*-- Индикатор онлайна --*/
+#block-online {
+    -fx-background-color: -fx-green;
+    -fx-background-radius: 5px;
+}
 #online {
-    -fx-fill: #FFDE6B;
+    -fx-text-fill: -fx-white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
-#serverLogo {
-    -fx-background-position: center;
-    -fx-background-color: transparent;
-    -fx-background-image: url('../images/preloader/logo.png');
-}
 
-#nameServer {
-    -fx-fill: #2C2C2C;
-    -fx-text-fill: #2C2C2C;
-    -fx-font-size: 20px;
-    -fx-wrap-text: false;
+/*-- Кнопка сохранить (для всех сцен) --*/
+#save {
     -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-text-align: center;
+    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-violet;
+    -fx-background-radius: 10px;
 }
-
-#nameServer:hover {
-    -fx-fill: #7C4DFF;
-    -fx-font-size: 20px;
+#save:hover {
+    -fx-background-color: -fx-violet-hover;
+}
+#reset {
     -fx-font-weight: bold;
-    -fx-wrap-text: false;
+    -fx-font-size: 14px;
+    -fx-text-align: center;
+    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-red;
+    -fx-background-radius: 5px;
 }
-
-#genreServer {
-    -fx-fill: #808080;
-    -fx-font-size: 12px;
+#reset:hover {
+    -fx-background-color: -fx-red-hover;
 }
-
-#headingDialog {
-    -fx-fill: #323232;
-    -fx-font-weight: bold;
-    -fx-font-size: 14pt;
-}
-
-#notificationHeading {
-    -fx-fill: #323232;
-    -fx-font-weight: bold;
-    -fx-font-size: 12pt;
-}
-
-#notificationText {
-    -fx-fill: #5F5F5F;
-    -fx-font-size: 10pt;
-}
-
-#textDialog {
-    -fx-fill: #323232;
-    -fx-font-size: 12px;
-}
-
-.dialogInput {
-    -fx-background-color: #eee;
-}
-
-#dialogPane,
-#dialogApplyPane,
-#dialogTextInput {
-    -fx-background-color: #fff;
-    -fx-border-color: #C7C7C7;
-}
-
-#forgot2fa {
-    -fx-font-size: 8pt;
-    -fx-text-fill: #A9A9A9;
-}
-
-#line {
-    -fx-stroke: #C7C7C7;
-}
-
-
-/*Icons*/
-
-#icoApply {
-    -fx-fill: #fff;
-    -fx-font-size: 23pt;
-}
-
-#icoDeny {
-    -fx-fill: #fff;
-    -fx-font-size: 23pt;
-}
-
-#applyComponents {
-    -fx-background-radius: 0;
-    -fx-fill: #7C4DFF;
-    -fx-background-color: transparent;
-    -fx-font-size: 13pt;
-}
-
-#denyComponents {
-    -fx-background-radius: 0;
-    -fx-fill: #A23131;
-    -fx-background-color: transparent;
-    -fx-font-size: 13pt;
-}
-
-#applyComponents:hover,
-#applyComponents:pressed {
-    -fx-background-color: #6B36FF;
-    -fx-fill: #fff;
-}
-
-#denyComponents:hover,
-#denyComponents:pressed {
-    -fx-background-color: #AB2727;
-    -fx-fill: #fff;
-}
-
-
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/

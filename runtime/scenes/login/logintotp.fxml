@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<!-- DrLeonardo refactor -->
+
+<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+    <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur">
+
+        <!-- Вертикальная полоса -->
+        <Pane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="155.0" styleClass="vline" />
+
+        <!-- Блок атворизации -->
+        <Pane id="authButtonBlock" fx:id="auth" layoutX="22.0" layoutY="135.0">
+            <children>
+                
+                <!-- Кнопка второго фактора -->
+                <Pane id="auth2fa" prefHeight="231.0" prefWidth="202.0">
+                    <children>
+                        <SVGPath id="logoBorder" content="M99.9273 1.3606C101.453 0.515599 103.308 0.526451 104.824 1.38924L199.474 55.2744C201.036 56.1635 202 57.8224 202 59.6195V170.677C202 172.48 201.029 174.144 199.458 175.031L102.783 229.603C101.248 230.469 99.3711 230.464 97.8417 229.588L2.51653 175.036C0.960216 174.145 0 172.489 0 170.696V59.6588C0 57.8407 0.986863 56.1659 2.57724 55.285L99.9273 1.3606Z" />
+                        <Button id="authButton" alignment="CENTER" cacheShape="false" cancelButton="true" centerShape="false" contentDisplay="CENTER" defaultButton="true" graphicTextGap="0.0" layoutX="23.0" layoutY="27.0" prefHeight="177.0" prefWidth="156.0" scaleShape="false" snapToPixel="false">
+                            <graphic>
+                                <Pane>
+                                    <children>
+                                        <SVGPath content="M76.0685 0.856649C77.5961 0.00865024 79.4555 0.0195405 80.9731 0.885369L152.153 41.4968C153.713 42.3865 154.675 44.0442 154.675 45.8396V129.559C154.675 131.361 153.706 133.023 152.137 133.911L79.4214 175.047C77.8847 175.917 76.0034 175.911 74.4719 175.033L2.77956 133.916C1.22553 133.024 0.26709 131.37 0.26709 129.578V45.8789C0.26709 44.0625 1.25218 42.389 2.84032 41.5073L76.0685 0.856649Z" layoutX="-16.0" layoutY="-7.0" strokeMiterLimit="0.0" styleClass="auth2fa" />
+                                        <TextField id="6st" alignment="CENTER" layoutX="111.0" layoutY="61.0" prefHeight="40.0" prefWidth="25.0" promptText="_" styleClass="field-auth" />
+                                        <TextField id="5st" alignment="CENTER" layoutX="86.0" layoutY="61.0" prefHeight="40.0" prefWidth="25.0" promptText="_" styleClass="field-auth" />
+                                        <TextField id="4st" alignment="CENTER" layoutX="61.0" layoutY="61.0" prefHeight="40.0" prefWidth="25.0" promptText="_" styleClass="field-auth" />
+                                        <TextField id="3st" alignment="CENTER" layoutX="36.0" layoutY="61.0" prefHeight="40.0" prefWidth="25.0" promptText="_" styleClass="field-auth" />
+                                        <TextField id="2st" alignment="CENTER" layoutX="11.0" layoutY="61.0" prefHeight="40.0" prefWidth="25.0" promptText="_" styleClass="field-auth" />
+                                        <TextField id="1st" alignment="CENTER" layoutX="-14.0" layoutY="61.0" prefHeight="40.0" prefWidth="25.0" promptText="_" styleClass="field-auth" />
+                                    </children>
+                                </Pane>
+                            </graphic>
+                        </Button>
+                    </children>
+                </Pane>
+            </children>
+        </Pane>
+
+        <!-- Навбар -->
+        <Pane id="header" prefHeight="100.0" prefWidth="900.0">
+            <children>
+
+                <!-- Кнопки управления -->
+                <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
+                    <children>
+
+                        <!-- Ссылки -->
+                        <Pane id="links" layoutX="335.0" layoutY="33.0" prefHeight="32.0" prefWidth="196.0">
+                            <children>
+                                <Rectangle height="28.0" layoutX="72.0" layoutY="2.0" strokeType="INSIDE" styleClass="rectangle" width="1.0" x="0.5" />
+                                <Text id="forgotPass" layoutY="13.0" styleClass="forgotPass" text="%runtime.scenes.login.forgotPass" textAlignment="RIGHT" wrappingWidth="65.0" />
+                            </children>
+                        </Pane>
+                        <FlowPane id="registerPane" layoutX="419.0" layoutY="36.0" prefHeight="32.0" prefWidth="115.0">
+                            <children>
+                                <Text styleClass="textLogin" text="%runtime.scenes.login.textLogin" />
+                                <Text id="createAccount" styleClass="createAccount-text" text="%runtime.scenes.login.createAccount" />
+                            </children>
+                        </FlowPane>
+
+                        <!-- Кнопка закрыть -->
+                        <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="553.0" layoutY="30.0" styleClass="icon-button" textOverrun="CLIP">
+                            <graphic>
+                                <Pane>
+                                    <children>
+                                        <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" styleClass="header-button" />
+                                        <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE" styleClass="header-button-text" text="%runtime.scenes.loginpassword.header-button-text" textAlignment="CENTER" wrappingWidth="77.921875" />
+                                    </children>
+                                </Pane>
+                            </graphic>
+                            <tooltip>
+                                <Tooltip id="cancelTooltip" text="%runtime.scenes.loginpassword.cancelTooltip" />
+                            </tooltip>
+                        </Button>
+
+                    </children>
+                </Pane>
+
+                <!-- Левая часть навбара -->
+                <Pane id="leftHeaderPane" layoutX="45.0" prefHeight="100.0" prefWidth="156.0">
+                    <children>
+                        <TextFlow layoutX="18.0" layoutY="43.0">
+                            <children>
+                                <Text id="logoName" text="%runtime.scenes.login.logoName" />
+                                <Text id="logoProduct" styleClass="logoTextGray" text="%runtime.scenes.login.logoProduct" />
+                                <Text id="logoVersion" text="%runtime.scenes.login.logoVersion" />
+                            </children>
+                        </TextFlow>
+                    </children>
+                </Pane>
+            </children>
+        </Pane>
+   
+       <!-- Приветствие игрока -->
+       <Pane id="player" layoutX="240.0" layoutY="198.0" prefHeight="104.0" prefWidth="660.0">
+           <children>
+               <Label id="text-2fa" layoutX="8.0" layoutY="17.0" prefHeight="71.0" prefWidth="486.0" text="%runtime.scenes.login.text-2fa" wrapText="true" />
+           </children>
+       </Pane>
+    </Pane>
+
+    <!-- Подключение стилей-->
+    <stylesheets>
+        <URL value="@login.css" />
+        <URL value="@../../styles/global.css" />
+        <URL value="@../../styles/variables.css" />
+    </stylesheets>
+
+</Pane>

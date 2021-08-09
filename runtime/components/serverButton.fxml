@@ -1,16 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Hyperlink?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Text?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 
-<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="124.0" prefWidth="280.0" styleClass="serverButtons" stylesheets="@components.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
-   <Text id="online" fontSmoothingType="LCD" layoutX="14.0" layoutY="34.0" strokeType="OUTSIDE" strokeWidth="0.0" text="24" />
-   <ImageView id="serverLogo" fitHeight="75.0" fitWidth="71.0" layoutX="14.0" layoutY="25.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@../images/preloader/logo.png" />
-   </ImageView>
-   <Hyperlink id="nameServer" layoutX="101.0" layoutY="35.0" prefHeight="40.0" prefWidth="169.0" text="SERVER" />
-   <Text id="genreServer" fontSmoothingType="LCD" layoutX="107.0" layoutY="77.0" strokeType="OUTSIDE" strokeWidth="0.0" text="TechnoMagic" wrappingWidth="169.115234375" />
+<!-- DrLeonardo refactor -->
+
+<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="189.0" styleClass="b-20" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+   <Pane id="serverButtonLayout" prefHeight="339.0" prefWidth="189.0" styleClass="serverButtons">
+      <children>
+
+         <!-- Лого сервера -->
+         <ImageView id="serverLogo" fitHeight="242.0" fitWidth="151.0" layoutX="18.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
+            <Image url="@../images/servers/example.png" />
+         </ImageView>
+
+         <!-- Онлайн сервера -->
+         <Pane id="block-online" layoutX="115.0" layoutY="8.0" prefHeight="35.0" prefWidth="48.0">
+            <children>
+               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" text="?" />
+            </children>
+         </Pane>
+
+         <!-- Информация сервера -->
+         <Label id="nameServer" alignment="CENTER" layoutY="277.0" prefHeight="29.0" prefWidth="189.0" text="SERVERNAME" textAlignment="CENTER" />
+         <Label id="genreServer" alignment="CENTER" layoutY="302.0" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" />
+
+         <!-- Кнопка сохранить (для других сцен) -->
+         <Button id="save" layoutX="18.0" layoutY="205.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="151.0" text="%runtime.components.serverButton.save" visible="false" />
+         <Button id="reset" layoutX="25.0" layoutY="8.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0" text="%runtime.components.serverButton.reset" visible="false" >
+            <tooltip>
+               <Tooltip id="resetTooltip" text="%runtime.components.serverButton.resetTooltip" />
+            </tooltip>
+         </Button>
+
+      </children>
+   </Pane>
+
+   <!-- Подключение стилей-->
+   <stylesheets>
+      <URL value="@components.css" />
+      <URL value="@../styles/global.css" />
+      <URL value="@../styles/variables.css" />
+   </stylesheets>
+
 </Pane>

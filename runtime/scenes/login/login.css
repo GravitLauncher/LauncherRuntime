@@ -1,133 +1,196 @@
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/
 
-/* Backgrounds */
-#layout {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-background-image: url('../../images/login.png');
+@import "../../styles/global.css";
+@import "../../styles/variables.css";
+
+/*-- Вертикальная полоса на главной сцене --*/
+.vline{
+    -fx-background-color: -fx-grayTr;
 }
 
-#loginPane,
-#serverPaneLayout {
-    -fx-background-color: transparent;
+/*-- Ошибки --*/
+.authButtonError{
+    -fx-fill: -fx-red;
 }
 
-#password,
-#login {
+/*-- Ввод данных --*/
+#login,
+#password {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-header;
+    -fx-font-weight: bold;
+    -fx-cursor: text;
+}
+#password:focused,
+#login:focused {
+    -fx-text-fill: -fx-black2C;
+}
+.field-auth {
+    -fx-font-size: 18px;
+    -fx-text-fill: -fx-black2C;
+    -fx-font-weight: bold;
+    -fx-cursor: text;
+}
+#1st,#2st,#3st,#4st,#5st,#6st {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0.0 5.0 0.0 5.0;
+    -fx-padding: 0;
+    -fx-hgap: 0;
+    -fx-vgap: 0;
     -fx-background-radius: 0;
 }
 
-#goAuth {
-    -fx-background-color: transparent;
-    -fx-background-repeat: no-repeat;
-    -fx-background-image: url('../../images/icons/auth.png');
-    -fx-text-fill: #fff;
-    -fx-font-weight: bold;
-    -fx-font-size: 11pt;
-}
 
-#logo {
-    -fx-fill: #323232;
-}
-
-#auth_on:hover,
-#auth_on:pressed {
-    -fx-effect: dropshadow( three-pass-box, rgba(0, 0, 0, 0.6), 8, 0.0, 0, 0);
-}
-
+/*-- Чекбоксы --*/
 #savePassword,
 #autoenter {
-    -fx-font-size: 8pt;
-    -fx-text-fill: #5E5E5E;
+    -fx-font-size: 7pt;
+    -fx-background-image: url('../../images/icons/checkbox_off.png');
+    -fx-text-fill: -fx-black2C;
+}
+#savePassword:selected,
+#autoenter:selected {
+    -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
 
-#forgotPass {
-    -fx-font-size: 8pt;
-    -fx-text-fill: #A9A9A9;
+/*-- Метод авторизации --*/
+#authList {
+    -fx-background-color: -fx-grayTr;
+    -fx-background-radius: 10px;
 }
 
-#forgotPass:hover,
-#forgotPass:pressed {
-    -fx-text-fill: #606060;
-}
-
-#createAccount {
-    -fx-font-size: 10pt;
+/*-- Ссылки --*/
+.createAccount-text {
     -fx-font-weight: bold;
-    -fx-text-fill: #FFDE6B;
+    -fx-font-size: 9px;
+    -fx-text-align: left;
+    -fx-fill: -fx-green;
 }
-
-#textLogin {
-    -fx-font-size: 10pt;
-    -fx-text-fill: #fff;
+.createAccount-text:hover,
+.createAccount-text:pressed {
+    -fx-fill: -fx-green-hover;
+    -fx-cursor: hand;
 }
-
-#createAccount:hover,
-#createAccount:pressed {
-    -fx-text-fill: #FFC700;
-}
-
-#newsArea {
-    -fx-font-size: 10pt;
-    -fx-fill: #fff;
-}
-
-#combologin {
-    -fx-text-fill: #606060;
-    -fx-prompt-text-fill: #A9A9A9;
+.forgotPass {
     -fx-font-weight: bold;
-    -fx-font-size: 11pt;
-    -fx-pref-width: 280px;
-    -fx-pref-height: 45px;
+    -fx-font-size: 9px;
+    -fx-text-align: right;
+    -fx-fill: -fx-grayD;
+}
+.forgotPass:hover,
+.forgotPass:pressed {
+    -fx-fill: -fx-black2C-hover;
+    -fx-cursor: hand;
+}
+.textLogin {
+    -fx-fill: -fx-grayD;
+    -fx-font-size: 9px;
+    -fx-text-align: left;
+}
+.hyperlink:focused {
+    -fx-border-width: 0;
+}
+.rectangle {
+    -fx-stroke: -fx-black2C;
 }
 
-.combologin,
-.combologin {
-    -fx-font-size: 11px;
-    -fx-prompt-text-fill: #A9A9A9;
-    -fx-text-fill: #606060;
+/*-- Приветствие --*/
+#welcome {
+    -fx-font-size: 12px;
+    -fx-align-items: center;
+}
+#otherWelcome {
+    -fx-font-size: 14px;
+    -fx-text-align: center;
+}
+
+/*-- Веб авторизация --*/
+#webAuth {
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-text-align: center;
+    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-green;
+}
+
+/*-- Кнопка входа --*/
+.auth {
+     -fx-fill: -fx-green;
+}
+.auth2fa {
+    -fx-fill: -fx-white;
+}
+.logo {
+    -fx-fill: -fx-black2C;
+}
+#authBorder {
+    -fx-fill: -fx-greenTr;
+}
+#logoBorder {
+    -fx-fill: -fx-grayLTr;
+}
+#authButton {
     -fx-background-color: transparent;
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-fill: -fx-white;
 }
 
-.combologin .list-cell {
-    -fx-background: #EDEEEF;
+/*-- Надпись названия продукта --*/
+#logoVersion,
+#logoProduct,
+#logoName {
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
+    -fx-fill: -fx-grayDTr;
+}
+.logoTextGray {
+    -fx-fill: -fx-grayD !important;
+}
+
+/*-- Приветствие игрока --*/
+#text-2fa,
+#playerName {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-align-items: center;
+}
+#welcome {
+    -fx-font-size: 14px;
+    -fx-align-items: center;
+}
+
+/*-- Стилизация radiobutton's--*/
+.radio-button {
+    -fx-background-radius: 5px;
+    -fx-text-fill: -fx-black2C;
+    -fx-label-padding: 0 0 0 10px;
+    -fx-padding: 10px;
+    -fx-font-size: 10px;
+    -fx-text-align: left;
+}
+.radio-button > .radio,
+.radio-button:focused > .radio  {
+    -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
+    -fx-background-image: url('../../images/icons/checkbox_off.png');
+    -fx-padding: 5px;
+}
+.radio-button:selected {
+    -fx-background-radius: 5px;
+    -fx-background-color: -fx-grayLDTr;
+    -fx-text-fill: -fx-black2C-hover;
+}
+.radio-button .radio:selected {
+    -fx-background-color: -fx-white;
+    -fx-background-image: null;
+}
+.radio-button:selected .dot {
+    -fx-background-insets: 0;
+    -fx-background-radius: 7px;
+    -fx-background-color: -fx-white;
 }
 
-.combologin-popup .list-view {
-    -fx-background-color: #EDEEEF, #EDEEEF;
-    -fx-background-insets: 0, 1;
-    -fx-effect: dropshadow( three-pass-box, rgba(0, 0, 0, 0.3), 3, 0.0, 0, 0);
-}
-
-.combologin .list-cell:filled:selected .text,
-.combologin .list-cell:filled:selected .text {
-    -fx-fill: #A9A9A9;
-}
-
-.combologin .arrow,
-.combologin .arrow {
-    -fx-background-color: #A9A9A9;
-}
-
-.combologin-popup .list-view .list-cell {
-    -fx-background-color: #EDEEEF;
-}
-
-.combologin-popup .list-view .list-cell:filled:selected,
-.combologin-popup .list-view .list-cell:filled:selected:hover {
-    -fx-background: #EDEEEF;
-    -fx-background-color: #EDEEEF;
-    -fx-text-fill: -fx-selection-bar-text;
-}
-
-.combologin-popup .list-view .list-cell:filled:hover {
-    -fx-background-color: #EDEEEF;
-    -fx-text-fill: -fx-text-inner-color;
-}
-
-#iconsLogin {
-    -fx-fill: #fff;
-}
-
-/*-- DrLeonardo Design for GravitLauncher --*/
+/*-- DrLeonardo styles refactor --*/

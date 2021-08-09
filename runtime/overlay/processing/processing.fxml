@@ -1,27 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.shape.SVGPath?>
+<?import java.net.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
 
-<!-- DrLeonardo Design for GravitLauncher-->
+<!-- DrLeonardo refactor -->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+
+    <!-- Навбар -->
+    <Pane id="header" prefHeight="100.0" prefWidth="900.0">
+        <children>
+
+            <!-- Кнопки управления -->
+            <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
+                <children>
+
+                    <!-- Кнопка закрыть -->
+                    <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="553.0" layoutY="30.0" styleClass="icon-button" textOverrun="CLIP">
+                        <graphic>
+                            <Pane>
+                                <children>
+                                    <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE" styleClass="header-button-text" text="%runtime.scenes.loginpassword.header-button-text" textAlignment="CENTER" wrappingWidth="77.921875" />
+                                    <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" styleClass="header-button" />
+                                </children>
+                            </Pane>
+                        </graphic>
+                        <tooltip>
+                            <Tooltip id="cancelTooltip" text="%runtime.scenes.loginpassword.cancelTooltip" />
+                        </tooltip>
+                    </Button>
+
+                </children>
+            </Pane>
+        </children>
+    </Pane>
+
+    <!-- Описание процесса -->
+    <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="337.0" prefHeight="66.0" prefWidth="832.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" wrapText="true" />
+    <SVGPath content="M0 -2.28322C0 -3.01097 0.395307 -3.68128 1.03217 -4.03345L193.46 -110.441C194.086 -110.787 194.849 -110.772 195.462 -110.402L245.964 -79.9119C247.266 -79.1258 247.248 -77.2316 245.932 -76.4692L62.8001 29.6162C62.1827 29.9738 61.8026 30.6333 61.8026 31.3468V186.626C61.8026 187.354 62.1984 188.024 62.836 188.376L190.221 258.697C190.816 259.025 191.538 259.029 192.136 258.707L322.793 188.372C323.441 188.023 323.845 187.347 323.845 186.611V31.5293C323.845 30.7209 323.359 29.992 322.612 29.6821L285.222 14.1623C284.637 13.9194 283.971 13.9681 283.428 14.2937L159.187 88.7161C158.584 89.0774 158.215 89.7288 158.215 90.4318V122.629C158.215 123.339 158.592 123.997 159.205 124.355L193.111 144.181C194.444 144.96 196.12 143.999 196.12 142.454V113.411C196.12 112.711 196.486 112.062 197.085 111.7L281.256 60.7623C282.589 59.9557 284.292 60.9154 284.292 62.4734V161.242C284.292 161.936 283.932 162.58 283.342 162.944L192.226 219.173C191.582 219.57 190.77 219.57 190.126 219.173L99.0098 162.944C98.4195 162.58 98.0601 161.936 98.0601 161.242V54.3293C98.0601 53.6172 98.4387 52.9588 99.0543 52.6006L283.341 -54.6261C283.933 -54.9704 284.66 -54.9881 285.268 -54.6728L382.921 -4.02242C383.584 -3.67854 384 -2.9939 384 -2.24703V218.655C384 219.375 383.612 220.04 382.985 220.395L192.166 328.44C191.552 328.787 190.801 328.786 190.188 328.436L1.00816 220.397C0.384761 220.041 0 219.378 0 218.66V-2.28322Z" layoutX="256.0" layoutY="5.0" styleClass="logo" visible="true" />
+
+    <!-- Подключение стилей-->
     <stylesheets>
         <URL value="@processing.css" />
+        <URL value="@../../styles/global.css" />
+        <URL value="@../../styles/variables.css" />
     </stylesheets>
-    <!-- Description -->
-    <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="248.0" layoutY="315.0" prefHeight="66.0" prefWidth="404.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" textFill="WHITE" />
-    <ImageView layoutX="371.0" layoutY="161.0">
-        <Image url="@../../images/preloader/logo.png" />
-    </ImageView>
-    <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="72.0" layoutY="29.0" />
-    <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="700.0" layoutY="81.0" />
-    <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="102.0" layoutY="285.0" />
-    <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="347.0" layoutY="62.0" />
-    <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="689.0" layoutY="315.0" />
-    <SVGPath content="&#10;M12.9234 0.0994307L32.3961 71.1336L34.3202 105.281L23.1027 73.6293L15.1604 16.5845L12.9234 0.0994307Z&#10;" fill="#323232" layoutX="346.0" layoutY="381.0" />
+
 </Pane>

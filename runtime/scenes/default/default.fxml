@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+
+<!-- DrLeonardo refactor -->
+
+<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+    <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent">
+
+        <!-- Навбар -->
+        <Pane id="header" prefHeight="100.0" prefWidth="900.0">
+            <children>
+
+                <!-- Кнопки управления -->
+                <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
+                    <children>
+
+                        <!-- Кнопка закрыть -->
+                        <Button id="exit" graphicTextGap="0.0" layoutX="612.0" mnemonicParsing="false" styleClass="icon-button">
+                            <graphic>
+                                <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" styleClass="icon-button-color" />
+                            </graphic>
+                            <tooltip>
+                                <Tooltip id="exitTooltip" text="%runtime.scenes.serverinfo.exitTooltip" />
+                            </tooltip>
+                        </Button>
+
+                        <!-- Кнопка свернуть -->
+                        <Button id="minimize" layoutX="570.0" mnemonicParsing="false" styleClass="icon-button">
+                            <graphic>
+                                <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM10.2143 20C9.58968 20 9.07143 20.5183 9.07143 21.1429V22.2857C9.07143 22.9103 9.58968 23.4286 10.2143 23.4286H22.7857C23.4103 23.4286 23.9286 22.9103 23.9286 22.2857V21.1429C23.9286 20.5183 23.4103 20 22.7857 20H10.2143ZM10.2143 21.1429H22.7857V22.2857H10.2143V21.1429Z" styleClass="icon-button-color" />
+                            </graphic>
+                            <tooltip>
+                                <Tooltip id="minimizeTooltip" text="%runtime.scenes.serverinfo.minimizeTooltip" />
+                            </tooltip>
+                        </Button>
+
+                    </children>
+                </Pane>
+            </children>
+        </Pane>
+    </Pane>
+
+    <!-- Подключение стилей-->
+    <stylesheets>
+        <URL value="@default.css" />
+        <URL value="@../../styles/global.css" />
+        <URL value="@../../styles/variables.css" />
+    </stylesheets>
+
+</Pane>

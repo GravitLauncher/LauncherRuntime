@@ -8,12 +8,12 @@ plugins {
 }
 javafx {
     version = "12"
-    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing']
+    modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web']
 }
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
-version '1.5.2'
+version '2.0.0'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
 
 task sourcesJar(type: Jar) {
@@ -34,8 +34,17 @@ tasks.withType(JavaCompile) {
 
 jar {
     manifest.attributes("Module-Main-Class": mainClassName,
-            "Module-Config-Class": "pro.gravit.launcher.client.GuiModuleConfig",
+            "Module-Config-Class": "pro.gravit.launcher.client.gui.config.GuiModuleConfig",
             "Module-Config-Name": "JavaRuntime")
+}
+
+task runDev(type: JavaExec) {
+    dependsOn assemble
+    group = "Execution"
+    description = "Run the main class with JavaExecTask"
+    classpath = sourceSets.main.runtimeClasspath
+    jvmArgs = ["-Dlauncherdebug.modules="+mainClassName, "-Dlauncherdebug.env=DEBUG"]
+    main = "pro.gravit.launcher.debug.DebugMain"
 }
 
 repositories {
@@ -46,9 +55,11 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.1.10"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.1.10"
-    implementation "pro.gravit.launcher:launcher-client-api:5.1.10"
+    implementation "pro.gravit.launcher:launcher-core:5.2.0"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.2.0"
+    implementation "pro.gravit.launcher:launcher-client-api:5.2.0"
+    implementation "pro.gravit.utils.enfs:enfs:1.0.0-SNAPSHOT"
+    implementation "io.netty:netty-codec-http:4.1.48.Final"
     implementation 'com.github.oshi:oshi-core:4.5.2'
     implementation 'com.google.code.gson:gson:2.8.6'
 }

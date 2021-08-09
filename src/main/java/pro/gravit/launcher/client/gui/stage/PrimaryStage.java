@@ -4,11 +4,11 @@ import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import pro.gravit.launcher.client.gui.raw.AbstractStage;
-import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.nio.file.NoSuchFileException;
+import java.io.IOException;
 
 public class PrimaryStage extends AbstractStage {
     public PrimaryStage(Stage primaryStage, String title) {
@@ -18,9 +18,9 @@ public class PrimaryStage extends AbstractStage {
         stage.setResizable(false);
         // Icons
         try {
-            Image icon = new Image(IOHelper.getResourceURL("runtime/favicon.png").toString());
+            Image icon = new Image(JavaFXApplication.getResourceURL("favicon.png").toString());
             stage.getIcons().add(icon);
-        } catch (NoSuchFileException e) {
+        } catch (IOException e) {
             LogHelper.error(e);
         }
     }

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.text.*?>
+
+<!-- DrLeonardo refactor -->
+
+<Pane prefHeight="221.0" prefWidth="588.0" styleClass="dialog" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+
+    <!-- Заголовок диалога-->
+    <Label id="headingDialog" alignment="CENTER" contentDisplay="CENTER" prefHeight="61.0" prefWidth="589.0" text="%runtime.dialogs.apply.applyDialog" textAlignment="CENTER" />
+    <Label id="textDialog" alignment="TOP_LEFT" layoutX="51.0" layoutY="63.0" prefHeight="101.0" prefWidth="487.0" styleClass="dialogText" textAlignment="JUSTIFY" wrapText="true" />
+
+    <!-- Кнопки управления -->
+    <Button id="close" layoutX="538.0" layoutY="10.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" styleClass="icon-button" visible="false">
+        <graphic>
+            <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" styleClass="icon-button-color" />
+        </graphic>
+        <tooltip>
+          <Tooltip id="close-dialogTooltip" text="%runtime.dialogs.apply.close-dialogTooltip" />
+        </tooltip>
+    </Button>
+
+    <!-- Кнопка применить -->
+    <Button id="apply" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="196.0" layoutY="168.0" styleClass="icon-button" textOverrun="CLIP">
+        <graphic>
+            <Pane>
+                <children>
+                    <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE" styleClass="apply-button-text" text="%runtime.dialogs.apply.apply-button" textAlignment="CENTER" wrappingWidth="77.921875" />
+                    <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" styleClass="apply-button" />
+                </children>
+            </Pane>
+        </graphic>
+    </Button>
+
+    <!-- Кнопка отменить -->
+    <Button id="deny" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="296.0" layoutY="168.0" styleClass="icon-button" textOverrun="CLIP">
+        <graphic>
+            <Pane>
+                <children>
+                    <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE" styleClass="deny-button-text" text="%runtime.dialogs.apply.deny-button" textAlignment="CENTER" wrappingWidth="77.921875" />
+                    <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" styleClass="deny-button" />
+                </children>
+            </Pane>
+        </graphic>
+    </Button>
+
+    <!-- Подключение стилей-->
+    <stylesheets>
+        <URL value="@../dialogs.css" />
+        <URL value="@../../styles/global.css" />
+        <URL value="@../../styles/variables.css" />
+    </stylesheets>
+
+</Pane>

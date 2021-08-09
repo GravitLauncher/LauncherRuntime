@@ -1,0 +1,81 @@
+/*-- DrLeonardo styles refactor --*/
+
+@import "../styles/global.css";
+@import "../styles/variables.css";
+
+/*-- Блок диалога --*/
+.dialog {
+    -fx-background-color: -fx-white;
+    -fx-border-color: -fx-white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 30, 0.1, 0.0, 0.0);
+    -fx-border-radius: 20px;
+    -fx-background-radius: 20px;
+}
+
+/*-- Текст диалога --*/
+.dialogText {
+    -fx-font-size: 12px;
+    -fx-text-align: left;
+    -fx-text-fill: -fx-black2C;
+}
+
+/*-- Кнопки диалога --*/
+.apply-button {
+    -fx-fill: transparent;
+    -fx-stroke: -fx-header;
+    -fx-stroke-width: 1px;
+}
+.apply-button:hover,
+.apply-Button:pressed {
+    -fx-fill: -fx-greenTr;
+    -fx-stroke: -fx-green;
+}
+.deny-button-text,
+.apply-button-text {
+    -fx-font-size: 10px;
+    -fx-text-fill: -fx-header;
+    -fx-fill: -fx-header;
+    -fx-align-items: center;
+    -fx-font-weight: bold;
+}
+.apply-button-text:hover,
+.apply-Button-text:pressed {
+    -fx-text-fill: -fx-green;
+}
+
+.deny-button {
+    -fx-fill: transparent;
+    -fx-stroke: -fx-red;
+    -fx-stroke-width: 1px;
+}
+.deny-button:hover,
+.deny-Button:pressed {
+    -fx-fill: -fx-redTr;
+    -fx-stroke: -fx-red;
+}
+.deny-button-text:hover,
+.deny-Button-text:pressed {
+    -fx-text-fill: -fx-red;
+}
+
+/*-- Ввод данных --*/
+#dialogInput {
+    -fx-background-color: -fx-whiteG;
+    -fx-background-radius: 0 0 20 20;
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 10px;
+    -fx-text-fill: -fx-header;
+    -fx-font-weight: bold;
+    -fx-cursor: text;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.1, 0.0, 0.0);
+}
+#dialogInput:focused {
+    -fx-text-fill: -fx-black2C;
+}
+.InputError {
+    -fx-background-radius: 0;
+    -fx-background-color: -fx-whiteG;
+    -fx-text-fill: -fx-red;
+}
+
+/*-- DrLeonardo styles refactor --*/
