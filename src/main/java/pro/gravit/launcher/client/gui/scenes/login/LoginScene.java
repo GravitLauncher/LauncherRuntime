@@ -285,6 +285,7 @@ public class LoginScene extends AbstractScene {
     }
 
     private void loginWithGui() throws Exception {
+        authButton.unsetError();
         if (tryOAuthLogin()) return;
         for (int i : authFlow) {
             GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);

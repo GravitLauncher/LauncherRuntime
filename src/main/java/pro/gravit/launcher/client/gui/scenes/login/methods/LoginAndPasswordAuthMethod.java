@@ -87,9 +87,6 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
             password = LookupHelper.lookup(layout, "#password");
-            if (application.runtimeSettings.login != null) {
-                login.setText(application.runtimeSettings.login);
-            }
             authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, e -> {
                 String rawLogin = login.getText();
                 String rawPassword = password.getText();
@@ -102,6 +99,12 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             login.textProperty().addListener(l -> {
                 authButton.setActive(!login.getText().isEmpty());
             });
+            if (application.runtimeSettings.login != null) {
+                login.setText(application.runtimeSettings.login);
+                authButton.setActive(true);
+            } else {
+                authButton.setActive(false);
+            }
             if (application.runtimeSettings.password != null) {
                 password.getStyleClass().add("hasSaved");
                 password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
