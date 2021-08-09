@@ -19,7 +19,7 @@
          <!-- Онлайн сервера -->
          <Pane id="block-online" layoutX="115.0" layoutY="8.0" prefHeight="35.0" prefWidth="48.0">
             <children>
-               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" text="340" />
+               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" text="?" />
             </children>
          </Pane>
 
