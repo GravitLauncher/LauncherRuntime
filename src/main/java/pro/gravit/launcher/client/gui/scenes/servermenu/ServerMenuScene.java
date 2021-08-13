@@ -129,7 +129,9 @@ public class ServerMenuScene extends AbstractScene {
                         try {
                             ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
                             ServerPinger.Result result = pinger.ping();
-                            application.stateService.addServerSocketPing(serverProfile, result);
+                            contextHelper.runInFxThread(() -> {
+                                application.stateService.addServerSocketPing(serverProfile, result);
+                            });
                         } catch (IOException ignored) {
                         }
                     }
