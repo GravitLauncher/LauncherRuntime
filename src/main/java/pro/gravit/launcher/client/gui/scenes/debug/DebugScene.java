@@ -31,6 +31,7 @@ public class DebugScene extends AbstractScene {
 
     public DebugScene(JavaFXApplication application) {
         super("scenes/debug/debug.fxml", application);
+        this.isResetOnShow = true;
     }
 
     @Override
