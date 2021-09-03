@@ -24,6 +24,7 @@ import java.util.Set;
 public class EnFSHelper {
 
     private static final Set<String> themesCached = new HashSet<>(1);
+    private static final String BASE_DIRECTORY = "tgui";
 
     public static boolean checkEnFSUrl() {
         try {
@@ -34,7 +35,7 @@ public class EnFSHelper {
         }
     }
 
-    public static void initEnFS() {
+    public static void initEnFS() throws IOException {
         if(JVMHelper.JVM_VERSION == 8) {
             // Java 8 not supported `java.net.spi.URLStreamHandlerProvider`
             LogHelper.info("Java pkgs: %s", System.getProperty("java.protocol.handler.pkgs"));
@@ -42,10 +43,11 @@ public class EnFSHelper {
             // Result class: pro.gravit.util.enfs.protocol.enfs.Handler
             System.setProperty("java.protocol.handler.pkgs", "pro.gravit.utils.enfs.protocol");
         }
+        EnFS.main.newDirectory(Paths.get(BASE_DIRECTORY));
     }
 
     public static Path initEnFSDirectory(LauncherConfig config, String theme) throws IOException {
-        Path enfsDirectory = Paths.get("tgui", theme != null ? theme : "common");
+        Path enfsDirectory = Paths.get(BASE_DIRECTORY, theme != null ? theme : "common");
         Set<String> themePaths;
         String startThemePrefix;
         if(theme != null) {
@@ -77,8 +79,10 @@ public class EnFSHelper {
                 realPath = name;
             }
             try {
+                Path path = enfsDirectory.resolve(realPath);
+                EnFS.main.newDirectories(path.getParent());
                 FileEntry entry = makeFile(config, name, digest);
-                EnFS.main.addFile(enfsDirectory.resolve(realPath), entry);
+                EnFS.main.addFile(path, entry);
             } catch (IOException e) {
                 LogHelper.error(e);
             }
