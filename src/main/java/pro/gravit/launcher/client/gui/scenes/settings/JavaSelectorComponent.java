@@ -4,25 +4,20 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
-import pro.gravit.launcher.client.gui.helper.JavaVersionsHelper;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.service.JavaService;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.JavaHelper;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class JavaSelectorComponent {
     private final ComboBox<JavaHelper.JavaVersion> comboBox;
-    private final List<String> javaPaths = new ArrayList<>();
     private final Label javaPath;
     private final Label javaError;
     private final RuntimeSettings.ProfileSettingsView profileSettings;
     private final ClientProfile profile;
 
-    public JavaSelectorComponent(Pane layout, RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
+    public JavaSelectorComponent(JavaService javaService, Pane layout, RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
         comboBox = LookupHelper.lookup(layout, "#javaCombo");
         this.profile = profile;
         comboBox.getItems().clear();
@@ -35,18 +30,18 @@ public class JavaSelectorComponent {
             if(version == null) return;
             javaPath.setText(version.jvmDir.toAbsolutePath().toString());
             profileSettings.javaPath = javaPath.getText();
-            javaError.setVisible(isIncompatibleJava(version, profile));
+            javaError.setVisible(javaService.isIncompatibleJava(version, profile));
         });
-        for(JavaHelper.JavaVersion version : JavaVersionsHelper.javaVersions) {
+        for(JavaHelper.JavaVersion version : javaService.javaVersions) {
             comboBox.getItems().add(version);
             if(profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                 comboBox.setValue(version);
             }
         }
-    }
-
-    public static boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || ( !version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE );
+        JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
+        if(recommend != null) {
+            comboBox.getSelectionModel().select(recommend);
+        }
     }
 
     public String getPath() {

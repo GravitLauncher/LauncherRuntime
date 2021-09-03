@@ -1,10 +1,9 @@
 package pro.gravit.launcher.client.gui.config;
 
-import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
-import pro.gravit.launcher.client.gui.helper.JavaVersionsHelper;
+import pro.gravit.launcher.client.gui.service.JavaService;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.auth.AuthRequest;
@@ -37,8 +36,6 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public LAUNCHER_LOCALE locale;
     @LauncherNetworkAPI
-    public boolean disableJavaDownload;
-    @LauncherNetworkAPI
     public String oauthAccessToken;
     @LauncherNetworkAPI
     public String oauthRefreshToken;
@@ -54,7 +51,6 @@ public class RuntimeSettings extends UserSettings {
         runtimeSettings.autoAuth = false;
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
         runtimeSettings.locale = DEFAULT_LOCALE;
-        runtimeSettings.disableJavaDownload = false;
         return runtimeSettings;
     }
 
@@ -89,13 +85,13 @@ public class RuntimeSettings extends UserSettings {
         @LauncherNetworkAPI
         public String javaPath;
 
-        public static ProfileSettings getDefault(ClientProfile profile) {
+        public static ProfileSettings getDefault(JavaService javaService, ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
             ClientProfile.ProfileDefaultSettings defaultSettings = profile.getSettings();
             settings.ram = defaultSettings.ram;
             settings.autoEnter = defaultSettings.autoEnter;
             settings.fullScreen = defaultSettings.fullScreen;
-            JavaHelper.JavaVersion version = JavaVersionsHelper.getRecommendJavaVersion(profile);
+            JavaHelper.JavaVersion version = javaService.getRecommendJavaVersion(profile);
             if(version != null) {
                 settings.javaPath = version.jvmDir.toString();
             }

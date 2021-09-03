@@ -160,10 +160,14 @@ public class ServerInfoScene extends AbstractScene {
             });
         });
     }
-
-    private boolean isEnabledDownloadJava()
-    {
-        return application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && (!application.guiModuleConfig.userDisableDownloadJava || application.runtimeSettings.disableJavaDownload);
+    private String getJavaDirName() {
+        RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+        String prefix = DirBridge.dirUpdates.toAbsolutePath().toString();
+        if(profileSettings.javaPath == null || !profileSettings.javaPath.startsWith(prefix)) {
+            return null;
+        }
+        Path result = Paths.get(profileSettings.javaPath).relativize(DirBridge.dirUpdates);
+        return result.toString();
     }
     private void launchClient() {
         ClientProfile profile = application.stateService.getProfile();
@@ -176,9 +180,9 @@ public class ServerInfoScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
-                if(isEnabledDownloadJava())
+                String jvmDirName = getJavaDirName();
+                if(jvmDirName != null)
                 {
-                    String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
                     Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
                     application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
                         downloadClients(profile, jvmDirPath, jvmHDir);

@@ -127,7 +127,7 @@ public class SettingsScene extends AbstractScene {
     @Override
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
-        javaSelector = new JavaSelectorComponent(layout, profileSettings, application.stateService.getProfile());
+        javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings, application.stateService.getProfile());
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();
@@ -155,11 +155,6 @@ public class SettingsScene extends AbstractScene {
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
         add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
         add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value);
-        if(application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && application.guiModuleConfig.userDisableDownloadJava)
-        {
-            add("DisableJavaDownload", application.runtimeSettings.disableJavaDownload, (value) -> application.runtimeSettings.disableJavaDownload = value);
-        }
-
     }
 
     @Override

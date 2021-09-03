@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.utils;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
-import pro.gravit.launcher.client.gui.helper.JavaVersionsHelper;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
@@ -64,7 +63,7 @@ public class TriggerManager {
         @Override
         public JavaHelper.JavaVersion getJavaVersion() {
             RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-            for(JavaHelper.JavaVersion version : JavaVersionsHelper.javaVersions) {
+            for(JavaHelper.JavaVersion version : application.javaService.javaVersions) {
                 if(profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                     return version;
                 }
