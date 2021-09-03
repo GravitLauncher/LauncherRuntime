@@ -45,14 +45,15 @@ public class EnFSHelper {
     }
 
     public static Path initEnFSDirectory(LauncherConfig config, String theme) throws IOException {
-        Path enfsDirectory = Paths.get("tgui", theme);
-        if(themesCached.contains(theme)) {
-            return enfsDirectory;
-        }
-        EnFS.main.newDirectory(enfsDirectory);
+        Path enfsDirectory = Paths.get("tgui", theme != null ? theme : "common");
         Set<String> themePaths;
-        String startThemePrefix = String.format("themes/%s/", theme);
+        String startThemePrefix;
         if(theme != null) {
+            startThemePrefix = String.format("themes/%s/", theme);
+            if(themesCached.contains(theme)) {
+                return enfsDirectory;
+            }
+            EnFS.main.newDirectory(enfsDirectory);
             themePaths = new HashSet<>();
             // First stage - collect themes path
             config.runtime.forEach((name, digest) -> {
@@ -61,6 +62,7 @@ public class EnFSHelper {
                 }
             });
         } else {
+            startThemePrefix = "themes/common/";
             themePaths = Collections.emptySet();
         }
         // Second stage - put files
