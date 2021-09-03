@@ -17,8 +17,13 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EnFSHelper {
+
+    private static final Set<String> themesCached = new HashSet<>(1);
 
     public static boolean checkEnFSUrl() {
         try {
@@ -29,7 +34,7 @@ public class EnFSHelper {
         }
     }
 
-    private static void initEnFS() {
+    public static void initEnFS() {
         if(JVMHelper.JVM_VERSION == 8) {
             // Java 8 not supported `java.net.spi.URLStreamHandlerProvider`
             LogHelper.info("Java pkgs: %s", System.getProperty("java.protocol.handler.pkgs"));
@@ -39,34 +44,61 @@ public class EnFSHelper {
         }
     }
 
-    public static Path initEnFS(LauncherConfig config) throws IOException {
-        initEnFS();
-        Path enfsDirectory = Paths.get("aone");
+    public static Path initEnFSDirectory(LauncherConfig config, String theme) throws IOException {
+        Path enfsDirectory = Paths.get("tgui", theme);
+        if(themesCached.contains(theme)) {
+            return enfsDirectory;
+        }
         EnFS.main.newDirectory(enfsDirectory);
-        config.runtime.forEach((name, digest) -> {
-            EnFS.main.newDirectories(enfsDirectory.resolve(name).getParent());
-            try {
-                FileEntry entry;
-                if(config.runtimeEncryptKey == null) {
-                    entry = new URLFile(Launcher.getResourceURL(name));
-                } else {
-                    String encodedName = "runtime/"+ SecurityHelper.toHex(digest);
-                    entry = new RuntimeCryptedFile(() -> {
-                        try {
-                            InputStream inputStream = IOHelper.newInput(IOHelper.getResourceURL(encodedName));
-                            return inputStream;
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }, SecurityHelper.fromHex(config.runtimeEncryptKey));
+        Set<String> themePaths;
+        String startThemePrefix = String.format("themes/%s/", theme);
+        if(theme != null) {
+            themePaths = new HashSet<>();
+            // First stage - collect themes path
+            config.runtime.forEach((name, digest) -> {
+                if(name.startsWith(startThemePrefix)) {
+                    themePaths.add(name.substring(startThemePrefix.length()));
                 }
-                EnFS.main.addFile(enfsDirectory.resolve(name), entry);
-                LogHelper.debug("Pushed %s", enfsDirectory.resolve(name).toString());
-            } catch (Exception e) {
+            });
+        } else {
+            themePaths = Collections.emptySet();
+        }
+        // Second stage - put files
+        config.runtime.forEach((name, digest) -> {
+            String realPath;
+            if(name.startsWith(startThemePrefix)) {
+                realPath = name.substring(startThemePrefix.length());
+            } else {
+                if(themePaths.contains(name)) {
+                    return;
+                }
+                realPath = name;
+            }
+            try {
+                FileEntry entry = makeFile(config, name, digest);
+                EnFS.main.addFile(enfsDirectory.resolve(realPath), entry);
+            } catch (IOException e) {
                 LogHelper.error(e);
             }
         });
         return enfsDirectory;
+    }
+
+    private static FileEntry makeFile(LauncherConfig config, String name, byte[] digest) throws IOException {
+        FileEntry entry;
+        if(config.runtimeEncryptKey == null) {
+            entry = new URLFile(Launcher.getResourceURL(name));
+        } else {
+            String encodedName = "runtime/"+ SecurityHelper.toHex(digest);
+            entry = new RuntimeCryptedFile(() -> {
+                try {
+                    return IOHelper.newInput(IOHelper.getResourceURL(encodedName));
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }, SecurityHelper.fromHex(config.runtimeEncryptKey));
+        }
+        return entry;
     }
 
     public static URL getURL(String name) throws IOException {

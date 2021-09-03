@@ -45,6 +45,8 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public long oauthExpire;
     @LauncherNetworkAPI
+    public String theme;
+    @LauncherNetworkAPI
     public Map<UUID, ProfileSettings> profileSettings = new HashMap<>();
 
     public static RuntimeSettings getDefault() {
