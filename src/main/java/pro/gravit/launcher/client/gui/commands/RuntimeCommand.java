@@ -1,10 +1,7 @@
 package pro.gravit.launcher.client.gui.commands;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.commands.runtime.DialogCommand;
-import pro.gravit.launcher.client.gui.commands.runtime.NotifyCommand;
-import pro.gravit.launcher.client.gui.commands.runtime.ReloadCommand;
-import pro.gravit.launcher.client.gui.commands.runtime.WarpCommand;
+import pro.gravit.launcher.client.gui.commands.runtime.*;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.utils.command.Command;
 import pro.gravit.utils.command.CommandHandler;
@@ -18,6 +15,7 @@ public class RuntimeCommand extends Command {
         this.childCommands.put("warp", new WarpCommand(application));
         this.childCommands.put("reload", new ReloadCommand(application));
         this.childCommands.put("notify", new NotifyCommand(application.messageManager));
+        this.childCommands.put("theme", new ThemeCommand(application));
     }
 
     @Override
