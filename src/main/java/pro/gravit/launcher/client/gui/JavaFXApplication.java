@@ -193,7 +193,7 @@ public class JavaFXApplication extends Application {
 
     public void resetDirectory() throws IOException {
         if(runtimeDirectory != null) {
-            EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
         }
     }
 
