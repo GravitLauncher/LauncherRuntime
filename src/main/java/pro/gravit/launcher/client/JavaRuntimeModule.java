@@ -35,7 +35,7 @@ public class JavaRuntimeModule extends LauncherModule {
     }
 
     public static void noLocaleAlert(String file) {
-        String message = String.format("Не найден файл %s при инициализации GUI. Дальнейшая работа невозможна.\nУбедитесь что все файлы дизайна лаунчера присутствуют в папке runtime при сборке лаунчера", file);
+        String message = String.format("Не найден файл языка '%s' при инициализации GUI. Дальнейшая работа невозможна.\nУбедитесь что все файлы дизайна лаунчера присутствуют в папке runtime при сборке лаунчера", file);
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
 
