@@ -117,6 +117,7 @@ public class OptionsScene extends AbstractScene {
         Label desc = new Label();
         desc.setWrapText(true);
         desc.setText(description);
+        StackPane.setAlignment(desc, Pos.BASELINE_LEFT);
         container.getChildren().add(checkBox);
         container.getChildren().add(new StackPane(desc));
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
