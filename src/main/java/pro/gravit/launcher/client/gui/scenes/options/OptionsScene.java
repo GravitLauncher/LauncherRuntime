@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.scenes.options;
 
 import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -117,6 +118,7 @@ public class OptionsScene extends AbstractScene {
         Label desc = new Label();
         desc.setWrapText(true);
         desc.setText(description);
+        StackPane.setAlignment(desc, Pos.BASELINE_LEFT);
         container.getChildren().add(checkBox);
         container.getChildren().add(new StackPane(desc));
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
