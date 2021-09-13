@@ -93,8 +93,8 @@ public class OptionsScene extends AbstractScene {
 
     public void addProfileOptionals(OptionalView view) {
         this.optionalView = new OptionalView(view);
+        watchers.clear();
         for (OptionalFile optionalFile : optionalView.all) {
-            watchers.clear();
             if (!optionalFile.visible)
                 continue;
 
