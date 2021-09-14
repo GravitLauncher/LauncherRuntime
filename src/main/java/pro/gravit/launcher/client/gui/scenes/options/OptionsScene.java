@@ -110,7 +110,7 @@ public class OptionsScene extends AbstractScene {
     public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
-        Label label = new Label();
+        Label desc = new Label();
         vBox.getChildren().add(checkBox);
         vBox.getChildren().add(label);
         VBox.setMargin(vBox, new Insets(0, 0, 0, 30 * --padding));
