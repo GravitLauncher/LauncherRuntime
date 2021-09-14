@@ -190,7 +190,7 @@ public class JavaFXApplication extends Application {
     }
 
     public void resetDirectory() throws IOException {
-        if (enfsDirectory != null) {
+        if(enfsDirectory != null) {
             enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
         }
     }
