@@ -195,7 +195,7 @@ RadioButton {
 .check-box {
     -fx-background-color: transparent;
     -fx-text-fill: -fx-black2C;
-    -fx-background-image: url('../images/icons/checkbox_off.png');
+    -fx-background-image: url('../images/icons/checkbox1_off.png');
     -fx-background-repeat: no-repeat;
     -fx-label-padding: 0 0 0 10px;
     -fx-font-size: 14px;
@@ -209,7 +209,7 @@ RadioButton {
 }
 .check-box:selected {
     -fx-background-color: transparent;
-    -fx-background-image: url('../images/icons/checkbox_on.png');
+    -fx-background-image: url('../images/icons/checkbox1_on.png');
     -fx-background-repeat: no-repeat;
 }
 .check-box:selected .mark {
@@ -321,7 +321,13 @@ RadioButton {
     -fx-text-fill: -fx-black2C;
 }
 .combo-box .arrow{
-    -fx-background-color: -fx-black2C;
+    -fx-background-color: transparent;
 }
-
+.combo-box .arrow-button{
+    -fx-background-image: url('../images/icons/checkbox_arrow_button.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+    -fx-background-position: center center;
+    -fx-background-size: 50% 25%;
+}
 /*-- DrLeonardo styles refactor --*/

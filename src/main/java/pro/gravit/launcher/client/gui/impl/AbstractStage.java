@@ -46,13 +46,13 @@ public abstract class AbstractStage {
             throw new NullPointerException("Try set null scene");
         }
         visualComponent.currentStage = this;
-        if(!visualComponent.isInit()) {
+        if (!visualComponent.isInit()) {
             visualComponent.init();
         }
-        if(visualComponent.isResetOnShow) {
+        if (visualComponent.isResetOnShow) {
             visualComponent.reset();
         }
-        if(visualComponent instanceof AbstractScene) {
+        if (visualComponent instanceof AbstractScene) {
             stage.setScene(((AbstractScene) visualComponent).getScene());
         } else {
             Scene scene = new Scene(visualComponent.layout);

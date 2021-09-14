@@ -21,6 +21,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
     public ClientProfile profile;
     private Button saveButton;
     private Button resetButton;
+
     protected ServerButtonComponent(JavaFXApplication application, ClientProfile profile) {
         super(getFXMLPath(application, profile), application);
         this.profile = profile;
@@ -67,20 +68,20 @@ public class ServerButtonComponent extends AbstractVisualComponent {
 
     public void enableSaveButton(String text, EventHandler<ActionEvent> eventHandler) {
         saveButton.setVisible(true);
-        if(text != null)
+        if (text != null)
             saveButton.setText(text);
         saveButton.setOnAction(eventHandler);
     }
 
     public void enableResetButton(String text, EventHandler<ActionEvent> eventHandler) {
         resetButton.setVisible(true);
-        if(text != null)
+        if (text != null)
             resetButton.setText(text);
         resetButton.setOnAction(eventHandler);
     }
 
     public void addTo(Pane pane) {
-        if(!isInit()) {
+        if (!isInit()) {
             try {
                 init();
             } catch (Exception e) {

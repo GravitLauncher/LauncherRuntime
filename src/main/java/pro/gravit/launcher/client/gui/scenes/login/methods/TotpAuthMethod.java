@@ -7,7 +7,6 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
-import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.details.AuthTotpDetails;
 import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
 
@@ -60,9 +59,11 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         accessor.hideOverlay(0, (e) -> future.complete(null));
         return future;
     }
+
     public static class TotpOverlay extends AbstractOverlay {
         private TextField[] textFields;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+
         public TotpOverlay(JavaFXApplication application) {
             super("scenes/login/logintotp.fxml", application);
         }
@@ -76,14 +77,14 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         protected void doInit() {
             Pane sub = (Pane) LookupHelper.<Button>lookup(layout, "#auth2fa", "#authButton").getGraphic();
             textFields = new TextField[6];
-            for(int i=0;i<6;++i) {
-                textFields[i] = LookupHelper.lookup(sub, "#"+ (i+1) +"st");
-                if(i != 5) {
+            for (int i = 0; i < 6; ++i) {
+                textFields[i] = LookupHelper.lookup(sub, "#" + (i + 1) + "st");
+                if (i != 5) {
                     TextField field = textFields[i];
                     int finalI = i;
                     field.textProperty().addListener(l -> {
-                        if(field.getText().length() == 1) {
-                            textFields[finalI +1].requestFocus();
+                        if (field.getText().length() == 1) {
+                            textFields[finalI + 1].requestFocus();
                         }
                     });
                 } else {
@@ -102,7 +103,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
 
         public String getCode() {
             StringBuilder builder = new StringBuilder();
-            for(TextField field : textFields) {
+            for (TextField field : textFields) {
                 builder.append(field.getText());
             }
             return builder.toString();
@@ -110,7 +111,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
 
         @Override
         public void reset() {
-            for(TextField field : textFields) {
+            for (TextField field : textFields) {
                 field.setText("");
             }
         }

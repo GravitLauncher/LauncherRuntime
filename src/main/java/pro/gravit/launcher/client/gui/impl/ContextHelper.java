@@ -1,7 +1,6 @@
 package pro.gravit.launcher.client.gui.impl;
 
 import javafx.application.Platform;
-import pro.gravit.utils.helper.LogHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -12,9 +11,9 @@ public class ContextHelper {
         this.pane = pane;
     }
 
-    public static<T> CompletableFuture<T> runInFxThreadStatic(GuiExceptionCallback<T> callback) {
+    public static <T> CompletableFuture<T> runInFxThreadStatic(GuiExceptionCallback<T> callback) {
         CompletableFuture<T> result = new CompletableFuture<>();
-        if(Platform.isFxApplicationThread()) {
+        if (Platform.isFxApplicationThread()) {
             try {
                 result.complete(callback.call());
             } catch (Throwable throwable) {
@@ -32,7 +31,7 @@ public class ContextHelper {
         return result;
     }
 
-    public<T> T runCallback(GuiExceptionCallback<T> callback) {
+    public <T> T runCallback(GuiExceptionCallback<T> callback) {
         try {
             return callback.call();
         } catch (Throwable throwable) {
@@ -51,7 +50,7 @@ public class ContextHelper {
 
     public static CompletableFuture<Void> runInFxThreadStatic(GuiExceptionRunnable callback) {
         CompletableFuture<Void> result = new CompletableFuture<>();
-        if(Platform.isFxApplicationThread()) {
+        if (Platform.isFxApplicationThread()) {
             try {
                 callback.call();
                 result.complete(null);
@@ -71,7 +70,7 @@ public class ContextHelper {
         return result;
     }
 
-    public final<T> CompletableFuture<T> runInFxThread(GuiExceptionCallback<T> callback) {
+    public final <T> CompletableFuture<T> runInFxThread(GuiExceptionCallback<T> callback) {
         return runInFxThreadStatic(callback).exceptionally((t) -> {
             errorHandling(t);
             return null;

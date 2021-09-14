@@ -1,29 +1,16 @@
 package pro.gravit.launcher.client.gui.impl;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Rectangle2D;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Labeled;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.dialogs.*;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.helper.PositionHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.DialogStage;
-import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public class MessageManager {
@@ -41,7 +28,7 @@ public class MessageManager {
 
     public void initDialogInScene(AbstractScene scene, AbstractDialog dialog) {
         Pane root = (Pane) scene.getFxmlRoot();
-        if(!dialog.isInit()) {
+        if (!dialog.isInit()) {
             try {
                 dialog.currentStage = scene.currentStage;
                 dialog.init();
@@ -52,15 +39,15 @@ public class MessageManager {
         Pane dialogRoot = (Pane) dialog.getFxmlRoot();
         dialog.setOnClose(() -> {
             root.getChildren().remove(dialogRoot);
-            if(!(dialog instanceof NotificationDialog)) {
+            if (!(dialog instanceof NotificationDialog)) {
                 scene.enable();
             }
         });
-        if(dialog instanceof NotificationDialog) {
+        if (dialog instanceof NotificationDialog) {
 
             NotificationDialog.NotificationSlot slot = new NotificationDialog.NotificationSlot((scrollTo) -> {
-                dialogRoot.setLayoutY(dialogRoot.getLayoutY()+scrollTo);
-            }, ((Pane)dialog.getFxmlRoot()).getPrefHeight()+20);
+                dialogRoot.setLayoutY(dialogRoot.getLayoutY() + scrollTo);
+            }, ((Pane) dialog.getFxmlRoot()).getPrefHeight() + 20);
             NotificationDialog notificationDialog = (NotificationDialog) dialog;
             notificationDialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
         } else {
@@ -75,9 +62,9 @@ public class MessageManager {
 
     public void createNotification(String head, String message, boolean isLauncher) {
         NotificationDialog dialog = new NotificationDialog(application, head, message);
-        if(isLauncher) {
+        if (isLauncher) {
             AbstractScene scene = application.getCurrentScene();
-            if(scene == null) {
+            if (scene == null) {
                 throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
             }
             ContextHelper.runInFxThreadStatic(() -> {
@@ -87,8 +74,8 @@ public class MessageManager {
             AtomicReference<DialogStage> stage = new AtomicReference<>(null);
             ContextHelper.runInFxThreadStatic(() -> {
                 NotificationDialog.NotificationSlot slot = new NotificationDialog.NotificationSlot((scrollTo) -> {
-                    stage.get().stage.setY(stage.get().stage.getY()+scrollTo);
-                }, ((Pane)dialog.getFxmlRoot()).getPrefHeight()+20);
+                    stage.get().stage.setY(stage.get().stage.getY() + scrollTo);
+                }, ((Pane) dialog.getFxmlRoot()).getPrefHeight() + 20);
                 dialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
                 dialog.setOnClose(() -> {
                     stage.get().close();
@@ -120,9 +107,9 @@ public class MessageManager {
     }
 
     public void showAbstractDialog(AbstractDialog dialog, String header, boolean isLauncher) {
-        if(isLauncher) {
+        if (isLauncher) {
             AbstractScene scene = application.getCurrentScene();
-            if(scene == null) {
+            if (scene == null) {
                 throw new NullPointerException("Try show launcher dialog in application.getCurrentScene() == null");
             }
             ContextHelper.runInFxThreadStatic(() -> {

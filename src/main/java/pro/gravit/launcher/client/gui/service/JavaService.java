@@ -18,23 +18,23 @@ public class JavaService {
 
     public JavaService(JavaFXApplication application) {
         List<JavaHelper.JavaVersion> versions;
-        if(!application.guiModuleConfig.forceDownloadJava) {
+        if (!application.guiModuleConfig.forceDownloadJava) {
             versions = new LinkedList<>(JavaHelper.findJava());
         } else {
             versions = new LinkedList<>();
         }
         {
-            if(application.guiModuleConfig.javaList != null) {
-                for(Map.Entry<String, String> entry : application.guiModuleConfig.javaList.entrySet()) {
+            if (application.guiModuleConfig.javaList != null) {
+                for (Map.Entry<String, String> entry : application.guiModuleConfig.javaList.entrySet()) {
                     String javaVersionString = entry.getKey();
                     String javaDir = entry.getValue();
                     Matcher matcher = JAVA_VERSION_PATTERN.matcher(javaVersionString);
-                    if(matcher.matches()) {
+                    if (matcher.matches()) {
                         int version = Integer.parseInt(matcher.group("version"));
                         int build = Integer.parseInt(matcher.group("build"));
                         int bitness = Integer.parseInt(matcher.group("bitness"));
                         boolean javafx = Boolean.parseBoolean(matcher.group("javafx"));
-                        if(bitness != 0 && bitness != JVMHelper.OS_BITS) {
+                        if (bitness != 0 && bitness != JVMHelper.OS_BITS) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
@@ -50,29 +50,30 @@ public class JavaService {
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || ( !version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE );
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE);
     }
+
     public JavaHelper.JavaVersion getRecommendJavaVersion(ClientProfile profile) {
         int min = profile.getMinJavaVersion();
         int max = profile.getMaxJavaVersion();
         int recommend = profile.getRecommendJavaVersion();
         JavaHelper.JavaVersion result = null;
-        for(JavaHelper.JavaVersion version : javaVersions) {
-            if(version.version < min || version.version > max) continue;
-            if(result == null) {
+        for (JavaHelper.JavaVersion version : javaVersions) {
+            if (version.version < min || version.version > max) continue;
+            if (result == null) {
                 result = version;
                 continue;
             }
-            if(result.version != recommend && version.version == recommend) {
+            if (result.version != recommend && version.version == recommend) {
                 result = version;
                 continue;
             }
-            if((result.version == recommend) == (version.version == recommend) ) {
-                if(result.version < version.version) {
+            if ((result.version == recommend) == (version.version == recommend)) {
+                if (result.version < version.version) {
                     result = version;
                     continue;
                 }
-                if(result.version == version.version && result.build < version.build) {
+                if (result.version == version.version && result.build < version.build) {
                     result = version;
                 }
             }

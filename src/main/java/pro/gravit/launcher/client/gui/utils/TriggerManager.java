@@ -21,24 +21,24 @@ public class TriggerManager {
 
     public void process(ClientProfile profile, OptionalView view) {
         TriggerManagerContext context = new TriggerManagerContext(profile);
-        for(OptionalFile optional : view.all) {
-            if(optional.triggersList == null) continue;
+        for (OptionalFile optional : view.all) {
+            if (optional.triggersList == null) continue;
             boolean isRequired = false;
             int success = 0;
             int fail = 0;
-            for(OptionalTrigger trigger : optional.triggersList) {
-                if(trigger.required) isRequired = true;
-                if(trigger.check(optional, context)) {
+            for (OptionalTrigger trigger : optional.triggersList) {
+                if (trigger.required) isRequired = true;
+                if (trigger.check(optional, context)) {
                     success++;
                 } else {
                     fail++;
                 }
             }
-            if(isRequired) {
-                if(fail == 0) view.enable(optional, true, null);
+            if (isRequired) {
+                if (fail == 0) view.enable(optional, true, null);
                 else view.disable(optional, null);
             } else {
-                if(success > 0) view.enable(optional, false, null);
+                if (success > 0) view.enable(optional, false, null);
             }
         }
     }
@@ -63,8 +63,8 @@ public class TriggerManager {
         @Override
         public JavaHelper.JavaVersion getJavaVersion() {
             RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-            for(JavaHelper.JavaVersion version : application.javaService.javaVersions) {
-                if(profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
+            for (JavaHelper.JavaVersion version : application.javaService.javaVersions) {
+                if (profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                     return version;
                 }
             }

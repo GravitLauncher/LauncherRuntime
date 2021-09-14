@@ -1,10 +1,8 @@
 package pro.gravit.launcher.client.gui.scenes.settings;
 
-import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 import oshi.SystemInfo;
@@ -23,6 +21,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.text.MessageFormat;
 import java.util.function.Consumer;
 
 public class SettingsScene extends AbstractScene {
@@ -84,7 +83,7 @@ public class SettingsScene extends AbstractScene {
         });
         LookupHelper.<ButtonBase>lookup(layout, "#changeDir").setOnAction((e) -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
-            directoryChooser.setTitle("Сменить директорию загрузок");
+            directoryChooser.setTitle(application.getTranslation("runtime.scenes.settings.dirTitle"));
             directoryChooser.setInitialDirectory(DirBridge.dir.toFile());
             File choose = directoryChooser.showDialog(application.getMainStage().stage);
             if (choose == null)
@@ -113,7 +112,7 @@ public class SettingsScene extends AbstractScene {
                             }
                         }, () -> {
                         }, true)));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#back").ifPresent(a -> a.setOnAction((e) ->{
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#back").ifPresent(a -> a.setOnAction((e) -> {
             try {
                 profileSettings = null;
                 switchScene(application.gui.serverInfoScene);
@@ -169,24 +168,27 @@ public class SettingsScene extends AbstractScene {
     }
 
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
-        FlowPane container = new FlowPane();
+        VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
+        Label label = new Label();
+
+        vBox.getChildren().add(checkBox);
+        vBox.getChildren().add(label);
+        vBox.getStyleClass().add("settings-container");
+
         checkBox.setSelected(value);
         checkBox.setText(name);
-        Text desc = new Text();
-        desc.setText(description);
-        container.getChildren().add(checkBox);
-        container.getChildren().add(desc);
-
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
-        componentList.getChildren().add(container);
-        container.getStyleClass().add("settings-container");
         checkBox.getStyleClass().add("settings-checkbox");
-        desc.getStyleClass().add("settings-description");
-        FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
+
+        label.setText(description);
+        label.setWrapText(true);
+        label.getStyleClass().add("settings-label");
+
+        componentList.getChildren().add(vBox);
     }
-    public void updateRamLabel()
-    {
-        ramLabel.setText(profileSettings.ram == 0 ? "Auto" : Integer.toString(profileSettings.ram).concat(" MiB"));
+
+    public void updateRamLabel() {
+        ramLabel.setText(profileSettings.ram == 0 ? application.getTranslation("runtime.scenes.settings.ramAuto") : MessageFormat.format(application.getTranslation("runtime.scenes.settings.ram"), profileSettings.ram));
     }
 }

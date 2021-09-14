@@ -19,7 +19,7 @@ public class AuthService {
     }
 
     public AuthRequest.AuthPasswordInterface makePassword(String plainPassword) {
-        if(config.passwordEncryptKey != null) {
+        if (config.passwordEncryptKey != null) {
             try {
                 return new AuthAESPassword(encryptAESPassword(plainPassword));
             } catch (Exception ignored) {
@@ -27,6 +27,7 @@ public class AuthService {
         }
         return new AuthPlainPassword(plainPassword);
     }
+
     public AuthRequest.AuthPasswordInterface make2FAPassword(AuthRequest.AuthPasswordInterface firstPassword, String totp) {
         Auth2FAPassword auth2FAPassword = new Auth2FAPassword();
         auth2FAPassword.firstPassword = firstPassword;
@@ -34,9 +35,11 @@ public class AuthService {
         ((AuthTOTPPassword) auth2FAPassword.secondPassword).totp = totp;
         return auth2FAPassword;
     }
+
     public AuthRequest makeAuthRequest(String login, AuthRequest.AuthPasswordInterface password, String authId) {
         return new AuthRequest(login, password, authId, true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
     }
+
     private byte[] encryptAESPassword(String password) throws Exception {
         return SecurityHelper.encrypt(Launcher.getConfig().passwordEncryptKey, password);
     }

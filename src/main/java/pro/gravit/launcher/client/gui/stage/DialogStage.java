@@ -31,7 +31,7 @@ public class DialogStage extends AbstractStage {
         setScene(dialog);
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
-        if(bounds.getMaxX() == 0 || bounds.getMaxY() == 0) {
+        if (bounds.getMaxX() == 0 || bounds.getMaxY() == 0) {
             bounds = screen.getBounds();
         }
         LogHelper.info("Bounds: X: %f Y: %f", bounds.getMaxX(), bounds.getMaxY());

@@ -27,19 +27,19 @@ public class JavaSelectorComponent {
         comboBox.setConverter(new JavaVersionConverter(profile));
         comboBox.setOnAction(e -> {
             JavaHelper.JavaVersion version = comboBox.getValue();
-            if(version == null) return;
+            if (version == null) return;
             javaPath.setText(version.jvmDir.toAbsolutePath().toString());
             profileSettings.javaPath = javaPath.getText();
             javaError.setVisible(javaService.isIncompatibleJava(version, profile));
         });
-        for(JavaHelper.JavaVersion version : javaService.javaVersions) {
+        for (JavaHelper.JavaVersion version : javaService.javaVersions) {
             comboBox.getItems().add(version);
-            if(profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
+            if (profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                 comboBox.setValue(version);
             }
         }
         JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
-        if(recommend != null) {
+        if (recommend != null) {
             comboBox.getSelectionModel().select(recommend);
         }
     }
@@ -57,9 +57,9 @@ public class JavaSelectorComponent {
 
         @Override
         public String toString(JavaHelper.JavaVersion object) {
-            if(object == null) return "Unknown";
+            if (object == null) return "Unknown";
             String postfix = "";
-            if(object.version == profile.getRecommendJavaVersion()) {
+            if (object.version == profile.getRecommendJavaVersion()) {
                 postfix = "[RECOMMENDED]";
             }
             return String.format("Java %d b%d %s", object.version, object.build, postfix);
