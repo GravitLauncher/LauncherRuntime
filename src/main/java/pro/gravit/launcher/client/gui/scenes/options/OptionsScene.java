@@ -111,21 +111,17 @@ public class OptionsScene extends AbstractScene {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
         Label label = new Label();
-
         vBox.getChildren().add(checkBox);
         vBox.getChildren().add(label);
         VBox.setMargin(vBox, new Insets(0, 0, 0, 30 * --padding));
         vBox.getStyleClass().add("optional-container");
-
         checkBox.setSelected(value);
         checkBox.setText(name);
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         checkBox.getStyleClass().add("optional-checkbox");
-
         label.setText(description);
         label.setWrapText(true);
         label.getStyleClass().add("optional-label");
-
         componentList.getChildren().add(vBox);
         return checkBox::setSelected;
     }
