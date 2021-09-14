@@ -133,7 +133,7 @@ public class JavaFXApplication extends Application {
             Class.forName("pro.gravit.utils.enfs.EnFS", false, JavaFXApplication.class.getClassLoader());
             if (runtimeDirectory == null) {
                 EnFSHelper.initEnFS();
-                EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
+                enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
             }
             if (!EnFSHelper.checkEnFSUrl()) {
                 JavaRuntimeModule.noEnFSAlert();
@@ -190,8 +190,8 @@ public class JavaFXApplication extends Application {
     }
 
     public void resetDirectory() throws IOException {
-        if (runtimeDirectory != null) {
-            EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
+        if (enfsDirectory != null) {
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
         }
     }
 
