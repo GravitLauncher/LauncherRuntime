@@ -2,11 +2,14 @@ package pro.gravit.launcher.client.gui.scenes.options;
 
 import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.DirBridge;
@@ -45,6 +48,7 @@ public class OptionsScene extends AbstractScene {
 
     @Override
     public void reset() {
+        componentList.getChildren().clear();
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ClientProfile profile = application.stateService.getProfile();
@@ -79,10 +83,9 @@ public class OptionsScene extends AbstractScene {
     }
 
     private final Map<OptionalFile, Consumer<Boolean>> watchers = new HashMap<>();
-
     private void callWatcher(OptionalFile file, Boolean value) {
-        for (Map.Entry<OptionalFile, Consumer<Boolean>> v : watchers.entrySet()) {
-            if (v.getKey() == file) {
+        for(Map.Entry<OptionalFile, Consumer<Boolean>> v : watchers.entrySet()) {
+            if(v.getKey() == file) {
                 v.getValue().accept(value);
                 break;
             }
@@ -91,8 +94,8 @@ public class OptionsScene extends AbstractScene {
 
     public void addProfileOptionals(OptionalView view) {
         this.optionalView = new OptionalView(view);
-        watchers.clear();
         for (OptionalFile optionalFile : optionalView.all) {
+            watchers.clear();
             if (!optionalFile.visible)
                 continue;
 
@@ -108,21 +111,22 @@ public class OptionsScene extends AbstractScene {
     }
 
     public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
-        VBox vBox = new VBox();
+        VBox container = new VBox();
         CheckBox checkBox = new CheckBox();
-        Label label = new Label();
-        vBox.getChildren().add(checkBox);
-        vBox.getChildren().add(label);
-        VBox.setMargin(vBox, new Insets(0, 0, 0, 30 * --padding));
-        vBox.getStyleClass().add("optional-container");
         checkBox.setSelected(value);
         checkBox.setText(name);
+        Label desc = new Label();
+        desc.setWrapText(true);
+        desc.setText(description);
+        StackPane.setAlignment(desc, Pos.BASELINE_LEFT);
+        container.getChildren().add(checkBox);
+        container.getChildren().add(new StackPane(desc));
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
+        container.getStyleClass().add("optional-container");
         checkBox.getStyleClass().add("optional-checkbox");
-        label.setText(description);
-        label.setWrapText(true);
-        label.getStyleClass().add("optional-label");
-        componentList.getChildren().add(vBox);
+        desc.getStyleClass().add("optional-description");
+        FlowPane.setMargin(desc, new Insets(0, 0, 0, 30));
+        componentList.getChildren().add(container);
         return checkBox::setSelected;
     }
 
@@ -139,7 +143,7 @@ public class OptionsScene extends AbstractScene {
             entry.profileUUID = clientProfile.getUUID();
             OptionalView view = optionalViewMap.get(clientProfile);
             view.all.forEach((optionalFile -> {
-                if (optionalFile.visible) {
+                if(optionalFile.visible) {
                     boolean isEnabled = view.enabled.contains(optionalFile);
                     OptionalView.OptionalFileInstallInfo installInfo = view.installInfo.get(optionalFile);
                     entry.enabled.add(new OptionalListEntryPair(optionalFile, isEnabled, installInfo));
