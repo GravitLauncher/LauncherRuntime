@@ -44,7 +44,7 @@ task runDev(type: JavaExec) {
     description = "Run the main class with JavaExecTask"
     classpath = sourceSets.main.runtimeClasspath
     jvmArgs = ["-Dlauncherdebug.modules="+mainClassName, "-Dlauncherdebug.env=DEBUG"]
-    main = "pro.gravit.launcher.debug.DebugMain"
+    mainClass = "pro.gravit.launcher.debug.DebugMain"
 }
 
 repositories {
