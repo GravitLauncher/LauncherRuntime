@@ -38,7 +38,7 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     public Pane show(AbstractStage stage) throws Exception {
-        if(!isInit()) {
+        if (!isInit()) {
             init();
         }
         this.currentStage = stage;

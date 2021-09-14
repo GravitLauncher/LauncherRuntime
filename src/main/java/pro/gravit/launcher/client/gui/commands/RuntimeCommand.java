@@ -4,7 +4,6 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.commands.runtime.*;
 import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.utils.command.Command;
-import pro.gravit.utils.command.CommandHandler;
 
 public class RuntimeCommand extends Command {
     private final JavaFXApplication application;

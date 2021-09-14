@@ -36,7 +36,7 @@ public class EnFSHelper {
     }
 
     public static void initEnFS() throws IOException {
-        if(JVMHelper.JVM_VERSION == 8) {
+        if (JVMHelper.JVM_VERSION == 8) {
             // Java 8 not supported `java.net.spi.URLStreamHandlerProvider`
             LogHelper.info("Java pkgs: %s", System.getProperty("java.protocol.handler.pkgs"));
             // Format: {PKG}.{PROTOCOL}.Handler
@@ -50,16 +50,16 @@ public class EnFSHelper {
         Path enfsDirectory = Paths.get(BASE_DIRECTORY, theme != null ? theme : "common");
         Set<String> themePaths;
         String startThemePrefix;
-        if(theme != null) {
+        if (theme != null) {
             startThemePrefix = String.format("themes/%s/", theme);
-            if(themesCached.contains(theme)) {
+            if (themesCached.contains(theme)) {
                 return enfsDirectory;
             }
             EnFS.main.newDirectory(enfsDirectory);
             themePaths = new HashSet<>();
             // First stage - collect themes path
             config.runtime.forEach((name, digest) -> {
-                if(name.startsWith(startThemePrefix)) {
+                if (name.startsWith(startThemePrefix)) {
                     themePaths.add(name.substring(startThemePrefix.length()));
                 }
             });
@@ -70,10 +70,10 @@ public class EnFSHelper {
         // Second stage - put files
         config.runtime.forEach((name, digest) -> {
             String realPath;
-            if(name.startsWith(startThemePrefix)) {
+            if (name.startsWith(startThemePrefix)) {
                 realPath = name.substring(startThemePrefix.length());
             } else {
-                if(themePaths.contains(name)) {
+                if (themePaths.contains(name)) {
                     return;
                 }
                 realPath = name;
@@ -92,10 +92,10 @@ public class EnFSHelper {
 
     private static FileEntry makeFile(LauncherConfig config, String name, byte[] digest) throws IOException {
         FileEntry entry;
-        if(config.runtimeEncryptKey == null) {
+        if (config.runtimeEncryptKey == null) {
             entry = new URLFile(Launcher.getResourceURL(name));
         } else {
-            String encodedName = "runtime/"+ SecurityHelper.toHex(digest);
+            String encodedName = "runtime/" + SecurityHelper.toHex(digest);
             entry = new RuntimeCryptedFile(() -> {
                 try {
                     return IOHelper.newInput(IOHelper.getResourceURL(encodedName));
@@ -108,7 +108,7 @@ public class EnFSHelper {
     }
 
     public static URL getURL(String name) throws IOException {
-        try(InputStream stream = EnFS.main.getInputStream(Paths.get(name))) {
+        try (InputStream stream = EnFS.main.getInputStream(Paths.get(name))) {
             return new URL("enfs", null, -1, name);
         } catch (UnsupportedOperationException ex) {
             throw new FileNotFoundException(name);

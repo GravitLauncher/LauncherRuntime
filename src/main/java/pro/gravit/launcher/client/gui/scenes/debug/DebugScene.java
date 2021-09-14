@@ -59,7 +59,7 @@ public class DebugScene extends AbstractScene {
                 LogHelper.error(ex);
             }
 
-            if(haste == null)
+            if (haste == null)
                 return;
 
             ClipboardContent clipboardContent = new ClipboardContent();
@@ -70,9 +70,8 @@ public class DebugScene extends AbstractScene {
             application.openURL(haste);
         }));
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
-            if (writeParametersThread != null && writeParametersThread.isAlive())
-            {
-                if(currentProcess.isAlive()) writeParametersThread.interrupt();
+            if (writeParametersThread != null && writeParametersThread.isAlive()) {
+                if (currentProcess.isAlive()) writeParametersThread.interrupt();
             }
             if (currentProcess != null && currentProcess.isAlive()) {
                 Process process = currentProcess;
@@ -161,7 +160,7 @@ public class DebugScene extends AbstractScene {
     }
 
     public String hastebin(String log) throws IOException {
-        if(application.guiModuleConfig.hastebinServer == null)
+        if (application.guiModuleConfig.hastebinServer == null)
             throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
         URL url = new URL(application.guiModuleConfig.hastebinServer + "/documents");
 

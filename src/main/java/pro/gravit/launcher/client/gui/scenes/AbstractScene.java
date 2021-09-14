@@ -1,6 +1,5 @@
 package pro.gravit.launcher.client.gui.scenes;
 
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,23 +14,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
-import pro.gravit.launcher.client.JavaRuntimeModule;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
+import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.PropertyResourceBundle;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -60,7 +54,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             scene.setFill(Color.TRANSPARENT);
         }
         layout = (Pane) LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
-        Rectangle rect = new Rectangle(layout.getPrefWidth(),layout.getPrefHeight());
+        Rectangle rect = new Rectangle(layout.getPrefWidth(), layout.getPrefHeight());
         rect.setArcHeight(15);
         rect.setArcWidth(15);
         layout.setClip(rect);
@@ -99,8 +93,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             return;
         if (currentOverlay == null)
             return;
-        if(hideTransformStarted) {
-            if(onFinished != null) {
+        if (hideTransformStarted) {
+            if (onFinished != null) {
                 contextHelper.runInFxThread(() -> onFinished.handle(null));
             }
         }
@@ -152,25 +146,25 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public void disable() {
         LogHelper.debug("Scene %s disabled (%d)", getName(), enabled.incrementAndGet());
-        if(enabled.get() != 1) return;
+        if (enabled.get() != 1) return;
         Pane root = (Pane) scene.getRoot();
-        if(layout == root) {
+        if (layout == root) {
             throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
         }
         layout.setEffect(new GaussianBlur(20));
-        if(disablePane == null) {
+        if (disablePane == null) {
             disablePane = new Pane();
             disablePane.setPrefHeight(root.getPrefHeight());
             disablePane.setPrefWidth(root.getPrefWidth());
             int index = root.getChildren().indexOf(layout);
-            root.getChildren().add(index+1, disablePane);
+            root.getChildren().add(index + 1, disablePane);
         }
         disablePane.setVisible(true);
     }
 
     public void enable() {
         LogHelper.debug("Scene %s enabled (%d)", getName(), enabled.decrementAndGet());
-        if(enabled.get() != 0) return;
+        if (enabled.get() != 0) return;
         layout.setEffect(new GaussianBlur(0));
         disablePane.setVisible(false);
     }
@@ -186,13 +180,13 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     }
 
     private void sceneBaseInit() {
-        if(header == null) {
+        if (header == null) {
             LogHelper.warning("Scene %s header button(#close, #hide) deprecated", getName());
-            LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(layout,  "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
         } else {
-            LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header,  "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
             LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#lang").ifPresent((b) -> {
 
                 b.setContextMenu(makeLangContextMenu());
@@ -205,7 +199,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth").ifPresent(b -> b.setOnAction((e) ->
                     application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
                             application.getTranslation("runtime.scenes.settings.exitDialog.description"), this::userExit
-                                    , () -> {
+                            , () -> {
                             }, true)));
         }
         currentStage.enableMouseDrag(layout);
@@ -214,7 +208,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     private ContextMenu makeLangContextMenu() {
         ContextMenu contextMenu = new ContextMenu();
         contextMenu.getStyleClass().add("langChoice");
-        for(RuntimeSettings.LAUNCHER_LOCALE locale : RuntimeSettings.LAUNCHER_LOCALE.values()) {
+        for (RuntimeSettings.LAUNCHER_LOCALE locale : RuntimeSettings.LAUNCHER_LOCALE.values()) {
             MenuItem item = new MenuItem(locale.displayName);
             item.setOnAction(e -> {
                 try {

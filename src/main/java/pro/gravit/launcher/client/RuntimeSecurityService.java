@@ -9,7 +9,6 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.HardwareReportRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
-import pro.gravit.launcher.request.websockets.ClientWebSocketService;
 import pro.gravit.launcher.utils.HWIDProvider;
 import pro.gravit.utils.helper.*;
 
@@ -46,20 +45,17 @@ public class RuntimeSecurityService {
                 application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
                         .thenAccept((event1) -> {
                             Request.addExtendedToken("publicKey", event1.extendedToken);
-                            if(!event1.needHardwareInfo)
-                            {
+                            if (!event1.needHardwareInfo) {
                                 LogHelper.info("Advanced security level success completed");
                                 notifyWaitObject(true);
-                            }
-                            else
-                            {
+                            } else {
                                 doCollectHardwareInfo(!event1.onlyStatisticInfo);
                             }
                         }).exceptionally((e) -> {
-                    application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
-                    notifyWaitObject(false);
-                    return null;
-                });
+                            application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+                            notifyWaitObject(false);
+                            return null;
+                        });
             } catch (IOException e) {
                 LogHelper.error("VerifySecureLevel failed: %s", e.getMessage());
                 notifyWaitObject(false);
@@ -71,8 +67,7 @@ public class RuntimeSecurityService {
         });
     }
 
-    private void doCollectHardwareInfo(boolean needSerial)
-    {
+    private void doCollectHardwareInfo(boolean needSerial) {
         CommonHelper.newThread("HardwareInfo Collector Thread", true, () -> {
             HWIDProvider provider = new HWIDProvider();
             HardwareReportRequest.HardwareInfo info = provider.getHardwareInfo(needSerial);
@@ -155,8 +150,7 @@ public class RuntimeSecurityService {
         return SecurityHelper.sign(data, JavaRuntimeModule.engine.privateKey);
     }
 
-    public boolean isMayBeDownloadJava()
-    {
+    public boolean isMayBeDownloadJava() {
         return JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE;
     }
 }

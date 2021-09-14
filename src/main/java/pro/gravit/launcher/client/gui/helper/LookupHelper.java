@@ -1,10 +1,7 @@
 package pro.gravit.launcher.client.gui.helper;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Parent;
-import javafx.scene.control.ButtonBase;
 
 import java.util.Optional;
 
@@ -15,7 +12,7 @@ public class LookupHelper {
         if (current == null) {
             throw new NullPointerException();
         }
-        for (int i=0;i<names.length;++i) {
+        for (int i = 0; i < names.length; ++i) {
             current = current.lookup(names[i]);
             if (current == null) {
                 throw new LookupException(names, i);
@@ -51,14 +48,14 @@ public class LookupHelper {
     }
 
     public static <T extends Node> Point2D getAbsoluteCords(Node child, Node parent) {
-        Point2D point2D = new Point2D(0,0);
+        Point2D point2D = new Point2D(0, 0);
         // Node current = child //Crash in runtime
         Parent current = (Parent) child;
-        while(current != parent) {
+        while (current != parent) {
             point2D.x += current.getLayoutX();
             point2D.y += current.getLayoutY();
             current = current.getParent();
-            if(current == null) break;
+            if (current == null) break;
         }
         return point2D;
     }
@@ -72,7 +69,7 @@ public class LookupHelper {
         private static String buildStack(String[] args, int positionFailed) {
             StringBuilder stringBuilder = new StringBuilder("Lookup failed ");
             boolean first = true;
-            for (int i=0;i<args.length;++i) {
+            for (int i = 0; i < args.length; ++i) {
                 if (!first)
                     stringBuilder.append("->");
                 stringBuilder.append(args[i]);

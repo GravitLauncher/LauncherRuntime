@@ -1,15 +1,15 @@
 package pro.gravit.launcher.client.gui.impl;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.overlays.*;
-import pro.gravit.launcher.client.gui.scenes.*;
+import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
+import pro.gravit.launcher.client.gui.overlays.ProcessingOverlay;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
-import pro.gravit.launcher.client.gui.scenes.login.methods.WebAuthMethod;
 import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
-import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.scenes.serverinfo.ServerInfoScene;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.scenes.settings.SettingsScene;
 import pro.gravit.launcher.client.gui.scenes.update.UpdateScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
@@ -63,8 +63,8 @@ public class GuiObjectsContainer {
             overlays.clear();
             scenes.clear();
             init();
-            for(AbstractScene s : scenes) {
-                if(s.getClass() == scene) {
+            for (AbstractScene s : scenes) {
+                if (s.getClass() == scene) {
                     application.getMainStage().setScene(s);
                 }
             }
@@ -72,8 +72,8 @@ public class GuiObjectsContainer {
     }
 
     public AbstractScene getSceneByName(String name) {
-        for(AbstractScene scene : scenes) {
-            if(name.equals(scene.getName())) {
+        for (AbstractScene scene : scenes) {
+            if (name.equals(scene.getName())) {
                 return scene;
             }
         }
@@ -81,8 +81,8 @@ public class GuiObjectsContainer {
     }
 
     public AbstractOverlay getOverlayByName(String name) {
-        for(AbstractOverlay overlay : overlays) {
-            if(name.equals(overlay.getName())) {
+        for (AbstractOverlay overlay : overlays) {
+            if (name.equals(overlay.getName())) {
                 return overlay;
             }
         }
