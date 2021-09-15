@@ -171,20 +171,16 @@ public class SettingsScene extends AbstractScene {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
         Label label = new Label();
-
         vBox.getChildren().add(checkBox);
         vBox.getChildren().add(label);
         vBox.getStyleClass().add("settings-container");
-
         checkBox.setSelected(value);
         checkBox.setText(name);
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         checkBox.getStyleClass().add("settings-checkbox");
-
         label.setText(description);
         label.setWrapText(true);
         label.getStyleClass().add("settings-label");
-
         componentList.getChildren().add(vBox);
     }
 
