@@ -84,7 +84,7 @@ public class ServerMenuScene extends AbstractScene {
         if (lastProfiles == application.stateService.getProfiles()) return;
         lastProfiles = application.stateService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername());
+        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername().toUpperCase(Locale.ROOT));
         avatar.setImage(originalAvatarImage);
         int position = 0;
         for (ClientProfile profile : application.stateService.getProfiles()) {
