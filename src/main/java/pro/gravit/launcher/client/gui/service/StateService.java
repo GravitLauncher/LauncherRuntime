@@ -9,6 +9,7 @@ import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.management.PingServerReportRequest;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +42,10 @@ public class StateService {
     }
 
     public void setServerPingReport(Map<String, PingServerReportRequest.PingServerReport> serverPingReport) {
-        this.serverPingReport = serverPingReport;
+        if(this.serverPingReport == null) {
+            this.serverPingReport = new HashMap<>();
+        }
+        this.serverPingReport.putAll(serverPingReport);
         serverPingReportCallbackMap.forEach((name, callback) -> {
             PingServerReportRequest.PingServerReport report = serverPingReport.get(name);
             callback.onServerPingReport(report);
@@ -50,9 +54,10 @@ public class StateService {
 
     public void addServerSocketPing(ClientProfile.ServerProfile profile, ServerPinger.Result result) {
         PingServerReportRequest.PingServerReport report = new PingServerReportRequest.PingServerReport(profile.name, result.maxPlayers, result.onlinePlayers);
-        if (this.serverPingReport != null) {
-            this.serverPingReport.put(profile.name, report);
+        if(this.serverPingReport == null) {
+            this.serverPingReport = new HashMap<>();
         }
+        this.serverPingReport.put(profile.name, report);
         OnServerPingReportCallback cb = serverPingReportCallbackMap.get(profile.name);
         if (cb != null) {
             cb.onServerPingReport(report);
