@@ -13,16 +13,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaService {
-    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) x(?<bitness>.+) javafx (?<javafx>.+)");
+    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) x(?<bitness>.+) javafx (?<javafx>.+)");
     public final List<JavaHelper.JavaVersion> javaVersions;
 
     public JavaService(JavaFXApplication application) {
-        List<JavaHelper.JavaVersion> versions;
-        if (!application.guiModuleConfig.forceDownloadJava) {
-            versions = new LinkedList<>(JavaHelper.findJava());
-        } else {
-            versions = new LinkedList<>();
-        }
+        List<JavaHelper.JavaVersion> versions = new LinkedList<>();
         {
             if (application.guiModuleConfig.javaList != null) {
                 for (Map.Entry<String, String> entry : application.guiModuleConfig.javaList.entrySet()) {
@@ -30,6 +25,7 @@ public class JavaService {
                     String javaDir = entry.getValue();
                     Matcher matcher = JAVA_VERSION_PATTERN.matcher(javaVersionString);
                     if (matcher.matches()) {
+                        String os = matcher.group("os");
                         int version = Integer.parseInt(matcher.group("version"));
                         int build = Integer.parseInt(matcher.group("build"));
                         int bitness = Integer.parseInt(matcher.group("bitness"));
@@ -37,7 +33,11 @@ public class JavaService {
                         if (bitness != 0 && bitness != JVMHelper.OS_BITS) {
                             continue;
                         }
+                        if(!JVMHelper.OS_TYPE.name.equals(os)) {
+                            continue;
+                        }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
+                        LogHelper.debug("In-Launcher Java Version found: Java %db%d x%d javafx %s", version, build, bitness, Boolean.toString(javafx));
                         JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, bitness, javafx);
                         versions.add(javaVersion);
                     } else {
@@ -45,6 +45,9 @@ public class JavaService {
                     }
                 }
             }
+        }
+        if(!application.guiModuleConfig.forceDownloadJava || versions.isEmpty()) {
+            versions.addAll(JavaHelper.findJava());
         }
         javaVersions = Collections.unmodifiableList(versions);
     }
