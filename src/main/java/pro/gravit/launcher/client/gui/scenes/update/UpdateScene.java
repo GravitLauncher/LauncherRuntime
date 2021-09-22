@@ -1,12 +1,9 @@
 package pro.gravit.launcher.client.gui.scenes.update;
 
-import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.*;
-import javafx.scene.shape.Circle;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
-import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
@@ -27,7 +24,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
@@ -70,7 +66,7 @@ public class UpdateScene extends AbstractScene {
         );
         LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction(
                 (e) -> {
-                    if(downloader != null) {
+                    if (downloader != null) {
                         downloader.cancel();
                         downloader = null;
                     } else {
@@ -108,6 +104,7 @@ public class UpdateScene extends AbstractScene {
             Files.delete(subDir);
         }
     }
+
     private static class PathRemapperData {
         public String key;
         public String value;
@@ -117,6 +114,7 @@ public class UpdateScene extends AbstractScene {
             this.value = value;
         }
     }
+
     @SuppressWarnings("rawtypes")
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         UpdateRequest request = new UpdateRequest(dirName);
@@ -129,24 +127,20 @@ public class UpdateScene extends AbstractScene {
                 totalSize = 0;
                 progressBar.progressProperty().setValue(0);
                 if (optionalsEnabled) {
-                    for(OptionalAction action : view.getDisabledActions())
-                    {
-                        if(action instanceof OptionalActionFile)
-                        {
+                    for (OptionalAction action : view.getDisabledActions()) {
+                        if (action instanceof OptionalActionFile) {
                             ((OptionalActionFile) action).disableInHashedDir(updateRequestEvent.hdir);
                         }
                     }
                 }
                 try {
                     LinkedList<PathRemapperData> pathRemapper = new LinkedList<>();
-                    if(optionalsEnabled)
-                    {
+                    if (optionalsEnabled) {
                         Set<OptionalActionFile> fileActions = view.getActionsByClass(OptionalActionFile.class);
-                        for(OptionalActionFile file : fileActions)
-                        {
+                        for (OptionalActionFile file : fileActions) {
                             file.injectToHashedDir(updateRequestEvent.hdir);
-                            file.files.forEach((k,v) -> {
-                                if(v == null || v.isEmpty()) return;
+                            file.files.forEach((k, v) -> {
+                                if (v == null || v.isEmpty()) return;
                                 pathRemapper.add(new PathRemapperData(v, k)); //reverse (!)
                                 LogHelper.dev("Remap prepare %s to %s", v, k);
                             });
@@ -165,10 +159,8 @@ public class UpdateScene extends AbstractScene {
                             case FILE:
                                 HashedFile file = (HashedFile) entry;
                                 totalSize += file.size;
-                                for(PathRemapperData remapEntry : pathRemapper)
-                                {
-                                    if(path.startsWith(remapEntry.key))
-                                    {
+                                for (PathRemapperData remapEntry : pathRemapper) {
+                                    if (path.startsWith(remapEntry.key)) {
                                         urlPath = path.replace(remapEntry.key, remapEntry.value);
                                         LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
                                     }

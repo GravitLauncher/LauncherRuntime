@@ -1,10 +1,8 @@
 package pro.gravit.launcher.client.gui.helper;
 
-import javafx.scene.layout.Pane;
-
 public class PositionHelper {
     public enum PositionInfo {
-        TOP_LEFT(0,0,true,true),
+        TOP_LEFT(0, 0, true, true),
         TOP_RIGHT(Double.MAX_VALUE, 0, false, true),
         BOTTOM_LEFT(0, Double.MAX_VALUE, false, true),
         BOTTOM_RIGHT(Double.MAX_VALUE, Double.MAX_VALUE, false, false);
@@ -20,6 +18,7 @@ public class PositionHelper {
             this.offsetYPlus = offsetYPlus;
         }
     }
+
     private PositionHelper() {
         throw new UnsupportedOperationException();
     }
@@ -29,20 +28,20 @@ public class PositionHelper {
         double y = info.startY;
         x = Math.min(x, maxX);
         y = Math.min(y, maxY);
-        if(info.offsetXPlus) {
+        if (info.offsetXPlus) {
             x += width;
             x += offsetX;
         } else {
             x -= width;
             x -= offsetX;
         }
-        if(info.offsetYPlus) {
+        if (info.offsetYPlus) {
             y += height;
             y += offsetY;
         } else {
             y -= height;
             y -= offsetY;
         }
-        return new LookupHelper.Point2D(x,y);
+        return new LookupHelper.Point2D(x, y);
     }
 }

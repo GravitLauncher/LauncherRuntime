@@ -2,6 +2,9 @@ package pro.gravit.launcher.client.gui.config;
 
 import pro.gravit.launcher.LauncherInject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class GuiModuleConfig {
     @LauncherInject(value = "modules.javaruntime.createaccounturl")
     public String createAccountURL;
@@ -9,24 +12,17 @@ public class GuiModuleConfig {
     public String forgotPassURL;
     @LauncherInject(value = "modules.javaruntime.hastebinserver")
     public String hastebinServer;
-    @LauncherInject(value = "modules.javaruntime.enabledownloadjava")
-    public boolean enableDownloadJava;
-    @LauncherInject(value = "modules.javaruntime.userdisabledownloadjava")
-    public boolean userDisableDownloadJava;
-    @LauncherInject(value = "modules.javaruntime.jvmwindows64dir")
-    public String jvmWindows64Dir;
-    @LauncherInject(value = "modules.javaruntime.jvmwindows32dir")
-    public String jvmWindows32Dir;
+    @LauncherInject(value = "modules.javaruntime.forcedownloadjava")
+    public boolean forceDownloadJava;
+    @LauncherInject(value = "modules.javaruntime.javalist")
+    public Map<String, String> javaList;
 
     public static Object getDefault() {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravit.pro/createAccount.php";
         config.forgotPassURL = "https://gravit.pro/fogotPass.php";
         config.hastebinServer = "https://hastebin.com";
-        config.enableDownloadJava = false;
-        config.userDisableDownloadJava = true;
-        config.jvmWindows64Dir = "java-windows-x64";
-        config.jvmWindows32Dir = "java-windows-x32";
+        config.javaList = new HashMap<>();
         return config;
     }
 }

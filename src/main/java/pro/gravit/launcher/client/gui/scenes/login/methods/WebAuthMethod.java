@@ -65,6 +65,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         private WebView webView;
         private LoginScene.LoginSceneAccessor accessor;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+
         public WebAuthOverlay(JavaFXApplication application) {
             super("overlay/webauth/webauth.fxml", application);
         }
@@ -80,7 +81,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
             webView = new WebView();
             webViewPane.getChildren().add(webView);
             LookupHelper.<Button>lookup(layout, "#exit").setOnAction((e) -> {
-                if(future != null) {
+                if (future != null) {
                     future.completeExceptionally(new UserAuthCanceledException());
                 }
                 accessor.hideOverlay(0, null);
@@ -91,11 +92,11 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
             LogHelper.debug("Load url %s", url);
             webView.getEngine().setJavaScriptEnabled(true);
             webView.getEngine().load(url);
-            if(redirectCallback != null) {
+            if (redirectCallback != null) {
                 webView.getEngine().locationProperty().addListener((obs, oldLocation, newLocation) -> {
                     if (newLocation != null) {
-                        if(redirectUrl != null) {
-                            if(newLocation.endsWith(redirectUrl)) {
+                        if (redirectUrl != null) {
+                            if (newLocation.endsWith(redirectUrl)) {
                                 redirectCallback.accept(newLocation);
                             }
                         } else {

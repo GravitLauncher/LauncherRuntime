@@ -1,12 +1,10 @@
 package pro.gravit.launcher.client;
 
-import pro.gravit.launcher.ClientLauncherWrapper;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
 import pro.gravit.launcher.client.events.ClientUnlockConsoleEvent;
-import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.RuntimeProvider;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
@@ -24,7 +22,7 @@ public class JavaRuntimeModule extends LauncherModule {
     private RuntimeProvider provider;
 
     public JavaRuntimeModule() {
-        super(new LauncherModuleInfo("StdJavaRuntime", new Version(2, 0, 1, 1, Version.Type.STABLE),
+        super(new LauncherModuleInfo("StdJavaRuntime", new Version(2, 0, 2, 1, Version.Type.STABLE),
                 0, new String[]{}, new String[]{"runtime"}));
     }
 
@@ -35,7 +33,7 @@ public class JavaRuntimeModule extends LauncherModule {
     }
 
     public static void noLocaleAlert(String file) {
-        String message = String.format("Не найден файл %s при инициализации GUI. Дальнейшая работа невозможна.\nУбедитесь что все файлы дизайна лаунчера присутствуют в папке runtime при сборке лаунчера", file);
+        String message = String.format("Не найден файл языка '%s' при инициализации GUI. Дальнейшая работа невозможна.\nУбедитесь что все файлы дизайна лаунчера присутствуют в папке runtime при сборке лаунчера", file);
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -44,8 +42,7 @@ public class JavaRuntimeModule extends LauncherModule {
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
 
-    public static void errorHandleAlert(Throwable e)
-    {
+    public static void errorHandleAlert(Throwable e) {
         String message = String.format("Произошла серьезная ошибка при инициализации интерфейса лаунчера.\nДля пользователей:\nОбратитесь к администрации своего проекта с скриншотом этого окна\nJava %d (x%d) Ошибка %s\nОписание: %s\nБолее подробную информацию можно получить из лога", JVMHelper.JVM_VERSION, JVMHelper.JVM_BITS, e.getClass().getName(), e.getMessage() == null ? "null" : e.getMessage());
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
@@ -70,7 +67,7 @@ public class JavaRuntimeModule extends LauncherModule {
     }
 
     private void consoleUnlock(ClientUnlockConsoleEvent event) {
-        if(engine.runtimeProvider instanceof StdJavaRuntimeProvider) {
+        if (engine.runtimeProvider instanceof StdJavaRuntimeProvider) {
             ((StdJavaRuntimeProvider) engine.runtimeProvider).registerPrivateCommands();
         }
     }

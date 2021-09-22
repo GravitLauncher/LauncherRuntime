@@ -402,8 +402,7 @@ public class LoginScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
-            }
-            else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
+            } else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                 authFlow.clear();
                 authFlow.add(0);
                 authFlow.add(1);
@@ -431,8 +430,8 @@ public class LoginScene extends AbstractScene {
     public void onGetProfiles() {
         processing(new ProfilesRequest(), application.getTranslation("runtime.overlay.processing.text.profiles"), (profiles) -> {
             application.stateService.setProfilesResult(profiles);
-            for(ClientProfile profile : profiles.profiles) {
-                application.triggerManager.process(profile,application.stateService.getOptionalView(profile));
+            for (ClientProfile profile : profiles.profiles) {
+                application.triggerManager.process(profile, application.stateService.getOptionalView(profile));
             }
             contextHelper.runInFxThread(() -> {
                 hideOverlay(0, null);

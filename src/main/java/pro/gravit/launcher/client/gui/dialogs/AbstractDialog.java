@@ -1,8 +1,6 @@
 package pro.gravit.launcher.client.gui.dialogs;
 
 import javafx.geometry.Rectangle2D;
-import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -14,6 +12,7 @@ import java.util.List;
 
 public abstract class AbstractDialog extends AbstractVisualComponent {
     private List<ContextHelper.GuiExceptionRunnable> onClose = new ArrayList<>(1);
+
     protected AbstractDialog(String fxmlPath, JavaFXApplication application) {
         super(fxmlPath, application);
     }
@@ -38,7 +37,7 @@ public abstract class AbstractDialog extends AbstractVisualComponent {
     }
 
     public void close() throws Throwable {
-        for(ContextHelper.GuiExceptionRunnable callback : onClose) {
+        for (ContextHelper.GuiExceptionRunnable callback : onClose) {
             callback.call();
         }
     }

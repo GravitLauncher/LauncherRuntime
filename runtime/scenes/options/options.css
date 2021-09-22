@@ -10,21 +10,18 @@
 }
 
 /*-- Чекбоксы --*/
-.optional-description {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 12px;
-    -fx-wrap-text: true;
-    -fx-padding : 0 0 15 30px;
+.optional-container {
+    -fx-background-color: transparent;
+    -fx-padding: 15 0 0 15px;
 }
 .optional-checkbox {
-    -fx-label-padding: 0 0 10 10px;
-    -fx-padding: 0 0 15 0px;
     -fx-fill: -fx-black2C;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-.optional-container {
-    -fx-background-color: transparent;
+.optional-label {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 12px;
+    -fx-label-padding: 0 20 0 30px;
 }
-
 /*-- DrLeonardo styles refactor --*/

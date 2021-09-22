@@ -3,8 +3,6 @@ package pro.gravit.launcher.client.gui.dialogs;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
-import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 
@@ -20,6 +18,7 @@ public class TextDialog extends AbstractDialog {
     private Label textHeader;
     private Label textDescription;
     private TextField textField;
+
     public TextDialog(JavaFXApplication application, String header, String text, Consumer<String> onAccept, Runnable onClose) {
         super("dialogs/text/dialog.fxml", application);
         this.header = header;
@@ -30,13 +29,13 @@ public class TextDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if(isInit())
+        if (isInit())
             textDescription.setText(text);
     }
 
     public void setText(String text) {
         this.text = text;
-        if(isInit())
+        if (isInit())
             textHeader.setText(header);
     }
 

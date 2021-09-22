@@ -45,21 +45,19 @@
 }
 
 /*-- Чекбоксы --*/
-.settings-description {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 12px;
-    -fx-wrap-text: true;
-    -fx-label-padding: 0 0 15 30px;
+.settings-container {
+    -fx-background-color: transparent;
+    -fx-padding: 15 0 0 15px;
 }
 .settings-checkbox {
-    -fx-label-padding: 0 0 10 10px;
-    -fx-padding: 0 0 15 0px;
     -fx-fill: -fx-black2C;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-.settings-container {
-    -fx-background-color: transparent;
+.settings-label {
+    -fx-fill: -fx-black2C;
+    -fx-font-size: 12px;
+    -fx-label-padding: 0 20 0 30px;
 }
 
 /* Смена директорий */

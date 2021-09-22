@@ -14,15 +14,14 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
-import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.CommonHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.net.InetSocketAddress;
@@ -105,8 +104,7 @@ public class ServerInfoScene extends AbstractScene {
         return null;
     }
 
-    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir)
-    {
+    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
         application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
@@ -122,7 +120,7 @@ public class ServerInfoScene extends AbstractScene {
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
         ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir,
-                jvmDir != null ? jvmDir : ( profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath) ),
+                jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath)),
                 clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
                 application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = profileSettings.ram;
@@ -161,10 +159,16 @@ public class ServerInfoScene extends AbstractScene {
         });
     }
 
-    private boolean isEnabledDownloadJava()
-    {
-        return application.securityService.isMayBeDownloadJava() && application.guiModuleConfig.enableDownloadJava && (!application.guiModuleConfig.userDisableDownloadJava || application.runtimeSettings.disableJavaDownload);
+    private String getJavaDirName() {
+        RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+        String prefix = DirBridge.dirUpdates.toAbsolutePath().toString();
+        if (profileSettings.javaPath == null || !profileSettings.javaPath.startsWith(prefix)) {
+            return null;
+        }
+        Path result = Paths.get(profileSettings.javaPath).relativize(DirBridge.dirUpdates);
+        return result.toString();
     }
+
     private void launchClient() {
         ClientProfile profile = application.stateService.getProfile();
         if (profile == null)
@@ -176,16 +180,13 @@ public class ServerInfoScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
-                if(isEnabledDownloadJava())
-                {
-                    String jvmDirName = JVMHelper.OS_BITS == 64 ? application.guiModuleConfig.jvmWindows64Dir : application.guiModuleConfig.jvmWindows32Dir;
+                String jvmDirName = getJavaDirName();
+                if (jvmDirName != null) {
                     Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                    application.gui.updateScene.sendUpdateRequest( jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                    application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
                         downloadClients(profile, jvmDirPath, jvmHDir);
                     });
-                }
-                else
-                {
+                } else {
                     downloadClients(profile, null, null);
                 }
             });

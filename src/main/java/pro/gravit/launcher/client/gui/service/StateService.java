@@ -9,6 +9,7 @@ import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.management.PingServerReportRequest;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,19 +21,19 @@ public class StateService {
     private ClientProfile profile;
     private Map<String, PingServerReportRequest.PingServerReport> serverPingReport;
     private Map<ClientProfile, OptionalView> optionalViewMap;
+
     @FunctionalInterface
-    public interface OnServerPingReportCallback
-    {
+    public interface OnServerPingReportCallback {
         void onServerPingReport(PingServerReportRequest.PingServerReport report);
     }
+
     private final Map<String, OnServerPingReportCallback> serverPingReportCallbackMap = new HashMap<>();
 
     public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if(rawAuthResult.oauth != null) {
+        if (rawAuthResult.oauth != null) {
             Request.setOAuth(authId, rawAuthResult.oauth);
-        }
-        else if (rawAuthResult.session != null)
+        } else if (rawAuthResult.session != null)
             Request.setSession(rawAuthResult.session);
     }
 
@@ -41,7 +42,10 @@ public class StateService {
     }
 
     public void setServerPingReport(Map<String, PingServerReportRequest.PingServerReport> serverPingReport) {
-        this.serverPingReport = serverPingReport;
+        if(this.serverPingReport == null) {
+            this.serverPingReport = new HashMap<>();
+        }
+        this.serverPingReport.putAll(serverPingReport);
         serverPingReportCallbackMap.forEach((name, callback) -> {
             PingServerReportRequest.PingServerReport report = serverPingReport.get(name);
             callback.onServerPingReport(report);
@@ -50,19 +54,18 @@ public class StateService {
 
     public void addServerSocketPing(ClientProfile.ServerProfile profile, ServerPinger.Result result) {
         PingServerReportRequest.PingServerReport report = new PingServerReportRequest.PingServerReport(profile.name, result.maxPlayers, result.onlinePlayers);
-        if(this.serverPingReport != null) {
-            this.serverPingReport.put(profile.name, report);
+        if(this.serverPingReport == null) {
+            this.serverPingReport = new HashMap<>();
         }
+        this.serverPingReport.put(profile.name, report);
         OnServerPingReportCallback cb = serverPingReportCallbackMap.get(profile.name);
-        if(cb != null) {
+        if (cb != null) {
             cb.onServerPingReport(report);
         }
     }
 
-    public void addServerPingCallback(String name, OnServerPingReportCallback callback)
-    {
-        if(serverPingReport != null)
-        {
+    public void addServerPingCallback(String name, OnServerPingReportCallback callback) {
+        if (serverPingReport != null) {
             PingServerReportRequest.PingServerReport report = serverPingReport.get(name);
             callback.onServerPingReport(report);
         }
@@ -77,18 +80,16 @@ public class StateService {
         optionalViewMap.put(profile, view);
     }
 
-    public void clearServerPingCallbacks()
-    {
+    public void clearServerPingCallbacks() {
         serverPingReportCallbackMap.clear();
     }
 
     public void setProfilesResult(ProfilesRequestEvent rawProfilesResult) {
         this.profiles = rawProfilesResult.profiles;
         this.profiles.sort(ClientProfile::compareTo);
-        if(this.optionalViewMap == null) this.optionalViewMap = new HashMap<>();
+        if (this.optionalViewMap == null) this.optionalViewMap = new HashMap<>();
         else this.optionalViewMap.clear();
-        for(ClientProfile profile : profiles)
-        {
+        for (ClientProfile profile : profiles) {
             this.optionalViewMap.put(profile, new OptionalView(profile));
         }
     }

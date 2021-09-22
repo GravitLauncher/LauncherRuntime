@@ -8,7 +8,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -20,9 +19,10 @@ import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.Locale;
+import java.util.Map;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -55,35 +55,37 @@ public class ServerMenuScene extends AbstractScene {
         );
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         scrollPane.setOnScroll(e -> {
-            double offset = e.getDeltaY()/scrollPane.getWidth();
-            scrollPane.setHvalue(scrollPane.getHvalue()-offset);
+            double offset = e.getDeltaY() / scrollPane.getWidth();
+            scrollPane.setHvalue(scrollPane.getHvalue() - offset);
         });
         reset();
         isResetOnShow = true;
     }
-    static class ServerButtonCache
-    {
+
+    static class ServerButtonCache {
         public ServerButtonComponent serverButton;
         public int position;
     }
+
     public static boolean putAvatarToImageView(JavaFXApplication application, String username, ImageView imageView) {
         int width = (int) imageView.getFitWidth();
         int height = (int) imageView.getFitHeight();
         Image head = application.skinManager.getScaledFxSkinHead(username, width, height);
-        if(head == null) return false;
+        if (head == null) return false;
         imageView.setImage(head);
         return true;
     }
+
     public static ServerButtonComponent getServerButton(JavaFXApplication application, ClientProfile profile) {
         return new ServerButtonComponent(application, profile);
     }
 
     @Override
     public void reset() {
-        if(lastProfiles == application.stateService.getProfiles()) return;
+        if (lastProfiles == application.stateService.getProfiles()) return;
         lastProfiles = application.stateService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername());
+        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername().toUpperCase(Locale.ROOT));
         avatar.setImage(originalAvatarImage);
         int position = 0;
         for (ClientProfile profile : application.stateService.getProfiles()) {
@@ -116,16 +118,15 @@ public class ServerMenuScene extends AbstractScene {
         });
         try {
             Request.service.request(new PingServerRequest()).thenAccept((event) -> {
-                if(event.serverMap != null)
-                {
+                if (event.serverMap != null) {
                     event.serverMap.forEach((name, value) -> {
                         application.stateService.setServerPingReport(event.serverMap);
                     });
                 }
                 CommonHelper.newThread("ServerPinger", true, () -> {
-                    for(ClientProfile profile : lastProfiles) {
+                    for (ClientProfile profile : lastProfiles) {
                         ClientProfile.ServerProfile serverProfile = profile.getDefaultServerProfile();
-                        if(!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
+                        if (!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
                         try {
                             ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
                             ServerPinger.Result result = pinger.ping();

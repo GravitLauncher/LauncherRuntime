@@ -14,6 +14,7 @@ public class InfoDialog extends AbstractDialog {
 
     private Text textHeader;
     private Text textDescription;
+
     public InfoDialog(JavaFXApplication application, String header, String text, Runnable onAccept, Runnable onClose) {
         super("dialogs/info/dialog.fxml", application);
         this.header = header;
@@ -24,13 +25,13 @@ public class InfoDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if(isInit())
+        if (isInit())
             textDescription.setText(text);
     }
 
     public void setText(String text) {
         this.text = text;
-        if(isInit())
+        if (isInit())
             textHeader.setText(header);
     }
 

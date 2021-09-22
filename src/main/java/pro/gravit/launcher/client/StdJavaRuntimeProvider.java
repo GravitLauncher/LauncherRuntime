@@ -33,8 +33,7 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
     public void run(String[] args) {
         Application.launch(JavaFXApplication.class, args);
         LogHelper.debug("Post Application.launch method invoked");
-        if(launcherUpdateTempPath != null && processBuilder != null)
-        {
+        if (launcherUpdateTempPath != null && processBuilder != null) {
             try {
                 Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
                 try (InputStream in = IOHelper.newInput(launcherUpdateTempPath)) {
@@ -42,8 +41,7 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
                 }
                 Files.deleteIfExists(launcherUpdateTempPath);
                 processBuilder.start();
-            } catch (Throwable e)
-            {
+            } catch (Throwable e) {
                 LogHelper.error(e);
             }
 
@@ -57,14 +55,14 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
 
     protected void registerPrivateCommands() {
         JavaFXApplication application = JavaFXApplication.getInstance();
-        if(application != null) {
+        if (application != null) {
             application.registerPrivateCommands();
         }
     }
 
     @Override
     public void init(boolean clientInstance) {
-        if(clientInstance) {
+        if (clientInstance) {
             JavaFXApplication.setNoGUIMode(true);
         }
     }

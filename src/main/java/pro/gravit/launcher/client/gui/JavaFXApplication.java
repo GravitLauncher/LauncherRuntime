@@ -17,6 +17,7 @@ import pro.gravit.launcher.client.gui.config.StdSettingsManager;
 import pro.gravit.launcher.client.gui.helper.EnFSHelper;
 import pro.gravit.launcher.client.gui.impl.*;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.service.JavaService;
 import pro.gravit.launcher.client.gui.service.RuntimeDialogService;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
@@ -62,6 +63,7 @@ public class JavaFXApplication extends Application {
     public RuntimeSecurityService securityService;
     public SkinManager skinManager;
     public FXMLFactory fxmlFactory;
+    public JavaService javaService;
     public TriggerManager triggerManager;
     private SettingsManager settingsManager;
     private PrimaryStage mainStage;
@@ -109,6 +111,7 @@ public class JavaFXApplication extends Application {
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
         triggerManager = new TriggerManager(this);
+        javaService = new JavaService(this);
         registerCommands();
     }
 
@@ -117,25 +120,26 @@ public class JavaFXApplication extends Application {
         // If debugging
         try {
             Class.forName("pro.gravit.launcher.debug.DebugMain", false, JavaFXApplication.class.getClassLoader());
-            if(DebugMain.IS_DEBUG.get()) {
+            if (DebugMain.IS_DEBUG.get()) {
                 runtimeDirectory = IOHelper.WORKING_DIR.resolve("runtime");
                 debugMode = true;
             }
         } catch (Throwable e) {
-            if(!(e instanceof ClassNotFoundException)) {
+            if (!(e instanceof ClassNotFoundException)) {
                 LogHelper.error(e);
             }
         }
         try {
             Class.forName("pro.gravit.utils.enfs.EnFS", false, JavaFXApplication.class.getClassLoader());
-            if(runtimeDirectory == null) {
-                enfsDirectory = EnFSHelper.initEnFS(config);
+            if (runtimeDirectory == null) {
+                EnFSHelper.initEnFS();
+                enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
             }
-            if(!EnFSHelper.checkEnFSUrl()) {
+            if (!EnFSHelper.checkEnFSUrl()) {
                 JavaRuntimeModule.noEnFSAlert();
             }
         } catch (Throwable e) {
-            if(!(e instanceof ClassNotFoundException)) {
+            if (!(e instanceof ClassNotFoundException)) {
                 LogHelper.error(e);
             }
         }
@@ -144,10 +148,9 @@ public class JavaFXApplication extends Application {
             runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
         try {
             updateLocaleResources(runtimeSettings.locale.name);
-        } catch (Throwable e)
-        {
+        } catch (Throwable e) {
             JavaRuntimeModule.noLocaleAlert(runtimeSettings.locale.name);
-            if(!(e instanceof  FileNotFoundException)) {
+            if (!(e instanceof FileNotFoundException)) {
                 LogHelper.error(e);
             }
             Platform.exit();
@@ -163,7 +166,7 @@ public class JavaFXApplication extends Application {
             gui = new GuiObjectsContainer(this);
             gui.init();
             //
-            if(!IS_NOGUI.get()) {
+            if (!IS_NOGUI.get()) {
                 mainStage.setScene(gui.loginScene);
                 mainStage.show();
             } else {
@@ -172,8 +175,7 @@ public class JavaFXApplication extends Application {
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
             AuthRequest.registerProviders();
-        } catch (Throwable e)
-        {
+        } catch (Throwable e) {
             LogHelper.error(e);
             JavaRuntimeModule.errorHandleAlert(e);
             Platform.exit();
@@ -187,19 +189,25 @@ public class JavaFXApplication extends Application {
         fxmlFactory = new FXMLFactory(resources, workers);
     }
 
+    public void resetDirectory() throws IOException {
+        if(enfsDirectory != null) {
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
+        }
+    }
+
     private CommandCategory runtimeCategory;
 
     private void registerCommands() {
         runtimeCategory = new BaseCommandCategory();
         runtimeCategory.registerCommand("version", new VersionCommand());
-        if(ConsoleManager.isConsoleUnlock) {
+        if (ConsoleManager.isConsoleUnlock) {
             registerPrivateCommands();
         }
         ConsoleManager.handler.registerCategory(new CommandHandler.Category(runtimeCategory, "runtime"));
     }
 
     public void registerPrivateCommands() {
-        if(runtimeCategory == null) return;
+        if (runtimeCategory == null) return;
         runtimeCategory.registerCommand("runtime", new RuntimeCommand(this));
     }
 
@@ -219,12 +227,12 @@ public class JavaFXApplication extends Application {
     }
 
     public static URL getResourceURL(String name) throws IOException {
-        if(runtimeDirectory != null) {
+        if (runtimeDirectory != null) {
             Path target = runtimeDirectory.resolve(name);
-            if(!Files.exists(target))
+            if (!Files.exists(target))
                 throw new FileNotFoundException(String.format("File runtime/%s not found", name));
             return target.toUri().toURL();
-        } else if(enfsDirectory != null) {
+        } else if (enfsDirectory != null) {
             return getResourceEnFs(name);
         } else {
             return Launcher.getResourceURL(name);
@@ -250,11 +258,11 @@ public class JavaFXApplication extends Application {
     }
 
     public RuntimeSettings.ProfileSettings getProfileSettings(ClientProfile profile) {
-        if(profile == null) throw new NullPointerException("ClientProfile not selected");
+        if (profile == null) throw new NullPointerException("ClientProfile not selected");
         UUID uuid = profile.getUUID();
         RuntimeSettings.ProfileSettings settings = runtimeSettings.profileSettings.get(uuid);
-        if(settings == null) {
-            settings = RuntimeSettings.ProfileSettings.getDefault(profile);
+        if (settings == null) {
+            settings = RuntimeSettings.ProfileSettings.getDefault(javaService, profile);
             runtimeSettings.profileSettings.put(uuid, settings);
         }
         return settings;
