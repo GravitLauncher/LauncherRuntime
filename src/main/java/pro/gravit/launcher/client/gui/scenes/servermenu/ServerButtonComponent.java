@@ -56,7 +56,11 @@ public class ServerButtonComponent extends AbstractVisualComponent {
             }
         });
         application.stateService.addServerPingCallback(profile.getDefaultServerProfile().name, (report) -> {
-            LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(report.playersOnline));
+            if(report == null) {
+                LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
+            } else {
+                LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(report.playersOnline));
+            }
         });
         saveButton = LookupHelper.lookup(layout, "#save");
         resetButton = LookupHelper.lookup(layout, "#reset");
