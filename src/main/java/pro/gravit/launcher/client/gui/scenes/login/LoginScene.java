@@ -71,7 +71,7 @@ public class LoginScene extends AbstractScene {
     public void doInit() {
         authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, (e) -> contextHelper.runCallback(this::loginWithGui));
         savePasswordCheckBox = LookupHelper.lookup(layout, "#leftPane", "#savePassword");
-        if (application.runtimeSettings.password != null) {
+        if (application.runtimeSettings.password != null || application.runtimeSettings.oauthAccessToken != null) {
             LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
         }
         autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");

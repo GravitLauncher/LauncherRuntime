@@ -16,12 +16,15 @@ public class GuiModuleConfig {
     public boolean forceDownloadJava;
     @LauncherInject(value = "modules.javaruntime.javalist")
     public Map<String, String> javaList;
+    @LauncherInject(value = "modules.javaruntime.lazy")
+    public boolean lazy;
 
     public static Object getDefault() {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravit.pro/createAccount.php";
         config.forgotPassURL = "https://gravit.pro/fogotPass.php";
         config.hastebinServer = "https://hastebin.com";
+        config.lazy = true;
         config.javaList = new HashMap<>();
         return config;
     }
