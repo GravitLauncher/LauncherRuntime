@@ -11,7 +11,12 @@ public class PingService {
     private final Map<String, CompletableFuture<PingServerReportRequest.PingServerReport>> reports = new ConcurrentHashMap<>();
 
     public CompletableFuture<PingServerReportRequest.PingServerReport> getPingReport(String serverName) {
-        return reports.getOrDefault(serverName, new CompletableFuture<>());
+        CompletableFuture<PingServerReportRequest.PingServerReport> report = reports.get(serverName);
+        if(report == null) {
+            report = new CompletableFuture<>();
+            reports.put(serverName, report);
+        }
+        return report;
     }
 
     public void addReports(Map<String, PingServerReportRequest.PingServerReport> map) {
