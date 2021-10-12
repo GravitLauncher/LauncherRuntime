@@ -27,6 +27,7 @@ public class TriggerManager {
             if(optional.limited) {
                 if(!stateService.checkPermission(String.format("launcher.runtime.optionals.%s.%s.show", profile.getUUID(), optional.name.toLowerCase(Locale.ROOT)))) {
                     view.disable(optional, null);
+                    optional.visible = false;
                 }
             }
             if (optional.triggersList == null) continue;
