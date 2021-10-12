@@ -100,7 +100,7 @@ public class ServerMenuScene extends AbstractScene {
         HBox serverList = (HBox) scrollPane.getContent();
         serverList.setSpacing(20);
         serverList.getChildren().clear();
-        application.stateService.clearServerPingCallbacks();
+        application.pingService.clear();
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             EventHandler<? super MouseEvent> handle = (event) -> {
                 if (!event.getButton().equals(MouseButton.PRIMARY))
@@ -119,9 +119,7 @@ public class ServerMenuScene extends AbstractScene {
         try {
             Request.service.request(new PingServerRequest()).thenAccept((event) -> {
                 if (event.serverMap != null) {
-                    event.serverMap.forEach((name, value) -> {
-                        application.stateService.setServerPingReport(event.serverMap);
-                    });
+                    application.pingService.addReports(event.serverMap);
                 }
                 CommonHelper.newThread("ServerPinger", true, () -> {
                     for (ClientProfile profile : lastProfiles) {
@@ -131,7 +129,7 @@ public class ServerMenuScene extends AbstractScene {
                             ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
                             ServerPinger.Result result = pinger.ping();
                             contextHelper.runInFxThread(() -> {
-                                application.stateService.addServerSocketPing(serverProfile, result);
+                                application.pingService.addReport(serverProfile.name, result);
                             });
                         } catch (IOException ignored) {
                         }

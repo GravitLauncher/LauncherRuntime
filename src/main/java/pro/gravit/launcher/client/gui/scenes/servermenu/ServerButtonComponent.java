@@ -55,7 +55,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
                 LogHelper.error(e);
             }
         });
-        application.stateService.addServerPingCallback(profile.getDefaultServerProfile().name, (report) -> {
+        application.pingService.getPingReport(profile.getDefaultServerProfile().name).thenAccept((report) -> {
             if(report == null) {
                 LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
             } else {
