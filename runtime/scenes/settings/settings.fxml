@@ -13,8 +13,10 @@
       xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
-    <Pane id="header" prefHeight="100.0" prefWidth="900.0"><!-- Кнопки управления -->
-        <Pane id="controls" layoutX="31.0" layoutY="34.0" prefHeight="32.0" prefWidth="835.0"><!-- Кнопка назад -->
+    <Pane id="header" prefHeight="100.0" prefWidth="900.0">
+    <!-- Кнопки управления -->
+        <Pane id="controls" layoutX="31.0" layoutY="34.0" prefHeight="32.0" prefWidth="835.0">
+        <!-- Кнопка назад -->
             <Button id="back" layoutX="-25.0" layoutY="-6.0" mnemonicParsing="false" prefHeight="44.0"
                     prefWidth="56.0" styleClass="icon-button">
                 <graphic>
@@ -112,7 +114,8 @@
     </Pane>
 
     <!-- Папка проекта-->
-    <Pane id="folder" layoutX="241.0" layoutY="418.0" prefHeight="40.0" prefWidth="624.0"><!-- Путь к папкам-->
+    <Pane id="folder" layoutX="241.0" layoutY="418.0" prefHeight="40.0" prefWidth="624.0">
+    <!-- Путь к папкам-->
         <Hyperlink id="path" focusTraversable="false" prefHeight="40.0" prefWidth="478.0" text="C:/Users">
             <padding>
                 <Insets left="28.0" right="10.0"/>
