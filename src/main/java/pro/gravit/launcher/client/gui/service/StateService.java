@@ -57,6 +57,13 @@ public class StateService {
         return rawAuthResult.playerProfile.username;
     }
 
+    public boolean checkPermission(String name) {
+        if(rawAuthResult == null || rawAuthResult.permissions == null) {
+            return false;
+        }
+        return rawAuthResult.permissions.hasAction(name);
+    }
+
     public List<ClientProfile> getProfiles() {
         return profiles;
     }
