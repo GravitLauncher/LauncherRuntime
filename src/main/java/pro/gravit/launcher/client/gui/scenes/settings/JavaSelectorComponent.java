@@ -9,6 +9,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.service.JavaService;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.JavaHelper;
+import pro.gravit.utils.helper.LogHelper;
 
 public class JavaSelectorComponent {
     private final ComboBox<JavaHelper.JavaVersion> comboBox;
@@ -25,23 +26,28 @@ public class JavaSelectorComponent {
         javaError = LookupHelper.lookup(layout, "#javaError");
         this.profileSettings = profileSettings;
         comboBox.setConverter(new JavaVersionConverter(profile));
-        comboBox.setOnAction(e -> {
-            JavaHelper.JavaVersion version = comboBox.getValue();
-            if (version == null) return;
-            javaPath.setText(version.jvmDir.toAbsolutePath().toString());
-            profileSettings.javaPath = javaPath.getText();
-            javaError.setVisible(javaService.isIncompatibleJava(version, profile));
-        });
+        boolean reset = true;
         for (JavaHelper.JavaVersion version : javaService.javaVersions) {
             comboBox.getItems().add(version);
             if (profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                 comboBox.setValue(version);
+                reset = false;
             }
         }
-        JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
-        if (recommend != null) {
-            comboBox.getSelectionModel().select(recommend);
+        if(reset) {
+            JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
+            if (recommend != null) {
+                comboBox.getSelectionModel().select(recommend);
+            }
         }
+        comboBox.setOnAction(e -> {
+            JavaHelper.JavaVersion version = comboBox.getValue();
+            if (version == null) return;
+            javaPath.setText(version.jvmDir.toAbsolutePath().toString());
+            LogHelper.info("Select Java %s", version.jvmDir.toAbsolutePath().toString());
+            profileSettings.javaPath = javaPath.getText();
+            javaError.setVisible(javaService.isIncompatibleJava(version, profile));
+        });
     }
 
     public String getPath() {
