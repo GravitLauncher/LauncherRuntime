@@ -279,7 +279,7 @@ public class LoginScene extends AbstractScene {
             if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                 application.runtimeSettings.oauthAccessToken = null;
                 application.runtimeSettings.oauthRefreshToken = null;
-                loginWithGui();
+                contextHelper.runInFxThread(this::loginWithGui);
             } else {
                 errorHandle(new RequestException(error));
             }
