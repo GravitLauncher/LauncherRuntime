@@ -72,7 +72,7 @@ public class TriggerManager {
 
         @Override
         public JavaHelper.JavaVersion getJavaVersion() {
-            RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+            RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings(profile);
             for (JavaHelper.JavaVersion version : application.javaService.javaVersions) {
                 if (profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                     return version;
