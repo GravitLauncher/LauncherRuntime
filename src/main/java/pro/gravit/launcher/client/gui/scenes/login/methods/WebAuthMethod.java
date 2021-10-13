@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.scenes.login.methods;
 
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -79,7 +80,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         protected void doInit() {
             Pane webViewPane = LookupHelper.lookup(layout, "#webview");
             webView = new WebView();
-            webViewPane.getChildren().add(webView);
+            webViewPane.getChildren().add(new VBox(webView));
             LookupHelper.<Button>lookup(layout, "#exit").setOnAction((e) -> {
                 if (future != null) {
                     future.completeExceptionally(new UserAuthCanceledException());

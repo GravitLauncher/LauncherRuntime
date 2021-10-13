@@ -21,8 +21,8 @@ public class JavaService {
         {
             if (application.guiModuleConfig.javaList != null) {
                 for (Map.Entry<String, String> entry : application.guiModuleConfig.javaList.entrySet()) {
-                    String javaVersionString = entry.getKey();
-                    String javaDir = entry.getValue();
+                    String javaDir = entry.getKey();
+                    String javaVersionString = entry.getValue();
                     Matcher matcher = JAVA_VERSION_PATTERN.matcher(javaVersionString);
                     if (matcher.matches()) {
                         String os = matcher.group("os");

@@ -18,6 +18,7 @@ import pro.gravit.launcher.client.gui.helper.EnFSHelper;
 import pro.gravit.launcher.client.gui.impl.*;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.service.JavaService;
+import pro.gravit.launcher.client.gui.service.PingService;
 import pro.gravit.launcher.client.gui.service.RuntimeDialogService;
 import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
@@ -64,6 +65,7 @@ public class JavaFXApplication extends Application {
     public SkinManager skinManager;
     public FXMLFactory fxmlFactory;
     public JavaService javaService;
+    public PingService pingService;
     public TriggerManager triggerManager;
     private SettingsManager settingsManager;
     private PrimaryStage mainStage;
@@ -112,6 +114,7 @@ public class JavaFXApplication extends Application {
         skinManager = new SkinManager(this);
         triggerManager = new TriggerManager(this);
         javaService = new JavaService(this);
+        pingService = new PingService();
         registerCommands();
     }
 

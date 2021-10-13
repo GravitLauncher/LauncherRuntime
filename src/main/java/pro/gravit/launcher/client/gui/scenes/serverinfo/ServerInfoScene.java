@@ -22,9 +22,11 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.CommonHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -165,7 +167,7 @@ public class ServerInfoScene extends AbstractScene {
         if (profileSettings.javaPath == null || !profileSettings.javaPath.startsWith(prefix)) {
             return null;
         }
-        Path result = Paths.get(profileSettings.javaPath).relativize(DirBridge.dirUpdates);
+        Path result = DirBridge.dirUpdates.relativize(Paths.get(profileSettings.javaPath));
         return result.toString();
     }
 
@@ -184,6 +186,14 @@ public class ServerInfoScene extends AbstractScene {
                 if (jvmDirName != null) {
                     Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
                     application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
+                            Path javaFile = jvmDirPath.resolve("bin").resolve("java");
+                            if(Files.exists(javaFile)) {
+                                if(!javaFile.toFile().setExecutable(true)) {
+                                    LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
+                                }
+                            }
+                        }
                         downloadClients(profile, jvmDirPath, jvmHDir);
                     });
                 } else {

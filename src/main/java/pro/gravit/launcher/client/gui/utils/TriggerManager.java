@@ -10,6 +10,8 @@ import pro.gravit.launcher.profiles.optional.triggers.OptionalTrigger;
 import pro.gravit.launcher.profiles.optional.triggers.OptionalTriggerContext;
 import pro.gravit.utils.helper.JavaHelper;
 
+import java.util.Locale;
+
 public class TriggerManager {
     private final StateService stateService;
     private final JavaFXApplication application;
@@ -22,6 +24,14 @@ public class TriggerManager {
     public void process(ClientProfile profile, OptionalView view) {
         TriggerManagerContext context = new TriggerManagerContext(profile);
         for (OptionalFile optional : view.all) {
+            if(optional.limited) {
+                if(!stateService.checkPermission(String.format("launcher.runtime.optionals.%s.%s.show", profile.getUUID(), optional.name.toLowerCase(Locale.ROOT)))) {
+                    view.disable(optional, null);
+                    optional.visible = false;
+                } else {
+                    optional.visible = true;
+                }
+            }
             if (optional.triggersList == null) continue;
             boolean isRequired = false;
             int success = 0;
@@ -62,7 +72,7 @@ public class TriggerManager {
 
         @Override
         public JavaHelper.JavaVersion getJavaVersion() {
-            RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+            RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings(profile);
             for (JavaHelper.JavaVersion version : application.javaService.javaVersions) {
                 if (profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                     return version;

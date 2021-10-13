@@ -12,6 +12,7 @@ import pro.gravit.launcher.client.gui.utils.FXMLFactory;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ExecutionException;
 
@@ -22,6 +23,7 @@ public abstract class AbstractVisualComponent {
     protected Pane layout;
     private String sysFxmlPath;
     private Parent sysFxmlRoot;
+    private CompletableFuture<Node> sysFxmlFuture;
     boolean isInit;
     protected boolean isResetOnShow = false;
 
@@ -29,6 +31,9 @@ public abstract class AbstractVisualComponent {
         this.application = application;
         this.sysFxmlPath = fxmlPath;
         this.contextHelper = new ContextHelper(this);
+        if(application.guiModuleConfig.lazy) {
+            this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
+        }
     }
 
     public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
@@ -54,7 +59,10 @@ public abstract class AbstractVisualComponent {
     protected synchronized Parent getFxmlRoot() {
         try {
             if (sysFxmlRoot == null) {
-                sysFxmlRoot = (Parent) application.fxmlFactory.getAsync(sysFxmlPath).get();
+                if(sysFxmlFuture == null) {
+                    this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
+                }
+                sysFxmlRoot = (Parent) sysFxmlFuture.get();
             }
             return sysFxmlRoot;
         } catch (InterruptedException e) {
