@@ -318,7 +318,7 @@ public class LoginScene extends AbstractScene {
         if (savePassword) {
             application.runtimeSettings.login = successAuth.recentLogin;
             if (result.oauth == null) {
-                if(checkSavePasswordAvailable(successAuth.recentPassword)) {
+                if(successAuth.recentPassword != null && checkSavePasswordAvailable(successAuth.recentPassword)) {
                     application.runtimeSettings.password = successAuth.recentPassword;
                 } else {
                     LogHelper.warning("2FA/MFA Password not saved");
