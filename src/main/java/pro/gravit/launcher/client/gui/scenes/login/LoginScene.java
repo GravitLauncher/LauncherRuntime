@@ -273,7 +273,7 @@ public class LoginScene extends AbstractScene {
         AuthRequest authRequest = authService.makeAuthRequest(null, password, authAvailability.name);
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
             contextHelper.runInFxThread(() -> {
-                onSuccessLogin(result);
+                onSuccessLogin(new SuccessAuth(result, null, null));
             });
         }, (error) -> {
             if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
@@ -301,13 +301,28 @@ public class LoginScene extends AbstractScene {
         });
     }
 
-    private void onSuccessLogin(AuthRequestEvent result) {
+    private boolean checkSavePasswordAvailable(AuthRequest.AuthPasswordInterface password) {
+        if(password instanceof Auth2FAPassword)
+            return false;
+        if(password instanceof AuthMultiPassword)
+            return false;
+        if(authAvailability == null || authAvailability.details == null || authAvailability.details.size() == 0 || !( authAvailability.details.get(0) instanceof AuthPasswordDetails ) )
+            return false;
+        return true;
+    }
+
+    private void onSuccessLogin(SuccessAuth successAuth) {
+        AuthRequestEvent result = successAuth.requestEvent;
         application.stateService.setAuthResult(authAvailability.name, result);
         boolean savePassword = savePasswordCheckBox.isSelected();
         if (savePassword) {
-            application.runtimeSettings.login = result.playerProfile.username; // TODO
+            application.runtimeSettings.login = successAuth.recentLogin;
             if (result.oauth == null) {
-                application.runtimeSettings.password = null;
+                if(checkSavePasswordAvailable(successAuth.recentPassword)) {
+                    application.runtimeSettings.password = successAuth.recentPassword;
+                } else {
+                    LogHelper.warning("2FA/MFA Password not saved");
+                }
             } else {
                 application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
                 application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
@@ -475,7 +490,7 @@ public class LoginScene extends AbstractScene {
             return authFuture;
         }
 
-        private void start(CompletableFuture<AuthRequestEvent> result, String resentLogin, AuthRequest.AuthPasswordInterface resentPassword) {
+        private void start(CompletableFuture<SuccessAuth> result, String resentLogin, AuthRequest.AuthPasswordInterface resentPassword) {
             CompletableFuture<LoginAndPasswordResult> authFuture = tryLogin(resentLogin, resentPassword);
             authFuture.thenAccept(e -> {
                 login(e.login, e.password, authAvailability, result);
@@ -490,18 +505,20 @@ public class LoginScene extends AbstractScene {
             });
         }
 
-        private CompletableFuture<AuthRequestEvent> start() {
-            CompletableFuture<AuthRequestEvent> result = new CompletableFuture<>();
+        private CompletableFuture<SuccessAuth> start() {
+            CompletableFuture<SuccessAuth> result = new CompletableFuture<>();
             start(result, null, null);
             return result;
         }
 
 
-        private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, CompletableFuture<AuthRequestEvent> result) {
+        private void login(String login, AuthRequest.AuthPasswordInterface password, GetAvailabilityAuthRequestEvent.AuthAvailability authId, CompletableFuture<SuccessAuth> result) {
             isLoginStarted = true;
             LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
             AuthRequest authRequest = authService.makeAuthRequest(login, password, authId.name);
-            processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), result::complete, (error) -> {
+            processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"), (event) -> {
+                result.complete(new SuccessAuth(event, login, password));
+            }, (error) -> {
                 if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                     application.runtimeSettings.oauthAccessToken = null;
                     application.runtimeSettings.oauthRefreshToken = null;
@@ -545,5 +562,17 @@ public class LoginScene extends AbstractScene {
             }
             return authService.getPasswordFromList(result);
         }*/
+    }
+
+    public static class SuccessAuth {
+        public AuthRequestEvent requestEvent;
+        public String recentLogin;
+        public AuthRequest.AuthPasswordInterface recentPassword;
+
+        public SuccessAuth(AuthRequestEvent requestEvent, String recentLogin, AuthRequest.AuthPasswordInterface recentPassword) {
+            this.requestEvent = requestEvent;
+            this.recentLogin = recentLogin;
+            this.recentPassword = recentPassword;
+        }
     }
 }
