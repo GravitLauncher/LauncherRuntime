@@ -532,7 +532,7 @@ public class LoginScene extends AbstractScene {
                     authFlow.addAll(newAuthFlow);*/
                     authFlow.clear();
                     authFlow.add(1);
-                    start(result, login, password);
+                    contextHelper.runInFxThread(() -> start(result, login, password));
                 } else if (error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
                     List<Integer> newAuthFlow = new ArrayList<>();
                     for (String s : error.substring(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length() + 1).split("\\.")) {
@@ -541,7 +541,7 @@ public class LoginScene extends AbstractScene {
                     //AuthRequest.AuthPasswordInterface recentPassword = makeResentPassword(newAuthFlow, password);
                     authFlow.clear();
                     authFlow.addAll(newAuthFlow);
-                    start(result, login, password);
+                    contextHelper.runInFxThread(() -> start(result, login, password));
                 } else {
                     errorHandle(new RequestException(error));
                 }
