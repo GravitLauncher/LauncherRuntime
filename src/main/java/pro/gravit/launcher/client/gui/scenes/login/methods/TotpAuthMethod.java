@@ -91,7 +91,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
                     textFields[i].textProperty().addListener(l -> {
                         AuthTOTPPassword password = new AuthTOTPPassword();
                         password.totp = getCode();
-                        future.complete(new LoginScene.LoginAndPasswordResult(null, new AuthTOTPPassword()));
+                        future.complete(new LoginScene.LoginAndPasswordResult(null, password));
                     });
                 }
             }
