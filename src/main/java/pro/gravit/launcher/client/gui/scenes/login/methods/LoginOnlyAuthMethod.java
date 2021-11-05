@@ -62,6 +62,11 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
         return future;
     }
 
+    @Override
+    public boolean isSavable() {
+        return true;
+    }
+
     public static class LoginOnlyOverlay extends AbstractOverlay {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;

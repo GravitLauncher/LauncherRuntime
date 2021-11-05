@@ -60,6 +60,11 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         return future;
     }
 
+    @Override
+    public boolean isSavable() {
+        return false;
+    }
+
     public static class TotpOverlay extends AbstractOverlay {
         private TextField[] textFields;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;

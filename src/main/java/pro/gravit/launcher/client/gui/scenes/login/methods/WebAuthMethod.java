@@ -62,6 +62,11 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         return null;
     }
 
+    @Override
+    public boolean isSavable() {
+        return false;
+    }
+
     public static class WebAuthOverlay extends AbstractOverlay {
         private WebView webView;
         private LoginScene.LoginSceneAccessor accessor;

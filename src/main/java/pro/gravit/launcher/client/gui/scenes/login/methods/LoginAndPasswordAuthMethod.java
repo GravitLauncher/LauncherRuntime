@@ -64,6 +64,11 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         return future;
     }
 
+    @Override
+    public boolean isSavable() {
+        return true;
+    }
+
     public static class LoginAndPasswordOverlay extends AbstractOverlay {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;

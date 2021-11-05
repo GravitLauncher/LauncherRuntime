@@ -542,6 +542,8 @@ public class LoginScene extends AbstractScene {
                     authFlow.addAll(newAuthFlow);
                     contextHelper.runInFxThread(() -> start(result, login, password));
                 } else {
+                    authFlow.clear();
+                    authFlow.add(0);
                     errorHandle(new RequestException(error));
                 }
             });
