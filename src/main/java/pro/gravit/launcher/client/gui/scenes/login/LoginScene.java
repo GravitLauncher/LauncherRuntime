@@ -17,10 +17,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.client.gui.scenes.login.methods.AbstractAuthMethod;
-import pro.gravit.launcher.client.gui.scenes.login.methods.LoginAndPasswordAuthMethod;
-import pro.gravit.launcher.client.gui.scenes.login.methods.TotpAuthMethod;
-import pro.gravit.launcher.client.gui.scenes.login.methods.WebAuthMethod;
+import pro.gravit.launcher.client.gui.scenes.login.methods.*;
 import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
@@ -32,6 +29,7 @@ import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.GetAvailabilityAuthRequest;
 import pro.gravit.launcher.request.auth.RefreshTokenRequest;
+import pro.gravit.launcher.request.auth.details.AuthLoginOnlyDetails;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
 import pro.gravit.launcher.request.auth.details.AuthTotpDetails;
 import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
@@ -65,6 +63,7 @@ public class LoginScene extends AbstractScene {
         authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod(accessor));
         authMethods.put(AuthWebViewDetails.class, new WebAuthMethod(accessor));
         authMethods.put(AuthTotpDetails.class, new TotpAuthMethod(accessor));
+        authMethods.put(AuthLoginOnlyDetails.class, new LoginOnlyAuthMethod(accessor));
     }
 
     @Override
