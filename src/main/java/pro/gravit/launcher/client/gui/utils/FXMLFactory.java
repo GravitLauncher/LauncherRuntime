@@ -32,9 +32,14 @@ public class FXMLFactory {
     }
 
     public <T> T get(String url) throws IOException {
+        long startTime = System.currentTimeMillis();
         FXMLLoader loader = newLoaderInstance(JavaFXApplication.getResourceURL(url));
+        long loaderInstanceTime = System.currentTimeMillis();
         try (InputStream inputStream = IOHelper.newInput(JavaFXApplication.getResourceURL(url))) {
-            return loader.load(inputStream);
+            T result = loader.load(inputStream);
+            long endTime = System.currentTimeMillis();
+            LogHelper.debug("Fxml load %s time: c: %d | l: %d | total: %d", url, loaderInstanceTime - startTime, endTime - loaderInstanceTime, endTime - startTime);
+            return result;
         }
     }
 

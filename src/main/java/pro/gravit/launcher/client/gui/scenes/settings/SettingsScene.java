@@ -96,6 +96,14 @@ public class SettingsScene extends AbstractScene {
             }
             application.runtimeSettings.updatesDirPath = newDir.toString();
             application.runtimeSettings.updatesDir = newDir;
+            String oldDir = DirBridge.dirUpdates.toString();
+            DirBridge.dirUpdates = newDir;
+            for(ClientProfile profile : application.stateService.getProfiles()) {
+                RuntimeSettings.ProfileSettings settings = application.getProfileSettings(profile);
+                if(settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
+                    settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
+                }
+            }
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
         LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction((e) ->

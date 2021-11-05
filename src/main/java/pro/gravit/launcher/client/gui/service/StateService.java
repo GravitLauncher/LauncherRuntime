@@ -61,7 +61,7 @@ public class StateService {
         if(rawAuthResult == null || rawAuthResult.permissions == null) {
             return false;
         }
-        return rawAuthResult.permissions.hasAction(name);
+        return rawAuthResult.permissions.hasPerm(name);
     }
 
     public List<ClientProfile> getProfiles() {

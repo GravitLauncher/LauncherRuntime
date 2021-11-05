@@ -8,19 +8,20 @@ import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.AuthRequest;
+import pro.gravit.launcher.request.auth.details.AuthLoginOnlyDetails;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
 
 import java.util.concurrent.CompletableFuture;
 
-public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordDetails> {
-    private final LoginAndPasswordOverlay overlay;
+public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails> {
+    private final LoginOnlyOverlay overlay;
     private final JavaFXApplication application;
     private final LoginScene.LoginSceneAccessor accessor;
 
-    public LoginAndPasswordAuthMethod(LoginScene.LoginSceneAccessor accessor) {
+    public LoginOnlyAuthMethod(LoginScene.LoginSceneAccessor accessor) {
         this.accessor = accessor;
         this.application = accessor.getApplication();
-        this.overlay = application.gui.registerOverlay(LoginAndPasswordOverlay.class);
+        this.overlay = application.gui.registerOverlay(LoginOnlyOverlay.class);
         this.overlay.accessor = accessor;
     }
 
@@ -34,7 +35,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     @Override
-    public CompletableFuture<Void> show(AuthPasswordDetails details) {
+    public CompletableFuture<Void> show(AuthLoginOnlyDetails details) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         try {
             accessor.showOverlay(overlay, (e) -> future.complete(null));
@@ -45,14 +46,11 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     @Override
-    public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthPasswordDetails details) {
+    public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthLoginOnlyDetails details) {
         overlay.future = new CompletableFuture<>();
         String login = overlay.login.getText();
-        AuthRequest.AuthPasswordInterface password;
-        if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(
-                application.getTranslation("runtime.scenes.login.password.saved"))) {
-            password = application.runtimeSettings.password;
-            return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(login, password));
+        if (login != null && !login.isEmpty()) {
+            return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(login, null));
         }
         return overlay.future;
     }
@@ -69,31 +67,28 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         return true;
     }
 
-    public static class LoginAndPasswordOverlay extends AbstractOverlay {
+    public static class LoginOnlyOverlay extends AbstractOverlay {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
-        private TextField password;
         private LoginAuthButtonComponent authButton;
         private LoginScene.LoginSceneAccessor accessor;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
 
-        public LoginAndPasswordOverlay(JavaFXApplication application) {
-            super("scenes/login/loginpassword.fxml", application);
+        public LoginOnlyOverlay(JavaFXApplication application) {
+            super("scenes/login/loginonly.fxml", application);
         }
 
         @Override
         public String getName() {
-            return "loginandpassword";
+            return "loginonly";
         }
 
         @Override
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
-            password = LookupHelper.lookup(layout, "#password");
             authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, e -> {
                 String rawLogin = login.getText();
-                String rawPassword = password.getText();
-                future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword)));
+                future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, null));
             });
             LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
                 accessor.hideOverlay(0, null);
@@ -108,20 +103,11 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             } else {
                 authButton.setActive(false);
             }
-            if (application.runtimeSettings.password != null) {
-                password.getStyleClass().add("hasSaved");
-                password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
-            }
-
         }
 
 
         @Override
         public void reset() {
-            if (password == null) return;
-            password.getStyleClass().removeAll("hasSaved");
-            password.setPromptText(application.getTranslation("runtime.scenes.login.password"));
-            password.setText("");
             login.setText("");
         }
     }

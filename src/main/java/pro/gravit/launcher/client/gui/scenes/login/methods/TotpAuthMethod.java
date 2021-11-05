@@ -60,6 +60,11 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         return future;
     }
 
+    @Override
+    public boolean isSavable() {
+        return false;
+    }
+
     public static class TotpOverlay extends AbstractOverlay {
         private TextField[] textFields;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
@@ -91,7 +96,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
                     textFields[i].textProperty().addListener(l -> {
                         AuthTOTPPassword password = new AuthTOTPPassword();
                         password.totp = getCode();
-                        future.complete(new LoginScene.LoginAndPasswordResult(null, new AuthTOTPPassword()));
+                        future.complete(new LoginScene.LoginAndPasswordResult(null, password));
                     });
                 }
             }

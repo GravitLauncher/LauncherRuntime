@@ -19,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 public abstract class AbstractVisualComponent {
     protected final JavaFXApplication application;
     protected final ContextHelper contextHelper;
+    protected final FXExecutorService fxExecutor;
     protected AbstractStage currentStage;
     protected Pane layout;
     private String sysFxmlPath;
@@ -31,6 +32,7 @@ public abstract class AbstractVisualComponent {
         this.application = application;
         this.sysFxmlPath = fxmlPath;
         this.contextHelper = new ContextHelper(this);
+        this.fxExecutor = new FXExecutorService(contextHelper);
         if(application.guiModuleConfig.lazy) {
             this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
         }

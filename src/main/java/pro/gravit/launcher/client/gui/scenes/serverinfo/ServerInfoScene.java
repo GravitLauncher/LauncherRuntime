@@ -21,9 +21,7 @@ import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
-import pro.gravit.utils.helper.CommonHelper;
-import pro.gravit.utils.helper.JVMHelper;
-import pro.gravit.utils.helper.LogHelper;
+import pro.gravit.utils.helper.*;
 
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
@@ -121,8 +119,15 @@ public class ServerInfoScene extends AbstractScene {
 
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir,
-                jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath)),
+        Path javaPath = jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath));
+        if(!Files.exists(javaPath)) {
+            LogHelper.warning("Java %s not exist", javaPath.toString());
+            JavaHelper.JavaVersion version = application.javaService.getRecommendJavaVersion(profile);
+            if(version != null) {
+                javaPath = version.jvmDir;
+            }
+        }
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaPath,
                 clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
                 application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = profileSettings.ram;

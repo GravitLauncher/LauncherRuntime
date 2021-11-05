@@ -16,6 +16,8 @@ public abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEve
 
     public abstract CompletableFuture<Void> hide();
 
+    public abstract boolean isSavable();
+
     public static class UserAuthCanceledException extends RuntimeException {
         public UserAuthCanceledException() {
         }
