@@ -29,6 +29,7 @@ public class DialogStage extends AbstractStage {
             LogHelper.error(e);
         }
         setScene(dialog);
+        enableMouseDrag(dialog.getLayout());
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();
         if (bounds.getMaxX() == 0 || bounds.getMaxY() == 0) {

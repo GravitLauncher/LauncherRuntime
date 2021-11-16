@@ -115,7 +115,9 @@ public class RuntimeSecurityService {
         // Rewrite and start new instance
         try {
             LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
-            Request.service.close();
+            if(Request.getRequestService() instanceof AutoCloseable) {
+                ((AutoCloseable) Request.getRequestService()).close();
+            }
         } catch (Throwable ignored) {
         }
         Files.deleteIfExists(C_BINARY_PATH);

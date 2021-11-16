@@ -12,6 +12,7 @@ import pro.gravit.utils.helper.JavaHelper;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -45,6 +46,8 @@ public class RuntimeSettings extends UserSettings {
     public String theme;
     @LauncherNetworkAPI
     public Map<UUID, ProfileSettings> profileSettings = new HashMap<>();
+    @LauncherNetworkAPI
+    public List<ClientProfile> profiles;
 
     public static RuntimeSettings getDefault() {
         RuntimeSettings runtimeSettings = new RuntimeSettings();

@@ -131,6 +131,7 @@ public class ServerInfoScene extends AbstractScene {
                 clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
                 application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = profileSettings.ram;
+        clientLauncherProcess.params.offlineMode = application.offlineService.isOfflineMode();
         if (clientLauncherProcess.params.ram > 0) {
             clientLauncherProcess.jvmArgs.add("-Xms" + clientLauncherProcess.params.ram + 'M');
             clientLauncherProcess.jvmArgs.add("-Xmx" + clientLauncherProcess.params.ram + 'M');

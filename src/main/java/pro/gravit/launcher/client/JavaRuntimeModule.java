@@ -5,10 +5,13 @@ import pro.gravit.launcher.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientPreGuiPhase;
 import pro.gravit.launcher.client.events.ClientUnlockConsoleEvent;
+import pro.gravit.launcher.client.gui.service.OfflineService;
 import pro.gravit.launcher.gui.RuntimeProvider;
 import pro.gravit.launcher.modules.LauncherInitContext;
 import pro.gravit.launcher.modules.LauncherModule;
 import pro.gravit.launcher.modules.LauncherModuleInfo;
+import pro.gravit.launcher.modules.events.OfflineModeEvent;
+import pro.gravit.launcher.request.websockets.OfflineRequestService;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -53,6 +56,7 @@ public class JavaRuntimeModule extends LauncherModule {
         registerEvent(this::engineInitPhase, ClientEngineInitPhase.class);
         registerEvent(this::exitPhase, ClientExitPhase.class);
         registerEvent(this::consoleUnlock, ClientUnlockConsoleEvent.class);
+        registerEvent(this::offlineMode, OfflineModeEvent.class);
     }
 
     private void preGuiPhase(ClientPreGuiPhase phase) {
@@ -70,6 +74,10 @@ public class JavaRuntimeModule extends LauncherModule {
         if (engine.runtimeProvider instanceof StdJavaRuntimeProvider) {
             ((StdJavaRuntimeProvider) engine.runtimeProvider).registerPrivateCommands();
         }
+    }
+
+    private void offlineMode(OfflineModeEvent event) {
+        OfflineService.applyRuntimeProcessors((OfflineRequestService) event.service);
     }
 
     private void engineInitPhase(ClientEngineInitPhase initPhase) {

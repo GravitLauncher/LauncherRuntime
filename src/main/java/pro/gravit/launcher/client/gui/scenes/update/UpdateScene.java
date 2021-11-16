@@ -117,6 +117,18 @@ public class UpdateScene extends AbstractScene {
 
     @SuppressWarnings("rawtypes")
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
+        if(application.offlineService.isOfflineMode()) {
+            ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
+            application.workers.submit(() -> {
+                try {
+                    HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
+                    onSuccess.accept(hashedDir);
+                } catch (IOException e) {
+                    errorHandle(e);
+                }
+            });
+            return;
+        }
         UpdateRequest request = new UpdateRequest(dirName);
         try {
             application.service.request(request).thenAccept(updateRequestEvent -> {

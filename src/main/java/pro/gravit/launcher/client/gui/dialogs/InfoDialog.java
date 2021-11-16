@@ -43,9 +43,9 @@ public class InfoDialog extends AbstractDialog {
     @Override
     protected void doInit() throws Exception {
         textHeader = LookupHelper.lookup(layout, "#headingDialog");
-        //textDescription = LookupHelper.lookup(layout, "#textDialog");
+        textDescription = LookupHelper.lookup(layout, "#dialogDescription");
         textHeader.setText(header);
-        //textDescription.setText(text);
+        textDescription.setText(text);
         LookupHelper.<Button>lookup(layout, "#close").setOnAction((e) -> {
             try {
                 close();
