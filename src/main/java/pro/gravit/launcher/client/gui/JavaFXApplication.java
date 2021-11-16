@@ -17,10 +17,7 @@ import pro.gravit.launcher.client.gui.config.StdSettingsManager;
 import pro.gravit.launcher.client.gui.helper.EnFSHelper;
 import pro.gravit.launcher.client.gui.impl.*;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.client.gui.service.JavaService;
-import pro.gravit.launcher.client.gui.service.PingService;
-import pro.gravit.launcher.client.gui.service.RuntimeDialogService;
-import pro.gravit.launcher.client.gui.service.StateService;
+import pro.gravit.launcher.client.gui.service.*;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
 import pro.gravit.launcher.client.gui.utils.TriggerManager;
@@ -29,6 +26,7 @@ import pro.gravit.launcher.managers.ConsoleManager;
 import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
+import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
@@ -56,7 +54,7 @@ public class JavaFXApplication extends Application {
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newWorkStealingPool(4);
     public RuntimeSettings runtimeSettings;
-    public StdWebSocketService service;
+    public RequestService service;
     public GuiObjectsContainer gui;
     public StateService stateService;
     public GuiModuleConfig guiModuleConfig;
@@ -66,6 +64,7 @@ public class JavaFXApplication extends Application {
     public FXMLFactory fxmlFactory;
     public JavaService javaService;
     public PingService pingService;
+    public OfflineService offlineService;
     public TriggerManager triggerManager;
     private SettingsManager settingsManager;
     private PrimaryStage mainStage;
@@ -106,7 +105,7 @@ public class JavaFXApplication extends Application {
         runtimeSettings = (RuntimeSettings) settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME);
         runtimeSettings.apply();
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
-        service = Request.service;
+        service = Request.getRequestService();
         service.registerEventHandler(new GuiEventHandler(this));
         stateService = new StateService();
         messageManager = new MessageManager(this);
@@ -114,6 +113,7 @@ public class JavaFXApplication extends Application {
         skinManager = new SkinManager(this);
         triggerManager = new TriggerManager(this);
         javaService = new JavaService(this);
+        offlineService = new OfflineService(this);
         pingService = new PingService();
         registerCommands();
     }
@@ -163,6 +163,12 @@ public class JavaFXApplication extends Application {
             DialogService.setDialogImpl(dialogService);
             DialogService.setNotificationImpl(dialogService);
         }
+        if(offlineService.isOfflineMode()) {
+            if(!offlineService.isAvailableOfflineMode() && !debugMode) {
+                messageManager.showDialog(getTranslation("runtime.offline.dialog.header"), getTranslation("runtime.offline.dialog.text"), Platform::exit, Platform::exit, false);
+                return;
+            }
+        }
         try {
             mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
             // Overlay loading
@@ -172,6 +178,9 @@ public class JavaFXApplication extends Application {
             if (!IS_NOGUI.get()) {
                 mainStage.setScene(gui.loginScene);
                 mainStage.show();
+                if(offlineService.isOfflineMode()) {
+                    messageManager.createNotification(getTranslation("runtime.offline.notification.header"), getTranslation("runtime.offline.notification.text"));
+                }
             } else {
                 Platform.setImplicitExit(false);
             }

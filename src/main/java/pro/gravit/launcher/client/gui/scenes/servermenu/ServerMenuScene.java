@@ -117,7 +117,7 @@ public class ServerMenuScene extends AbstractScene {
             serverButtonCache.serverButton.setOnMouseClicked(handle);
         });
         try {
-            Request.service.request(new PingServerRequest()).thenAccept((event) -> {
+            application.service.request(new PingServerRequest()).thenAccept((event) -> {
                 if (event.serverMap != null) {
                     application.pingService.addReports(event.serverMap);
                 }

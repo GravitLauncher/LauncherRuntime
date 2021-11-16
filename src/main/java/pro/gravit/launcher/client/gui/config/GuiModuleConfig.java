@@ -18,6 +18,8 @@ public class GuiModuleConfig {
     public Map<String, String> javaList;
     @LauncherInject(value = "modules.javaruntime.lazy")
     public boolean lazy;
+    @LauncherInject(value = "modules.javaruntime.disableofflinemode")
+    public boolean disableOfflineMode;
 
     public static Object getDefault() {
         GuiModuleConfig config = new GuiModuleConfig();
@@ -26,6 +28,7 @@ public class GuiModuleConfig {
         config.hastebinServer = "https://hastebin.com";
         config.lazy = true;
         config.javaList = new HashMap<>();
+        config.disableOfflineMode = false;
         return config;
     }
 }

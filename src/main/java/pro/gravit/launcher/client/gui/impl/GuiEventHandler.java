@@ -4,11 +4,12 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.events.RequestEvent;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
+import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.websockets.ClientWebSocketService;
 import pro.gravit.utils.helper.LogHelper;
 
-public class GuiEventHandler implements ClientWebSocketService.EventHandler {
+public class GuiEventHandler implements RequestService.EventHandler {
     private final JavaFXApplication application;
 
     public GuiEventHandler(JavaFXApplication application) {

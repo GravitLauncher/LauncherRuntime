@@ -101,6 +101,9 @@ public class LoginScene extends AbstractScene {
                         changeAuthAvailability(authAvailability);
                     addAuthAvailability(authAvailability);
                 }
+                if(this.authAvailability == null && auth.list.size() > 0) {
+                    changeAuthAvailability(auth.list.get(0));
+                }
                 hideOverlay(0, (event) -> {
                     if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
                         contextHelper.runCallback(this::loginWithGui);
@@ -195,7 +198,7 @@ public class LoginScene extends AbstractScene {
             processingEnabled = false;
         };
         try {
-            Request.service.request(request).thenAccept((result) -> {
+            application.service.request(request).thenAccept((result) -> {
                 onSuccess.accept(result);
                 processingOff.run();
             }).exceptionally((exc) -> {
@@ -372,6 +375,7 @@ public class LoginScene extends AbstractScene {
     public void onGetProfiles() {
         processing(new ProfilesRequest(), application.getTranslation("runtime.overlay.processing.text.profiles"), (profiles) -> {
             application.stateService.setProfilesResult(profiles);
+            application.runtimeSettings.profiles = profiles.profiles;
             for (ClientProfile profile : profiles.profiles) {
                 application.triggerManager.process(profile, application.stateService.getOptionalView(profile));
             }
