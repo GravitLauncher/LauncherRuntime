@@ -17,6 +17,8 @@ import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
+import pro.gravit.launcher.client.gui.scenes.update.UpdateScene;
+import pro.gravit.launcher.client.params.SocketParamsWriter;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
@@ -27,6 +29,8 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.concurrent.CompletableFuture;
 
 public class ServerInfoScene extends AbstractScene {
     private ImageView avatar;
@@ -101,23 +105,10 @@ public class ServerInfoScene extends AbstractScene {
 
     @Override
     public String getName() {
-        return null;
+        return "serverInfo";
     }
 
-    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
-        Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
-        LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
-            Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
-            LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
-                LogHelper.info("Success update");
-                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), jvmDir, jvmHDir);
-            });
-        });
-    }
-
-    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
+    private void doLaunchClient(Path clientDir, Path assetDir, Path jvmDir, UpdateScene.HashedClientResult clientResult, ClientProfile profile, OptionalView view) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
         Path javaPath = jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath));
         if(!Files.exists(javaPath)) {
@@ -129,9 +120,10 @@ public class ServerInfoScene extends AbstractScene {
         }
         ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaPath,
                 clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
-                application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
+                application.stateService.getAccessToken(), clientResult.clientDir, clientResult.assetsDir, clientResult.javaDir);
         clientLauncherProcess.params.ram = profileSettings.ram;
         clientLauncherProcess.params.offlineMode = application.offlineService.isOfflineMode();
+        clientLauncherProcess.params.zones = clientResult.zones;
         if (clientLauncherProcess.params.ram > 0) {
             clientLauncherProcess.jvmArgs.add("-Xms" + clientLauncherProcess.params.ram + 'M');
             clientLauncherProcess.jvmArgs.add("-Xmx" + clientLauncherProcess.params.ram + 'M');
@@ -141,7 +133,8 @@ public class ServerInfoScene extends AbstractScene {
         contextHelper.runCallback(() -> {
             Thread writerThread = CommonHelper.newThread("Client Params Writer Thread", true, () -> {
                 try {
-                    clientLauncherProcess.runWriteParams(new InetSocketAddress("127.0.0.1", Launcher.getConfig().clientPort));
+                    SocketParamsWriter writer = new SocketParamsWriter(new InetSocketAddress("127.0.0.1", Launcher.getConfig().clientPort));
+                    writer.write(clientLauncherProcess.params);
                     if (!profileSettings.debug) {
                         LogHelper.debug("Params writted successful. Exit...");
                         LauncherEngine.exitLauncher(0);
@@ -188,23 +181,28 @@ public class ServerInfoScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
+                Path clientDir = DirBridge.dirUpdates.resolve(profile.getDir());
+                Path assetsDir = DirBridge.dirUpdates.resolve(profile.getAssetDir());
                 String jvmDirName = getJavaDirName();
+                Path jvmDir;
                 if (jvmDirName != null) {
-                    Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                    application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
-                            Path javaFile = jvmDirPath.resolve("bin").resolve("java");
-                            if(Files.exists(javaFile)) {
-                                if(!javaFile.toFile().setExecutable(true)) {
-                                    LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
-                                }
-                            }
-                        }
-                        downloadClients(profile, jvmDirPath, jvmHDir);
-                    });
+                    jvmDir = DirBridge.dirUpdates.resolve(jvmDirName);
                 } else {
-                    downloadClients(profile, null, null);
+                    jvmDir = null;
                 }
+                CompletableFuture<UpdateScene.HashedClientResult> future = application.gui.updateScene.startClientDownload(profile, DirBridge.dirUpdates, clientDir, assetsDir, application.stateService.getOptionalView(), jvmDir, jvmDirName);
+                future.thenApply((e) -> {
+                    try {
+                        LogHelper.info("Start client...");
+                        doLaunchClient(clientDir, assetsDir, jvmDir, e, profile, application.stateService.getOptionalView());
+                    } catch (Throwable th) {
+                        LogHelper.error(th);
+                    }
+                    return e;
+                }).exceptionally(ex -> {
+                    errorHandle(ex);
+                    return null;
+                });
             });
         }), null);
     }

@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
+import pro.gravit.launcher.client.ClientLauncherProcess;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
@@ -12,6 +13,7 @@ import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
 import pro.gravit.launcher.hasher.HashedFile;
+import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
 import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
@@ -23,11 +25,15 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class UpdateScene extends AbstractScene {
     private final AtomicLong totalDownloaded = new AtomicLong(0);
@@ -38,8 +44,8 @@ public class UpdateScene extends AbstractScene {
     private Label volume;
     private TextArea logOutput;
     private Text currentStatus;
-    private Button reload;
-    private Button cancel;
+    //private Button reload;
+    //private Button cancel;
     private Text speedtext;
     private Text speederr;
     private long totalSize;
@@ -55,17 +61,16 @@ public class UpdateScene extends AbstractScene {
         speed = LookupHelper.lookup(layout, "#speed");
         speederr = LookupHelper.lookup(layout, "#speedErr");
         speedtext = LookupHelper.lookup(layout, "#speed-text");
-        reload = LookupHelper.lookup(layout, "#reload");
-        cancel = LookupHelper.lookup(layout, "#cancel");
+        //cancel = LookupHelper.lookup(header, "#controls", "#controls", "#cancel");
         volume = LookupHelper.lookup(layout, "#volume");
         logOutput = LookupHelper.lookup(layout, "#outputUpdate");
         currentStatus = LookupHelper.lookup(layout, "#headingUpdate");
         logOutput.setText("");
-        LookupHelper.<ButtonBase>lookup(layout, "#reload").setOnAction(
-                (e) -> reset()
-        );
-        LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction(
-                (e) -> {
+        enableControlButton("#reload").ifPresent(e -> {
+            e.setOnAction(x -> reset());
+        });
+        enableControlButton("#cancel").ifPresent(e -> e.setOnAction(
+                (x) -> {
                     if (downloader != null) {
                         downloader.cancel();
                         downloader = null;
@@ -76,7 +81,7 @@ public class UpdateScene extends AbstractScene {
                             errorHandle(exception);
                         }
                     }
-                });
+                }));
     }
 
     private void deleteExtraDir(Path subDir, HashedDir subHDir, boolean deleteDir) throws IOException {
@@ -115,19 +120,78 @@ public class UpdateScene extends AbstractScene {
         }
     }
 
-    @SuppressWarnings("rawtypes")
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
+    public static class HashedClientResult {
+        public HashedDir clientDir;
+        public HashedDir assetsDir;
+        public HashedDir javaDir;
+        public List<ClientLauncherProcess.ClientParams.ClientZoneInfo> zones;
+
+        public HashedClientResult(HashedDir clientDir) {
+            this.clientDir = clientDir;
+            this.zones = new ArrayList<>(1);
+        }
+    }
+
+    public CompletableFuture<HashedClientResult> startClientDownload(ClientProfile profile, Path baseDir, Path clientDir, Path assetsDir, OptionalView view, Path javaDir, String javaDirName) {
+        CompletableFuture<HashedDir> future = downloadStdDir(profile.getDir(), clientDir, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), view, true, null);
+        CompletableFuture<HashedClientResult> result = future.thenCompose(e -> {
+            HashedClientResult r = new HashedClientResult(e);
+            return downloadStdDir(profile.getAssetDir(), assetsDir, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), null, false, null).thenApply((assetHDir) -> {
+                r.assetsDir = assetHDir;
+                return r;
+            });
+        });
+        if(javaDir != null && javaDirName != null) {
+            result = result.thenCompose((r) -> downloadStdDir(javaDirName, javaDir, null, profile.isUpdateFastCheck(), null, true, null).thenApply((en) -> {
+                r.javaDir = en;
+                return r;
+            }));
+        }
+        Map<String, List<Path>> zoneInfo = collectZoneInfo(profile);
+        for(Map.Entry<String, List<Path>> e : zoneInfo.entrySet()) {
+            Path zonePath = baseDir.resolve(e.getKey());
+            Function<HashedDir, HashedDir> modifyHashDir = (hdir) -> {
+                return hdir.filter((p) -> {
+                    if(!p.getFileName().toString().endsWith(".jar")) {
+                        return true;
+                    }
+                    return e.getValue().contains(p);
+                });
+            };
+            result = result.thenCompose((r)-> downloadStdDir(e.getKey(), zonePath, null, profile.isUpdateFastCheck(), null, false, modifyHashDir).thenApply((en) -> {
+                r.zones.add(new ClientLauncherProcess.ClientParams.ClientZoneInfo(e.getKey(), zonePath.toString(), en));
+                return r;
+            }));
+        }
+        return result;
+    }
+
+    private Map<String, List<Path>> collectZoneInfo(ClientProfile profile) {
+        Map<String, List<Path>> result = new HashMap<>();
+        for(ClientProfile.ClientProfileLibrary library : profile.getLibraries()) {
+            if(library.zone == null || library.zone.isEmpty() || library.zone.equals("@")) {
+                continue;
+            }
+            List<Path> list = result.computeIfAbsent(library.zone, k -> new ArrayList<>(8));
+            list.add(Paths.get(library.path));
+        }
+        return result;
+    }
+
+    private CompletableFuture<HashedDir> downloadStdDir(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean deleteExtra, Function<HashedDir, HashedDir> modifyHashedDir) {
+        CompletableFuture<HashedDir> result = new CompletableFuture<>();
         if(application.offlineService.isOfflineMode()) {
             ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
             application.workers.submit(() -> {
                 try {
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
-                    onSuccess.accept(hashedDir);
+                    result.complete(hashedDir);
                 } catch (IOException e) {
                     errorHandle(e);
+                    result.completeExceptionally(e);
                 }
             });
-            return;
+            return result;
         }
         UpdateRequest request = new UpdateRequest(dirName);
         try {
@@ -138,19 +202,25 @@ public class UpdateScene extends AbstractScene {
                 lastDownloaded.set(0);
                 totalSize = 0;
                 progressBar.progressProperty().setValue(0);
-                if (optionalsEnabled) {
+                HashedDir remoteHashedDir;
+                if(modifyHashedDir != null) {
+                    remoteHashedDir = modifyHashedDir.apply(updateRequestEvent.hdir);
+                } else {
+                    remoteHashedDir = updateRequestEvent.hdir;
+                }
+                if (view != null) {
                     for (OptionalAction action : view.getDisabledActions()) {
                         if (action instanceof OptionalActionFile) {
-                            ((OptionalActionFile) action).disableInHashedDir(updateRequestEvent.hdir);
+                            ((OptionalActionFile) action).disableInHashedDir(remoteHashedDir);
                         }
                     }
                 }
                 try {
                     LinkedList<PathRemapperData> pathRemapper = new LinkedList<>();
-                    if (optionalsEnabled) {
+                    if (view != null) {
                         Set<OptionalActionFile> fileActions = view.getActionsByClass(OptionalActionFile.class);
                         for (OptionalActionFile file : fileActions) {
-                            file.injectToHashedDir(updateRequestEvent.hdir);
+                            file.injectToHashedDir(remoteHashedDir);
                             file.files.forEach((k, v) -> {
                                 if (v == null || v.isEmpty()) return;
                                 pathRemapper.add(new PathRemapperData(v, k)); //reverse (!)
@@ -163,7 +233,7 @@ public class UpdateScene extends AbstractScene {
                     if (!IOHelper.exists(dir))
                         Files.createDirectories(dir);
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
-                    HashedDir.Diff diff = updateRequestEvent.hdir.diff(hashedDir, matcher);
+                    HashedDir.Diff diff = remoteHashedDir.diff(hashedDir, matcher);
                     final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
                     diff.mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
                         String urlPath = path;
@@ -204,30 +274,40 @@ public class UpdateScene extends AbstractScene {
                         }
                     }, executor, 4);
                     downloader.getFuture().thenAccept((e) -> {
-                        ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
-                        try {
-                            deleteExtraDir(dir, diff.extra, diff.extra.flag);
-                            onSuccess.accept(updateRequestEvent.hdir);
-                        } catch (Exception ex) {
-                            ex.printStackTrace();
+                        if(deleteExtra) {
+                            ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
+                            try {
+                                deleteExtraDir(dir, diff.extra, diff.extra.flag);
+                                result.complete(remoteHashedDir);
+                            } catch (Exception ex) {
+                                result.completeExceptionally(ex);
+                                errorHandle(ex);
+                            }
+                        } else {
+                            result.complete(remoteHashedDir);
                         }
                     }).exceptionally((e) -> {
+                        result.completeExceptionally(e);
                         ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                         return null;
                     }).thenAccept((e) -> {
                         executor.shutdown();
                     });
                 } catch (Exception e) {
+                    result.completeExceptionally(e);
                     ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
                 }
             }).exceptionally((error) -> {
+                result.completeExceptionally(error);
                 ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
                 // hide(2500, scene, onError);
                 return null;
             });
         } catch (IOException e) {
-            errorHandle(e);
+            result.completeExceptionally(e);
+            ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
         }
+        return result;
     }
 
     private void addLog(String string) {
@@ -263,8 +343,8 @@ public class UpdateScene extends AbstractScene {
         speed.setText("0");
         //reload.setDisable(true);
         //reload.setStyle("-fx-opacity: 0");
-        cancel.setDisable(false);
-        cancel.setStyle("-fx-opacity: 1");
+        //cancel.setDisable(false);
+        //cancel.setStyle("-fx-opacity: 1");
         progressBar.getStyleClass().removeAll("progress");
         speed.getStyleClass().removeAll("speedError");
         speed.setStyle("-fx-opacity: 1");
@@ -282,8 +362,8 @@ public class UpdateScene extends AbstractScene {
         LogHelper.error(e);
         //reload.setDisable(false);
         //reload.setStyle("-fx-opacity: 1");
-        cancel.setDisable(true);
-        cancel.setStyle("-fx-opacity: 0");
+        //cancel.setDisable(true);
+        //cancel.setStyle("-fx-opacity: 0");
     }
 
     @Override

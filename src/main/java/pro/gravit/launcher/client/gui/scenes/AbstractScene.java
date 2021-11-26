@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -26,6 +27,7 @@ import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
@@ -185,9 +187,9 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             LookupHelper.<ButtonBase>lookupIfPossible(layout, "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
             LookupHelper.<ButtonBase>lookupIfPossible(layout, "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
         } else {
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#lang").ifPresent((b) -> {
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#controls", "#lang").ifPresent((b) -> {
 
                 b.setContextMenu(makeLangContextMenu());
                 b.setOnMousePressed((e) -> {
@@ -203,6 +205,12 @@ public abstract class AbstractScene extends AbstractVisualComponent {
                             }, true)));
         }
         currentStage.enableMouseDrag(layout);
+    }
+
+    protected Optional<Button> enableControlButton(String name) {
+        Optional<Button> button = LookupHelper.lookupIfPossible(header, "#controls", "#controls", name);
+        button.ifPresent(value -> value.setVisible(true));
+        return button;
     }
 
     private ContextMenu makeLangContextMenu() {

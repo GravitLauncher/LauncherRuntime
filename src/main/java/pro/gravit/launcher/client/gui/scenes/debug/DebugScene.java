@@ -37,19 +37,19 @@ public class DebugScene extends AbstractScene {
     @Override
     protected void doInit() {
         output = LookupHelper.lookup(layout, "#output");
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
+        enableControlButton("#kill").ifPresent((x) -> x.setOnAction((e) -> {
             if (currentProcess != null && currentProcess.isAlive())
                 currentProcess.destroyForcibly();
         }));
 
         LookupHelper.<Label>lookupIfPossible(layout, "#version").ifPresent((v) -> v.setText(ConsoleScene.getMiniLauncherInfo()));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
+        enableControlButton("#copy").ifPresent((x) -> x.setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
         }));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
+        enableControlButton("#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
             String haste = null;
             try {
                 haste = hastebin(output.getText());
@@ -69,7 +69,7 @@ public class DebugScene extends AbstractScene {
 
             application.openURL(haste);
         }));
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(header, "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive()) {
                 if (currentProcess.isAlive()) writeParametersThread.interrupt();
             }

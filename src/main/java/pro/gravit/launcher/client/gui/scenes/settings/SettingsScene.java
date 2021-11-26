@@ -38,7 +38,7 @@ public class SettingsScene extends AbstractScene {
     @Override
     protected void doInit() {
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
+        enableControlButton("#console").ifPresent(e -> e.setOnAction((x) -> {
             try {
                 if (application.gui.consoleStage == null)
                     application.gui.consoleStage = new ConsoleStage(application);
@@ -48,7 +48,7 @@ public class SettingsScene extends AbstractScene {
             } catch (Exception ex) {
                 errorHandle(ex);
             }
-        });
+        }));
 
         ramSlider = LookupHelper.lookup(layout, "#ramSlider");
         ramLabel = LookupHelper.lookup(layout, "#ramLabel");
