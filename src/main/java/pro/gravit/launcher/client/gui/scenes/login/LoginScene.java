@@ -342,7 +342,7 @@ public class LoginScene extends AbstractScene {
         contextHelper.runInFxThread(() -> {
             Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
             if (player.isPresent()) {
-                LookupHelper.<Label>lookupIfPossible(layout, "#playerName").ifPresent((e) -> e.setText(application.stateService.getUsername()));
+                LookupHelper.<Label>lookupIfPossible(player.get(), "#playerName").ifPresent((e) -> e.setText(application.stateService.getUsername()));
                 LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
                         (h) -> {
                             try {
