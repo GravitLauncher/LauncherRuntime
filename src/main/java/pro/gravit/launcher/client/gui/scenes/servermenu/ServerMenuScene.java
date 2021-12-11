@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
