@@ -156,7 +156,14 @@ public class SkinManager {
 
     private static BufferedImage downloadSkin(URL url) {
         try {
-            return ImageIO.read(url);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setDoInput(true);
+            connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36");
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            BufferedImage bufferedImage = ImageIO.read(input);
+            input.close();
+            return bufferedImage;
         } catch (IOException e) {
             if (!(e instanceof FileNotFoundException)) LogHelper.error(e);
             return null;
