@@ -103,6 +103,13 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
             } else {
                 authButton.setActive(false);
             }
+        
+            if (application.guiModuleConfig.createAccountURL != null)
+                LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
+                        application.openURL(application.guiModuleConfig.createAccountURL));
+            if (application.guiModuleConfig.forgotPassURL != null)
+                LookupHelper.<Text>lookup(layout, "#forgotPass").setOnMouseClicked((e) ->
+                        application.openURL(application.guiModuleConfig.forgotPassURL));
         }
 
 
