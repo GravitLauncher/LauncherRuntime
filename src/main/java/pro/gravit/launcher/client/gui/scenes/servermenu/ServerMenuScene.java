@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
+import javafx.scene.control.Label;
 import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -85,7 +86,7 @@ public class ServerMenuScene extends AbstractScene {
         if (lastProfiles == application.stateService.getProfiles()) return;
         lastProfiles = application.stateService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        LookupHelper.<Labeled>lookup(layout, "#nickname").setText(application.stateService.getUsername().toUpperCase(Locale.ROOT));
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
         avatar.setImage(originalAvatarImage);
         int position = 0;
         for (ClientProfile profile : application.stateService.getProfiles()) {
