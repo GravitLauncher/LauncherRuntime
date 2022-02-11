@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.scenes.login.methods;
 
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
