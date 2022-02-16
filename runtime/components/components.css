@@ -76,7 +76,7 @@
     -fx-text-align: center;
     -fx-text-fill: -fx-white;
     -fx-background-color: -fx-violet;
-    -fx-background-radius: 10px;
+    -fx-background-radius: 0px 0px 10px 10px;
 }
 #save:hover {
     -fx-background-color: -fx-violet-hover;
