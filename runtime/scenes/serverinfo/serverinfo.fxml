@@ -122,7 +122,7 @@
         <!-- Описание сервера-->
       <Pane id="server-detail" layoutX="241.0" layoutY="119.0" prefHeight="340.0" prefWidth="624.0">
          <children>
-              <Label id="serverDescription" alignment="TOP_LEFT" layoutX="28.0" layoutY="58.0" prefHeight="283.0" prefWidth="569.0" text="Server Description" />
+              <Label id="serverDescription" alignment="TOP_LEFT" layoutX="28.0" layoutY="58.0" prefHeight="283.0" prefWidth="569.0" text="Server Description" wrapText="true" />
               <Label id="serverName" layoutX="28.0" layoutY="19.0" prefHeight="37.0" prefWidth="559.0" text="ServerName" />
          </children>
       </Pane>
