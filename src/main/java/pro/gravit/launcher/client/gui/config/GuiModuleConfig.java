@@ -25,7 +25,7 @@ public class GuiModuleConfig {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravit.pro/createAccount.php";
         config.forgotPassURL = "https://gravit.pro/fogotPass.php";
-        config.hastebinServer = "https://hastebin.com";
+        config.hastebinServer = "https://haste.gravit.pro";
         config.lazy = true;
         config.javaList = new HashMap<>();
         config.disableOfflineMode = false;
