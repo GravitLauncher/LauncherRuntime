@@ -167,8 +167,7 @@ public class ServerInfoScene extends AbstractScene {
         });
     }
 
-    private String getJavaDirName() {
-        RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+    private String getJavaDirName(RuntimeSettings.ProfileSettings profileSettings) {
         String prefix = DirBridge.dirUpdates.toAbsolutePath().toString();
         if (profileSettings.javaPath == null || !profileSettings.javaPath.startsWith(prefix)) {
             return null;
@@ -188,7 +187,14 @@ public class ServerInfoScene extends AbstractScene {
                 } catch (Exception e) {
                     errorHandle(e);
                 }
-                String jvmDirName = getJavaDirName();
+                RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+                Path javaDirPath = profileSettings.javaPath == null ? null : Paths.get(profileSettings.javaPath);
+                if(javaDirPath != null) {
+                    if(!application.javaService.contains(javaDirPath) && Files.notExists(javaDirPath)) {
+                        profileSettings.javaPath = application.javaService.getRecommendJavaVersion(profile).jvmDir.toString();
+                    }
+                }
+                String jvmDirName = getJavaDirName(profileSettings);
                 if (jvmDirName != null) {
                     Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
                     application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {

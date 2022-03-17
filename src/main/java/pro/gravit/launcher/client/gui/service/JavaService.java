@@ -56,6 +56,15 @@ public class JavaService {
         return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE);
     }
 
+    public boolean contains(Path dir) {
+        for(JavaHelper.JavaVersion version : javaVersions) {
+            if(version.jvmDir.toAbsolutePath().equals(dir.toAbsolutePath())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public JavaHelper.JavaVersion getRecommendJavaVersion(ClientProfile profile) {
         int min = profile.getMinJavaVersion();
         int max = profile.getMaxJavaVersion();
