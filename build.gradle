@@ -57,9 +57,9 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.2.7"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.2.7"
-    implementation "pro.gravit.launcher:launcher-client-api:5.2.7"
+    implementation "pro.gravit.launcher:launcher-core:5.2.9"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.2.9"
+    implementation "pro.gravit.launcher:launcher-client-api:5.2.9"
     implementation "pro.gravit.utils.enfs:enfs:1.0.0-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'

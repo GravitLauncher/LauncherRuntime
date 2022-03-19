@@ -27,10 +27,7 @@ public class StateService {
 
     public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if (rawAuthResult.oauth != null) {
-            Request.setOAuth(authId, rawAuthResult.oauth);
-        } else if (rawAuthResult.session != null)
-            Request.setSession(rawAuthResult.session);
+        Request.setOAuth(authId, rawAuthResult.oauth);
     }
 
     public Map<ClientProfile, OptionalView> getOptionalViewMap() {
