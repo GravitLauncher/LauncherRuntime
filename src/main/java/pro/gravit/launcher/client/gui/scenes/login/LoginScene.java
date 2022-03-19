@@ -332,9 +332,9 @@ public class LoginScene extends AbstractScene {
             }
             application.runtimeSettings.lastAuth = authAvailability;
         }
-        if (result.playerProfile != null && result.playerProfile.skin != null) {
+        if (result.playerProfile != null && result.playerProfile.assets != null && result.playerProfile.assets.get("SKIN") != null) {
             try {
-                application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.skin.url));
+                application.skinManager.addSkin(result.playerProfile.username, new URL(result.playerProfile.assets.get("SKIN").url));
                 application.skinManager.getSkin(result.playerProfile.username); //Cache skin
             } catch (Exception ignored) {
             }

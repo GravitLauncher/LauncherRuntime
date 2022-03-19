@@ -15,6 +15,7 @@ import pro.gravit.utils.helper.SecurityHelper;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -42,7 +43,7 @@ public class OfflineService {
 
     public static void applyRuntimeProcessors(OfflineRequestService service) {
         service.registerRequestProcessor(AuthRequest.class, (r) -> {
-            return new AuthRequestEvent(new ClientPermissions(), new PlayerProfile(UUID.nameUUIDFromBytes(r.login.getBytes(StandardCharsets.UTF_8)), r.login, null, null),
+            return new AuthRequestEvent(new ClientPermissions(), new PlayerProfile(UUID.nameUUIDFromBytes(r.login.getBytes(StandardCharsets.UTF_8)), r.login, new HashMap<>(), new HashMap<>()),
                     SecurityHelper.randomStringToken(), "", null, new AuthRequestEvent.OAuthRequestEvent(SecurityHelper.randomStringToken(), null, 0));
         });
         service.registerRequestProcessor(ProfilesRequest.class, (r) -> {

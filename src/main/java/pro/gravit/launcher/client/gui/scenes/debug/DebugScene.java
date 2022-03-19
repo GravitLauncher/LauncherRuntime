@@ -170,6 +170,7 @@ public class DebugScene extends AbstractScene {
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
         connection.setRequestProperty("Accept", "application/json");
+        connection.addRequestProperty("User-Agent", "Mozilla/4.76");
         connection.setConnectTimeout(10000);
         try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8)) {
             writer.write(log);

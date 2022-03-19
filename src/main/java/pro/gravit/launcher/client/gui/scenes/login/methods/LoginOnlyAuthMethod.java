@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.scenes.login.methods;
 
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
@@ -103,6 +104,13 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
             } else {
                 authButton.setActive(false);
             }
+        
+            if (application.guiModuleConfig.createAccountURL != null)
+                LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
+                        application.openURL(application.guiModuleConfig.createAccountURL));
+            if (application.guiModuleConfig.forgotPassURL != null)
+                LookupHelper.<Text>lookup(layout, "#forgotPass").setOnMouseClicked((e) ->
+                        application.openURL(application.guiModuleConfig.forgotPassURL));
         }
 
 
