@@ -68,7 +68,7 @@ public class AuthService {
     }
 
     public AuthRequest makeAuthRequest(String login, AuthRequest.AuthPasswordInterface password, String authId) {
-        return new AuthRequest(login, password, authId, true, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
+        return new AuthRequest(login, password, authId, false, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
     }
 
     private byte[] encryptAESPassword(String password) throws Exception {
