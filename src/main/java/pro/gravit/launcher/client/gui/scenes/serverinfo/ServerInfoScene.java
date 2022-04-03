@@ -23,6 +23,7 @@ import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.*;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -198,7 +199,7 @@ public class ServerInfoScene extends AbstractScene {
                 if (jvmDirName != null) {
                     Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
                     application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
+                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
                             Path javaFile = jvmDirPath.resolve("bin").resolve("java");
                             if(Files.exists(javaFile)) {
                                 if(!javaFile.toFile().setExecutable(true)) {
