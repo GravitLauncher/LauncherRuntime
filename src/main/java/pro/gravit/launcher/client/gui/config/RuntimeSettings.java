@@ -1,5 +1,9 @@
 package pro.gravit.launcher.client.gui.config;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.UserSettings;
@@ -8,13 +12,6 @@ import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.utils.helper.JavaHelper;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 public class RuntimeSettings extends UserSettings {
     public static final LAUNCHER_LOCALE DEFAULT_LOCALE = LAUNCHER_LOCALE.RUSSIAN;
@@ -67,6 +64,7 @@ public class RuntimeSettings extends UserSettings {
         RUSSIAN("ru", "Русский"),
         @LauncherNetworkAPI
         ENGLISH("en", "English");
+
         public final String name;
         public final String displayName;
 
@@ -95,7 +93,7 @@ public class RuntimeSettings extends UserSettings {
             settings.autoEnter = defaultSettings.autoEnter;
             settings.fullScreen = defaultSettings.fullScreen;
             JavaHelper.JavaVersion version = javaService.getRecommendJavaVersion(profile);
-            if(version != null) {
+            if (version != null) {
                 settings.javaPath = version.jvmDir.toString();
             }
             return settings;

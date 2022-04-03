@@ -1,16 +1,17 @@
 package pro.gravit.launcher.client;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicReference;
+
 import javafx.application.Application;
+
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.RuntimeProvider;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class StdJavaRuntimeProvider implements RuntimeProvider {
     public static Path launcherUpdateTempPath;

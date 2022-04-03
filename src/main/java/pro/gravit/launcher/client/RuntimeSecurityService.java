@@ -1,5 +1,16 @@
 package pro.gravit.launcher.client;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientExitPhase;
@@ -12,22 +23,11 @@ import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
 import pro.gravit.launcher.utils.HWIDProvider;
 import pro.gravit.utils.helper.*;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 public class RuntimeSecurityService {
     private static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
     private static final Path C_BINARY_PATH = BINARY_PATH.resolveSibling(IOHelper.getFileName(BINARY_PATH) + ".tmp");
     private final JavaFXApplication application;
-    private final Boolean[] waitObject = new Boolean[]{null};
+    private final Boolean[] waitObject = new Boolean[] { null };
 
     public RuntimeSecurityService(JavaFXApplication application) {
         this.application = application;
@@ -42,10 +42,12 @@ public class RuntimeSecurityService {
             }
             byte[] signature = sign(event.verifySecureKey);
             try {
-                application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
+                application.service
+                        .request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(),
+                                signature))
                         .thenAccept((event1) -> {
                             Request.addExtendedToken("publicKey", event1.extendedToken);
-                            if(event1.hardwareExtendedToken != null) {
+                            if (event1.hardwareExtendedToken != null) {
                                 Request.addExtendedToken("hardware", event1.hardwareExtendedToken);
                             }
                             if (!event1.needHardwareInfo) {
@@ -55,7 +57,8 @@ public class RuntimeSecurityService {
                                 doCollectHardwareInfo(!event1.onlyStatisticInfo);
                             }
                         }).exceptionally((e) -> {
-                            application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+                            application.messageManager.createNotification("Hardware Checker",
+                                    e.getCause().getMessage());
                             notifyWaitObject(false);
                             return null;
                         });
@@ -118,7 +121,7 @@ public class RuntimeSecurityService {
         // Rewrite and start new instance
         try {
             LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
-            if(Request.getRequestService() instanceof AutoCloseable) {
+            if (Request.getRequestService() instanceof AutoCloseable) {
                 ((AutoCloseable) Request.getRequestService()).close();
             }
         } catch (Throwable ignored) {
@@ -140,13 +143,14 @@ public class RuntimeSecurityService {
         }
         if (Arrays.equals(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, C_BINARY_PATH),
                 SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, BINARY_PATH)))
-            throw new IOException("Invalid update (launcher needs update, but link has old launcher), check LaunchServer config...");
-        //To StdJavaRuntimeProvider
-        //try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
-        //    IOHelper.transfer(in, BINARY_PATH);
-        //}
-        //Files.deleteIfExists(C_BINARY_PATH);
-        //builder.start();
+            throw new IOException(
+                    "Invalid update (launcher needs update, but link has old launcher), check LaunchServer config...");
+        // To StdJavaRuntimeProvider
+        // try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
+        // IOHelper.transfer(in, BINARY_PATH);
+        // }
+        // Files.deleteIfExists(C_BINARY_PATH);
+        // builder.start();
         StdJavaRuntimeProvider.launcherUpdateTempPath = C_BINARY_PATH;
         StdJavaRuntimeProvider.processBuilder = builder;
     }

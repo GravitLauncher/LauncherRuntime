@@ -1,5 +1,9 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutionException;
+
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -7,14 +11,11 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 
 public abstract class AbstractVisualComponent {
     protected final JavaFXApplication application;
@@ -33,7 +34,7 @@ public abstract class AbstractVisualComponent {
         this.sysFxmlPath = fxmlPath;
         this.contextHelper = new ContextHelper(this);
         this.fxExecutor = new FXExecutorService(contextHelper);
-        if(application.guiModuleConfig.lazy) {
+        if (application.guiModuleConfig.lazy) {
             this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
         }
     }
@@ -61,7 +62,7 @@ public abstract class AbstractVisualComponent {
     protected synchronized Parent getFxmlRoot() {
         try {
             if (sysFxmlRoot == null) {
-                if(sysFxmlFuture == null) {
+                if (sysFxmlFuture == null) {
                     this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
                 }
                 sysFxmlRoot = (Parent) sysFxmlFuture.get();

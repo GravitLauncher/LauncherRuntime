@@ -4,6 +4,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
@@ -23,12 +24,15 @@ public class ConsoleScene extends AbstractScene {
     }
 
     public static String getLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s %s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"), JVMHelper.JVM_BITS,
+        return String.format("Launcher %s | Java %d(%s %s) x%d | %s x%d", Version.getVersion().toString(),
+                JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"),
+                JVMHelper.JVM_BITS,
                 JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
     }
 
     public static String getMiniLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS,
+        return String.format("Launcher %s | Java %d(%s) x%d | %s x%d", Version.getVersion().toString(),
+                JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS,
                 JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
     }
 

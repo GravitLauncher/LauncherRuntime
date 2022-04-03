@@ -19,7 +19,8 @@ public class TextDialog extends AbstractDialog {
     private Label textDescription;
     private TextField textField;
 
-    public TextDialog(JavaFXApplication application, String header, String text, Consumer<String> onAccept, Runnable onClose) {
+    public TextDialog(JavaFXApplication application, String header, String text, Consumer<String> onAccept,
+            Runnable onClose) {
         super("dialogs/text/dialog.fxml", application);
         this.header = header;
         this.text = text;

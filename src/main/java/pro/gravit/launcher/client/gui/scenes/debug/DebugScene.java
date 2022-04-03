@@ -1,10 +1,16 @@
 package pro.gravit.launcher.client.gui.scenes.debug;
 
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -15,11 +21,6 @@ import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
 public class DebugScene extends AbstractScene {
     private static final long MAX_LENGTH = 163840;
@@ -42,36 +43,40 @@ public class DebugScene extends AbstractScene {
                 currentProcess.destroyForcibly();
         }));
 
-        LookupHelper.<Label>lookupIfPossible(layout, "#version").ifPresent((v) -> v.setText(ConsoleScene.getMiniLauncherInfo()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#version")
+                .ifPresent((v) -> v.setText(ConsoleScene.getMiniLauncherInfo()));
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
         }));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
-            String haste = null;
-            try {
-                haste = hastebin(output.getText());
-            } catch (IOException ex) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
-                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
-                LogHelper.error(ex);
-            }
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin")
+                .ifPresent((x) -> x.setOnAction((e) -> {
+                    String haste = null;
+                    try {
+                        haste = hastebin(output.getText());
+                    } catch (IOException ex) {
+                        application.messageManager.createNotification(
+                                application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+                                application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
+                        LogHelper.error(ex);
+                    }
 
-            if (haste == null)
-                return;
+                    if (haste == null)
+                        return;
 
-            ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(haste);
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            clipboard.setContent(clipboardContent);
+                    ClipboardContent clipboardContent = new ClipboardContent();
+                    clipboardContent.putString(haste);
+                    Clipboard clipboard = Clipboard.getSystemClipboard();
+                    clipboard.setContent(clipboardContent);
 
-            application.openURL(haste);
-        }));
+                    application.openURL(haste);
+                }));
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive()) {
-                if (currentProcess.isAlive()) writeParametersThread.interrupt();
+                if (currentProcess.isAlive())
+                    writeParametersThread.interrupt();
             }
             if (currentProcess != null && currentProcess.isAlive()) {
                 Process process = currentProcess;
@@ -95,7 +100,6 @@ public class DebugScene extends AbstractScene {
         });
     }
 
-
     @Override
     public void reset() {
         output.clear();
@@ -113,7 +117,8 @@ public class DebugScene extends AbstractScene {
                 for (int length = stream.read(buf); length >= 0; length = stream.read(buf)) {
                     append(new String(buf, 0, length));
                 }
-                if (currentProcess.isAlive()) currentProcess.waitFor();
+                if (currentProcess.isAlive())
+                    currentProcess.waitFor();
                 onProcessExit(currentProcess.exitValue());
             } catch (IOException e) {
                 errorHandle(e);
@@ -151,7 +156,8 @@ public class DebugScene extends AbstractScene {
 
     private void onProcessExit(int code) {
         append(String.format("Process exit code %d", code));
-        if (writeParametersThread != null) writeParametersThread.interrupt();
+        if (writeParametersThread != null)
+            writeParametersThread.interrupt();
     }
 
     public static class HasteResponse {
@@ -186,12 +192,14 @@ public class DebugScene extends AbstractScene {
             reader = new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8);
         try {
             HasteResponse obj = Launcher.gsonManager.gson.fromJson(reader, HasteResponse.class);
-            application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.success.header"),
+            application.messageManager.createNotification(
+                    application.getTranslation("runtime.overlay.debug.hastebin.success.header"),
                     application.getTranslation("runtime.overlay.debug.hastebin.success.description"));
             return application.guiModuleConfig.hastebinServer + "/" + obj.key;
         } catch (Exception e) {
             if (200 > statusCode || statusCode > 300) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+                application.messageManager.createNotification(
+                        application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
                         application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
                 LogHelper.error("JsonRequest failed. Server response code %d", statusCode);
                 throw new IOException(e);

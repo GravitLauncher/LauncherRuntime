@@ -1,16 +1,5 @@
 package pro.gravit.launcher.client.gui.helper;
 
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherConfig;
-import pro.gravit.launcher.client.gui.utils.RuntimeCryptedFile;
-import pro.gravit.utils.enfs.EnFS;
-import pro.gravit.utils.enfs.dir.FileEntry;
-import pro.gravit.utils.enfs.dir.URLFile;
-import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
-import pro.gravit.utils.helper.LogHelper;
-import pro.gravit.utils.helper.SecurityHelper;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +10,14 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import pro.gravit.launcher.Launcher;
+import pro.gravit.launcher.LauncherConfig;
+import pro.gravit.launcher.client.gui.utils.RuntimeCryptedFile;
+import pro.gravit.utils.enfs.EnFS;
+import pro.gravit.utils.enfs.dir.FileEntry;
+import pro.gravit.utils.enfs.dir.URLFile;
+import pro.gravit.utils.helper.*;
+
 public class EnFSHelper {
 
     private static final Set<String> themesCached = new HashSet<>(1);
@@ -28,7 +25,7 @@ public class EnFSHelper {
 
     public static boolean checkEnFSUrl() {
         try {
-            URL url = new URL(new URL("enfs", null, -1, "aone").toString()); // check URL Handler
+            new URL(new URL("enfs", null, -1, "aone").toString()); // check URL Handler
             return true;
         } catch (IOException e) {
             return false; // Failed on Java 8

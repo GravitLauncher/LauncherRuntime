@@ -1,5 +1,10 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
+import java.util.HashSet;
+import java.util.Set;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.overlays.ProcessingOverlay;
@@ -14,11 +19,6 @@ import pro.gravit.launcher.client.gui.scenes.settings.SettingsScene;
 import pro.gravit.launcher.client.gui.scenes.update.UpdateScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
-import java.util.HashSet;
-import java.util.Set;
 
 public class GuiObjectsContainer {
     private final JavaFXApplication application;
@@ -89,11 +89,12 @@ public class GuiObjectsContainer {
         return null;
     }
 
-
     @SuppressWarnings("unchecked")
     public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(application);
+            T instance = (T) MethodHandles.publicLookup()
+                    .findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
             overlays.add(instance);
             return instance;
         } catch (Throwable e) {
@@ -105,7 +106,9 @@ public class GuiObjectsContainer {
     @SuppressWarnings("unchecked")
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(application);
+            T instance = (T) MethodHandles.publicLookup()
+                    .findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
             scenes.add(instance);
             return instance;
         } catch (Throwable e) {

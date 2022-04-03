@@ -6,6 +6,7 @@ public class PositionHelper {
         TOP_RIGHT(Double.MAX_VALUE, 0, false, true),
         BOTTOM_LEFT(0, Double.MAX_VALUE, false, true),
         BOTTOM_RIGHT(Double.MAX_VALUE, Double.MAX_VALUE, false, false);
+
         public final double startX;
         public final double startY;
         public final boolean offsetXPlus;
@@ -23,7 +24,8 @@ public class PositionHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static LookupHelper.Point2D calculate(PositionInfo info, double width, double height, double offsetX, double offsetY, double maxX, double maxY) {
+    public static LookupHelper.Point2D calculate(PositionInfo info, double width, double height, double offsetX,
+            double offsetY, double maxX, double maxY) {
         double x = info.startX;
         double y = info.startY;
         x = Math.min(x, maxX);

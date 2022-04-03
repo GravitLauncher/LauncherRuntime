@@ -1,5 +1,10 @@
 package pro.gravit.launcher.client.gui.scenes.serverinfo;
 
+import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
@@ -21,12 +26,10 @@ import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
-import pro.gravit.utils.helper.*;
-
-import java.net.InetSocketAddress;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import pro.gravit.utils.helper.CommonHelper;
+import pro.gravit.utils.helper.JVMHelper;
+import pro.gravit.utils.helper.JavaHelper;
+import pro.gravit.utils.helper.LogHelper;
 
 public class ServerInfoScene extends AbstractScene {
     private ImageView avatar;
@@ -44,7 +47,8 @@ public class ServerInfoScene extends AbstractScene {
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent(
                 (h) -> {
                     try {
-                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(),
+                                h.getFitHeight());
                         clip.setArcWidth(h.getFitWidth());
                         clip.setArcHeight(h.getFitHeight());
                         h.setClip(clip);
@@ -52,8 +56,7 @@ public class ServerInfoScene extends AbstractScene {
                     } catch (Throwable e) {
                         LogHelper.warning("Skin head error");
                     }
-                }
-        );
+                });
         LookupHelper.<Button>lookup(header, "#back").setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverMenuScene);
@@ -89,13 +92,16 @@ public class ServerInfoScene extends AbstractScene {
         avatar.setImage(originalAvatarImage);
         ClientProfile profile = application.stateService.getProfile();
         LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getTitle()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#serverDescription").ifPresent((e) -> e.setText(profile.getInfo()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#serverDescription")
+                .ifPresent((e) -> e.setText(profile.getInfo()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
+                .ifPresent((e) -> e.setText(application.stateService.getUsername()));
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         serverButton = ServerMenuScene.getServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
-        serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"), (e) -> launchClient());
+        serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"),
+                (e) -> launchClient());
         ServerMenuScene.putAvatarToImageView(application, application.stateService.getUsername(), avatar);
     }
 
@@ -107,23 +113,30 @@ public class ServerInfoScene extends AbstractScene {
     private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
-            Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
-            LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
-                LogHelper.info("Success update");
-                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), jvmDir, jvmHDir);
-            });
-        });
+        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(),
+                profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
+                    Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
+                    LogHelper.info("Start update to %s", targetClient.toString());
+                    application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient,
+                            profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(),
+                            application.stateService.getOptionalView(), true, (clientHDir) -> {
+                                LogHelper.info("Success update");
+                                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile,
+                                        application.stateService.getOptionalView(), jvmDir, jvmHDir);
+                            });
+                });
     }
 
-    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
+    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir,
+            ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-        Path javaPath = jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath));
-        if(!Files.exists(javaPath)) {
+        Path javaPath = jvmDir != null ? jvmDir
+                : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home"))
+                        : Paths.get(profileSettings.javaPath));
+        if (!Files.exists(javaPath)) {
             LogHelper.warning("Java %s not exist", javaPath.toString());
             JavaHelper.JavaVersion version = application.javaService.getRecommendJavaVersion(profile);
-            if(version != null) {
+            if (version != null) {
                 javaPath = version.jvmDir;
             }
         }
@@ -141,16 +154,18 @@ public class ServerInfoScene extends AbstractScene {
         contextHelper.runCallback(() -> {
             Thread writerThread = CommonHelper.newThread("Client Params Writer Thread", true, () -> {
                 try {
-                    clientLauncherProcess.runWriteParams(new InetSocketAddress("127.0.0.1", Launcher.getConfig().clientPort));
+                    clientLauncherProcess
+                            .runWriteParams(new InetSocketAddress("127.0.0.1", Launcher.getConfig().clientPort));
                     if (!profileSettings.debug) {
                         LogHelper.debug("Params writted successful. Exit...");
                         LauncherEngine.exitLauncher(0);
                     }
                 } catch (Throwable e) {
                     LogHelper.error(e);
-                    if (getCurrentStage().getVisualComponent() instanceof DebugScene) { //TODO: FIX
+                    if (getCurrentStage().getVisualComponent() instanceof DebugScene) { // TODO: FIX
                         DebugScene debugScene = (DebugScene) getCurrentStage().getVisualComponent();
-                        debugScene.append(String.format("Launcher fatal error(Write Params Thread): %s: %s", e.getClass().getName(), e.getMessage()));
+                        debugScene.append(String.format("Launcher fatal error(Write Params Thread): %s: %s",
+                                e.getClass().getName(), e.getMessage()));
                         if (debugScene.currentProcess != null && debugScene.currentProcess.isAlive()) {
                             debugScene.currentProcess.destroy();
                         }
@@ -180,38 +195,44 @@ public class ServerInfoScene extends AbstractScene {
         ClientProfile profile = application.stateService.getProfile();
         if (profile == null)
             return;
-        processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
-            hideOverlay(0, (ev) -> {
-                try {
-                    switchScene(application.gui.updateScene);
-                } catch (Exception e) {
-                    errorHandle(e);
-                }
-                RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-                Path javaDirPath = profileSettings.javaPath == null ? null : Paths.get(profileSettings.javaPath);
-                if(javaDirPath != null) {
-                    if(!application.javaService.contains(javaDirPath) && Files.notExists(javaDirPath)) {
-                        profileSettings.javaPath = application.javaService.getRecommendJavaVersion(profile).jvmDir.toString();
-                    }
-                }
-                String jvmDirName = getJavaDirName(profileSettings);
-                if (jvmDirName != null) {
-                    Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                    application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
-                            Path javaFile = jvmDirPath.resolve("bin").resolve("java");
-                            if(Files.exists(javaFile)) {
-                                if(!javaFile.toFile().setExecutable(true)) {
-                                    LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
-                                }
+        processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"),
+                new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
+                    hideOverlay(0, (ev) -> {
+                        try {
+                            switchScene(application.gui.updateScene);
+                        } catch (Exception e) {
+                            errorHandle(e);
+                        }
+                        RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+                        Path javaDirPath = profileSettings.javaPath == null ? null
+                                : Paths.get(profileSettings.javaPath);
+                        if (javaDirPath != null) {
+                            if (!application.javaService.contains(javaDirPath) && Files.notExists(javaDirPath)) {
+                                profileSettings.javaPath = application.javaService
+                                        .getRecommendJavaVersion(profile).jvmDir.toString();
                             }
                         }
-                        downloadClients(profile, jvmDirPath, jvmHDir);
+                        String jvmDirName = getJavaDirName(profileSettings);
+                        if (jvmDirName != null) {
+                            Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
+                            application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null,
+                                    profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false,
+                                    (jvmHDir) -> {
+                                        if (JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
+                                            Path javaFile = jvmDirPath.resolve("bin").resolve("java");
+                                            if (Files.exists(javaFile)) {
+                                                if (!javaFile.toFile().setExecutable(true)) {
+                                                    LogHelper.warning("Set permission for %s unsuccessful",
+                                                            javaFile.toString());
+                                                }
+                                            }
+                                        }
+                                        downloadClients(profile, jvmDirPath, jvmHDir);
+                                    });
+                        } else {
+                            downloadClients(profile, null, null);
+                        }
                     });
-                } else {
-                    downloadClients(profile, null, null);
-                }
-            });
-        }), null);
+                }), null);
     }
 }

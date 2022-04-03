@@ -1,16 +1,17 @@
 package pro.gravit.launcher.client.gui.utils;
 
-import javafx.fxml.FXMLLoader;
-import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.LogHelper;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
+
+import javafx.fxml.FXMLLoader;
+
+import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.LogHelper;
 
 public class FXMLFactory {
     private final ResourceBundle resources;
@@ -38,7 +39,8 @@ public class FXMLFactory {
         try (InputStream inputStream = IOHelper.newInput(JavaFXApplication.getResourceURL(url))) {
             T result = loader.load(inputStream);
             long endTime = System.currentTimeMillis();
-            LogHelper.debug("Fxml load %s time: c: %d | l: %d | total: %d", url, loaderInstanceTime - startTime, endTime - loaderInstanceTime, endTime - startTime);
+            LogHelper.debug("Fxml load %s time: c: %d | l: %d | total: %d", url, loaderInstanceTime - startTime,
+                    endTime - loaderInstanceTime, endTime - startTime);
             return result;
         }
     }
