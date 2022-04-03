@@ -1,15 +1,18 @@
 package pro.gravit.launcher.client.gui.dialogs;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.function.Consumer;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.helper.PositionHelper;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.util.*;
-import java.util.function.Consumer;
 
 public class NotificationDialog extends AbstractDialog {
     public static class NotificationSlot {
@@ -103,7 +106,8 @@ public class NotificationDialog extends AbstractDialog {
         }
         this.positionInfo = position;
         LogHelper.info("Notification position: %s", position);
-        if (position == null) return;
+        if (position == null)
+            return;
         NotificationSlotsInfo slotsInfo = slots.get(position);
         if (slotsInfo == null) {
             slotsInfo = new NotificationSlotsInfo();
@@ -131,13 +135,16 @@ public class NotificationDialog extends AbstractDialog {
             LogHelper.info("Notification position: using central");
             return super.getOutSceneCoords(bounds);
         }
-        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0, 30 + positionOffset, bounds.getMaxX(), bounds.getMaxY());
+        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0,
+                30 + positionOffset, bounds.getMaxX(), bounds.getMaxY());
     }
 
     @Override
     public LookupHelper.Point2D getSceneCoords(Pane root) {
-        if (positionInfo == null) return super.getSceneCoords(root);
-        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0, 30 + positionOffset, root.getPrefWidth(), root.getPrefHeight());
+        if (positionInfo == null)
+            return super.getSceneCoords(root);
+        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0,
+                30 + positionOffset, root.getPrefWidth(), root.getPrefHeight());
     }
 
     @Override

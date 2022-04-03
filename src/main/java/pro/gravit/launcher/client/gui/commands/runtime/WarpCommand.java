@@ -27,7 +27,8 @@ public class WarpCommand extends Command {
     @Override
     public void invoke(String... args) throws Exception {
         verifyArgs(args, 2);
-        if (application == null) application = JavaFXApplication.getInstance();
+        if (application == null)
+            application = JavaFXApplication.getInstance();
         if (args[0].equals("scene")) {
             AbstractScene scene = application.gui.getSceneByName(args[1]);
             if (scene == null) {

@@ -1,25 +1,5 @@
 package pro.gravit.launcher.client.gui.scenes.update;
 
-import javafx.beans.property.DoubleProperty;
-import javafx.scene.control.*;
-import javafx.scene.text.Text;
-import pro.gravit.launcher.AsyncDownloader;
-import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.hasher.FileNameMatcher;
-import pro.gravit.launcher.hasher.HashedDir;
-import pro.gravit.launcher.hasher.HashedEntry;
-import pro.gravit.launcher.hasher.HashedFile;
-import pro.gravit.launcher.profiles.optional.OptionalView;
-import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
-import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
-import pro.gravit.launcher.request.update.UpdateRequest;
-import pro.gravit.utils.Downloader;
-import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.LogHelper;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -29,6 +9,24 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.scene.control.*;
+import javafx.scene.text.Text;
+
+import pro.gravit.launcher.AsyncDownloader;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.hasher.*;
+import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
+import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
+import pro.gravit.launcher.request.update.UpdateRequest;
+import pro.gravit.utils.Downloader;
+import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.LogHelper;
+
 public class UpdateScene extends AbstractScene {
     private final AtomicLong totalDownloaded = new AtomicLong(0);
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
@@ -37,8 +35,6 @@ public class UpdateScene extends AbstractScene {
     private Text speed;
     private Label volume;
     private TextArea logOutput;
-    private Text currentStatus;
-    private Button reload;
     private Button cancel;
     private Text speedtext;
     private Text speederr;
@@ -55,15 +51,14 @@ public class UpdateScene extends AbstractScene {
         speed = LookupHelper.lookup(layout, "#speed");
         speederr = LookupHelper.lookup(layout, "#speedErr");
         speedtext = LookupHelper.lookup(layout, "#speed-text");
-        reload = LookupHelper.lookup(layout, "#reload");
+        LookupHelper.lookup(layout, "#reload");
         cancel = LookupHelper.lookup(layout, "#cancel");
         volume = LookupHelper.lookup(layout, "#volume");
         logOutput = LookupHelper.lookup(layout, "#outputUpdate");
-        currentStatus = LookupHelper.lookup(layout, "#headingUpdate");
+        LookupHelper.lookup(layout, "#headingUpdate");
         logOutput.setText("");
         LookupHelper.<ButtonBase>lookup(layout, "#reload").setOnAction(
-                (e) -> reset()
-        );
+                (e) -> reset());
         LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction(
                 (e) -> {
                     if (downloader != null) {
@@ -116,8 +111,9 @@ public class UpdateScene extends AbstractScene {
     }
 
     @SuppressWarnings("rawtypes")
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
-        if(application.offlineService.isOfflineMode()) {
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
+            boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
+        if (application.offlineService.isOfflineMode()) {
             ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));
             application.workers.submit(() -> {
                 try {
@@ -152,8 +148,9 @@ public class UpdateScene extends AbstractScene {
                         for (OptionalActionFile file : fileActions) {
                             file.injectToHashedDir(updateRequestEvent.hdir);
                             file.files.forEach((k, v) -> {
-                                if (v == null || v.isEmpty()) return;
-                                pathRemapper.add(new PathRemapperData(v, k)); //reverse (!)
+                                if (v == null || v.isEmpty())
+                                    return;
+                                pathRemapper.add(new PathRemapperData(v, k)); // reverse (!)
                                 LogHelper.dev("Remap prepare %s to %s", v, k);
                             });
                         }
@@ -174,7 +171,9 @@ public class UpdateScene extends AbstractScene {
                                 for (PathRemapperData remapEntry : pathRemapper) {
                                     if (path.startsWith(remapEntry.key)) {
                                         urlPath = path.replace(remapEntry.key, remapEntry.value);
-                                        LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
+                                        LogHelper.dev(
+                                                "Remap found: injected url path: %s | calculated original url path: %s",
+                                                path, urlPath);
                                     }
                                 }
                                 Files.deleteIfExists(dir.resolve(path));
@@ -189,22 +188,24 @@ public class UpdateScene extends AbstractScene {
                     LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                     ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Downloading %s...", dirName)));
                     ExecutorService executor = Executors.newWorkStealingPool(4);
-                    downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir, new Downloader.DownloadCallback() {
-                        @Override
-                        public void apply(long fullDiff) {
-                            {
-                                long old = totalDownloaded.getAndAdd(fullDiff);
-                                updateProgress(old, old + fullDiff);
-                            }
-                        }
+                    downloader = Downloader.downloadList(adds, updateRequestEvent.url, dir,
+                            new Downloader.DownloadCallback() {
+                                @Override
+                                public void apply(long fullDiff) {
+                                    {
+                                        long old = totalDownloaded.getAndAdd(fullDiff);
+                                        updateProgress(old, old + fullDiff);
+                                    }
+                                }
 
-                        @Override
-                        public void onComplete(Path path) {
+                                @Override
+                                public void onComplete(Path path) {
 
-                        }
-                    }, executor, 4);
+                                }
+                            }, executor, 4);
                     downloader.getFuture().thenAccept((e) -> {
-                        ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
+                        ContextHelper
+                                .runInFxThreadStatic(() -> addLog(String.format("Delete Extra files %s", dirName)));
                         try {
                             deleteExtraDir(dir, diff.extra, diff.extra.flag);
                             onSuccess.accept(updateRequestEvent.hdir);
@@ -242,7 +243,8 @@ public class UpdateScene extends AbstractScene {
         long lastTime = lastUpdateTime.get();
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastTime >= 130) {
-            String format = String.format(" [%.1f MB]", (double) newValue / (1024.0 * 1024.0), (double) totalSize / (1024.0 * 1024.0));
+            String format = String.format(" [%.1f MB]", (double) newValue / (1024.0 * 1024.0),
+                    (double) totalSize / (1024.0 * 1024.0));
             double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (currentTime - lastTime) * 1000.0;
             String speedFormat = String.format("%.2f ", bytesSpeed * 8 / (1000.0 * 1000.0));
             ContextHelper.runInFxThreadStatic(() -> {
@@ -261,8 +263,8 @@ public class UpdateScene extends AbstractScene {
         logOutput.clear();
         volume.setText("");
         speed.setText("0");
-        //reload.setDisable(true);
-        //reload.setStyle("-fx-opacity: 0");
+        // reload.setDisable(true);
+        // reload.setStyle("-fx-opacity: 0");
         cancel.setDisable(false);
         cancel.setStyle("-fx-opacity: 1");
         progressBar.getStyleClass().removeAll("progress");
@@ -280,8 +282,8 @@ public class UpdateScene extends AbstractScene {
         speedtext.setStyle("-fx-opacity: 0");
         speederr.setStyle("-fx-opacity: 1");
         LogHelper.error(e);
-        //reload.setDisable(false);
-        //reload.setStyle("-fx-opacity: 1");
+        // reload.setDisable(false);
+        // reload.setStyle("-fx-opacity: 1");
         cancel.setDisable(true);
         cancel.setStyle("-fx-opacity: 0");
     }

@@ -1,9 +1,9 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
+import java.util.concurrent.CompletableFuture;
+
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
-
-import java.util.concurrent.CompletableFuture;
 
 public abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> {
     public abstract void prepare();

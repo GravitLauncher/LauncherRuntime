@@ -1,13 +1,14 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 
-import java.util.concurrent.atomic.AtomicReference;
+import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 
 public abstract class AbstractStage {
     public final Stage stage;

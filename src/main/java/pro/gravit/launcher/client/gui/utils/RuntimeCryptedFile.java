@@ -1,19 +1,20 @@
 package pro.gravit.launcher.client.gui.utils;
 
-import pro.gravit.utils.enfs.dir.FileEntry;
-import pro.gravit.utils.helper.SecurityHelper;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.function.Supplier;
+
+import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import pro.gravit.utils.enfs.dir.FileEntry;
+import pro.gravit.utils.helper.SecurityHelper;
 
 public class RuntimeCryptedFile extends FileEntry {
     private final Supplier<InputStream> inputStream;
@@ -39,7 +40,8 @@ public class RuntimeCryptedFile extends FileEntry {
         try {
             cipher = Cipher.getInstance(alg);
             cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iKeySpec);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+                | InvalidAlgorithmParameterException e) {
             throw new IOException(e);
         }
         return new CipherInputStream(inputStream.get(), cipher);

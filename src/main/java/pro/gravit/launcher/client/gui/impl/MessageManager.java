@@ -1,6 +1,10 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
+
 import javafx.scene.layout.Pane;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.dialogs.*;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -9,14 +13,8 @@ import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.stage.DialogStage;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
-
 public class MessageManager {
     public final JavaFXApplication application;
-    private final AtomicInteger count = new AtomicInteger(0);
-    private final AtomicInteger localCount = new AtomicInteger(0);
 
     public MessageManager(JavaFXApplication application) {
         this.application = application;
@@ -65,7 +63,8 @@ public class MessageManager {
         if (isLauncher) {
             AbstractScene scene = application.getCurrentScene();
             if (scene == null) {
-                throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
+                throw new NullPointerException(
+                        "Try show launcher notification in application.getCurrentScene() == null");
             }
             ContextHelper.runInFxThreadStatic(() -> {
                 initDialogInScene(scene, dialog);
@@ -87,21 +86,26 @@ public class MessageManager {
         }
     }
 
-    public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
+    public void showDialog(String header, String text, Runnable onApplyCallback, Runnable onCloseCallback,
+            boolean isLauncher) {
         InfoDialog dialog = new InfoDialog(application, header, text, onApplyCallback, onCloseCallback);
         showAbstractDialog(dialog, header, isLauncher);
     }
 
-    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, boolean isLauncher) {
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback,
+            boolean isLauncher) {
         showApplyDialog(header, text, onApplyCallback, onDenyCallback, onDenyCallback, isLauncher);
     }
 
-    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback, boolean isLauncher) {
-        ApplyDialog dialog = new ApplyDialog(application, header, text, onApplyCallback, onDenyCallback, onCloseCallback);
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback,
+            Runnable onCloseCallback, boolean isLauncher) {
+        ApplyDialog dialog = new ApplyDialog(application, header, text, onApplyCallback, onDenyCallback,
+                onCloseCallback);
         showAbstractDialog(dialog, header, isLauncher);
     }
 
-    public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback, boolean isLauncher) {
+    public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback,
+            boolean isLauncher) {
         TextDialog dialog = new TextDialog(application, header, "", onApplyCallback, onCloseCallback);
         showAbstractDialog(dialog, header, isLauncher);
     }

@@ -1,11 +1,19 @@
 package pro.gravit.launcher.client.gui.scenes.settings;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.text.MessageFormat;
+import java.util.function.Consumer;
+
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
+
 import oshi.SystemInfo;
+
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
@@ -18,18 +26,11 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.function.Consumer;
-
 public class SettingsScene extends AbstractScene {
     private Pane componentList;
     private Label ramLabel;
     private Slider ramSlider;
     private RuntimeSettings.ProfileSettingsView profileSettings;
-    private JavaSelectorComponent javaSelector;
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -98,16 +99,17 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDir = newDir;
             String oldDir = DirBridge.dirUpdates.toString();
             DirBridge.dirUpdates = newDir;
-            for(ClientProfile profile : application.stateService.getProfiles()) {
+            for (ClientProfile profile : application.stateService.getProfiles()) {
                 RuntimeSettings.ProfileSettings settings = application.getProfileSettings(profile);
-                if(settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
+                if (settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
                     settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
                 }
             }
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.deletedir.header"),
+        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir")
+                .ifPresent(a -> a.setOnAction((e) -> application.messageManager.showApplyDialog(
+                        application.getTranslation("runtime.scenes.settings.deletedir.header"),
                         application.getTranslation("runtime.scenes.settings.deletedir.description"),
                         () -> {
                             LogHelper.debug("Delete dir: %s", DirBridge.dirUpdates);
@@ -115,8 +117,10 @@ public class SettingsScene extends AbstractScene {
                                 IOHelper.deleteDir(DirBridge.dirUpdates, false);
                             } catch (IOException ex) {
                                 LogHelper.error(ex);
-                                application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
-                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.description"));
+                                application.messageManager.createNotification(
+                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
+                                        application
+                                                .getTranslation("runtime.scenes.settings.deletedir.fail.description"));
                             }
                         }, () -> {
                         }, true)));
@@ -134,7 +138,8 @@ public class SettingsScene extends AbstractScene {
     @Override
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
-        javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings, application.stateService.getProfile());
+        new JavaSelectorComponent(application.javaService, layout, profileSettings,
+                application.stateService.getProfile());
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();
@@ -171,8 +176,10 @@ public class SettingsScene extends AbstractScene {
 
     public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {
         String nameKey = String.format("runtime.scenes.settings.properties.%s.name", languageName.toLowerCase());
-        String descriptionKey = String.format("runtime.scenes.settings.properties.%s.description", languageName.toLowerCase());
-        add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName), value, onChanged);
+        String descriptionKey = String.format("runtime.scenes.settings.properties.%s.description",
+                languageName.toLowerCase());
+        add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName),
+                value, onChanged);
     }
 
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
@@ -197,6 +204,7 @@ public class SettingsScene extends AbstractScene {
     }
 
     public void updateRamLabel() {
-        ramLabel.setText(profileSettings.ram == 0 ? application.getTranslation("runtime.scenes.settings.ramAuto") : MessageFormat.format(application.getTranslation("runtime.scenes.settings.ram"), profileSettings.ram));
+        ramLabel.setText(profileSettings.ram == 0 ? application.getTranslation("runtime.scenes.settings.ramAuto")
+                : MessageFormat.format(application.getTranslation("runtime.scenes.settings.ram"), profileSettings.ram));
     }
 }

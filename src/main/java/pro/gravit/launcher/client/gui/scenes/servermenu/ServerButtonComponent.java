@@ -1,5 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.servermenu;
 
+import java.net.URL;
+
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -7,13 +9,12 @@ import javafx.scene.control.Labeled;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.net.URL;
 
 public class ServerButtonComponent extends AbstractVisualComponent {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -56,7 +57,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
             }
         });
         application.pingService.getPingReport(profile.getDefaultServerProfile().name).thenAccept((report) -> {
-            if(report == null) {
+            if (report == null) {
                 LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
             } else {
                 LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(report.playersOnline));

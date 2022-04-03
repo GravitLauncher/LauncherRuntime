@@ -1,5 +1,10 @@
 package pro.gravit.launcher.client.gui.service;
 
+import java.nio.file.Path;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.profiles.ClientProfile;
@@ -7,13 +12,9 @@ import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.JavaHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.nio.file.Path;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class JavaService {
-    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) x(?<bitness>.+) javafx (?<javafx>.+)");
+    private static final Pattern JAVA_VERSION_PATTERN = Pattern
+            .compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) x(?<bitness>.+) javafx (?<javafx>.+)");
     public final List<JavaHelper.JavaVersion> javaVersions;
 
     public JavaService(JavaFXApplication application) {
@@ -33,12 +34,14 @@ public class JavaService {
                         if (bitness != 0 && bitness != JVMHelper.OS_BITS) {
                             continue;
                         }
-                        if(!JVMHelper.OS_TYPE.name.equals(os)) {
+                        if (!JVMHelper.OS_TYPE.name.equals(os)) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
-                        LogHelper.debug("In-Launcher Java Version found: Java %db%d x%d javafx %s", version, build, bitness, Boolean.toString(javafx));
-                        JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, bitness, javafx);
+                        LogHelper.debug("In-Launcher Java Version found: Java %db%d x%d javafx %s", version, build,
+                                bitness, Boolean.toString(javafx));
+                        JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build,
+                                bitness, javafx);
                         versions.add(javaVersion);
                     } else {
                         LogHelper.warning("Java Version: %s does not match", javaVersionString);
@@ -46,19 +49,21 @@ public class JavaService {
                 }
             }
         }
-        if(!application.guiModuleConfig.forceDownloadJava || versions.isEmpty()) {
+        if (!application.guiModuleConfig.forceDownloadJava || versions.isEmpty()) {
             versions.addAll(JavaHelper.findJava());
         }
         javaVersions = Collections.unmodifiableList(versions);
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE);
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
+                || (!version.enabledJavaFX
+                        && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE);
     }
 
     public boolean contains(Path dir) {
-        for(JavaHelper.JavaVersion version : javaVersions) {
-            if(version.jvmDir.toAbsolutePath().equals(dir.toAbsolutePath())) {
+        for (JavaHelper.JavaVersion version : javaVersions) {
+            if (version.jvmDir.toAbsolutePath().equals(dir.toAbsolutePath())) {
                 return true;
             }
         }
@@ -71,7 +76,8 @@ public class JavaService {
         int recommend = profile.getRecommendJavaVersion();
         JavaHelper.JavaVersion result = null;
         for (JavaHelper.JavaVersion version : javaVersions) {
-            if (version.version < min || version.version > max) continue;
+            if (version.version < min || version.version > max)
+                continue;
             if (result == null) {
                 result = version;
                 continue;

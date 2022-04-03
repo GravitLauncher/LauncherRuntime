@@ -1,12 +1,13 @@
 package pro.gravit.launcher.client.gui.service;
 
+import java.util.function.Consumer;
+
 import pro.gravit.launcher.api.DialogService;
 import pro.gravit.launcher.client.gui.impl.MessageManager;
 import pro.gravit.launcher.events.NotificationEvent;
 
-import java.util.function.Consumer;
-
-public class RuntimeDialogService implements DialogService.DialogServiceNotificationImplementation, DialogService.DialogServiceImplementation {
+public class RuntimeDialogService
+        implements DialogService.DialogServiceNotificationImplementation, DialogService.DialogServiceImplementation {
     private final MessageManager messageManager;
 
     public RuntimeDialogService(MessageManager messageManager) {
@@ -24,7 +25,8 @@ public class RuntimeDialogService implements DialogService.DialogServiceNotifica
     }
 
     @Override
-    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback) {
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback,
+            Runnable onCloseCallback) {
         messageManager.showApplyDialog(header, text, onApplyCallback, onDenyCallback, onCloseCallback, false);
     }
 

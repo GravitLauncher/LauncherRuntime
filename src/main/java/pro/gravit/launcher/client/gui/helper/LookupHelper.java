@@ -1,9 +1,9 @@
 package pro.gravit.launcher.client.gui.helper;
 
+import java.util.Optional;
+
 import javafx.scene.Node;
 import javafx.scene.Parent;
-
-import java.util.Optional;
 
 public class LookupHelper {
     @SuppressWarnings("unchecked")
@@ -55,7 +55,8 @@ public class LookupHelper {
             point2D.x += current.getLayoutX();
             point2D.y += current.getLayoutY();
             current = current.getParent();
-            if (current == null) break;
+            if (current == null)
+                break;
         }
         return point2D;
     }

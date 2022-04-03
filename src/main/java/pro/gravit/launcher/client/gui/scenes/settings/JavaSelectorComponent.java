@@ -4,6 +4,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
+
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.service.JavaService;
@@ -15,16 +16,13 @@ public class JavaSelectorComponent {
     private final ComboBox<JavaHelper.JavaVersion> comboBox;
     private final Label javaPath;
     private final Label javaError;
-    private final RuntimeSettings.ProfileSettingsView profileSettings;
-    private final ClientProfile profile;
 
-    public JavaSelectorComponent(JavaService javaService, Pane layout, RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
+    public JavaSelectorComponent(JavaService javaService, Pane layout,
+            RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
         comboBox = LookupHelper.lookup(layout, "#javaCombo");
-        this.profile = profile;
         comboBox.getItems().clear();
         javaPath = LookupHelper.lookup(layout, "#javaPath");
         javaError = LookupHelper.lookup(layout, "#javaError");
-        this.profileSettings = profileSettings;
         comboBox.setConverter(new JavaVersionConverter(profile));
         boolean reset = true;
         for (JavaHelper.JavaVersion version : javaService.javaVersions) {
@@ -34,7 +32,7 @@ public class JavaSelectorComponent {
                 reset = false;
             }
         }
-        if(reset) {
+        if (reset) {
             JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
             if (recommend != null) {
                 comboBox.getSelectionModel().select(recommend);
@@ -42,7 +40,8 @@ public class JavaSelectorComponent {
         }
         comboBox.setOnAction(e -> {
             JavaHelper.JavaVersion version = comboBox.getValue();
-            if (version == null) return;
+            if (version == null)
+                return;
             javaPath.setText(version.jvmDir.toAbsolutePath().toString());
             LogHelper.info("Select Java %s", version.jvmDir.toAbsolutePath().toString());
             profileSettings.javaPath = javaPath.getText();
@@ -63,7 +62,8 @@ public class JavaSelectorComponent {
 
         @Override
         public String toString(JavaHelper.JavaVersion object) {
-            if (object == null) return "Unknown";
+            if (object == null)
+                return "Unknown";
             String postfix = "";
             if (object.version == profile.getRecommendJavaVersion()) {
                 postfix = "[RECOMMENDED]";
