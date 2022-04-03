@@ -1,14 +1,15 @@
 package pro.gravit.launcher.client.gui.dialogs;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.layout.Pane;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public abstract class AbstractDialog extends AbstractVisualComponent {
     private List<ContextHelper.GuiExceptionRunnable> onClose = new ArrayList<>(1);

@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.dialogs;
 
 import javafx.scene.control.Button;
 import javafx.scene.text.Text;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 

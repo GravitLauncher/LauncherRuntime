@@ -1,5 +1,8 @@
 package pro.gravit.launcher.client.gui.scenes;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
+
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,6 +15,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -25,9 +29,6 @@ import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.ExitRequest;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Consumer;
 
 public abstract class AbstractScene extends AbstractVisualComponent {
     protected final LauncherConfig launcherConfig;
@@ -72,7 +73,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     }
 
     private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
-        if (newOverlay == null) throw new NullPointerException();
+        if (newOverlay == null)
+            throw new NullPointerException();
         if (currentOverlayNode != null) {
             swapOverlay(newOverlay, onFinished);
             return;
@@ -105,7 +107,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             root.requestFocus();
             enable();
             currentOverlayNode = null;
-            if (currentOverlay != null) currentOverlay.reset();
+            if (currentOverlay != null)
+                currentOverlay.reset();
             currentOverlay = null;
             if (onFinished != null) {
                 onFinished.handle(e);
@@ -132,11 +135,13 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         });
     }
 
-    protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+    protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
+            Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
     }
 
-    protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request, Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
+    protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
+            Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
         application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onException, onError);
     }
 
@@ -146,7 +151,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public void disable() {
         LogHelper.debug("Scene %s disabled (%d)", getName(), enabled.incrementAndGet());
-        if (enabled.get() != 1) return;
+        if (enabled.get() != 1)
+            return;
         Pane root = (Pane) scene.getRoot();
         if (layout == root) {
             throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
@@ -164,7 +170,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public void enable() {
         LogHelper.debug("Scene %s enabled (%d)", getName(), enabled.decrementAndGet());
-        if (enabled.get() != 0) return;
+        if (enabled.get() != 0)
+            return;
         layout.setEffect(new GaussianBlur(0));
         disablePane.setVisible(false);
     }
@@ -182,11 +189,15 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     private void sceneBaseInit() {
         if (header == null) {
             LogHelper.warning("Scene %s header button(#close, #hide) deprecated", getName());
-            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#close").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#hide").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#close")
+                    .ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#hide")
+                    .ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
         } else {
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#exit").ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#minimize").ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#exit")
+                    .ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#minimize")
+                    .ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
             LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#lang").ifPresent((b) -> {
 
                 b.setContextMenu(makeLangContextMenu());
@@ -196,10 +207,11 @@ public abstract class AbstractScene extends AbstractVisualComponent {
                     b.getContextMenu().show(b, e.getScreenX(), e.getScreenY());
                 });
             });
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth").ifPresent(b -> b.setOnAction((e) ->
-                    application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
-                            application.getTranslation("runtime.scenes.settings.exitDialog.description"), this::userExit
-                            , () -> {
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth")
+                    .ifPresent(b -> b.setOnAction((e) -> application.messageManager.showApplyDialog(
+                            application.getTranslation("runtime.scenes.settings.exitDialog.header"),
+                            application.getTranslation("runtime.scenes.settings.exitDialog.description"),
+                            this::userExit, () -> {
                             }, true)));
         }
         currentStage.enableMouseDrag(layout);

@@ -1,5 +1,7 @@
 package pro.gravit.launcher.client.gui.utils;
 
+import java.util.Locale;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.service.StateService;
@@ -9,8 +11,6 @@ import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.profiles.optional.triggers.OptionalTrigger;
 import pro.gravit.launcher.profiles.optional.triggers.OptionalTriggerContext;
 import pro.gravit.utils.helper.JavaHelper;
-
-import java.util.Locale;
 
 public class TriggerManager {
     private final StateService stateService;
@@ -24,20 +24,23 @@ public class TriggerManager {
     public void process(ClientProfile profile, OptionalView view) {
         TriggerManagerContext context = new TriggerManagerContext(profile);
         for (OptionalFile optional : view.all) {
-            if(optional.limited) {
-                if(!stateService.checkPermission(String.format("launcher.runtime.optionals.%s.%s.show", profile.getUUID(), optional.name.toLowerCase(Locale.ROOT)))) {
+            if (optional.limited) {
+                if (!stateService.checkPermission(String.format("launcher.runtime.optionals.%s.%s.show",
+                        profile.getUUID(), optional.name.toLowerCase(Locale.ROOT)))) {
                     view.disable(optional, null);
                     optional.visible = false;
                 } else {
                     optional.visible = true;
                 }
             }
-            if (optional.triggersList == null) continue;
+            if (optional.triggersList == null)
+                continue;
             boolean isRequired = false;
             int success = 0;
             int fail = 0;
             for (OptionalTrigger trigger : optional.triggersList) {
-                if (trigger.required) isRequired = true;
+                if (trigger.required)
+                    isRequired = true;
                 if (trigger.check(optional, context)) {
                     success++;
                 } else {
@@ -45,10 +48,13 @@ public class TriggerManager {
                 }
             }
             if (isRequired) {
-                if (fail == 0) view.enable(optional, true, null);
-                else view.disable(optional, null);
+                if (fail == 0)
+                    view.enable(optional, true, null);
+                else
+                    view.disable(optional, null);
             } else {
-                if (success > 0) view.enable(optional, false, null);
+                if (success > 0)
+                    view.enable(optional, false, null);
             }
         }
     }

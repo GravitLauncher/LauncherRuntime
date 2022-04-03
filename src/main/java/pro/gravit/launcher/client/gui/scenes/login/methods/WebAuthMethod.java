@@ -1,10 +1,13 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
@@ -12,9 +15,6 @@ import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.AuthCodePassword;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.util.concurrent.CompletableFuture;
-import java.util.function.Consumer;
 
 public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     WebAuthOverlay overlay;
@@ -55,7 +55,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         overlay.follow(details.url, details.redirectUrl, (r) -> {
             String code = r;
             LogHelper.debug("Code: %s", code);
-            if(code.startsWith("?code=")) {
+            if (code.startsWith("?code=")) {
                 code = r.substring("?code=".length(), r.indexOf("&"));
             }
             LogHelper.debug("Code: %s", code);

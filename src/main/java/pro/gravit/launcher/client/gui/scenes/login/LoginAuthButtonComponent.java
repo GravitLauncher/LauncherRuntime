@@ -9,16 +9,14 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 
 public class LoginAuthButtonComponent {
-    private final JavaFXApplication application;
     private final Pane layout;
     private final Pane authUnActive;
     private final Pane authActive;
     private final SVGPath authBorder;
     private final Button button;
-    private boolean isDisabled;
 
-    public LoginAuthButtonComponent(Pane authButton, JavaFXApplication application, EventHandler<ActionEvent> eventHandler) {
-        this.application = application;
+    public LoginAuthButtonComponent(Pane authButton, JavaFXApplication application,
+            EventHandler<ActionEvent> eventHandler) {
         this.layout = authButton;
         this.authUnActive = LookupHelper.lookup(layout, "#authUnactive");
         this.authActive = LookupHelper.lookup(layout, "#authActive");
@@ -39,12 +37,10 @@ public class LoginAuthButtonComponent {
     }
 
     public void disable() {
-        isDisabled = true;
         this.button.setDisable(true);
     }
 
     public void enable() {
-        isDisabled = false;
         this.button.setDisable(false);
     }
 

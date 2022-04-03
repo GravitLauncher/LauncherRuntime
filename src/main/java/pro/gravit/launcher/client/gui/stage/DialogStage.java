@@ -1,16 +1,17 @@
 package pro.gravit.launcher.client.gui.stage;
 
+import java.io.IOException;
+
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.StageStyle;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.dialogs.AbstractDialog;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.io.IOException;
 
 public class DialogStage extends AbstractStage {
     public DialogStage(JavaFXApplication application, String title, AbstractDialog dialog) throws Exception {

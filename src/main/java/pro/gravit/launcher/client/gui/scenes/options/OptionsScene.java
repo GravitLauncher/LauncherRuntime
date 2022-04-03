@@ -1,14 +1,21 @@
 package pro.gravit.launcher.client.gui.scenes.options;
 
 import com.google.gson.reflect.TypeToken;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.function.Consumer;
+
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
+
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -21,15 +28,6 @@ import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.function.Consumer;
 
 public class OptionsScene extends AbstractScene {
     private Pane componentList;
@@ -97,7 +95,8 @@ public class OptionsScene extends AbstractScene {
             if (!optionalFile.visible)
                 continue;
 
-            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
+            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info,
+                    optionalView.enabled.contains(optionalFile),
                     optionalFile.subTreeLevel, (isSelected) -> {
                         if (isSelected)
                             optionalView.enable(optionalFile, true, this::callWatcher);
@@ -108,7 +107,8 @@ public class OptionsScene extends AbstractScene {
         }
     }
 
-    public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
+    public Consumer<Boolean> add(String name, String description, boolean value, int padding,
+            Consumer<Boolean> onChanged) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
         Label label = new Label();
@@ -170,7 +170,8 @@ public class OptionsScene extends AbstractScene {
             for (OptionalListEntry entry : list) {
                 ClientProfile selectedProfile = null;
                 for (ClientProfile clientProfile : profiles) {
-                    if (entry.profileUUID != null ? entry.profileUUID.equals(clientProfile.getUUID()) : clientProfile.getTitle().equals(entry.name))
+                    if (entry.profileUUID != null ? entry.profileUUID.equals(clientProfile.getUUID())
+                            : clientProfile.getTitle().equals(entry.name))
                         selectedProfile = clientProfile;
                 }
                 if (selectedProfile == null) {
@@ -183,12 +184,14 @@ public class OptionsScene extends AbstractScene {
                         OptionalFile file = selectedProfile.getOptionalFile(entryPair.name);
                         if (file.visible) {
                             if (entryPair.mark)
-                                view.enable(file, entryPair.installInfo != null && entryPair.installInfo.isManual, null);
+                                view.enable(file, entryPair.installInfo != null && entryPair.installInfo.isManual,
+                                        null);
                             else
                                 view.disable(file, null);
                         }
                     } catch (Exception exc) {
-                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed", selectedProfile.getTitle(), entryPair.name);
+                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed",
+                                selectedProfile.getTitle(), entryPair.name);
                     }
                 }
             }
@@ -200,7 +203,8 @@ public class OptionsScene extends AbstractScene {
         public boolean mark;
         public OptionalView.OptionalFileInstallInfo installInfo;
 
-        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled, OptionalView.OptionalFileInstallInfo installInfo) {
+        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled,
+                OptionalView.OptionalFileInstallInfo installInfo) {
             name = optionalFile.name;
             mark = enabled;
             this.installInfo = installInfo;
@@ -214,8 +218,10 @@ public class OptionsScene extends AbstractScene {
 
         @Override
         public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
+            if (this == o)
+                return true;
+            if (o == null || getClass() != o.getClass())
+                return false;
             OptionalListEntry that = (OptionalListEntry) o;
             return Objects.equals(profileUUID, that.profileUUID) &&
                     Objects.equals(name, that.name);

@@ -1,13 +1,7 @@
 package pro.gravit.launcher.client.gui;
 
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
-import javafx.scene.image.PixelFormat;
-import javafx.scene.image.WritableImage;
-import pro.gravit.utils.helper.LogHelper;
-
-import javax.imageio.ImageIO;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.awt.image.SinglePixelPackedSampleModel;
@@ -20,10 +14,18 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import javafx.scene.image.PixelFormat;
+import javafx.scene.image.WritableImage;
+
+import javax.imageio.ImageIO;
+
+import pro.gravit.utils.helper.LogHelper;
+
 public class SkinManager {
     private static class SkinEntry {
         final URL url;
-        final String imageUrl;
         SoftReference<Optional<BufferedImage>> imageRef = new SoftReference<>(null);
         SoftReference<Optional<BufferedImage>> avatarRef = new SoftReference<>(null);
         SoftReference<Optional<Image>> fxImageRef = new SoftReference<>(null);
@@ -31,7 +33,6 @@ public class SkinManager {
 
         private SkinEntry(URL url) {
             this.url = url;
-            imageUrl = null;
         }
 
         synchronized BufferedImage getFullImage() {
@@ -74,11 +75,9 @@ public class SkinManager {
         }
     }
 
-    private final JavaFXApplication application;
     private final Map<String, SkinEntry> map = new ConcurrentHashMap<>();
 
     public SkinManager(JavaFXApplication application) {
-        this.application = application;
     }
 
     public void addSkin(String username, URL url) {
@@ -87,25 +86,29 @@ public class SkinManager {
 
     public BufferedImage getSkin(String username) {
         SkinEntry entry = map.get(username);
-        if (entry == null) return null;
+        if (entry == null)
+            return null;
         return entry.getFullImage();
     }
 
     public BufferedImage getSkinHead(String username) {
         SkinEntry entry = map.get(username);
-        if (entry == null) return null;
+        if (entry == null)
+            return null;
         return entry.getHeadImage();
     }
 
     public Image getFxSkin(String username) {
         SkinEntry entry = map.get(username);
-        if (entry == null) return null;
+        if (entry == null)
+            return null;
         return entry.getFullFxImage();
     }
 
     public Image getFxSkinHead(String username) {
         SkinEntry entry = map.get(username);
-        if (entry == null) return null;
+        if (entry == null)
+            return null;
         return entry.getHeadFxImage();
     }
 
@@ -145,7 +148,8 @@ public class SkinManager {
     }
 
     private static BufferedImage scaleImage(BufferedImage origImage, int width, int height) {
-        if (origImage == null) return null;
+        if (origImage == null)
+            return null;
         java.awt.Image resized = origImage.getScaledInstance(width, height, java.awt.Image.SCALE_FAST);
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
         Graphics2D graphics2D = image.createGraphics();
@@ -158,7 +162,8 @@ public class SkinManager {
         try {
             return ImageIO.read(url);
         } catch (IOException e) {
-            if (!(e instanceof FileNotFoundException)) LogHelper.error(e);
+            if (!(e instanceof FileNotFoundException))
+                LogHelper.error(e);
             return null;
         }
     }
@@ -182,7 +187,8 @@ public class SkinManager {
     }
 
     private static Image convertToFxImage(BufferedImage image) {
-        if (image == null) return null;
+        if (image == null)
+            return null;
         try {
             return SwingFXUtils.toFXImage(image, null);
         } catch (Throwable e) {
@@ -211,10 +217,10 @@ public class SkinManager {
         WritableImage writableImage = new WritableImage(bw, bh);
         DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
         int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel
-                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
-        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ?
-                PixelFormat.getIntArgbPreInstance() :
-                PixelFormat.getIntArgbInstance();
+                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride()
+                : 0;
+        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ? PixelFormat.getIntArgbPreInstance()
+                : PixelFormat.getIntArgbInstance();
         writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
         return writableImage;
     }

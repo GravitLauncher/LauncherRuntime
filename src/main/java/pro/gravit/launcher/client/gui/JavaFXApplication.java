@@ -1,9 +1,24 @@
 package pro.gravit.launcher.client.gui;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import pro.gravit.launcher.*;
 import pro.gravit.launcher.api.DialogService;
 import pro.gravit.launcher.client.*;
@@ -15,7 +30,9 @@ import pro.gravit.launcher.client.gui.config.GuiModuleConfig;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.config.StdSettingsManager;
 import pro.gravit.launcher.client.gui.helper.EnFSHelper;
-import pro.gravit.launcher.client.gui.impl.*;
+import pro.gravit.launcher.client.gui.impl.GuiEventHandler;
+import pro.gravit.launcher.client.gui.impl.GuiObjectsContainer;
+import pro.gravit.launcher.client.gui.impl.MessageManager;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.service.*;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
@@ -28,24 +45,11 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.auth.AuthRequest;
-import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandCategory;
 import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
-
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
@@ -104,7 +108,8 @@ public class JavaFXApplication extends Application {
         }
         runtimeSettings = (RuntimeSettings) settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME);
         runtimeSettings.apply();
-        DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
+        DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir
+                : runtimeSettings.updatesDir;
         service = Request.getRequestService();
         service.registerEventHandler(new GuiEventHandler(this));
         stateService = new StateService();
@@ -163,9 +168,10 @@ public class JavaFXApplication extends Application {
             DialogService.setDialogImpl(dialogService);
             DialogService.setNotificationImpl(dialogService);
         }
-        if(offlineService.isOfflineMode()) {
-            if(!offlineService.isAvailableOfflineMode() && !debugMode) {
-                messageManager.showDialog(getTranslation("runtime.offline.dialog.header"), getTranslation("runtime.offline.dialog.text"), Platform::exit, Platform::exit, false);
+        if (offlineService.isOfflineMode()) {
+            if (!offlineService.isAvailableOfflineMode() && !debugMode) {
+                messageManager.showDialog(getTranslation("runtime.offline.dialog.header"),
+                        getTranslation("runtime.offline.dialog.text"), Platform::exit, Platform::exit, false);
                 return;
             }
         }
@@ -178,8 +184,9 @@ public class JavaFXApplication extends Application {
             if (!IS_NOGUI.get()) {
                 mainStage.setScene(gui.loginScene);
                 mainStage.show();
-                if(offlineService.isOfflineMode()) {
-                    messageManager.createNotification(getTranslation("runtime.offline.notification.header"), getTranslation("runtime.offline.notification.text"));
+                if (offlineService.isOfflineMode()) {
+                    messageManager.createNotification(getTranslation("runtime.offline.notification.header"),
+                            getTranslation("runtime.offline.notification.text"));
                 }
             } else {
                 Platform.setImplicitExit(false);
@@ -202,7 +209,7 @@ public class JavaFXApplication extends Application {
     }
 
     public void resetDirectory() throws IOException {
-        if(enfsDirectory != null) {
+        if (enfsDirectory != null) {
             enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
         }
     }
@@ -219,10 +226,10 @@ public class JavaFXApplication extends Application {
     }
 
     public void registerPrivateCommands() {
-        if (runtimeCategory == null) return;
+        if (runtimeCategory == null)
+            return;
         runtimeCategory.registerCommand("runtime", new RuntimeCommand(this));
     }
-
 
     @Override
     public void stop() {
@@ -253,7 +260,7 @@ public class JavaFXApplication extends Application {
 
     private static URL getResourceEnFs(String name) throws IOException {
         return EnFSHelper.getURL(enfsDirectory.resolve(name).toString().replaceAll("\\\\", "/"));
-        //return EnFS.main.getURL(enfsDirectory.resolve(name));
+        // return EnFS.main.getURL(enfsDirectory.resolve(name));
     }
 
     public URL tryResource(String name) {
@@ -270,7 +277,8 @@ public class JavaFXApplication extends Application {
     }
 
     public RuntimeSettings.ProfileSettings getProfileSettings(ClientProfile profile) {
-        if (profile == null) throw new NullPointerException("ClientProfile not selected");
+        if (profile == null)
+            throw new NullPointerException("ClientProfile not selected");
         UUID uuid = profile.getUUID();
         RuntimeSettings.ProfileSettings settings = runtimeSettings.profileSettings.get(uuid);
         if (settings == null) {
