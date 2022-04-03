@@ -110,3 +110,5 @@ cmd.sh
 project/target
 ## PVS Studio
 .PVS-Studio/
+## VS Code
+/.vscode/
