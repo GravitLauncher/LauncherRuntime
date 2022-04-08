@@ -13,7 +13,9 @@ import java.awt.image.DataBufferInt;
 import java.awt.image.SinglePixelPackedSampleModel;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.SoftReference;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.IntBuffer;
 import java.util.Map;
@@ -155,17 +157,21 @@ public class SkinManager {
     }
 
     private static BufferedImage downloadSkin(URL url) {
+        HttpURLConnection connection = null;
         try {
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
             connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36");
+            connection.setConnectTimeout(10000);
             connection.connect();
-            InputStream input = connection.getInputStream();
-            BufferedImage bufferedImage = ImageIO.read(input);
-            input.close();
-            return bufferedImage;
+            try (InputStream input = connection.getInputStream()) {
+                return ImageIO.read(input);
+            } catch (FileNotFoundException fnfe) {
+                LogHelper.dev("User texture not found" + fnfe.getMessage());
+                return null;
+            }
         } catch (IOException e) {
-            if (!(e instanceof FileNotFoundException)) LogHelper.error(e);
+            LogHelper.error(e);
             return null;
         }
     }
@@ -217,11 +223,8 @@ public class SkinManager {
         }
         WritableImage writableImage = new WritableImage(bw, bh);
         DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
-        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel
-                ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
-        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ?
-                PixelFormat.getIntArgbPreInstance() :
-                PixelFormat.getIntArgbInstance();
+        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
+        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ? PixelFormat.getIntArgbPreInstance() : PixelFormat.getIntArgbInstance();
         writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
         return writableImage;
     }
