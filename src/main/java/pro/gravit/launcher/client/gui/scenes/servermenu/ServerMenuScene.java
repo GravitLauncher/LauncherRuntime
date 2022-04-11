@@ -14,8 +14,6 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.management.PingServerRequest;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -117,32 +115,20 @@ public class ServerMenuScene extends AbstractScene {
             serverButtonCache.serverButton.addTo(serverList);
             serverButtonCache.serverButton.setOnMouseClicked(handle);
         });
-        try {
-            application.service.request(new PingServerRequest()).thenAccept((event) -> {
-                if (event.serverMap != null) {
-                    application.pingService.addReports(event.serverMap);
+        CommonHelper.newThread("ServerPinger", true, () -> {
+            for (ClientProfile profile : lastProfiles) {
+                ClientProfile.ServerProfile serverProfile = profile.getDefaultServerProfile();
+                if (!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
+                try {
+                    ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
+                    ServerPinger.Result result = pinger.ping();
+                    contextHelper.runInFxThread(() -> {
+                        application.pingService.addReport(serverProfile.name, result);
+                    });
+                } catch (IOException ignored) {
                 }
-                CommonHelper.newThread("ServerPinger", true, () -> {
-                    for (ClientProfile profile : lastProfiles) {
-                        ClientProfile.ServerProfile serverProfile = profile.getDefaultServerProfile();
-                        if (!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
-                        try {
-                            ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
-                            ServerPinger.Result result = pinger.ping();
-                            contextHelper.runInFxThread(() -> {
-                                application.pingService.addReport(serverProfile.name, result);
-                            });
-                        } catch (IOException ignored) {
-                        }
-                    }
-                }).start();
-            }).exceptionally((ex) -> {
-                errorHandle(ex.getCause());
-                return null;
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            }
+        }).start();
         putAvatarToImageView(application, application.stateService.getUsername(), avatar);
     }
 
