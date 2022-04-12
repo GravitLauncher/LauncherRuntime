@@ -1,13 +1,11 @@
 package pro.gravit.launcher.client.gui.service;
 
-import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.management.PingServerReportRequest;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +17,6 @@ public class StateService {
     private List<ClientProfile> profiles;
     private ClientProfile profile;
     private Map<ClientProfile, OptionalView> optionalViewMap;
-
-    @FunctionalInterface
-    public interface OnServerPingReportCallback {
-        void onServerPingReport(PingServerReportRequest.PingServerReport report);
-    }
 
     public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;

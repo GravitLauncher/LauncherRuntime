@@ -1,17 +1,16 @@
 package pro.gravit.launcher.client.gui.service;
 
 import pro.gravit.launcher.client.ServerPinger;
-import pro.gravit.launcher.request.management.PingServerReportRequest;
 
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PingService {
-    private final Map<String, CompletableFuture<PingServerReportRequest.PingServerReport>> reports = new ConcurrentHashMap<>();
+    private final Map<String, CompletableFuture<PingServerReport>> reports = new ConcurrentHashMap<>();
 
-    public CompletableFuture<PingServerReportRequest.PingServerReport> getPingReport(String serverName) {
-        CompletableFuture<PingServerReportRequest.PingServerReport> report = reports.get(serverName);
+    public CompletableFuture<PingServerReport> getPingReport(String serverName) {
+        CompletableFuture<PingServerReport> report = reports.get(serverName);
         if(report == null) {
             report = new CompletableFuture<>();
             reports.put(serverName, report);
@@ -19,16 +18,16 @@ public class PingService {
         return report;
     }
 
-    public void addReports(Map<String, PingServerReportRequest.PingServerReport> map) {
+    public void addReports(Map<String, PingServerReport> map) {
         map.forEach((k,v) -> {
-            CompletableFuture<PingServerReportRequest.PingServerReport> report = getPingReport(k);
+            CompletableFuture<PingServerReport> report = getPingReport(k);
             report.complete(v);
         });
     }
 
     public void addReport(String name, ServerPinger.Result result) {
-        CompletableFuture<PingServerReportRequest.PingServerReport> report = getPingReport(name);
-        PingServerReportRequest.PingServerReport value = new PingServerReportRequest.PingServerReport(name, result.maxPlayers, result.onlinePlayers);
+        CompletableFuture<PingServerReport> report = getPingReport(name);
+        PingServerReport value = new PingServerReport(name, result.maxPlayers, result.onlinePlayers);
         report.complete(value);
     }
 
@@ -39,5 +38,17 @@ public class PingService {
             }
         });
         reports.clear();
+    }
+
+    public static class PingServerReport {
+        public final String name;
+        public final int maxPlayers;
+        public final int playersOnline;
+
+        public PingServerReport(String name, int maxPlayers, int playersOnline) {
+            this.name = name;
+            this.maxPlayers = maxPlayers;
+            this.playersOnline = playersOnline;
+        }
     }
 }
