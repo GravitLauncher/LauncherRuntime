@@ -31,6 +31,7 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
 
     @Override
     public void run(String[] args) {
+        LogHelper.debug("Start JavaFX Application");
         Application.launch(JavaFXApplication.class, args);
         LogHelper.debug("Post Application.launch method invoked");
         if (launcherUpdateTempPath != null && processBuilder != null) {

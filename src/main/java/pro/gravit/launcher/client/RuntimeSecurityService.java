@@ -72,11 +72,11 @@ public class RuntimeSecurityService {
 
     private void doCollectHardwareInfo(boolean needSerial) {
         CommonHelper.newThread("HardwareInfo Collector Thread", true, () -> {
-            HWIDProvider provider = new HWIDProvider();
-            HardwareReportRequest.HardwareInfo info = provider.getHardwareInfo(needSerial);
-            HardwareReportRequest reportRequest = new HardwareReportRequest();
-            reportRequest.hardware = info;
             try {
+                HWIDProvider provider = new HWIDProvider();
+                HardwareReportRequest.HardwareInfo info = provider.getHardwareInfo(needSerial);
+                HardwareReportRequest reportRequest = new HardwareReportRequest();
+                reportRequest.hardware = info;
                 application.service.request(reportRequest).thenAccept((event) -> {
                     Request.addExtendedToken("hardware", event.extendedToken);
                     LogHelper.info("Advanced security level success completed");
@@ -85,8 +85,9 @@ public class RuntimeSecurityService {
                     application.messageManager.createNotification("Hardware Checker", exc.getCause().getMessage());
                     return null;
                 });
-            } catch (IOException e) {
+            } catch (Throwable e) {
                 LogHelper.error(e);
+                notifyWaitObject(false);
             }
         }).start();
     }
