@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaService {
-    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) x(?<bitness>.+) javafx (?<javafx>.+)");
+    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) (?<arch>.+) javafx (?<javafx>.+)");
     public final List<JavaHelper.JavaVersion> javaVersions;
 
     public JavaService(JavaFXApplication application) {
@@ -28,17 +28,17 @@ public class JavaService {
                         String os = matcher.group("os");
                         int version = Integer.parseInt(matcher.group("version"));
                         int build = Integer.parseInt(matcher.group("build"));
-                        int bitness = Integer.parseInt(matcher.group("bitness"));
+                        JVMHelper.ARCH arch = JVMHelper.ARCH.valueOf(matcher.group("arch"));
                         boolean javafx = Boolean.parseBoolean(matcher.group("javafx"));
-                        if (bitness != 0 && bitness != JVMHelper.OS_BITS) {
+                        if (arch != JVMHelper.ARCH_TYPE) {
                             continue;
                         }
                         if(!JVMHelper.OS_TYPE.name.equals(os)) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
-                        LogHelper.debug("In-Launcher Java Version found: Java %db%d x%d javafx %s", version, build, bitness, Boolean.toString(javafx));
-                        JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, bitness, javafx);
+                        LogHelper.debug("In-Launcher Java Version found: Java %db%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
+                        JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, arch, javafx);
                         versions.add(javaVersion);
                     } else {
                         LogHelper.warning("Java Version: %s does not match", javaVersionString);

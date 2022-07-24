@@ -105,7 +105,7 @@ public class ServerInfoScene extends AbstractScene {
         return null;
     }
 
-    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
+    private void downloadClients(ClientProfile profile, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
         application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
@@ -113,22 +113,20 @@ public class ServerInfoScene extends AbstractScene {
             LogHelper.info("Start update to %s", targetClient.toString());
             application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
-                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), jvmDir, jvmHDir);
+                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), javaVersion, jvmHDir);
             });
         });
     }
 
-    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
+    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-        Path javaPath = jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath));
-        if(!Files.exists(javaPath)) {
-            LogHelper.warning("Java %s not exist", javaPath.toString());
-            JavaHelper.JavaVersion version = application.javaService.getRecommendJavaVersion(profile);
-            if(version != null) {
-                javaPath = version.jvmDir;
-            }
+        if(javaVersion == null) {
+            javaVersion = application.javaService.getRecommendJavaVersion(profile);
         }
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaPath,
+        if(javaVersion == null) {
+            javaVersion = JavaHelper.JavaVersion.getCurrentJavaVersion();
+        }
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaVersion,
                 clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
                 application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = profileSettings.ram;
@@ -189,28 +187,43 @@ public class ServerInfoScene extends AbstractScene {
                     errorHandle(e);
                 }
                 RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-                Path javaDirPath = profileSettings.javaPath == null ? null : Paths.get(profileSettings.javaPath);
-                if(javaDirPath != null) {
-                    if(!application.javaService.contains(javaDirPath) && Files.notExists(javaDirPath)) {
-                        profileSettings.javaPath = application.javaService.getRecommendJavaVersion(profile).jvmDir.toString();
-                    }
-                }
+                JavaHelper.JavaVersion javaVersion = null;
                 String jvmDirName = getJavaDirName(profileSettings);
                 if (jvmDirName != null) {
-                    Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
-                    application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                    for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
+                        if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
+                            javaVersion = v;
+                        }
+                    }
+                    if(javaVersion == null) {
+                        javaVersion = application.javaService.getRecommendJavaVersion(profile);
+                    }
+                    final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
+                    application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
                         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
-                            Path javaFile = jvmDirPath.resolve("bin").resolve("java");
+                            Path javaFile = finalJavaVersion.jvmDir.resolve("bin").resolve("java");
                             if(Files.exists(javaFile)) {
                                 if(!javaFile.toFile().setExecutable(true)) {
                                     LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
                                 }
                             }
                         }
-                        downloadClients(profile, jvmDirPath, jvmHDir);
+                        downloadClients(profile, finalJavaVersion, jvmHDir);
                     });
                 } else {
-                    downloadClients(profile, null, null);
+                    for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
+                        if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
+                            javaVersion = v;
+                        }
+                    }
+                    if(javaVersion == null && profileSettings.javaPath != null) {
+                        try {
+                            javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
+                        } catch (Throwable e) {
+                            LogHelper.error(e);
+                        }
+                    }
+                    downloadClients(profile, javaVersion, null);
                 }
             });
         }), null);

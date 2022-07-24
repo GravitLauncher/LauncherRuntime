@@ -49,11 +49,11 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public List<ClientProfile> profiles;
 
-    public static RuntimeSettings getDefault() {
+    public static RuntimeSettings getDefault(GuiModuleConfig config) {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.autoAuth = false;
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
-        runtimeSettings.locale = DEFAULT_LOCALE;
+        runtimeSettings.locale = LAUNCHER_LOCALE.valueOf(config.locale);
         return runtimeSettings;
     }
 

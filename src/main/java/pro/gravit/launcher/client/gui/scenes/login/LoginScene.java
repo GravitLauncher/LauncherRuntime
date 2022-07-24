@@ -82,7 +82,7 @@ public class LoginScene extends AbstractScene {
         if (application.guiModuleConfig.forgotPassURL != null)
             LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
-        authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
+        authList = LookupHelper.<VBox>lookup(layout, "#authList");
         authToggleGroup = new ToggleGroup();
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
@@ -107,9 +107,12 @@ public class LoginScene extends AbstractScene {
                 hideOverlay(0, (event) -> {
                     if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
                         contextHelper.runCallback(this::loginWithGui);
+                    if(application.isDebugMode()) {
+                        postInit();
+                    }
                 });
             }), null);
-            if (!application.isDebugMode())
+            if (!application.isDebugMode()) {
                 processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                     if (result.launcherExtendedToken != null) {
                         Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
@@ -136,7 +139,15 @@ public class LoginScene extends AbstractScene {
                         }
                     }
                     LogHelper.dev("Launcher update processed");
+                    postInit();
                 }, (event) -> LauncherEngine.exitLauncher(0));
+            }
+        }
+    }
+
+    private void postInit() {
+        if(application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
+            loginWithGui();
         }
     }
 

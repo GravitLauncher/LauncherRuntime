@@ -115,7 +115,6 @@ public class UpdateScene extends AbstractScene {
         }
     }
 
-    @SuppressWarnings("rawtypes")
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         if(application.offlineService.isOfflineMode()) {
             ContextHelper.runInFxThreadStatic(() -> addLog(String.format("Hashing %s", dirName)));

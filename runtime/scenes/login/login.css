@@ -193,4 +193,8 @@
     -fx-background-color: -fx-white;
 }
 
+#authRadio {
+    -fx-max-width: 99999;
+}
+
 /*-- DrLeonardo styles refactor --*/
