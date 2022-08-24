@@ -149,7 +149,7 @@ public class LoginScene extends AbstractScene {
 
     private void postInit() {
         if(application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
-            loginWithGui();
+            contextHelper.runInFxThread(this::loginWithGui);
         }
     }
 
