@@ -13,6 +13,7 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
@@ -108,12 +109,17 @@ public class ServerInfoScene extends AbstractScene {
     private void downloadClients(ClientProfile profile, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
+        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, application.stateService.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
+            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), true, application.stateService.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
-                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), javaVersion, jvmHDir);
+                try {
+                    doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), javaVersion, jvmHDir);
+                } catch (Throwable e) {
+                    LogHelper.error(e);
+                    ContextHelper.runInFxThreadStatic(() -> application.gui.updateScene.addLog(String.format("launchClient error %s:%s", e.getClass().getName(), e.getMessage())));
+                }
             });
         });
     }
@@ -175,17 +181,22 @@ public class ServerInfoScene extends AbstractScene {
         return result.toString();
     }
 
+    private void showJavaAlert(ClientProfile profile) {
+        if((JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM32 || JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0) {
+            application.messageManager.showDialog(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.header"),
+                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.description"), profile.getRecommendJavaVersion()), () -> {}, () -> {}, true);
+        } else {
+            application.messageManager.showDialog(application.getTranslation("runtime.scenes.serverinfo.javaalert.header"),
+                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.description"), profile.getRecommendJavaVersion()), () -> {}, () -> {}, true);
+        }
+    }
+
     private void launchClient() {
         ClientProfile profile = application.stateService.getProfile();
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
             hideOverlay(0, (ev) -> {
-                try {
-                    switchScene(application.gui.updateScene);
-                } catch (Exception e) {
-                    errorHandle(e);
-                }
                 RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
                 JavaHelper.JavaVersion javaVersion = null;
                 String jvmDirName = getJavaDirName(profileSettings);
@@ -198,8 +209,17 @@ public class ServerInfoScene extends AbstractScene {
                     if(javaVersion == null) {
                         javaVersion = application.javaService.getRecommendJavaVersion(profile);
                     }
+                    if(javaVersion == null) {
+                        showJavaAlert(profile);
+                        return;
+                    }
                     final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
-                    application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                    try {
+                        switchScene(application.gui.updateScene);
+                    } catch (Exception e) {
+                        errorHandle(e);
+                    }
+                    application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, true, application.stateService.getOptionalView(), false, (jvmHDir) -> {
                         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
                             Path javaFile = finalJavaVersion.jvmDir.resolve("bin").resolve("java");
                             if(Files.exists(javaFile)) {
@@ -222,6 +242,18 @@ public class ServerInfoScene extends AbstractScene {
                         } catch (Throwable e) {
                             LogHelper.error(e);
                         }
+                    }
+                    if(javaVersion != null && application.javaService.isIncompatibleJava(javaVersion, profile)) {
+                        javaVersion = application.javaService.getRecommendJavaVersion(profile);
+                    }
+                    if(javaVersion == null) {
+                        showJavaAlert(profile);
+                        return;
+                    }
+                    try {
+                        switchScene(application.gui.updateScene);
+                    } catch (Exception e) {
+                        errorHandle(e);
                     }
                     downloadClients(profile, javaVersion, null);
                 }

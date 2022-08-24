@@ -18,6 +18,7 @@ import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import javax.swing.*;
+import java.util.Base64;
 
 public class JavaRuntimeModule extends LauncherModule {
 
@@ -73,8 +74,9 @@ public class JavaRuntimeModule extends LauncherModule {
             LauncherEngine.exitLauncher(0);
         }
         try {
-            JavaFXApplication.class.getMethod("init");
-        } catch (NoSuchMethodException exception) {
+            JavaFXApplication.class.getMethod(new String(Base64.getDecoder().decode("aW5pdA=="))); // Fix proguard remapping
+        } catch (Exception exception) {
+            LogHelper.error(exception);
             noInitMethodAlert();
             LauncherEngine.exitLauncher(0);
         }

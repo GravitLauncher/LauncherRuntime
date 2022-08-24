@@ -1,10 +1,5 @@
 package pro.gravit.launcher.client;
-
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherEngine;
-import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.HardwareReportRequest;
@@ -13,19 +8,8 @@ import pro.gravit.launcher.utils.HWIDProvider;
 import pro.gravit.utils.helper.*;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class RuntimeSecurityService {
-    private static final Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
-    private static final Path C_BINARY_PATH = BINARY_PATH.resolveSibling(IOHelper.getFileName(BINARY_PATH) + ".tmp");
     private final JavaFXApplication application;
     private final Boolean[] waitObject = new Boolean[]{null};
 
@@ -107,56 +91,7 @@ public class RuntimeSecurityService {
         }
     }
 
-    public void update(LauncherRequestEvent result) throws IOException {
-        List<String> args = new ArrayList<>(8);
-        args.add(IOHelper.resolveJavaBin(null).toString());
-        if (LogHelper.isDebugEnabled())
-            args.add(JVMHelper.jvmProperty(LogHelper.DEBUG_PROPERTY, Boolean.toString(LogHelper.isDebugEnabled())));
-        args.add("-jar");
-        args.add(BINARY_PATH.toString());
-        ProcessBuilder builder = new ProcessBuilder(args.toArray(new String[0]));
-        builder.inheritIO();
-        // Rewrite and start new instance
-        try {
-            LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
-            if(Request.getRequestService() instanceof AutoCloseable) {
-                ((AutoCloseable) Request.getRequestService()).close();
-            }
-        } catch (Throwable ignored) {
-        }
-        Files.deleteIfExists(C_BINARY_PATH);
-        if (result.binary != null) {
-            IOHelper.write(C_BINARY_PATH, result.binary);
-        } else {
-            URL url;
-            try {
-                url = new URL(result.url);
-            } catch (MalformedURLException e) {
-                throw new IOException(e);
-            }
-            URLConnection connection = url.openConnection();
-            try (InputStream in = connection.getInputStream()) {
-                IOHelper.transfer(in, C_BINARY_PATH);
-            }
-        }
-        if (Arrays.equals(SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, C_BINARY_PATH),
-                SecurityHelper.digest(SecurityHelper.DigestAlgorithm.MD5, BINARY_PATH)))
-            throw new IOException("Invalid update (launcher needs update, but link has old launcher), check LaunchServer config...");
-        //To StdJavaRuntimeProvider
-        //try (InputStream in = IOHelper.newInput(C_BINARY_PATH)) {
-        //    IOHelper.transfer(in, BINARY_PATH);
-        //}
-        //Files.deleteIfExists(C_BINARY_PATH);
-        //builder.start();
-        StdJavaRuntimeProvider.launcherUpdateTempPath = C_BINARY_PATH;
-        StdJavaRuntimeProvider.processBuilder = builder;
-    }
-
     public byte[] sign(byte[] data) {
         return SecurityHelper.sign(data, JavaRuntimeModule.engine.privateKey);
-    }
-
-    public boolean isMayBeDownloadJava() {
-        return JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE;
     }
 }

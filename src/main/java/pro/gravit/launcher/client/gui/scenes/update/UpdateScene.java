@@ -229,7 +229,7 @@ public class UpdateScene extends AbstractScene {
         }
     }
 
-    private void addLog(String string) {
+    public void addLog(String string) {
         LogHelper.dev("Update event %s", string);
         logOutput.appendText(string.concat("\n"));
     }

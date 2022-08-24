@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.LauncherEngine;
+import pro.gravit.launcher.client.StdJavaRuntimeProvider;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -36,6 +37,7 @@ import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
+import pro.gravit.launcher.utils.LauncherUpdater;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -121,7 +123,7 @@ public class LoginScene extends AbstractScene {
                         try {
                             LogHelper.debug("Start update processing");
                             disable();
-                            application.securityService.update(result);
+                            StdJavaRuntimeProvider.updatePath = LauncherUpdater.prepareUpdate(new URL(result.url));
                             LogHelper.debug("Exit with Platform.exit");
                             Platform.exit();
                             return;

@@ -53,7 +53,9 @@ public class JavaService {
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE);
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
+                || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE)
+                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
     }
 
     public boolean contains(Path dir) {
@@ -72,6 +74,9 @@ public class JavaService {
         JavaHelper.JavaVersion result = null;
         for (JavaHelper.JavaVersion version : javaVersions) {
             if (version.version < min || version.version > max) continue;
+            if(isIncompatibleJava(version, profile)) {
+                continue;
+            }
             if (result == null) {
                 result = version;
                 continue;

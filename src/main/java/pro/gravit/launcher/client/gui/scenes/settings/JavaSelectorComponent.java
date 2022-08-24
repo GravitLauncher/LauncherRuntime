@@ -28,6 +28,9 @@ public class JavaSelectorComponent {
         comboBox.setConverter(new JavaVersionConverter(profile));
         boolean reset = true;
         for (JavaHelper.JavaVersion version : javaService.javaVersions) {
+            if(javaService.isIncompatibleJava(version, profile)) {
+                continue;
+            }
             comboBox.getItems().add(version);
             if (profileSettings.javaPath != null && profileSettings.javaPath.equals(version.jvmDir.toString())) {
                 comboBox.setValue(version);
@@ -46,7 +49,6 @@ public class JavaSelectorComponent {
             javaPath.setText(version.jvmDir.toAbsolutePath().toString());
             LogHelper.info("Select Java %s", version.jvmDir.toAbsolutePath().toString());
             profileSettings.javaPath = javaPath.getText();
-            javaError.setVisible(javaService.isIncompatibleJava(version, profile));
         });
     }
 
