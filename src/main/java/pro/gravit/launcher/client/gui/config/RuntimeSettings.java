@@ -53,7 +53,7 @@ public class RuntimeSettings extends UserSettings {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.autoAuth = false;
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
-        runtimeSettings.locale = LAUNCHER_LOCALE.valueOf(config.locale);
+        runtimeSettings.locale = config.locale == null ? LAUNCHER_LOCALE.RUSSIAN : LAUNCHER_LOCALE.valueOf(config.locale);
         return runtimeSettings;
     }
 
