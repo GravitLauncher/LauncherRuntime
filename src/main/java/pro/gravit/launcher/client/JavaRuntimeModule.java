@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client;
 
+import javafx.stage.Stage;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.client.events.ClientExitPhase;
@@ -18,6 +19,8 @@ import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import javax.swing.*;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Base64;
 
 public class JavaRuntimeModule extends LauncherModule {
@@ -74,7 +77,11 @@ public class JavaRuntimeModule extends LauncherModule {
             LauncherEngine.exitLauncher(0);
         }
         try {
-            JavaFXApplication.class.getMethod(new String(Base64.getDecoder().decode("aW5pdA=="))); // Fix proguard remapping
+            Method m = JavaFXApplication.class.getMethod(new String(Base64.getDecoder().decode("c3RhcnQ=")), Stage.class); // Fix proguard remapping
+            LogHelper.warning("Method %s", m.toGenericString());
+            if(Modifier.isAbstract(m.getModifiers())) {
+                throw new RuntimeException("Method start is abstract");
+            }
         } catch (Exception exception) {
             LogHelper.error(exception);
             noInitMethodAlert();
