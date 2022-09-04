@@ -11,8 +11,10 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -42,7 +44,11 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
             LauncherEngine.beforeExit(0);
             Path target = IOHelper.getCodeSource(LauncherUpdater.class);
             try {
-                IOHelper.copy(updatePath, target);
+                try(InputStream input = IOHelper.newInput(updatePath)) {
+                    try(OutputStream output = IOHelper.newOutput(target)) {
+                        IOHelper.transfer(input, output);
+                    }
+                }
                 Files.deleteIfExists(updatePath);
             } catch (IOException e) {
                 LogHelper.error(e);
