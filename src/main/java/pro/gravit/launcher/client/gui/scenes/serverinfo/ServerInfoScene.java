@@ -172,12 +172,12 @@ public class ServerInfoScene extends AbstractScene {
         });
     }
 
-    private String getJavaDirName(RuntimeSettings.ProfileSettings profileSettings) {
+    private String getJavaDirName(Path javaPath) {
         String prefix = DirBridge.dirUpdates.toAbsolutePath().toString();
-        if (profileSettings.javaPath == null || !profileSettings.javaPath.startsWith(prefix)) {
+        if (javaPath == null || !javaPath.startsWith(prefix)) {
             return null;
         }
-        Path result = DirBridge.dirUpdates.relativize(Paths.get(profileSettings.javaPath));
+        Path result = DirBridge.dirUpdates.relativize(javaPath);
         return result.toString();
     }
 
@@ -199,20 +199,20 @@ public class ServerInfoScene extends AbstractScene {
             hideOverlay(0, (ev) -> {
                 RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
                 JavaHelper.JavaVersion javaVersion = null;
-                String jvmDirName = getJavaDirName(profileSettings);
+                for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
+                    if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
+                        javaVersion = v;
+                    }
+                }
+                if(javaVersion != null && application.javaService.isIncompatibleJava(javaVersion, profile)) {
+                    javaVersion = application.javaService.getRecommendJavaVersion(profile);
+                }
+                if(javaVersion == null) {
+                    showJavaAlert(profile);
+                    return;
+                }
+                String jvmDirName = getJavaDirName(javaVersion.jvmDir);
                 if (jvmDirName != null) {
-                    for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
-                        if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
-                            javaVersion = v;
-                        }
-                    }
-                    if(javaVersion == null) {
-                        javaVersion = application.javaService.getRecommendJavaVersion(profile);
-                    }
-                    if(javaVersion == null) {
-                        showJavaAlert(profile);
-                        return;
-                    }
                     final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
                     try {
                         switchScene(application.gui.updateScene);
@@ -231,25 +231,6 @@ public class ServerInfoScene extends AbstractScene {
                         downloadClients(profile, finalJavaVersion, jvmHDir);
                     });
                 } else {
-                    for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
-                        if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
-                            javaVersion = v;
-                        }
-                    }
-                    if(javaVersion == null && profileSettings.javaPath != null) {
-                        try {
-                            javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
-                        } catch (Throwable e) {
-                            LogHelper.error(e);
-                        }
-                    }
-                    if(javaVersion != null && application.javaService.isIncompatibleJava(javaVersion, profile)) {
-                        javaVersion = application.javaService.getRecommendJavaVersion(profile);
-                    }
-                    if(javaVersion == null) {
-                        showJavaAlert(profile);
-                        return;
-                    }
                     try {
                         switchScene(application.gui.updateScene);
                     } catch (Exception e) {
