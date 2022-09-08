@@ -22,7 +22,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
      <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent">
 
          <!-- Вертикальная полоса -->
@@ -74,23 +74,23 @@
       </Pane>
 
          <!-- Способы авторизации -->
-         <ScrollPane id="authList" hbarPolicy="NEVER" layoutX="728.0" layoutY="368.0" vbarPolicy="NEVER">
-             <opaqueInsets>
-                 <Insets />
-             </opaqueInsets>
-             <padding>
-                 <Insets bottom="5.0" top="5.0" />
-             </padding>
-             <content>
-                 <VBox alignment="BOTTOM_LEFT" />
-             </content>
-         <cursor>
-            <Cursor fx:constant="HAND" />
-         </cursor>
-         <effect>
-            <Blend />
-         </effect>
-         </ScrollPane>
+         <VBox alignment="BOTTOM_LEFT"  layoutX="728.0" layoutY="159.0" prefHeight="339.0" prefWidth="167.0">
+             <VBox id="authList">
+                 <opaqueInsets>
+                     <Insets />
+                 </opaqueInsets>
+                 <padding>
+                     <Insets bottom="5.0" top="5.0" />
+                 </padding>
+                 <cursor>
+                     <Cursor fx:constant="HAND" />
+                 </cursor>
+                 <effect>
+                     <Blend />
+                 </effect>
+             </VBox>
+         </VBox>
+
 
          <!-- Навбар -->
       <Pane id="header" prefHeight="100.0" prefWidth="900.0">

@@ -71,7 +71,7 @@ public class DebugScene extends AbstractScene {
         }));
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive()) {
-                if (currentProcess.isAlive()) writeParametersThread.interrupt();
+                writeParametersThread.interrupt();
             }
             if (currentProcess != null && currentProcess.isAlive()) {
                 Process process = currentProcess;

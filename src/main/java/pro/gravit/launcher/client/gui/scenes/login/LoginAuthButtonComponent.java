@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.scenes.login;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.SVGPath;
@@ -15,6 +16,8 @@ public class LoginAuthButtonComponent {
     private final Pane authActive;
     private final SVGPath authBorder;
     private final Button button;
+
+    private final Node authsvg;
     private boolean isDisabled;
 
     public LoginAuthButtonComponent(Pane authButton, JavaFXApplication application, EventHandler<ActionEvent> eventHandler) {
@@ -24,6 +27,7 @@ public class LoginAuthButtonComponent {
         this.authActive = LookupHelper.lookup(layout, "#authActive");
         this.authBorder = LookupHelper.lookup(authActive, "#authBorder");
         this.button = LookupHelper.lookup(authActive, "#authButton");
+        this.authsvg = ((Pane)button.getGraphic()).getChildren().get(0);
         this.button.setOnMouseEntered(e -> {
             this.authBorder.setVisible(true);
         });
@@ -61,14 +65,14 @@ public class LoginAuthButtonComponent {
     }
 
     public void setError() {
-        LookupHelper.lookup(authActive, "#authBorder").setStyle("-fx-fill: -fx-redTr");
-        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().removeAll("auth");
-        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().add("authButtonError");
+        authBorder.setStyle("-fx-fill: -fx-redTr");
+        authsvg.getStyleClass().removeAll("auth");
+        authsvg.getStyleClass().add("authButtonError");
     }
 
     public void unsetError() {
-        LookupHelper.lookup(authActive, "#authBorder").setStyle("-fx-fill: -fx-greenTr");
-        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().removeAll("authButtonError");
-        LookupHelper.lookup(authActive, "#authsvg").getStyleClass().add("auth");
+        authBorder.setStyle("-fx-fill: -fx-greenTr");
+        authsvg.getStyleClass().removeAll("authButtonError");
+        authsvg.getStyleClass().add("auth");
     }
 }

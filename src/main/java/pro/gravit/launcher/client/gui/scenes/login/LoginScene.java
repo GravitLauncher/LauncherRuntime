@@ -12,6 +12,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.LauncherEngine;
+import pro.gravit.launcher.client.StdJavaRuntimeProvider;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -36,6 +37,7 @@ import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
+import pro.gravit.launcher.utils.LauncherUpdater;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -82,7 +84,7 @@ public class LoginScene extends AbstractScene {
         if (application.guiModuleConfig.forgotPassURL != null)
             LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
-        authList = (VBox) LookupHelper.<ScrollPane>lookup(layout, "#authList").getContent();
+        authList = LookupHelper.<VBox>lookup(layout, "#authList");
         authToggleGroup = new ToggleGroup();
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
@@ -107,9 +109,12 @@ public class LoginScene extends AbstractScene {
                 hideOverlay(0, (event) -> {
                     if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
                         contextHelper.runCallback(this::loginWithGui);
+                    if(application.isDebugMode()) {
+                        postInit();
+                    }
                 });
             }), null);
-            if (!application.isDebugMode())
+            if (!application.isDebugMode()) {
                 processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                     if (result.launcherExtendedToken != null) {
                         Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
@@ -118,7 +123,7 @@ public class LoginScene extends AbstractScene {
                         try {
                             LogHelper.debug("Start update processing");
                             disable();
-                            application.securityService.update(result);
+                            StdJavaRuntimeProvider.updatePath = LauncherUpdater.prepareUpdate(new URL(result.url));
                             LogHelper.debug("Exit with Platform.exit");
                             Platform.exit();
                             return;
@@ -136,7 +141,15 @@ public class LoginScene extends AbstractScene {
                         }
                     }
                     LogHelper.dev("Launcher update processed");
+                    postInit();
                 }, (event) -> LauncherEngine.exitLauncher(0));
+            }
+        }
+    }
+
+    private void postInit() {
+        if(application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
+            contextHelper.runInFxThread(this::loginWithGui);
         }
     }
 

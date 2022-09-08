@@ -13,7 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JavaService {
-    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) x(?<bitness>.+) javafx (?<javafx>.+)");
+    private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) (?<arch>.+) javafx (?<javafx>.+)");
     public final List<JavaHelper.JavaVersion> javaVersions;
 
     public JavaService(JavaFXApplication application) {
@@ -28,17 +28,17 @@ public class JavaService {
                         String os = matcher.group("os");
                         int version = Integer.parseInt(matcher.group("version"));
                         int build = Integer.parseInt(matcher.group("build"));
-                        int bitness = Integer.parseInt(matcher.group("bitness"));
+                        JVMHelper.ARCH arch = JVMHelper.ARCH.valueOf(matcher.group("arch"));
                         boolean javafx = Boolean.parseBoolean(matcher.group("javafx"));
-                        if (bitness != 0 && bitness != JVMHelper.OS_BITS) {
+                        if (arch != JVMHelper.ARCH_TYPE) {
                             continue;
                         }
                         if(!JVMHelper.OS_TYPE.name.equals(os)) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
-                        LogHelper.debug("In-Launcher Java Version found: Java %db%d x%d javafx %s", version, build, bitness, Boolean.toString(javafx));
-                        JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, bitness, javafx);
+                        LogHelper.debug("In-Launcher Java Version found: Java %db%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
+                        JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, arch, javafx);
                         versions.add(javaVersion);
                     } else {
                         LogHelper.warning("Java Version: %s does not match", javaVersionString);
@@ -53,7 +53,9 @@ public class JavaService {
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion() || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE);
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
+                || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE)
+                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
     }
 
     public boolean contains(Path dir) {
@@ -72,6 +74,9 @@ public class JavaService {
         JavaHelper.JavaVersion result = null;
         for (JavaHelper.JavaVersion version : javaVersions) {
             if (version.version < min || version.version > max) continue;
+            if(isIncompatibleJava(version, profile)) {
+                continue;
+            }
             if (result == null) {
                 result = version;
                 continue;

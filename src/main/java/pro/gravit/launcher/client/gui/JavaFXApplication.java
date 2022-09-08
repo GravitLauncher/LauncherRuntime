@@ -96,7 +96,7 @@ public class JavaFXApplication extends Application {
         settingsManager.loadConfig();
         NewLauncherSettings settings = settingsManager.getConfig();
         if (settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME) == null)
-            settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault());
+            settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault(guiModuleConfig));
         try {
             settingsManager.loadHDirStore();
         } catch (Exception e) {

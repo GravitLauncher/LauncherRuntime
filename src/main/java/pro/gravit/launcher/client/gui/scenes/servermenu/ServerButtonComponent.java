@@ -95,6 +95,17 @@ public class ServerButtonComponent extends AbstractVisualComponent {
         pane.getChildren().add(layout);
     }
 
+    public void addTo(Pane pane, int position) {
+        if (!isInit()) {
+            try {
+                init();
+            } catch (Exception e) {
+                LogHelper.error(e);
+            }
+        }
+        pane.getChildren().add(position, layout);
+    }
+
     @Override
     public void reset() {
 

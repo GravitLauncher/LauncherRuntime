@@ -21,6 +21,15 @@ public class GuiModuleConfig {
     @LauncherInject(value = "modules.javaruntime.disableofflinemode")
     public boolean disableOfflineMode;
 
+    @LauncherInject(value = "modules.javaruntime.autoauth")
+    public boolean autoAuth;
+
+    @LauncherInject(value = "modules.javaruntime.locale")
+    public String locale;
+
+    @LauncherInject(value = "modules.javaruntime.downloadthreads")
+    public int downloadThreads = 4;
+
     public static Object getDefault() {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravit.pro/createAccount.php";
@@ -29,6 +38,9 @@ public class GuiModuleConfig {
         config.lazy = true;
         config.javaList = new HashMap<>();
         config.disableOfflineMode = false;
+        config.autoAuth = false;
+        config.locale = "RUSSIAN";
+        config.downloadThreads = 4;
         return config;
     }
 }

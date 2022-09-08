@@ -18,10 +18,7 @@ import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -86,8 +83,10 @@ public class ServerMenuScene extends AbstractScene {
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
         avatar.setImage(originalAvatarImage);
+        List<ClientProfile> profiles = new ArrayList<>(lastProfiles);
+        profiles.sort(Comparator.comparingInt(ClientProfile::getSortIndex).thenComparing(ClientProfile::getTitle));
         int position = 0;
-        for (ClientProfile profile : application.stateService.getProfiles()) {
+        for (ClientProfile profile : profiles) {
             ServerButtonCache cache = new ServerButtonCache();
             cache.serverButton = getServerButton(application, profile);
             cache.position = position;
@@ -112,7 +111,7 @@ public class ServerMenuScene extends AbstractScene {
                     errorHandle(e);
                 }
             };
-            serverButtonCache.serverButton.addTo(serverList);
+            serverButtonCache.serverButton.addTo(serverList, serverButtonCache.position);
             serverButtonCache.serverButton.setOnMouseClicked(handle);
         });
         CommonHelper.newThread("ServerPinger", true, () -> {

@@ -8,6 +8,7 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
@@ -42,6 +43,6 @@ public class RuntimeCryptedFile extends FileEntry {
         } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
             throw new IOException(e);
         }
-        return new CipherInputStream(inputStream.get(), cipher);
+        return new BufferedInputStream(new CipherInputStream(inputStream.get(), cipher));
     }
 }
