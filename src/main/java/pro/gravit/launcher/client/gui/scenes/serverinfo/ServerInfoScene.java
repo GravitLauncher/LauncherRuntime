@@ -204,7 +204,17 @@ public class ServerInfoScene extends AbstractScene {
                         javaVersion = v;
                     }
                 }
-                if(javaVersion != null && application.javaService.isIncompatibleJava(javaVersion, profile)) {
+                if(javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
+                    try {
+                        javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
+                    } catch (Throwable e) {
+                        if(LogHelper.isDevEnabled()) {
+                            LogHelper.error(e);
+                        }
+                        LogHelper.warning("Incorrect java path %s", profileSettings.javaPath);
+                    }
+                }
+                if(javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
                     javaVersion = application.javaService.getRecommendJavaVersion(profile);
                 }
                 if(javaVersion == null) {
