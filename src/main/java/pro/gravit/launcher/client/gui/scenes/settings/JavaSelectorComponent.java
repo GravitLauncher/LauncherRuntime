@@ -40,7 +40,9 @@ public class JavaSelectorComponent {
         if(reset) {
             JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
             if (recommend != null) {
+                LogHelper.warning("Selected Java Version not found. Using %s", recommend.jvmDir.toAbsolutePath().toString());
                 comboBox.getSelectionModel().select(recommend);
+                profileSettings.javaPath = recommend.jvmDir.toAbsolutePath().toString();
             }
         }
         comboBox.setOnAction(e -> {

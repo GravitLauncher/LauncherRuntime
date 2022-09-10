@@ -29,6 +29,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.function.Consumer;
 
 public class ServerInfoScene extends AbstractScene {
     private ImageView avatar;
@@ -109,7 +110,7 @@ public class ServerInfoScene extends AbstractScene {
     private void downloadClients(ClientProfile profile, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, profile.getAssetIndex(), (assetHDir) -> {
+        Consumer<HashedDir> next = (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
             application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), true, application.stateService.getOptionalView(), true, (clientHDir) -> {
@@ -121,7 +122,12 @@ public class ServerInfoScene extends AbstractScene {
                     ContextHelper.runInFxThreadStatic(() -> application.gui.updateScene.addLog(String.format("launchClient error %s:%s", e.getClass().getName(), e.getMessage())));
                 }
             });
-        });
+        };
+        if(profile.getVersion().compareTo(ClientProfile.Version.MC164) <= 0) {
+            application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, null, false, next);
+        } else {
+            application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, profile.getAssetIndex(), next);
+        }
     }
 
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
@@ -204,7 +210,17 @@ public class ServerInfoScene extends AbstractScene {
                         javaVersion = v;
                     }
                 }
-                if(javaVersion != null && application.javaService.isIncompatibleJava(javaVersion, profile)) {
+                if(javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
+                    try {
+                        javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
+                    } catch (Throwable e) {
+                        if(LogHelper.isDevEnabled()) {
+                            LogHelper.error(e);
+                        }
+                        LogHelper.warning("Incorrect java path %s", profileSettings.javaPath);
+                    }
+                }
+                if(javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
                     javaVersion = application.javaService.getRecommendJavaVersion(profile);
                 }
                 if(javaVersion == null) {
