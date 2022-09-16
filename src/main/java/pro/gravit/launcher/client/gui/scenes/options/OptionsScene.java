@@ -1,12 +1,11 @@
 package pro.gravit.launcher.client.gui.scenes.options;
 
+import animatefx.animation.FadeIn;
+import animatefx.animation.SlideInUp;
 import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import pro.gravit.launcher.Launcher;
@@ -41,29 +40,55 @@ public class OptionsScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
-    }
-
-    @Override
-    public void reset() {
-        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
-        serverButtonContainer.getChildren().clear();
-        ClientProfile profile = application.stateService.getProfile();
-        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
-        serverButton.addTo(serverButtonContainer);
-        serverButton.enableSaveButton(null, (e) -> {
+        LookupHelper.<Button>lookup(layout, "#site").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#discord").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#aboutproj").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        ClientProfile profile1 = application.stateService.getProfile();
+        LookupHelper.<ButtonBase>lookup(layout, "#savesettings").setOnAction((e) -> {
             try {
-                application.stateService.setOptionalView(profile, optionalView);
-                switchScene(application.gui.serverInfoScene);
+                application.stateService.setOptionalView(profile1, optionalView);
+                super.notificateHandle("Изменения успешно сохраненны!", "Нажмите на уведомление, чтобы скрыть его.");
+            } catch (Exception ex) {
+                errorHandle(ex);
+            }
+        });
+        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
+        LookupHelper.<ButtonBase>lookup(layout,"#leftpane", "#settings").setOnAction((e) -> {
+            try {
+                switchScene(application.gui.settingsScene);
+                application.gui.settingsScene.reset();
             } catch (Exception exception) {
                 errorHandle(exception);
             }
         });
-        serverButton.enableResetButton(null, (e) -> {
-            componentList.getChildren().clear();
-            application.stateService.setOptionalView(profile, new OptionalView(profile));
-            addProfileOptionals(application.stateService.getOptionalView());
-        });
+    }
+
+    @Override
+    public void reset() {
+        new SlideInUp(LookupHelper.lookup(layout, "#options-detail")).play();
+        ClientProfile profile = application.stateService.getProfile();
+        LookupHelper.<Label>lookup(layout, "#title").setText(profile.getTitle());
+//        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+//        serverButtonContainer.getChildren().clear();
+//        ClientProfile profile = application.stateService.getProfile();
+//        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
+//        serverButton.addTo(serverButtonContainer);
+//        serverButton.enableSaveButton(null, (e) -> {
+//            try {
+//                application.stateService.setOptionalView(profile, optionalView);
+//                switchScene(application.gui.serverInfoScene);
+//            } catch (Exception exception) {
+//                errorHandle(exception);
+//            }
+//        });
+//        serverButton.enableResetButton(null, (e) -> {
+//            componentList.getChildren().clear();
+//            application.stateService.setOptionalView(profile, new OptionalView(profile));
+//            addProfileOptionals(application.stateService.getOptionalView());
+//        });
         componentList.getChildren().clear();
         LookupHelper.<Button>lookupIfPossible(header, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
@@ -111,18 +136,32 @@ public class OptionsScene extends AbstractScene {
     public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
+        Pane pane = new Pane();
+        pane.setMinWidth(726);
+        pane.setMaxWidth(726);
+        pane.setMinHeight(60);
+        pane.setMaxHeight(60);
         Label label = new Label();
+        Label maintext = new Label();
         vBox.getChildren().add(checkBox);
-        vBox.getChildren().add(label);
-        VBox.setMargin(vBox, new Insets(0, 0, 0, 30 * --padding));
+        pane.getChildren().add(label);
+        pane.getChildren().add(maintext);
+        checkBox.setGraphic(pane);
+        VBox.setMargin(vBox, new Insets(0, 0, 6, 30 * --padding));
         vBox.getStyleClass().add("optional-container");
         checkBox.setSelected(value);
-        checkBox.setText(name);
+        checkBox.setMinWidth(726);
+        checkBox.setMaxWidth(726);
+        checkBox.setMinHeight(60);
+        checkBox.setMaxHeight(60);
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         checkBox.getStyleClass().add("optional-checkbox");
+        maintext.setText(name);
+        maintext.setWrapText(true);
+        maintext.getStyleClass().add("maintext");
         label.setText(description);
         label.setWrapText(true);
-        label.getStyleClass().add("optional-label");
+        label.getStyleClass().add("descriptiontext");
         componentList.getChildren().add(vBox);
         return checkBox::setSelected;
     }

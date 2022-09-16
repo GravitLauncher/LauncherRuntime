@@ -1,7 +1,11 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
+import animatefx.animation.SlideInDown;
 import javafx.scene.control.ButtonBase;
+import javafx.scene.control.Label;
+import javafx.scene.control.Labeled;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -89,6 +93,8 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
 
         @Override
         protected void doInit() {
+            LookupHelper.<Label>lookup(layout, "#createaccount").setOnMouseClicked((e) ->
+                    application.openURL(application.guiModuleConfig.createAccountURL));
             login = LookupHelper.lookup(layout, "#login");
             password = LookupHelper.lookup(layout, "#password");
             authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, e -> {
@@ -96,32 +102,23 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
                 String rawPassword = password.getText();
                 future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword)));
             });
-            LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
+            LookupHelper.<ButtonBase>lookup(layout, "#header", "#exit").setOnAction(e -> {
                 accessor.hideOverlay(0, null);
                 future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
             });
             login.textProperty().addListener(l -> {
                 authButton.setActive(!login.getText().isEmpty());
             });
-            
-            if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
-                    application.openURL(application.guiModuleConfig.createAccountURL));
-            if (application.guiModuleConfig.forgotPassURL != null)
-                LookupHelper.<Text>lookup(layout, "#forgotPass").setOnMouseClicked((e) ->
-                        application.openURL(application.guiModuleConfig.forgotPassURL));
-            
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
                 authButton.setActive(true);
             } else {
-                authButton.setActive(false);
+                authButton.setActive(true);
             }
             if (application.runtimeSettings.password != null) {
                 password.getStyleClass().add("hasSaved");
                 password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             }
-
         }
 
 
@@ -129,7 +126,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         public void reset() {
             if (password == null) return;
             password.getStyleClass().removeAll("hasSaved");
-            password.setPromptText(application.getTranslation("runtime.scenes.login.password"));
+            password.setPromptText("Введите пароль");
             password.setText("");
             login.setText("");
         }

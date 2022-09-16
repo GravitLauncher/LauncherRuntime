@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.scenes;
 
+import animatefx.animation.*;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -55,8 +56,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         }
         layout = (Pane) LookupHelper.lookupIfPossible(scene.getRoot(), "#layout").orElse(scene.getRoot());
         Rectangle rect = new Rectangle(layout.getPrefWidth(), layout.getPrefHeight());
-        rect.setArcHeight(15);
-        rect.setArcWidth(15);
+        rect.setArcHeight(16);
+        rect.setArcWidth(16);
         layout.setClip(rect);
         header = (Pane) LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
         sceneBaseInit();
@@ -70,7 +71,6 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         currentOverlay.show(currentStage);
         showOverlay(overlay.getLayout(), onFinished);
     }
-
     private void showOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
         if (newOverlay == null) throw new NullPointerException();
         if (currentOverlayNode != null) {
@@ -85,6 +85,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
         newOverlay.toFront();
         newOverlay.requestFocus();
+        new SlideInUp(newOverlay).setSpeed(1.5).play();
         fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
     }
 
@@ -112,6 +113,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             }
             hideTransformStarted = false;
         });
+        new SlideOutDown(currentOverlay.getLayout()).play();
     }
 
     private void swapOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
@@ -151,7 +153,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         if (layout == root) {
             throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
         }
-        layout.setEffect(new GaussianBlur(20));
+        layout.setEffect(new GaussianBlur(10));
         if (disablePane == null) {
             disablePane = new Pane();
             disablePane.setPrefHeight(root.getPrefHeight());
@@ -196,7 +198,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
                     b.getContextMenu().show(b, e.getScreenX(), e.getScreenY());
                 });
             });
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth").ifPresent(b -> b.setOnAction((e) ->
+            LookupHelper.<ButtonBase>lookupIfPossible(header, "#deauth").ifPresent(b -> b.setOnAction((e) ->
                     application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.exitDialog.header"),
                             application.getTranslation("runtime.scenes.settings.exitDialog.description"), this::userExit
                             , () -> {

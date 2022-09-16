@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.scenes.login;
 
+import animatefx.animation.*;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -11,11 +12,12 @@ import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import pro.gravit.launcher.LauncherEngine;
-import pro.gravit.launcher.client.StdJavaRuntimeProvider;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.login.methods.*;
@@ -37,21 +39,24 @@ import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.request.auth.password.*;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
-import pro.gravit.launcher.utils.LauncherUpdater;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import java.io.File;
 
 public class LoginScene extends AbstractScene {
     public Map<Class<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>, AbstractAuthMethod<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>> authMethods = new HashMap<>(8);
     public boolean isLoginStarted;
     private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
-    private CheckBox savePasswordCheckBox;
-    private CheckBox autoenter;
+    private Boolean savePass = false;
     private LoginAuthButtonComponent authButton;
     private final AuthService authService = new AuthService(application);
     private VBox authList;
@@ -69,22 +74,25 @@ public class LoginScene extends AbstractScene {
     }
 
     @Override
-    public void doInit() {
+    public void doInit() throws Exception {
+//        String musicFile = "runtime/images/niggers.m4a";
+//
+//        Media sound = new Media(new File(musicFile).toURI().toString());
+//        MediaPlayer mediaPlayer = new MediaPlayer(sound);
+//        mediaPlayer.setOnEndOfMedia(new Runnable() {
+//            public void run() {
+//                mediaPlayer.seek(Duration.ZERO);
+//            }});
+//        mediaPlayer.play();
+        new ZoomIn(LookupHelper.lookupIfPossible(layout, "#header").orElse(null)).setSpeed(0.2).play();
         authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, (e) -> contextHelper.runCallback(this::loginWithGui));
-        savePasswordCheckBox = LookupHelper.lookup(layout, "#leftPane", "#savePassword");
         if (application.runtimeSettings.password != null || application.runtimeSettings.oauthAccessToken != null) {
-            LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
+            savePass = true;
         }
-        autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
-        autoenter.setSelected(application.runtimeSettings.autoAuth);
-        autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
-        if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(header, "#controls", "#registerPane", "#createAccount").setOnMouseClicked((e) ->
-                    application.openURL(application.guiModuleConfig.createAccountURL));
-        if (application.guiModuleConfig.forgotPassURL != null)
-            LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
-                    application.openURL(application.guiModuleConfig.forgotPassURL));
-        authList = LookupHelper.<VBox>lookup(layout, "#authList");
+//        if (application.guiModuleConfig.createAccountURL != null){}
+//        if (application.guiModuleConfig.forgotPassURL != null)
+//            LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
+//                    application.openURL(application.guiModuleConfig.forgotPassURL));
         authToggleGroup = new ToggleGroup();
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
@@ -93,7 +101,6 @@ public class LoginScene extends AbstractScene {
             GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
             processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
                 this.auth = auth.list;
-                authList.setVisible(auth.list.size() != 1);
                 for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
                     if (application.runtimeSettings.lastAuth == null) {
                         if (authAvailability.name.equals("std") || this.authAvailability == null) {
@@ -107,14 +114,14 @@ public class LoginScene extends AbstractScene {
                     changeAuthAvailability(auth.list.get(0));
                 }
                 hideOverlay(0, (event) -> {
-                    if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
+                    if (application.runtimeSettings.password != null)
                         contextHelper.runCallback(this::loginWithGui);
                     if(application.isDebugMode()) {
                         postInit();
                     }
                 });
             }), null);
-            if (!application.isDebugMode()) {
+            if (!application.isDebugMode())
                 processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
                     if (result.launcherExtendedToken != null) {
                         Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
@@ -123,7 +130,7 @@ public class LoginScene extends AbstractScene {
                         try {
                             LogHelper.debug("Start update processing");
                             disable();
-                            StdJavaRuntimeProvider.updatePath = LauncherUpdater.prepareUpdate(new URL(result.url));
+                            application.securityService.update(result);
                             LogHelper.debug("Exit with Platform.exit");
                             Platform.exit();
                             return;
@@ -145,11 +152,10 @@ public class LoginScene extends AbstractScene {
                 }, (event) -> LauncherEngine.exitLauncher(0));
             }
         }
-    }
 
     private void postInit() {
         if(application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
-            contextHelper.runInFxThread(this::loginWithGui);
+            loginWithGui();
         }
     }
 
@@ -171,7 +177,6 @@ public class LoginScene extends AbstractScene {
             changeAuthAvailability(authAvailability);
         });
         LogHelper.info("Added %s: %s", authAvailability.name, authAvailability.displayName);
-        authList.getChildren().add(radio);
     }
 
     private volatile boolean processingEnabled = false;
@@ -186,29 +191,29 @@ public class LoginScene extends AbstractScene {
         if (!processingEnabled) {
             contextHelper.runInFxThread(() -> {
                 disable();
-                layout.getChildren().remove(authButton.getLayout());
-                root.getChildren().add(authButton.getLayout());
+//                layout.getChildren().remove(authButton.getLayout());
+//                root.getChildren().add(authButton.getLayout());
                 authButton.getLayout().setLayoutX(authAbsPosition.x);
                 authButton.getLayout().setLayoutY(authAbsPosition.y);
             });
-            authButton.disable();
+            authButton.enable();
             processingEnabled = true;
         }
         contextHelper.runInFxThread(() -> {
-            authButton.setText(text);
+//            authButton.setText(text);
         });
         Runnable processingOff = () -> {
             if (!processingEnabled) return;
             contextHelper.runInFxThread(() -> {
                 enable();
-                root.getChildren().remove(authButton.getLayout());
-                layout.getChildren().add(authButton.getLayout());
-                authButton.getLayout().setLayoutX(authLayoutX);
-                authButton.getLayout().setLayoutY(authLayoutY);
-                authButton.setText(oldText);
+//                root.getChildren().remove(authButton.getLayout());
+//                layout.getChildren().add(authButton.getLayout());
+//                authButton.getLayout().setLayoutX(authLayoutX);
+//                authButton.getLayout().setLayoutY(authLayoutY);
+//                authButton.setText(oldText);
             });
-            authButton.enable();
             processingEnabled = false;
+            //           authButton.disable();
         };
         try {
             application.service.request(request).thenAccept((result) -> {
@@ -235,12 +240,13 @@ public class LoginScene extends AbstractScene {
         if (!processingEnabled) return;
         contextHelper.runInFxThread(() -> {
             enable();
-            root.getChildren().remove(authButton.getLayout());
-            layout.getChildren().add(authButton.getLayout());
-            authButton.getLayout().setLayoutX(authLayoutX);
-            authButton.getLayout().setLayoutY(authLayoutY);
-            authButton.setText("ERROR");
-            authButton.setError();
+//            root.getChildren().remove(authButton.getLayout());
+//            layout.getChildren().add(authButton.getLayout());
+            //authButton.getLayout().setLayoutX(authLayoutX);
+            //
+            // .getLayout().setLayoutY(authLayoutY);
+            //authButton.setText("ERROR");
+            //authButton.setError();
         });
         authButton.enable();
         processingEnabled = false;
@@ -307,7 +313,6 @@ public class LoginScene extends AbstractScene {
     }
 
     private void loginWithGui() {
-        authButton.unsetError();
         if (tryOAuthLogin()) return;
         authFlow.start().thenAccept((result) -> {
             contextHelper.runInFxThread(() -> {
@@ -329,8 +334,7 @@ public class LoginScene extends AbstractScene {
     private void onSuccessLogin(SuccessAuth successAuth) {
         AuthRequestEvent result = successAuth.requestEvent;
         application.stateService.setAuthResult(authAvailability.name, result);
-        boolean savePassword = savePasswordCheckBox.isSelected();
-        if (savePassword) {
+        if (savePass) {
             application.runtimeSettings.login = successAuth.recentLogin;
             if (result.oauth == null) {
                 if(successAuth.recentPassword != null && checkSavePasswordAvailable(successAuth.recentPassword)) {
@@ -355,22 +359,22 @@ public class LoginScene extends AbstractScene {
         contextHelper.runInFxThread(() -> {
             Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
             if (player.isPresent()) {
-                LookupHelper.<Label>lookupIfPossible(player.get(), "#playerName").ifPresent((e) -> e.setText(application.stateService.getUsername()));
-                LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
-                        (h) -> {
-                            try {
-                                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
-                                clip.setArcWidth(h.getFitWidth());
-                                clip.setArcHeight(h.getFitHeight());
-                                h.setClip(clip);
-                                Image image = application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight());
-                                if (image != null)
-                                    h.setImage(image);
-                            } catch (Throwable e) {
-                                LogHelper.warning("Skin head error");
-                            }
-                        }
-                );
+//                LookupHelper.<Label>lookupIfPossible(player.get(), "#playerName").ifPresent((e) -> e.setText(application.stateService.getUsername()));
+//                LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
+//                        (h) -> {
+//                            try {
+//                                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+//                                clip.setArcWidth(h.getFitWidth());
+//                                clip.setArcHeight(h.getFitHeight());
+//                                h.setClip(clip);
+//                                Image image = application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight());
+//                                if (image != null)
+//                                    h.setImage(image);
+//                            } catch (Throwable e) {
+//                                LogHelper.warning("Skin head error");
+//                            }
+//                        }
+//                );
                 player.get().setVisible(true);
                 disable();
                 fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {

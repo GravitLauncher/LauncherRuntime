@@ -1,11 +1,14 @@
 package pro.gravit.launcher.client.gui.scenes.serverinfo;
 
+import animatefx.animation.FadeInDown;
+import animatefx.animation.FadeInUp;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Text;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.ClientLauncherProcess;
@@ -13,7 +16,6 @@ import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
@@ -29,7 +31,6 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.function.Consumer;
 
 public class ServerInfoScene extends AbstractScene {
     private ImageView avatar;
@@ -42,6 +43,19 @@ public class ServerInfoScene extends AbstractScene {
 
     @Override
     protected void doInit() throws Exception {
+        LookupHelper.<Button>lookup(layout, "#site").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#discord").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#aboutproj").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#buttonsave", "#save").setOnAction((e) -> {
+            try {
+                launchClient();
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        });
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent(
@@ -65,7 +79,7 @@ public class ServerInfoScene extends AbstractScene {
             }
         });
 
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#clientSettings").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(layout, "#leftpane", "#clientSettings").setOnAction((e) -> {
             try {
                 if (application.stateService.getProfile() == null)
                     return;
@@ -76,7 +90,7 @@ public class ServerInfoScene extends AbstractScene {
                 errorHandle(ex);
             }
         });
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(layout, "#leftpane", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.settingsScene);
                 application.gui.settingsScene.reset();
@@ -91,14 +105,29 @@ public class ServerInfoScene extends AbstractScene {
     public void reset() {
         avatar.setImage(originalAvatarImage);
         ClientProfile profile = application.stateService.getProfile();
+        LookupHelper.<Pane>lookup(layout, "#background").setStyle("-fx-background-image: url(runtime/images/components/images/" + profile.getTitle() + ".png);");
+        Path clientfolder = DirBridge.dirUpdates.resolve(profile.getDir());
+        Path assetfolder = DirBridge.dirUpdates.resolve(profile.getDir());
+        Pane panepanepane = (Pane) LookupHelper.<Button>lookup(layout, "#buttonsave", "#save").getGraphic();
+        if (IOHelper.exists(clientfolder) && IOHelper.exists(assetfolder)){
+            LookupHelper.<Text>lookup(panepanepane, "#authtxt").setText("Продолжить игру!");
+            LookupHelper.<Label>lookup(layout, "#clientinfo").setText("Клиент установлен");
+        } else {
+            LookupHelper.<Text>lookup(panepanepane, "#authtxt").setText("Войти в историю!");
+            LookupHelper.<Label>lookup(layout, "#clientinfo").setText("Клиент не установлен");
+        }
+        new FadeInDown(LookupHelper.<Pane>lookup(layout, "#background")).play();
+        new FadeInUp(LookupHelper.<Pane>lookup(layout, "#server-detail")).play();
+        LookupHelper.<Label>lookup(layout, "#version").setText("Версия: " + profile.getAssetIndex() + " | " + profile.getProperty("version") + " | " + "Последее обновление: " + profile.getProperty("updated"));
+        LookupHelper.<Label>lookup(layout, "#title").setText(profile.getTitle());
         LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getTitle()));
         LookupHelper.<Label>lookupIfPossible(layout, "#serverDescription").ifPresent((e) -> e.setText(profile.getInfo()));
         LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
-        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
-        serverButtonContainer.getChildren().clear();
-        serverButton = ServerMenuScene.getServerButton(application, profile);
-        serverButton.addTo(serverButtonContainer);
-        serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"), (e) -> launchClient());
+//        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+//        serverButtonContainer.getChildren().clear();
+//        serverButton = ServerMenuScene.getServerButton(application, profile);
+//        serverButton.addTo(serverButtonContainer);
+//        serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"), (e) -> launchClient());
         ServerMenuScene.putAvatarToImageView(application, application.stateService.getUsername(), avatar);
     }
 
@@ -107,38 +136,30 @@ public class ServerInfoScene extends AbstractScene {
         return null;
     }
 
-    private void downloadClients(ClientProfile profile, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
+    private void downloadClients(ClientProfile profile, Path jvmDir, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
-        Consumer<HashedDir> next = (assetHDir) -> {
+        application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
-            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), true, application.stateService.getOptionalView(), true, (clientHDir) -> {
+            application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), profile.isUpdateFastCheck(), application.stateService.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
-                try {
-                    doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), javaVersion, jvmHDir);
-                } catch (Throwable e) {
-                    LogHelper.error(e);
-                    ContextHelper.runInFxThreadStatic(() -> application.gui.updateScene.addLog(String.format("launchClient error %s:%s", e.getClass().getName(), e.getMessage())));
-                }
+                doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), jvmDir, jvmHDir);
             });
-        };
-        if(profile.getVersion().compareTo(ClientProfile.Version.MC164) <= 0) {
-            application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, null, false, next);
-        } else {
-            application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, profile.getAssetIndex(), next);
-        }
+        });
     }
 
-    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
+    private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, Path jvmDir, HashedDir jvmHDir) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-        if(javaVersion == null) {
-            javaVersion = application.javaService.getRecommendJavaVersion(profile);
+        Path javaPath = jvmDir != null ? jvmDir : (profileSettings.javaPath == null ? Paths.get(System.getProperty("java.home")) : Paths.get(profileSettings.javaPath));
+        if(!Files.exists(javaPath)) {
+            LogHelper.warning("Java %s not exist", javaPath.toString());
+            JavaHelper.JavaVersion version = application.javaService.getRecommendJavaVersion(profile);
+            if(version != null) {
+                javaPath = version.jvmDir;
+            }
         }
-        if(javaVersion == null) {
-            javaVersion = JavaHelper.JavaVersion.getCurrentJavaVersion();
-        }
-        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaVersion,
+        ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaPath,
                 clientDir.resolve("resourcepacks"), profile, application.stateService.getPlayerProfile(), view,
                 application.stateService.getAccessToken(), clientHDir, assetHDir, jvmHDir);
         clientLauncherProcess.params.ram = profileSettings.ram;
@@ -178,23 +199,13 @@ public class ServerInfoScene extends AbstractScene {
         });
     }
 
-    private String getJavaDirName(Path javaPath) {
+    private String getJavaDirName(RuntimeSettings.ProfileSettings profileSettings) {
         String prefix = DirBridge.dirUpdates.toAbsolutePath().toString();
-        if (javaPath == null || !javaPath.startsWith(prefix)) {
+        if (profileSettings.javaPath == null || !profileSettings.javaPath.startsWith(prefix)) {
             return null;
         }
-        Path result = DirBridge.dirUpdates.relativize(javaPath);
+        Path result = DirBridge.dirUpdates.relativize(Paths.get(profileSettings.javaPath));
         return result.toString();
-    }
-
-    private void showJavaAlert(ClientProfile profile) {
-        if((JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM32 || JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0) {
-            application.messageManager.showDialog(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.header"),
-                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.description"), profile.getRecommendJavaVersion()), () -> {}, () -> {}, true);
-        } else {
-            application.messageManager.showDialog(application.getTranslation("runtime.scenes.serverinfo.javaalert.header"),
-                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.description"), profile.getRecommendJavaVersion()), () -> {}, () -> {}, true);
-        }
     }
 
     private void launchClient() {
@@ -203,56 +214,34 @@ public class ServerInfoScene extends AbstractScene {
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
             hideOverlay(0, (ev) -> {
+                try {
+                    switchScene(application.gui.updateScene);
+                } catch (Exception e) {
+                    errorHandle(e);
+                }
                 RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-                JavaHelper.JavaVersion javaVersion = null;
-                for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
-                    if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
-                        javaVersion = v;
+                Path javaDirPath = profileSettings.javaPath == null ? null : Paths.get(profileSettings.javaPath);
+                if(javaDirPath != null) {
+                    if(!application.javaService.contains(javaDirPath) && Files.notExists(javaDirPath)) {
+                        profileSettings.javaPath = application.javaService.getRecommendJavaVersion(profile).jvmDir.toString();
                     }
                 }
-                if(javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
-                    try {
-                        javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
-                    } catch (Throwable e) {
-                        if(LogHelper.isDevEnabled()) {
-                            LogHelper.error(e);
-                        }
-                        LogHelper.warning("Incorrect java path %s", profileSettings.javaPath);
-                    }
-                }
-                if(javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
-                    javaVersion = application.javaService.getRecommendJavaVersion(profile);
-                }
-                if(javaVersion == null) {
-                    showJavaAlert(profile);
-                    return;
-                }
-                String jvmDirName = getJavaDirName(javaVersion.jvmDir);
+                String jvmDirName = getJavaDirName(profileSettings);
                 if (jvmDirName != null) {
-                    final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
-                    try {
-                        switchScene(application.gui.updateScene);
-                    } catch (Exception e) {
-                        errorHandle(e);
-                    }
-                    application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, true, application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                    Path jvmDirPath = DirBridge.dirUpdates.resolve(jvmDirName);
+                    application.gui.updateScene.sendUpdateRequest(jvmDirName, jvmDirPath, null, profile.isUpdateFastCheck(), application.stateService.getOptionalView(), false, (jvmHDir) -> {
                         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
-                            Path javaFile = finalJavaVersion.jvmDir.resolve("bin").resolve("java");
+                            Path javaFile = jvmDirPath.resolve("bin").resolve("java");
                             if(Files.exists(javaFile)) {
                                 if(!javaFile.toFile().setExecutable(true)) {
                                     LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
                                 }
                             }
                         }
-                        downloadClients(profile, finalJavaVersion, jvmHDir);
+                        downloadClients(profile, jvmDirPath, jvmHDir);
                     });
                 } else {
-                    try {
-                        switchScene(application.gui.updateScene);
-                    } catch (Exception e) {
-                        errorHandle(e);
-                    }
-                    downloadClients(profile, javaVersion, null);
+                    downloadClients(profile, null, null);
                 }
             });
         }), null);

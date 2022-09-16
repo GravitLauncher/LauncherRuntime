@@ -51,9 +51,9 @@ public class RuntimeSettings extends UserSettings {
 
     public static RuntimeSettings getDefault(GuiModuleConfig config) {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
-        runtimeSettings.autoAuth = false;
+        runtimeSettings.autoAuth = true;
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
-        runtimeSettings.locale = config.locale == null ? LAUNCHER_LOCALE.RUSSIAN : LAUNCHER_LOCALE.valueOf(config.locale);
+        runtimeSettings.locale = LAUNCHER_LOCALE.valueOf(config.locale);
         return runtimeSettings;
     }
 

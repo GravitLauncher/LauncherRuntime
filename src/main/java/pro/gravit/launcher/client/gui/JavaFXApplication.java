@@ -90,13 +90,14 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void init() throws Exception {
+        System.setProperty("prism.lcdtext", "false");
         guiModuleConfig = new GuiModuleConfig();
         settingsManager = new StdSettingsManager();
         UserSettings.providers.register(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.class);
         settingsManager.loadConfig();
         NewLauncherSettings settings = settingsManager.getConfig();
         if (settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME) == null)
-            settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault(guiModuleConfig));
+            settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault());
         try {
             settingsManager.loadHDirStore();
         } catch (Exception e) {

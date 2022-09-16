@@ -1,5 +1,9 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import animatefx.animation.FadeIn;
+import animatefx.animation.SlideInLeft;
+import animatefx.animation.SlideInRight;
+import animatefx.animation.SlideOutRight;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.dialogs.*;
@@ -49,13 +53,28 @@ public class MessageManager {
                 dialogRoot.setLayoutY(dialogRoot.getLayoutY() + scrollTo);
             }, ((Pane) dialog.getFxmlRoot()).getPrefHeight() + 20);
             NotificationDialog notificationDialog = (NotificationDialog) dialog;
+            new SlideInRight(notificationDialog.layout).setSpeed(1.5).play();
+            notificationDialog.layout.setLayoutX(700);
+            notificationDialog.layout.setLayoutY(60);
             notificationDialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
         } else {
             scene.disable();
         }
+        if (dialog instanceof ApplyDialog) {
+
+            NotificationDialog.NotificationSlot slot = new NotificationDialog.NotificationSlot((scrollTo) -> {
+                dialogRoot.setLayoutY(dialogRoot.getLayoutY() + scrollTo);
+            }, ((Pane) dialog.getFxmlRoot()).getPrefHeight() + 20);
+            ApplyDialog applyDialog = (ApplyDialog) dialog;
+            new FadeIn(applyDialog.layout).play();
+            applyDialog.layout.setLayoutX(306);
+            applyDialog.layout.setLayoutY(189);
+        }
         LookupHelper.Point2D coords = dialog.getSceneCoords(root);
-        dialogRoot.setLayoutX(coords.x);
-        dialogRoot.setLayoutY(coords.y);
+//        dialogRoot.setLayoutX(coords.x);
+//        dialogRoot.setLayoutY(coords.y);
+//        dialogRoot.setLayoutX(250);
+//        dialogRoot.setLayoutY(150);
         LogHelper.info("X: %f Y: %f", coords.x, coords.y);
         root.getChildren().add(dialogRoot);
     }

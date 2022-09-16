@@ -1,5 +1,8 @@
 package pro.gravit.launcher.client.gui.scenes.settings;
 
+import animatefx.animation.FadeIn;
+import animatefx.animation.SlideInUp;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -38,18 +41,33 @@ public class SettingsScene extends AbstractScene {
     @Override
     protected void doInit() {
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
+        LookupHelper.<Button>lookup(layout, "#site").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#discord").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#aboutproj").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<ButtonBase>lookup(layout, "#leftpane", "#clientSettings").setOnAction((e) -> {
             try {
-                if (application.gui.consoleStage == null)
-                    application.gui.consoleStage = new ConsoleStage(application);
-                if (application.gui.consoleStage.isNullScene())
-                    application.gui.consoleStage.setScene(application.gui.consoleScene);
-                application.gui.consoleStage.show();
+                if (application.stateService.getProfile() == null)
+                    return;
+                switchScene(application.gui.optionsScene);
+                application.gui.optionsScene.reset();
+                application.gui.optionsScene.addProfileOptionals(application.stateService.getOptionalView());
             } catch (Exception ex) {
                 errorHandle(ex);
             }
         });
-
+        ClientProfile profile1 = application.stateService.getProfile();
+        LookupHelper.<ButtonBase>lookup(layout, "#savesettings").setOnAction((e) -> {
+            try {
+                profileSettings.apply();
+                application.triggerManager.process(profile1, application.stateService.getOptionalView());
+                super.notificateHandle("Изменения успешно сохраненны!", "Нажмите на уведомление, чтобы скрыть его.");
+            } catch (Exception ex) {
+                errorHandle(ex);
+            }
+        });
         ramSlider = LookupHelper.lookup(layout, "#ramSlider");
         ramLabel = LookupHelper.lookup(layout, "#ramLabel");
         try {
@@ -76,7 +94,7 @@ public class SettingsScene extends AbstractScene {
                 return null;
             }
         });
-        Hyperlink updateDirLink = LookupHelper.lookup(layout, "#folder", "#path");
+        Hyperlink updateDirLink = LookupHelper.lookup(layout, "#path");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
         updateDirLink.setOnAction((e) -> {
             application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString());
@@ -133,6 +151,7 @@ public class SettingsScene extends AbstractScene {
 
     @Override
     public void reset() {
+        new SlideInUp(LookupHelper.lookup(layout, "#contentbox")).play();
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
         javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings, application.stateService.getProfile());
         ramSlider.setValue(profileSettings.ram);
@@ -141,23 +160,24 @@ public class SettingsScene extends AbstractScene {
             updateRamLabel();
         });
         updateRamLabel();
-        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
-        serverButtonContainer.getChildren().clear();
+//        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+//        serverButtonContainer.getChildren().clear();
         ClientProfile profile = application.stateService.getProfile();
-        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
-        serverButton.addTo(serverButtonContainer);
-        serverButton.enableSaveButton(null, (e) -> {
-            try {
-                profileSettings.apply();
-                application.triggerManager.process(profile, application.stateService.getOptionalView());
-                switchScene(application.gui.serverInfoScene);
-            } catch (Exception exception) {
-                errorHandle(exception);
-            }
-        });
-        serverButton.enableResetButton(null, (e) -> {
-            reset();
-        });
+        LookupHelper.<Label>lookup(layout, "#title").setText(profile.getTitle());
+//        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
+//        serverButton.addTo(serverButtonContainer);
+//        serverButton.enableSaveButton(null, (e) -> {
+//            try {
+//                profileSettings.apply();
+//                application.triggerManager.process(profile, application.stateService.getOptionalView());
+//                switchScene(application.gui.serverInfoScene);
+//            } catch (Exception exception) {
+//                errorHandle(exception);
+//            }
+//        });
+//        serverButton.enableResetButton(null, (e) -> {
+//            reset();
+//        });
         componentList.getChildren().clear();
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
         add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
@@ -178,21 +198,32 @@ public class SettingsScene extends AbstractScene {
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
+        Pane pane = new Pane();
+        pane.setMinWidth(304);
+        pane.setMaxWidth(304);
+        pane.setMinHeight(60);
+        pane.setMaxHeight(60);
         Label label = new Label();
-
+        Label maintext = new Label();
         vBox.getChildren().add(checkBox);
-        vBox.getChildren().add(label);
+        pane.getChildren().add(label);
+        pane.getChildren().add(maintext);
+        checkBox.setGraphic(pane);
+        VBox.setMargin(vBox, new Insets(0, 0, 10, 0));
         vBox.getStyleClass().add("settings-container");
-
         checkBox.setSelected(value);
-        checkBox.setText(name);
+        checkBox.setMinWidth(302);
+        checkBox.setMaxWidth(302);
+        checkBox.setMinHeight(60);
+        checkBox.setMaxHeight(60);
         checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         checkBox.getStyleClass().add("settings-checkbox");
-
+        maintext.setText(name);
+        maintext.setWrapText(true);
+        maintext.getStyleClass().add("maintext");
         label.setText(description);
         label.setWrapText(true);
-        label.getStyleClass().add("settings-label");
-
+        label.getStyleClass().add("descriptiontext");
         componentList.getChildren().add(vBox);
     }
 

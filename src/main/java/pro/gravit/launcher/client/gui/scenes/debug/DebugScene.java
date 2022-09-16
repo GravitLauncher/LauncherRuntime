@@ -1,5 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.debug;
 
+import animatefx.animation.SlideInUp;
+import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -12,6 +14,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
+import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -36,6 +39,13 @@ public class DebugScene extends AbstractScene {
 
     @Override
     protected void doInit() {
+        LookupHelper.<Button>lookup(layout, "#site").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#discord").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#aboutproj").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        ClientProfile profile = application.stateService.getProfile();
         output = LookupHelper.lookup(layout, "#output");
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
             if (currentProcess != null && currentProcess.isAlive())
@@ -49,29 +59,29 @@ public class DebugScene extends AbstractScene {
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
         }));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
-            String haste = null;
-            try {
-                haste = hastebin(output.getText());
-            } catch (IOException ex) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
-                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
-                LogHelper.error(ex);
-            }
-
-            if (haste == null)
-                return;
-
-            ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(haste);
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            clipboard.setContent(clipboardContent);
-
-            application.openURL(haste);
-        }));
+//        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
+//            String haste = null;
+//            try {
+//                haste = hastebin(output.getText());
+//            } catch (IOException ex) {
+//                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+//                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
+//                LogHelper.error(ex);
+//            }
+//
+//            if (haste == null)
+//                return;
+//
+//            ClipboardContent clipboardContent = new ClipboardContent();
+//            clipboardContent.putString(haste);
+//            Clipboard clipboard = Clipboard.getSystemClipboard();
+//            clipboard.setContent(clipboardContent);
+//
+//            application.openURL(haste);
+//        }));
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive()) {
-                writeParametersThread.interrupt();
+                if (currentProcess.isAlive()) writeParametersThread.interrupt();
             }
             if (currentProcess != null && currentProcess.isAlive()) {
                 Process process = currentProcess;
@@ -93,6 +103,7 @@ public class DebugScene extends AbstractScene {
                 errorHandle(ex);
             }
         });
+        LookupHelper.<Label>lookup(layout, "#title").setText(profile.getTitle());
     }
 
 
@@ -170,7 +181,6 @@ public class DebugScene extends AbstractScene {
         connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
         connection.setRequestProperty("Accept", "application/json");
-        connection.addRequestProperty("User-Agent", "Mozilla/4.76");
         connection.setConnectTimeout(10000);
         try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8)) {
             writer.write(log);

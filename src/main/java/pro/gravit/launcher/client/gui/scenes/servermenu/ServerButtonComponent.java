@@ -1,12 +1,19 @@
 package pro.gravit.launcher.client.gui.scenes.servermenu;
 
+import animatefx.animation.*;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.ScaleTransition;
+import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
@@ -21,6 +28,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
     public ClientProfile profile;
     private Button saveButton;
     private Button resetButton;
+    public String nameprofile;
 
     protected ServerButtonComponent(JavaFXApplication application, ClientProfile profile) {
         super(getFXMLPath(application, profile), application);
@@ -43,8 +51,14 @@ public class ServerButtonComponent extends AbstractVisualComponent {
 
     @Override
     protected void doInit() throws Exception {
+        if (profile.getTitle().contains(" ")){
+            nameprofile = profile.getTitle().replace(" ", "");
+        } else {
+            nameprofile = profile.getTitle();
+        }
+        Pane asd = LookupHelper.lookup(layout, "#serverbuttonimage");
+        asd.setStyle("-fx-background-image: url(runtime/images/components/servers/" + nameprofile + ".png);");
         LookupHelper.<Labeled>lookup(layout, "#nameServer").setText(profile.getTitle());
-        LookupHelper.<Labeled>lookup(layout, "#genreServer").setText(profile.getVersion().toString());
         LookupHelper.<ImageView>lookupIfPossible(layout, "#serverLogo").ifPresent((a) -> {
             try {
                 javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(a.getFitWidth(), a.getFitHeight());
@@ -55,15 +69,25 @@ public class ServerButtonComponent extends AbstractVisualComponent {
                 LogHelper.error(e);
             }
         });
+        layout.setOnMouseEntered((event) -> {
+            ScaleTransition transition = new ScaleTransition(Duration.seconds(0.1), layout);
+            transition.setToX(1.02);
+            transition.setToY(1.02);
+            transition.play();
+        });
+        layout.setOnMouseExited((event) -> {
+            ScaleTransition transition = new ScaleTransition(Duration.seconds(0.1), layout);
+            transition.setToX(1);
+            transition.setToY(1);
+            transition.play();
+        });
         application.pingService.getPingReport(profile.getDefaultServerProfile().name).thenAccept((report) -> {
             if(report == null) {
-                LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
+                LookupHelper.<Labeled>lookup(layout, "#genreServer").setText("Версия: " + profile.getAssetIndex() + " | " + "Онлайн не заведён");
             } else {
-                LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(report.playersOnline));
+                LookupHelper.<Labeled>lookup(layout, "#genreServer").setText("Версия: " + profile.getAssetIndex() + " | " + "Онлайн: " + report.playersOnline + " из " + report.maxPlayers);
             }
         });
-        saveButton = LookupHelper.lookup(layout, "#save");
-        resetButton = LookupHelper.lookup(layout, "#reset");
     }
 
     public void setOnMouseClicked(EventHandler<? super MouseEvent> eventHandler) {
@@ -93,17 +117,6 @@ public class ServerButtonComponent extends AbstractVisualComponent {
             }
         }
         pane.getChildren().add(layout);
-    }
-
-    public void addTo(Pane pane, int position) {
-        if (!isInit()) {
-            try {
-                init();
-            } catch (Exception e) {
-                LogHelper.error(e);
-            }
-        }
-        pane.getChildren().add(position, layout);
     }
 
     @Override

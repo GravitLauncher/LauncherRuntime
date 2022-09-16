@@ -2,24 +2,19 @@ package pro.gravit.launcher.client;
 
 import javafx.application.Application;
 import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.RuntimeProvider;
-import pro.gravit.launcher.utils.LauncherUpdater;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StdJavaRuntimeProvider implements RuntimeProvider {
-    public static volatile Path updatePath;
+    public static Path launcherUpdateTempPath;
+    public static ProcessBuilder processBuilder;
     private static final AtomicReference<StdJavaRuntimeProvider> INSTANCE = new AtomicReference<>();
 
     public StdJavaRuntimeProvider() {
@@ -36,26 +31,22 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
 
     @Override
     public void run(String[] args) {
-        LogHelper.debug("Start JavaFX Application");
         Application.launch(JavaFXApplication.class, args);
         LogHelper.debug("Post Application.launch method invoked");
-        if(updatePath != null) {
-            LauncherUpdater.nothing();
-            LauncherEngine.beforeExit(0);
-            Path target = IOHelper.getCodeSource(LauncherUpdater.class);
+        if (launcherUpdateTempPath != null && processBuilder != null) {
             try {
-                try(InputStream input = IOHelper.newInput(updatePath)) {
-                    try(OutputStream output = IOHelper.newOutput(target)) {
-                        IOHelper.transfer(input, output);
-                    }
+                Path BINARY_PATH = IOHelper.getCodeSource(Launcher.class);
+                try (InputStream in = IOHelper.newInput(launcherUpdateTempPath)) {
+                    IOHelper.transfer(in, BINARY_PATH);
                 }
-                Files.deleteIfExists(updatePath);
-            } catch (IOException e) {
+                Files.deleteIfExists(launcherUpdateTempPath);
+                processBuilder.start();
+            } catch (Throwable e) {
                 LogHelper.error(e);
-                LauncherEngine.forceExit(-109);
             }
-            LauncherUpdater.restart();
+
         }
+        System.exit(0);
     }
 
     @Override

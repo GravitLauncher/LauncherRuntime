@@ -8,6 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.utils.helper.LogHelper;
@@ -114,6 +115,9 @@ public abstract class AbstractVisualComponent {
             message = application.getTranslation("runtime.request.".concat(message), message);
         }
         LogHelper.error(e);
-        application.messageManager.createNotification("Error", message);
+        application.messageManager.createNotification(message, "Нажмите на уведомление, чтобы скрыть его.");
+    }
+    public void notificateHandle(String title, String desc) {
+        application.messageManager.createNotification(title, desc);
     }
 }

@@ -1,14 +1,17 @@
 package pro.gravit.launcher.client.gui.scenes.servermenu;
 
+import animatefx.animation.FadeIn;
+import animatefx.animation.FadeOut;
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.HBox;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -18,7 +21,9 @@ import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ServerMenuScene extends AbstractScene {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -34,6 +39,21 @@ public class ServerMenuScene extends AbstractScene {
 
     @Override
     public void doInit() throws Exception {
+        new FadeIn(LookupHelper.<Pane>lookup(layout, "#infoaboutversion")).play();
+        LookupHelper.<Button>lookup(layout, "#buttonsave", "#save").setOnAction((e) -> {
+            try {
+                new FadeOut(LookupHelper.<Pane>lookup(layout, "#infoaboutversion")).play();
+                LookupHelper.<Pane>lookup(layout, "#infoaboutversion").setDisable(true);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        });
+        LookupHelper.<Button>lookup(layout, "#site").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#discord").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
+        LookupHelper.<Button>lookup(layout, "#aboutproj").setOnMouseClicked((e) ->
+                application.openURL("https://github.com/FluffyCuteOwO/VAULT-LAUNCHER-Runtime"));
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent(
@@ -83,10 +103,8 @@ public class ServerMenuScene extends AbstractScene {
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
         avatar.setImage(originalAvatarImage);
-        List<ClientProfile> profiles = new ArrayList<>(lastProfiles);
-        profiles.sort(Comparator.comparingInt(ClientProfile::getSortIndex).thenComparing(ClientProfile::getTitle));
         int position = 0;
-        for (ClientProfile profile : profiles) {
+        for (ClientProfile profile : application.stateService.getProfiles()) {
             ServerButtonCache cache = new ServerButtonCache();
             cache.serverButton = getServerButton(application, profile);
             cache.position = position;
@@ -95,8 +113,9 @@ public class ServerMenuScene extends AbstractScene {
             position++;
         }
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
-        HBox serverList = (HBox) scrollPane.getContent();
-        serverList.setSpacing(20);
+        FlowPane serverList = (FlowPane) scrollPane.getContent();
+        serverList.setHgap(30);
+        serverList.setVgap(30);
         serverList.getChildren().clear();
         application.pingService.clear();
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
@@ -111,7 +130,7 @@ public class ServerMenuScene extends AbstractScene {
                     errorHandle(e);
                 }
             };
-            serverButtonCache.serverButton.addTo(serverList, serverButtonCache.position);
+            serverButtonCache.serverButton.addTo(serverList);
             serverButtonCache.serverButton.setOnMouseClicked(handle);
         });
         CommonHelper.newThread("ServerPinger", true, () -> {
