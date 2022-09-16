@@ -1,7 +1,43 @@
-/*-- DrLeonardo styles refactor --*/
+/* 
+FluffyCuteOwO#6745 - DarkenGravitLauncherRuntime
+*/
 
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
+
+#headingDialog{
+    -fx-fill: #FFFFFF;
+    -fx-font-size: 18px;
+    -fx-font-family: "SF Pro Display Bold";
+}
+#desc{
+    -fx-text-fill: #99999A;
+    -fx-font-size: 14px;
+    -fx-font-family: "SF Pro Display Regular";
+}
+#debugPane{
+    -fx-background-color: #181A1B;
+    -fx-background-radius: 8px;
+}
+#output-detail {
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 8px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 8px;
+}
+#output-detail > #output {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+    -fx-padding: 10px;
+    -fx-font-size: 12px;
+    -fx-font-family: "SF Pro Display Medium";
+    -fx-text-fill: #FFFFFF;
+}
+#output-detail > #output .content,
+#output-detail > #output .content {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0;
+}
 
 .kill:hover,
 .kill:pressed {
@@ -12,4 +48,3 @@
     -fx-text-fill: -fx-grayD;
     -fx-font-size: 8pt;
 }
-/*-- DrLeonardo styles refactor --*/

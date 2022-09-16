@@ -1,27 +1,24 @@
-/*-- DrLeonardo styles refactor --*/
+/* 
+FluffyCuteOwO#6745 - DarkenGravitLauncherRuntime
+*/
 
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
 
-/*-- Вывод данных --*/
-#options-detail {
-    -fx-background-color: -fx-grayTr;
-    -fx-background-radius: 20px;
+#optionsPane{
+    -fx-background-color: #181A1B;
+    -fx-background-radius: 8px;
 }
 
-/*-- Чекбоксы --*/
 .optional-container {
-    -fx-background-color: transparent;
-    -fx-padding: 15 0 0 15px;
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 4px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 4px;
 }
+
 .optional-checkbox {
-    -fx-fill: -fx-black2C;
     -fx-font-size: 14px;
-    -fx-font-weight: bold;
+    -fx-font-family: "Manrope Bold";
 }
-.optional-label {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 12px;
-    -fx-label-padding: 0 20 0 30px;
-}
-/*-- DrLeonardo styles refactor --*/
+

@@ -2,6 +2,8 @@
 FluffyCuteOwO#6745 - DarkenGravitLauncherRuntime
 */
 
+@import "./variables.css";
+
 @font-face {
     font-family: 'Manrope Bold';
     src: url('./Manrope-Bold.ttf');
@@ -30,15 +32,209 @@ FluffyCuteOwO#6745 - DarkenGravitLauncherRuntime
     font-family: 'Manrope SemiBold';
     src: url('./Manrope-SemiBold.ttf');
 }
+@font-face {
+    font-family: 'Minecraft Ten';
+    src: url('./Minecraft.ttf');
+}
 
-.transparent {
+#authtxt{
+    -fx-font-family: "Minecraft Ten";
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 18px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 0px, 0px, 0px, 2px);
+}
+#layout {
+    -fx-background-color: #181A1B;
+    -fx-background-radius: 8px;
+}
+#logo, #logobutton{
+    -fx-background-image: url('../images/components/global/logo.png');
+    -fx-background-size: cover;
+}
+#title{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 14px;
+}
+#leftpane{
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 8 0 0 8;
+}
+.authActivepassw{
+    -fx-background-image: url('../images/components/global/buttonmc.png');
+}
+.authActivepassw:hover{
+    -fx-background-image: url('../images/components/global/buttonmchover.png');
+}
+.wow{
+    -fx-background-color: rgba(255,255,255,0.0)
+}
+.buttonunactive{
+    -fx-background-radius: 0px;
+    -fx-background-color: #1C1E20;
+}
+.buttonunactive:hover{
+    -fx-background-color: #282828;
+}
+#buttonunactivetext{
+    -fx-text-fill: #99999A;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 14px;
+}
+#buttonunactivetext:hover{
+    -fx-text-fill: #FFFFFF;
+}
+#logouttext{
+    -fx-text-fill: #D84343;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 14px;
+}
+#logouttext:hover{
+    -fx-text-fill: #E04B4B;
+}
+#nickname{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 14px;
+}
+#back, #savesettings, #cancel, #kill{
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 4px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 4px;
+}
+#textexit{
+    -fx-font-size: 12px;
+    -fx-font-family: "Manrope Medium";
+    -fx-text-fill: #FFFFFF;
+}
+#back:hover, #savesettings:hover, #cancel:hover, #kill:hover, .check-box:hover{
+    -fx-background-color: #222222;
+}
+#serverspane{
+    -fx-background-color: #282828;
+}
+#serverspanetxtactive{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 14px;
+}
+.check-box {
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: "Manrope Bold";
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 4px;
+    /* -fx-padding: 6 0 4 1; */
+    -fx-background-size: 20 20;
+    -fx-background-position: 16 20;
+    -fx-background-image: url('../images/icons/checkbox1_off.png');
+    -fx-background-repeat: no-repeat;
+    -fx-label-padding: 0 0 0 35;
+    -fx-alignment: center-left;
+    /* -fx-text-align: left; */
+}
+.maintext{
+    -fx-text-fill: #ffffff;
+    -fx-label-padding: 14 0 0 35;
+    -fx-alignment: center-left;
+}
+.descriptiontext {
+    -fx-text-fill: #99999A;
+    -fx-font-size: 12px;
+    -fx-font-family: "Manrope Regular";
+    -fx-label-padding: 32 0 0 35;
+    -fx-alignment: center-left;
+}
+.combo-box .list-cell {
+    -fx-text-fill: #99999A;
+}
+.combo-box-popup .list-view{
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 4px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 4px;
+}
+.combo-box-popup .list-view .list-cell{
+    -fx-text-fill: #99999A;
+    -fx-padding: 8;
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 4px;
+}
+.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover{
+    -fx-background-color: #282828;
+    -fx-text-fill: #99999A;
+}
+.combo-box-popup .list-view .list-cell:filled:hover{
+    -fx-background-color: #282828;
+    -fx-text-fill: #FFFFFF;
+}
+.combo-box .arrow-button{
+    /* -fx-background-image: url('../images/icons/checkbox_arrow_button.png');*/
+    -fx-background-repeat: no-repeat;
+    -fx-background-color: transparent;
+    -fx-background-position: center center;
+    -fx-background-size: 50% 20%;
+}
+.combo-box-popup .list-cell {
+    -fx-background-color: #ff0000;
+    -fx-text-fill: #ff0000;
+}
+.combo-box .arrow{
+    -fx-background-color: transparent;
+}
+.root {
+    -fx-font-family: "Manrope Medium";
+}
+.check-box .mark {
+    -fx-background-color: transparent;
+}
+.check-box .box {
+    -fx-background-color: transparent;
+}
+.check-box:selected {
+    -fx-background-color: transparent;
+    -fx-background-image: url('../images/icons/checkbox1_on.png');
+    -fx-background-repeat: no-repeat;
+}
+.check-box:selected .mark {
+    -fx-background-color: transparent;
+}
+.check-box:selected .box {
     -fx-background-color: transparent;
 }
 
 
-@import "./variables.css";
 
-/*-- Подключение шрифтов --*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 Button,
 CheckBox,
@@ -48,9 +244,6 @@ RadioButton {
 }
 
 /*-- Шрифты --*/
-.root {
-    -fx-font-family: "Open Sans";
-}
 
 /*-- Вид блоков --*/
 .blocks {
@@ -71,17 +264,17 @@ RadioButton {
 }
 
 /*-- Управление прозрачностью --*/
-
+.transparent {
+    -fx-background-color: transparent;
+    -fx-background-size: cover;
+}
 
 /*-- Импорт фона --*/
-#layout {
-    -fx-background-image: url('../images/background.png');
-    -fx-background-size: cover;
-}
-.blur {
+
+/* .blur {
     -fx-background-image: url('../images/background-blur.png') !important;
     -fx-background-size: cover;
-}
+} */
 
 /* (тех. Кнопки) */
 .invisible{
@@ -120,11 +313,6 @@ RadioButton {
 }
 
 /*-- Информация игрока --*/
-#nickname {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-text-fill: -fx-black2C;
-}
 #money {
     -fx-font-weight: normal;
     -fx-font-size: 12px;
@@ -138,8 +326,6 @@ RadioButton {
 
 /*-- Заголовки --*/
 #dialogHeader,
-#headingUpdate,
-#headingDialog,
 #headerDescription {
     -fx-fill: -fx-black2C;
     -fx-background-color: transparent;
@@ -148,24 +334,7 @@ RadioButton {
 }
 
 /*-- Блок вывода --*/
-#output-detail {
-    -fx-background-color: -fx-grayTr;
-    -fx-background-radius: 20px;
-}
 
-/* Вывод лога */
-#output-detail > #output {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
-    -fx-padding: 10px;
-    -fx-font-size: 12px;
-    -fx-text-color: -fx-black2C;
-}
-#output-detail > #output .content,
-#output-detail > #output .content {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
-}
 
 /*-- Кнопка отправить --*/
 .send-button-text {
@@ -184,7 +353,7 @@ RadioButton {
     -fx-background-color: -fx-whiteG;
     -fx-background-insets: 0;
     -fx-padding: 5px;
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: #FFFFFF;
     -fx-background-radius: 5px;
 }
 .menu-item {
@@ -206,32 +375,8 @@ RadioButton {
 
 
 /* check-box элементы */
-.check-box {
-    -fx-background-color: transparent;
-    -fx-text-fill: -fx-black2C;
-    -fx-background-image: url('../images/icons/checkbox1_off.png');
-    -fx-background-repeat: no-repeat;
-    -fx-label-padding: 0 0 0 10px;
-    -fx-font-size: 14px;
-    -fx-text-align: left;
-}
-.check-box .mark {
-    -fx-background-color: transparent;
-}
-.check-box .box {
-    -fx-background-color: transparent;
-}
-.check-box:selected {
-    -fx-background-color: transparent;
-    -fx-background-image: url('../images/icons/checkbox1_on.png');
-    -fx-background-repeat: no-repeat;
-}
-.check-box:selected .mark {
-    -fx-background-color: transparent;
-}
-.check-box:selected .box {
-    -fx-background-color: transparent;
-}
+
+
 
 
 /* Скролл панели */
@@ -287,7 +432,7 @@ RadioButton {
     -fx-background-color: -fx-violet;
 }
 .choice-box .menu-item > .label {
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: #FFFFFF;
 }
 .choice-box .menu-item:focused>.label {
     -fx-text-fill: -fx-white;
@@ -301,47 +446,7 @@ RadioButton {
 }
 
 /* combo-box элементы */
-.combo-box {
-    -fx-background-color: -fx-grayLDTr;
-    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-background-radius: 5px;
-    -fx-padding: 5;
-    -fx-text-fill: -fx-black2C;
-    -fx-alignment: CENTER;
-    -fx-content-display: LEFT;
-}
-.combo-box .list-cell {
-    -fx-text-fill: -fx-black2C;
-}
-.combo-box-popup .list-view{
-    -fx-background-color: -fx-gray;
-}
-.combo-box-popup .list-view .list-cell{
-    -fx-text-fill: -fx-black2C;
-    -fx-padding: 5;
-    -fx-background-color: -fx-gray;
-}
-.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover{
-    -fx-background-color: -fx-grayTr;
-    -fx-text-fill: -fx-black2C-hover;
-    -fx-font-weight: bold;
-}
-.combo-box-popup .list-view .list-cell:filled:hover{
-    -fx-background-color: -fx-grayTr;
-    -fx-text-fill: -fx-black2C-hover;
-}
-.combo-box-popup .list-cell {
-    -fx-background-color: -fx-whiteG;
-    -fx-text-fill: -fx-black2C;
-}
-.combo-box .arrow{
-    -fx-background-color: transparent;
-}
-.combo-box .arrow-button{
-    -fx-background-image: url('../images/icons/checkbox_arrow_button.png');
-    -fx-background-repeat: no-repeat;
-    -fx-background-color: transparent;
-    -fx-background-position: center center;
-    -fx-background-size: 50% 25%;
-}
+
+
+
 /*-- DrLeonardo styles refactor --*/

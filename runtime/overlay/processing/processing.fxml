@@ -1,25 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.shape.*?>
-<?import javafx.scene.text.*?>
+<?import java.net.URL?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.text.Text?>
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="overlay" disable="true" opacity="0.0" prefHeight="500.0" prefWidth="900.0" visible="false" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
-    <Pane id="header" prefHeight="100.0" prefWidth="900.0">
+    <Pane id="header" disable="true" opacity="0.0" prefHeight="100.0" prefWidth="900.0" visible="false">
         <children>
 
             <!-- Кнопки управления -->
-            <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
+            <Pane id="controls" disable="true" layoutX="222.0" layoutY="-1.0" opacity="0.0" prefHeight="100.0" prefWidth="676.0" visible="false">
                 <children>
 
                     <!-- Кнопка закрыть -->
-                    <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="553.0" layoutY="30.0" styleClass="icon-button" textOverrun="CLIP">
+                    <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" disable="true" graphicTextGap="0.0" layoutX="553.0" layoutY="30.0" opacity="0.0" styleClass="icon-button" textOverrun="CLIP" visible="false">
                         <graphic>
                             <Pane>
                                 <children>
@@ -39,7 +41,7 @@
     </Pane>
 
     <!-- Описание процесса -->
-    <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="337.0" prefHeight="66.0" prefWidth="832.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" wrapText="true" />
+    <Label id="description" alignment="CENTER" contentDisplay="CENTER" disable="true" layoutX="32.0" layoutY="337.0" opacity="0.0" prefHeight="66.0" prefWidth="832.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" visible="false" wrapText="true" />
     <SVGPath content="M0 -2.28322C0 -3.01097 0.395307 -3.68128 1.03217 -4.03345L193.46 -110.441C194.086 -110.787 194.849 -110.772 195.462 -110.402L245.964 -79.9119C247.266 -79.1258 247.248 -77.2316 245.932 -76.4692L62.8001 29.6162C62.1827 29.9738 61.8026 30.6333 61.8026 31.3468V186.626C61.8026 187.354 62.1984 188.024 62.836 188.376L190.221 258.697C190.816 259.025 191.538 259.029 192.136 258.707L322.793 188.372C323.441 188.023 323.845 187.347 323.845 186.611V31.5293C323.845 30.7209 323.359 29.992 322.612 29.6821L285.222 14.1623C284.637 13.9194 283.971 13.9681 283.428 14.2937L159.187 88.7161C158.584 89.0774 158.215 89.7288 158.215 90.4318V122.629C158.215 123.339 158.592 123.997 159.205 124.355L193.111 144.181C194.444 144.96 196.12 143.999 196.12 142.454V113.411C196.12 112.711 196.486 112.062 197.085 111.7L281.256 60.7623C282.589 59.9557 284.292 60.9154 284.292 62.4734V161.242C284.292 161.936 283.932 162.58 283.342 162.944L192.226 219.173C191.582 219.57 190.77 219.57 190.126 219.173L99.0098 162.944C98.4195 162.58 98.0601 161.936 98.0601 161.242V54.3293C98.0601 53.6172 98.4387 52.9588 99.0543 52.6006L283.341 -54.6261C283.933 -54.9704 284.66 -54.9881 285.268 -54.6728L382.921 -4.02242C383.584 -3.67854 384 -2.9939 384 -2.24703V218.655C384 219.375 383.612 220.04 382.985 220.395L192.166 328.44C191.552 328.787 190.801 328.786 190.188 328.436L1.00816 220.397C0.384761 220.041 0 219.378 0 218.66V-2.28322Z" layoutX="256.0" layoutY="5.0" styleClass="logo" visible="true" />
 
     <!-- Подключение стилей-->

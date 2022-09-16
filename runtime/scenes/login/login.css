@@ -1,32 +1,132 @@
-/*-- DrLeonardo styles refactor --*/
+/* 
+FluffyCuteOwO#6745 - DarkenGravitLauncherRuntime
+*/
 
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
-
-/*-- Вертикальная полоса на главной сцене --*/
-.vline{
-    -fx-background-color: -fx-grayTr;
+/* global */
+#loginbg{
+    -fx-background-color: #1C1E20;
+    -fx-background-radius: 8px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 8px;
 }
+/* end global */
 
-/*-- Ошибки --*/
-.authButtonError{
-    -fx-fill: -fx-red;
+/* login.fxml */
+#backgroundimage{
+    -fx-background-image: url('../../images/minecraft-villager.gif');
+    -fx-background-size: cover;
+    -fx-background-radius: 8px;
 }
+.authActive{
+    -fx-background-color: #202020;
+    -fx-background-radius: 8px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 8px;
+}
+#authbuttontext{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 12px;
+}
+#welcometext{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-family: "Manrope Bold";
+    -fx-font-size: 24px;
+}
+#selectauthtext{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 14px;
+    -fx-font-family: "Manrope Regular";
+}
+.authActive:hover{
+    -fx-background-color: #222222;
+}
+#loginPane{
+    -fx-background-color: #181a1b00;
+    -fx-background-radius: 8px;
+}
+/* end login.fxml */
 
-/*-- Ввод данных --*/
+/* loginpassword.fxml */
 #login,
 #password {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
+    -fx-background-color: #202020;
+    -fx-background-radius: 8px;
     -fx-font-size: 14px;
-    -fx-text-fill: -fx-header;
-    -fx-font-weight: bold;
+    -fx-text-fill: #444444;
+    -fx-font-family: "Manrope Regular";
     -fx-cursor: text;
 }
 #password:focused,
 #login:focused {
-    -fx-text-fill: -fx-black2C;
 }
+#createaccounttext{
+    -fx-text-fill: #FFFFFF;
+    -fx-font-size: 12px;
+    -fx-font-family: "Manrope Medium";
+}
+#createaccount{
+    -fx-text-fill: #0A84FF;
+    -fx-font-size: 12px;
+    -fx-font-family: "Manrope Regular";
+}
+#createaccount:hover{
+    -fx-text-fill: #2e97ff;
+}
+#backtext{
+    -fx-font-size: 12px;
+    -fx-fill: #FFFFFF;
+    -fx-font-family: "Manrope Medium";
+    -fx-align-items: center;
+}
+#backbutton{
+    -fx-background-color: #202020;
+    -fx-background-radius: 4px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 4px;
+}
+#backbutton:hover{
+    -fx-background-color: #222222;
+}
+#login, #password{
+    -fx-font-family: "Manrope Regular";
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #444444;
+    -fx-text-fill: #6A6A6A;
+    -fx-padding: 0 0 0 14;
+}
+#start{
+    -fx-background-image: url('../../images/components/start.gif');
+    -fx-background-size: cover;
+}
+#player{
+    -fx-background-color: #202020;
+    -fx-background-radius: 8px;
+    -fx-border-color: #282828;
+    -fx-border-radius: 8px;
+}
+/* end loginpassword.fxml */
+
+
+
+
+
+
+
+
+
+/* .vline{
+    -fx-background-color: -fx-grayTr;
+}
+-- Ошибки --
+.authButtonError{
+    -fx-fill: -fx-red;
+}
+
+-- Ввод данных --
+
 .field-auth {
     -fx-font-size: 18px;
     -fx-text-fill: -fx-black2C;
@@ -43,7 +143,7 @@
 }
 
 
-/*-- Чекбоксы --*/
+-- Чекбоксы --
 #savePassword,
 #autoenter {
     -fx-font-size: 7pt;
@@ -55,24 +155,14 @@
     -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
 
-/*-- Метод авторизации --*/
+-- Метод авторизации --
 #authList {
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 10px;
 }
 
-/*-- Ссылки --*/
-.createAccount-text {
-    -fx-font-weight: bold;
-    -fx-font-size: 9px;
-    -fx-text-align: left;
-    -fx-fill: -fx-green;
-}
-.createAccount-text:hover,
-.createAccount-text:pressed {
-    -fx-fill: -fx-green-hover;
-    -fx-cursor: hand;
-}
+-- Ссылки --
+
 .forgotPass {
     -fx-font-weight: bold;
     -fx-font-size: 9px;
@@ -84,11 +174,7 @@
     -fx-fill: -fx-black2C-hover;
     -fx-cursor: hand;
 }
-.textLogin {
-    -fx-fill: -fx-grayD;
-    -fx-font-size: 9px;
-    -fx-text-align: left;
-}
+
 .hyperlink:focused {
     -fx-border-width: 0;
 }
@@ -96,7 +182,7 @@
     -fx-stroke: -fx-black2C;
 }
 
-/*-- Приветствие --*/
+-- Приветствие --
 #welcome {
     -fx-font-size: 12px;
     -fx-align-items: center;
@@ -106,7 +192,7 @@
     -fx-text-align: center;
 }
 
-/*-- Веб авторизация --*/
+-- Веб авторизация --
 #webAuth {
     -fx-font-weight: bold;
     -fx-font-size: 12px;
@@ -115,7 +201,7 @@
     -fx-background-color: -fx-green;
 }
 
-/*-- Кнопка входа --*/
+-- Кнопка входа --
 .auth {
      -fx-fill: -fx-green;
 }
@@ -138,7 +224,7 @@
     -fx-text-fill: -fx-white;
 }
 
-/*-- Надпись названия продукта --*/
+-- Надпись названия продукта --
 #logoVersion,
 #logoProduct,
 #logoName {
@@ -150,7 +236,7 @@
     -fx-fill: -fx-grayD !important;
 }
 
-/*-- Приветствие игрока --*/
+-- Приветствие игрока --
 #text-2fa,
 #playerName {
     -fx-font-weight: bold;
@@ -162,7 +248,7 @@
     -fx-align-items: center;
 }
 
-/*-- Стилизация radiobutton's--*/
+-- Стилизация radiobutton's--
 .radio-button {
     -fx-background-radius: 5px;
     -fx-text-fill: -fx-black2C;
@@ -193,8 +279,4 @@
     -fx-background-color: -fx-white;
 }
 
-#authRadio {
-    -fx-max-width: 99999;
-}
-
-/*-- DrLeonardo styles refactor --*/
+-- DrLeonardo styles refactor -- */
