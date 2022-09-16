@@ -1,27 +1,44 @@
-/*-- DrLeonardo styles refactor --*/
+/* 
+FluffyCuteOwO#6745 - DarkenGravitLauncherRuntime
+*/
+
+@font-face {
+    font-family: 'Manrope Bold';
+    src: url('./Manrope-Bold.ttf');
+}
+@font-face {
+    font-family: 'Manrope ExtraBold';
+    src: url('./Manrope-ExtraBold.ttf');
+}
+@font-face {
+    font-family: 'Manrope ExtraLight';
+    src: url('./Manrope-ExtraLight.ttf');
+}
+@font-face {
+    font-family: 'Manrope Light';
+    src: url('./Manrope-Light.ttf');
+}
+@font-face {
+    font-family: 'Manrope Medium';
+    src: url('./Manrope-Medium.ttf');
+}
+@font-face {
+    font-family: 'Manrope Regular';
+    src: url('./Manrope-Regular.ttf');
+}
+@font-face {
+    font-family: 'Manrope SemiBold';
+    src: url('./Manrope-SemiBold.ttf');
+}
+
+.transparent {
+    -fx-background-color: transparent;
+}
+
+
 @import "./variables.css";
 
 /*-- Подключение шрифтов --*/
-@font-face {
-    font-family: 'Open Sans';
-    src: url('./OpenSans-Regular.ttf');
-}
-@font-face {
-    font-family: 'Open Sans Bold';
-    src: url('./OpenSans-Bold.ttf');
-}
-@font-face {
-    font-family: 'Open Sans Italic';
-    src: url('./OpenSans-Italic.ttf');
-}
-@font-face {
-    font-family: 'Open Sans Light';
-    src: url('./OpenSans-Light.ttf');
-}
-@font-face {
-    font-family: 'Open Sans BoldItalic';
-    src: url('./OpenSans-BoldItalic.ttf');
-}
 
 Button,
 CheckBox,
@@ -54,10 +71,7 @@ RadioButton {
 }
 
 /*-- Управление прозрачностью --*/
-.transparent {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-}
+
 
 /*-- Импорт фона --*/
 #layout {
