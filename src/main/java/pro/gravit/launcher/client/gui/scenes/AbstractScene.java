@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.scenes;
 
+import animatefx.animation.SlideInUp;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -85,6 +86,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);
         newOverlay.toFront();
         newOverlay.requestFocus();
+        new SlideInUp(newOverlay).setSpeed(1.5).play();
         fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
     }
 
