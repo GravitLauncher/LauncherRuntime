@@ -3,24 +3,24 @@
 
 /*-- Подключение шрифтов --*/
 @font-face {
-    font-family: 'Open Sans';
-    src: url('./OpenSans-Regular.ttf');
+    font-family: 'SF Pro';
+    src: url('./SFProDisplay-Regular.ttf');
 }
 @font-face {
-    font-family: 'Open Sans Bold';
-    src: url('./OpenSans-Bold.ttf');
+    font-family: 'SF Pro Bold';
+    src: url('./SFProDisplay-Bold.ttf');
 }
 @font-face {
-    font-family: 'Open Sans Italic';
-    src: url('./OpenSans-Italic.ttf');
+    font-family: 'SF Pro Italic';
+    src: url('./SFProDisplay-LightItalic.ttf');
 }
 @font-face {
-    font-family: 'Open Sans Light';
-    src: url('./OpenSans-Light.ttf');
+    font-family: 'SF Pro Light';
+    src: url('./SFProDisplay-Light.ttf');
 }
 @font-face {
-    font-family: 'Open Sans BoldItalic';
-    src: url('./OpenSans-BoldItalic.ttf');
+    font-family: 'SF Pro BoldItalic';
+    src: url('./SFProDisplay-BoldItalic.ttf');
 }
 
 Button,
@@ -32,7 +32,7 @@ RadioButton {
 
 /*-- Шрифты --*/
 .root {
-    -fx-font-family: "Open Sans";
+    -fx-font-family: "SF Pro";
 }
 
 /*-- Вид блоков --*/
