@@ -4,10 +4,12 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.control.*;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -34,7 +36,9 @@ import pro.gravit.launcher.request.auth.details.AuthLoginOnlyDetails;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
 import pro.gravit.launcher.request.auth.details.AuthTotpDetails;
 import pro.gravit.launcher.request.auth.details.AuthWebViewDetails;
-import pro.gravit.launcher.request.auth.password.*;
+import pro.gravit.launcher.request.auth.password.Auth2FAPassword;
+import pro.gravit.launcher.request.auth.password.AuthMultiPassword;
+import pro.gravit.launcher.request.auth.password.AuthOAuthPassword;
 import pro.gravit.launcher.request.update.LauncherRequest;
 import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.launcher.utils.LauncherUpdater;
@@ -47,17 +51,18 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class LoginScene extends AbstractScene {
+    private final AuthService authService = new AuthService(application);
+    private final AuthFlow authFlow = new AuthFlow();
     public Map<Class<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>, AbstractAuthMethod<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>> authMethods = new HashMap<>(8);
     public boolean isLoginStarted;
     private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
     private LoginAuthButtonComponent authButton;
-    private final AuthService authService = new AuthService(application);
     private VBox authList;
     private ToggleGroup authToggleGroup;
     private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
-    private final AuthFlow authFlow = new AuthFlow();
+    private volatile boolean processingEnabled = false;
 
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
@@ -103,13 +108,13 @@ public class LoginScene extends AbstractScene {
                         changeAuthAvailability(authAvailability);
                     addAuthAvailability(authAvailability);
                 }
-                if(this.authAvailability == null && auth.list.size() > 0) {
+                if (this.authAvailability == null && auth.list.size() > 0) {
                     changeAuthAvailability(auth.list.get(0));
                 }
                 hideOverlay(0, (event) -> {
                     if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
                         contextHelper.runCallback(this::loginWithGui);
-                    if(application.isDebugMode()) {
+                    if (application.isDebugMode()) {
                         postInit();
                     }
                 });
@@ -148,7 +153,7 @@ public class LoginScene extends AbstractScene {
     }
 
     private void postInit() {
-        if(application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
+        if (application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
             contextHelper.runInFxThread(this::loginWithGui);
         }
     }
@@ -173,8 +178,6 @@ public class LoginScene extends AbstractScene {
         LogHelper.info("Added %s: %s", authAvailability.name, authAvailability.displayName);
         authList.getChildren().add(radio);
     }
-
-    private volatile boolean processingEnabled = false;
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
         Pane root = (Pane) scene.getRoot();
@@ -317,11 +320,11 @@ public class LoginScene extends AbstractScene {
     }
 
     private boolean checkSavePasswordAvailable(AuthRequest.AuthPasswordInterface password) {
-        if(password instanceof Auth2FAPassword)
+        if (password instanceof Auth2FAPassword)
             return false;
-        if(password instanceof AuthMultiPassword)
+        if (password instanceof AuthMultiPassword)
             return false;
-        if(authAvailability == null || authAvailability.details == null || authAvailability.details.size() == 0 || !( authAvailability.details.get(0) instanceof AuthPasswordDetails ) )
+        if (authAvailability == null || authAvailability.details == null || authAvailability.details.size() == 0 || !(authAvailability.details.get(0) instanceof AuthPasswordDetails))
             return false;
         return true;
     }
@@ -333,7 +336,7 @@ public class LoginScene extends AbstractScene {
         if (savePassword) {
             application.runtimeSettings.login = successAuth.recentLogin;
             if (result.oauth == null) {
-                if(successAuth.recentPassword != null && checkSavePasswordAvailable(successAuth.recentPassword)) {
+                if (successAuth.recentPassword != null && checkSavePasswordAvailable(successAuth.recentPassword)) {
                     application.runtimeSettings.password = successAuth.recentPassword;
                 } else {
                     LogHelper.warning("2FA/MFA Password not saved");
@@ -429,6 +432,18 @@ public class LoginScene extends AbstractScene {
         }
     }
 
+    public static class SuccessAuth {
+        public AuthRequestEvent requestEvent;
+        public String recentLogin;
+        public AuthRequest.AuthPasswordInterface recentPassword;
+
+        public SuccessAuth(AuthRequestEvent requestEvent, String recentLogin, AuthRequest.AuthPasswordInterface recentPassword) {
+            this.requestEvent = requestEvent;
+            this.recentLogin = recentLogin;
+            this.recentPassword = recentPassword;
+        }
+    }
+
     public class LoginSceneAccessor {
         public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
             LoginScene.this.showOverlay(overlay, onFinished);
@@ -451,8 +466,6 @@ public class LoginScene extends AbstractScene {
         }
     }
 
-
-
     public class AuthFlow {
         private final List<Integer> authFlow = new ArrayList<>();
         private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
@@ -465,14 +478,15 @@ public class LoginScene extends AbstractScene {
 
         private CompletableFuture<LoginAndPasswordResult> tryLogin(String resentLogin, AuthRequest.AuthPasswordInterface resentPassword) {
             CompletableFuture<LoginScene.LoginAndPasswordResult> authFuture = null;
-            if(resentPassword != null) {
+            if (resentPassword != null) {
                 authFuture = new CompletableFuture<>();
                 authFuture.complete(new LoginAndPasswordResult(resentLogin, resentPassword));
             }
             for (int i : authFlow) {
                 GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
                 final AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> authMethod = detailsToMethod(details);
-                if (authFuture == null) authFuture = authMethod.show(details).thenCompose((e) -> authMethod.auth(details));
+                if (authFuture == null)
+                    authFuture = authMethod.show(details).thenCompose((e) -> authMethod.auth(details));
                 else {
                     authFuture = authFuture.thenCompose(e -> authMethod.show(details).thenApply(x -> e));
                     authFuture = authFuture.thenCompose(first -> authMethod.auth(details).thenApply(second -> {
@@ -580,17 +594,5 @@ public class LoginScene extends AbstractScene {
             }
             return authService.getPasswordFromList(result);
         }*/
-    }
-
-    public static class SuccessAuth {
-        public AuthRequestEvent requestEvent;
-        public String recentLogin;
-        public AuthRequest.AuthPasswordInterface recentPassword;
-
-        public SuccessAuth(AuthRequestEvent requestEvent, String recentLogin, AuthRequest.AuthPasswordInterface recentPassword) {
-            this.requestEvent = requestEvent;
-            this.recentLogin = recentLogin;
-            this.recentPassword = recentPassword;
-        }
     }
 }

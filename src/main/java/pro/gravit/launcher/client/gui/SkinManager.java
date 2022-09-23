@@ -24,107 +24,10 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SkinManager {
-    private static class SkinEntry {
-        final URL url;
-        final String imageUrl;
-        SoftReference<Optional<BufferedImage>> imageRef = new SoftReference<>(null);
-        SoftReference<Optional<BufferedImage>> avatarRef = new SoftReference<>(null);
-        SoftReference<Optional<Image>> fxImageRef = new SoftReference<>(null);
-        SoftReference<Optional<Image>> fxAvatarRef = new SoftReference<>(null);
-
-        private SkinEntry(URL url) {
-            this.url = url;
-            imageUrl = null;
-        }
-
-        synchronized BufferedImage getFullImage() {
-            Optional<BufferedImage> result = imageRef.get();
-            if (result == null) { // It is normal
-                result = Optional.ofNullable(downloadSkin(url));
-                imageRef = new SoftReference<>(result);
-            }
-            return result.orElse(null);
-        }
-
-        synchronized Image getFullFxImage() {
-            Optional<Image> result = fxImageRef.get();
-            if (result == null) { // It is normal
-                BufferedImage image = getFullImage();
-                result = Optional.ofNullable(convertToFxImage(image));
-                fxImageRef = new SoftReference<>(result);
-            }
-            return result.orElse(null);
-        }
-
-        synchronized BufferedImage getHeadImage() {
-            Optional<BufferedImage> result = avatarRef.get();
-            if (result == null) { // It is normal
-                BufferedImage image = getFullImage();
-                result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
-                avatarRef = new SoftReference<>(result);
-            }
-            return result.orElse(null);
-        }
-
-        synchronized Image getHeadFxImage() {
-            Optional<Image> result = fxAvatarRef.get();
-            if (result == null) { // It is normal
-                BufferedImage image = getHeadImage();
-                result = Optional.ofNullable(convertToFxImage(image));
-                fxAvatarRef = new SoftReference<>(result);
-            }
-            return result.orElse(null);
-        }
-    }
-
     private final JavaFXApplication application;
     private final Map<String, SkinEntry> map = new ConcurrentHashMap<>();
-
     public SkinManager(JavaFXApplication application) {
         this.application = application;
-    }
-
-    public void addSkin(String username, URL url) {
-        map.put(username, new SkinEntry(url));
-    }
-
-    public BufferedImage getSkin(String username) {
-        SkinEntry entry = map.get(username);
-        if (entry == null) return null;
-        return entry.getFullImage();
-    }
-
-    public BufferedImage getSkinHead(String username) {
-        SkinEntry entry = map.get(username);
-        if (entry == null) return null;
-        return entry.getHeadImage();
-    }
-
-    public Image getFxSkin(String username) {
-        SkinEntry entry = map.get(username);
-        if (entry == null) return null;
-        return entry.getFullFxImage();
-    }
-
-    public Image getFxSkinHead(String username) {
-        SkinEntry entry = map.get(username);
-        if (entry == null) return null;
-        return entry.getHeadFxImage();
-    }
-
-    public BufferedImage getScaledSkin(String username, int width, int height) {
-        BufferedImage image = getSkin(username);
-        return scaleImage(image, width, height);
-    }
-
-    public BufferedImage getScaledSkinHead(String username, int width, int height) {
-        BufferedImage image = getSkinHead(username);
-        return scaleImage(image, width, height);
-    }
-
-    public Image getScaledFxSkin(String username, int width, int height) {
-        BufferedImage image = getSkin(username);
-        return convertToFxImage(scaleImage(image, width, height));
     }
 
     public static BufferedImage sumBufferedImage(BufferedImage img1, BufferedImage img2) {
@@ -140,11 +43,6 @@ public class SkinManager {
         g2.drawImage(img2, null, 0, 0);
         g2.dispose();
         return result;
-    }
-
-    public Image getScaledFxSkinHead(String username, int width, int height) {
-        BufferedImage image = getSkinHead(username);
-        return convertToFxImage(scaleImage(image, width, height));
     }
 
     private static BufferedImage scaleImage(BufferedImage origImage, int width, int height) {
@@ -225,5 +123,106 @@ public class SkinManager {
         PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ? PixelFormat.getIntArgbPreInstance() : PixelFormat.getIntArgbInstance();
         writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
         return writableImage;
+    }
+
+    public void addSkin(String username, URL url) {
+        map.put(username, new SkinEntry(url));
+    }
+
+    public BufferedImage getSkin(String username) {
+        SkinEntry entry = map.get(username);
+        if (entry == null) return null;
+        return entry.getFullImage();
+    }
+
+    public BufferedImage getSkinHead(String username) {
+        SkinEntry entry = map.get(username);
+        if (entry == null) return null;
+        return entry.getHeadImage();
+    }
+
+    public Image getFxSkin(String username) {
+        SkinEntry entry = map.get(username);
+        if (entry == null) return null;
+        return entry.getFullFxImage();
+    }
+
+    public Image getFxSkinHead(String username) {
+        SkinEntry entry = map.get(username);
+        if (entry == null) return null;
+        return entry.getHeadFxImage();
+    }
+
+    public BufferedImage getScaledSkin(String username, int width, int height) {
+        BufferedImage image = getSkin(username);
+        return scaleImage(image, width, height);
+    }
+
+    public BufferedImage getScaledSkinHead(String username, int width, int height) {
+        BufferedImage image = getSkinHead(username);
+        return scaleImage(image, width, height);
+    }
+
+    public Image getScaledFxSkin(String username, int width, int height) {
+        BufferedImage image = getSkin(username);
+        return convertToFxImage(scaleImage(image, width, height));
+    }
+
+    public Image getScaledFxSkinHead(String username, int width, int height) {
+        BufferedImage image = getSkinHead(username);
+        return convertToFxImage(scaleImage(image, width, height));
+    }
+
+    private static class SkinEntry {
+        final URL url;
+        final String imageUrl;
+        SoftReference<Optional<BufferedImage>> imageRef = new SoftReference<>(null);
+        SoftReference<Optional<BufferedImage>> avatarRef = new SoftReference<>(null);
+        SoftReference<Optional<Image>> fxImageRef = new SoftReference<>(null);
+        SoftReference<Optional<Image>> fxAvatarRef = new SoftReference<>(null);
+
+        private SkinEntry(URL url) {
+            this.url = url;
+            imageUrl = null;
+        }
+
+        synchronized BufferedImage getFullImage() {
+            Optional<BufferedImage> result = imageRef.get();
+            if (result == null) { // It is normal
+                result = Optional.ofNullable(downloadSkin(url));
+                imageRef = new SoftReference<>(result);
+            }
+            return result.orElse(null);
+        }
+
+        synchronized Image getFullFxImage() {
+            Optional<Image> result = fxImageRef.get();
+            if (result == null) { // It is normal
+                BufferedImage image = getFullImage();
+                result = Optional.ofNullable(convertToFxImage(image));
+                fxImageRef = new SoftReference<>(result);
+            }
+            return result.orElse(null);
+        }
+
+        synchronized BufferedImage getHeadImage() {
+            Optional<BufferedImage> result = avatarRef.get();
+            if (result == null) { // It is normal
+                BufferedImage image = getFullImage();
+                result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
+                avatarRef = new SoftReference<>(result);
+            }
+            return result.orElse(null);
+        }
+
+        synchronized Image getHeadFxImage() {
+            Optional<Image> result = fxAvatarRef.get();
+            if (result == null) { // It is normal
+                BufferedImage image = getHeadImage();
+                result = Optional.ofNullable(convertToFxImage(image));
+                fxAvatarRef = new SoftReference<>(result);
+            }
+            return result.orElse(null);
+        }
     }
 }

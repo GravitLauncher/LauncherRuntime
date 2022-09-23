@@ -6,12 +6,10 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 
 public class InfoDialog extends AbstractDialog {
-    private String header;
-    private String text;
-
     private final Runnable onAccept;
     private final Runnable onClose;
-
+    private String header;
+    private String text;
     private Text textHeader;
     private Text textDescription;
 

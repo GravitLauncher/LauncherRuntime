@@ -1,33 +1,16 @@
 package pro.gravit.launcher.client.gui.scenes.update;
 
-import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.*;
 import javafx.scene.text.Text;
-import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.events.request.UpdateRequestEvent;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
-import pro.gravit.launcher.hasher.HashedEntry;
-import pro.gravit.launcher.hasher.HashedFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
-import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
-import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
-import pro.gravit.launcher.request.update.UpdateRequest;
-import pro.gravit.utils.Downloader;
-import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public class UpdateScene extends AbstractScene {

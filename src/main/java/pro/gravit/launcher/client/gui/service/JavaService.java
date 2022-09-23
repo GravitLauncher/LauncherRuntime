@@ -8,7 +8,10 @@ import pro.gravit.utils.helper.JavaHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,7 +36,7 @@ public class JavaService {
                         if (arch != JVMHelper.ARCH_TYPE) {
                             continue;
                         }
-                        if(!JVMHelper.OS_TYPE.name.equals(os)) {
+                        if (!JVMHelper.OS_TYPE.name.equals(os)) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
@@ -46,7 +49,7 @@ public class JavaService {
                 }
             }
         }
-        if(!application.guiModuleConfig.forceDownloadJava || versions.isEmpty()) {
+        if (!application.guiModuleConfig.forceDownloadJava || versions.isEmpty()) {
             versions.addAll(JavaHelper.findJava());
         }
         javaVersions = Collections.unmodifiableList(versions);
@@ -55,12 +58,12 @@ public class JavaService {
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
         return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
                 || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE)
-                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
+                || ((version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
     }
 
     public boolean contains(Path dir) {
-        for(JavaHelper.JavaVersion version : javaVersions) {
-            if(version.jvmDir.toAbsolutePath().equals(dir.toAbsolutePath())) {
+        for (JavaHelper.JavaVersion version : javaVersions) {
+            if (version.jvmDir.toAbsolutePath().equals(dir.toAbsolutePath())) {
                 return true;
             }
         }
@@ -74,7 +77,7 @@ public class JavaService {
         JavaHelper.JavaVersion result = null;
         for (JavaHelper.JavaVersion version : javaVersions) {
             if (version.version < min || version.version > max) continue;
-            if(isIncompatibleJava(version, profile)) {
+            if (isIncompatibleJava(version, profile)) {
                 continue;
             }
             if (result == null) {

@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.scenes.login.methods;
 
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -17,9 +16,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
-    WebAuthOverlay overlay;
     private final JavaFXApplication application;
     private final LoginScene.LoginSceneAccessor accessor;
+    WebAuthOverlay overlay;
 
     public WebAuthMethod(LoginScene.LoginSceneAccessor accessor) {
         this.application = accessor.getApplication();
@@ -55,7 +54,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         overlay.follow(details.url, details.redirectUrl, (r) -> {
             String code = r;
             LogHelper.debug("Code: %s", code);
-            if(code.startsWith("?code=")) {
+            if (code.startsWith("?code=")) {
                 code = r.substring("?code=".length(), r.indexOf("&"));
             }
             LogHelper.debug("Code: %s", code);

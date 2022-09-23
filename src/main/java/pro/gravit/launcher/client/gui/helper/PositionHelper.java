@@ -1,24 +1,6 @@
 package pro.gravit.launcher.client.gui.helper;
 
 public class PositionHelper {
-    public enum PositionInfo {
-        TOP_LEFT(0, 0, true, true),
-        TOP_RIGHT(Double.MAX_VALUE, 0, false, true),
-        BOTTOM_LEFT(0, Double.MAX_VALUE, false, true),
-        BOTTOM_RIGHT(Double.MAX_VALUE, Double.MAX_VALUE, false, false);
-        public final double startX;
-        public final double startY;
-        public final boolean offsetXPlus;
-        public final boolean offsetYPlus;
-
-        PositionInfo(double startX, double startY, boolean offsetXPlus, boolean offsetYPlus) {
-            this.startX = startX;
-            this.startY = startY;
-            this.offsetXPlus = offsetXPlus;
-            this.offsetYPlus = offsetYPlus;
-        }
-    }
-
     private PositionHelper() {
         throw new UnsupportedOperationException();
     }
@@ -43,5 +25,23 @@ public class PositionHelper {
             y -= offsetY;
         }
         return new LookupHelper.Point2D(x, y);
+    }
+
+    public enum PositionInfo {
+        TOP_LEFT(0, 0, true, true),
+        TOP_RIGHT(Double.MAX_VALUE, 0, false, true),
+        BOTTOM_LEFT(0, Double.MAX_VALUE, false, true),
+        BOTTOM_RIGHT(Double.MAX_VALUE, Double.MAX_VALUE, false, false);
+        public final double startX;
+        public final double startY;
+        public final boolean offsetXPlus;
+        public final boolean offsetYPlus;
+
+        PositionInfo(double startX, double startY, boolean offsetXPlus, boolean offsetYPlus) {
+            this.startX = startX;
+            this.startY = startY;
+            this.offsetXPlus = offsetXPlus;
+            this.offsetYPlus = offsetYPlus;
+        }
     }
 }

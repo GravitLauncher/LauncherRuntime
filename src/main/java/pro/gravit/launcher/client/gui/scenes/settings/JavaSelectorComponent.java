@@ -28,7 +28,7 @@ public class JavaSelectorComponent {
         comboBox.setConverter(new JavaVersionConverter(profile));
         boolean reset = true;
         for (JavaHelper.JavaVersion version : javaService.javaVersions) {
-            if(javaService.isIncompatibleJava(version, profile)) {
+            if (javaService.isIncompatibleJava(version, profile)) {
                 continue;
             }
             comboBox.getItems().add(version);
@@ -37,7 +37,7 @@ public class JavaSelectorComponent {
                 reset = false;
             }
         }
-        if(reset) {
+        if (reset) {
             JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
             if (recommend != null) {
                 LogHelper.warning("Selected Java Version not found. Using %s", recommend.jvmDir.toAbsolutePath().toString());

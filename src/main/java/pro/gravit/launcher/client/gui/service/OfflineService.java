@@ -27,20 +27,6 @@ public class OfflineService {
         this.application = application;
     }
 
-    public boolean isAvailableOfflineMode() {
-        if(application.guiModuleConfig.disableOfflineMode) {
-            return false;
-        }
-        if(application.runtimeSettings.profiles != null) {
-            return true;
-        }
-        return false;
-    }
-
-    public boolean isOfflineMode() {
-        return Request.getRequestService() instanceof OfflineRequestService;
-    }
-
     public static void applyRuntimeProcessors(OfflineRequestService service) {
         service.registerRequestProcessor(AuthRequest.class, (r) -> {
             return new AuthRequestEvent(new ClientPermissions(), new PlayerProfile(UUID.nameUUIDFromBytes(r.login.getBytes(StandardCharsets.UTF_8)), r.login, new HashMap<>(), new HashMap<>()),
@@ -53,5 +39,19 @@ public class OfflineService {
                     .collect(Collectors.toList());
             return new ProfilesRequestEvent(profileList);
         });
+    }
+
+    public boolean isAvailableOfflineMode() {
+        if (application.guiModuleConfig.disableOfflineMode) {
+            return false;
+        }
+        if (application.runtimeSettings.profiles != null) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isOfflineMode() {
+        return Request.getRequestService() instanceof OfflineRequestService;
     }
 }

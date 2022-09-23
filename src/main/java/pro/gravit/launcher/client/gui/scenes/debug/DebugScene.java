@@ -154,11 +154,6 @@ public class DebugScene extends AbstractScene {
         if (writeParametersThread != null) writeParametersThread.interrupt();
     }
 
-    public static class HasteResponse {
-        @LauncherNetworkAPI
-        public String key;
-    }
-
     public String hastebin(String log) throws IOException {
         if (application.guiModuleConfig.hastebinServer == null)
             throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
@@ -194,6 +189,11 @@ public class DebugScene extends AbstractScene {
             }
             return null;
         }
+    }
+
+    public static class HasteResponse {
+        @LauncherNetworkAPI
+        public String key;
     }
 
 }

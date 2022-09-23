@@ -1,7 +1,6 @@
 package pro.gravit.launcher.client;
 
 import javafx.application.Application;
-import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.RuntimeProvider;
@@ -14,13 +13,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class StdJavaRuntimeProvider implements RuntimeProvider {
-    public static volatile Path updatePath;
     private static final AtomicReference<StdJavaRuntimeProvider> INSTANCE = new AtomicReference<>();
+    public static volatile Path updatePath;
 
     public StdJavaRuntimeProvider() {
         INSTANCE.set(this);
@@ -39,13 +36,13 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
         LogHelper.debug("Start JavaFX Application");
         Application.launch(JavaFXApplication.class, args);
         LogHelper.debug("Post Application.launch method invoked");
-        if(updatePath != null) {
+        if (updatePath != null) {
             LauncherUpdater.nothing();
             LauncherEngine.beforeExit(0);
             Path target = IOHelper.getCodeSource(LauncherUpdater.class);
             try {
-                try(InputStream input = IOHelper.newInput(updatePath)) {
-                    try(OutputStream output = IOHelper.newOutput(target)) {
+                try (InputStream input = IOHelper.newInput(updatePath)) {
+                    try (OutputStream output = IOHelper.newOutput(target)) {
                         IOHelper.transfer(input, output);
                     }
                 }

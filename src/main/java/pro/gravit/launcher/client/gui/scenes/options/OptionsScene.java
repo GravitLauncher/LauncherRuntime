@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.scenes.options;
 
 import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -32,6 +31,7 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class OptionsScene extends AbstractScene {
+    private final Map<OptionalFile, Consumer<Boolean>> watchers = new HashMap<>();
     private Pane componentList;
     private OptionalView optionalView;
 
@@ -78,8 +78,6 @@ public class OptionsScene extends AbstractScene {
     public String getName() {
         return "options";
     }
-
-    private final Map<OptionalFile, Consumer<Boolean>> watchers = new HashMap<>();
 
     private void callWatcher(OptionalFile file, Boolean value) {
         for (Map.Entry<OptionalFile, Consumer<Boolean>> v : watchers.entrySet()) {

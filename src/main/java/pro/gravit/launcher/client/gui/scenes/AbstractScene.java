@@ -44,6 +44,10 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         this.launcherConfig = Launcher.getConfig();
     }
 
+    public static void runLater(double delay, EventHandler<ActionEvent> callback) {
+        fade(null, delay, 0.0, 1.0, callback);
+    }
+
     protected AbstractStage getCurrentStage() {
         return currentStage;
     }
@@ -251,9 +255,5 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public Node getHeader() {
         return header;
-    }
-
-    public static void runLater(double delay, EventHandler<ActionEvent> callback) {
-        fade(null, delay, 0.0, 1.0, callback);
     }
 }
