@@ -4,6 +4,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import javax.imageio.ImageIO;
@@ -159,10 +160,7 @@ public class SkinManager {
     private static BufferedImage downloadSkin(URL url) {
         HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36");
-            connection.setConnectTimeout(10000);
+            connection = (HttpURLConnection) IOHelper.newConnection(url);
             connection.connect();
             try (InputStream input = connection.getInputStream()) {
                 return ImageIO.read(input);

@@ -164,14 +164,10 @@ public class DebugScene extends AbstractScene {
             throw new NullPointerException("Regenerate the config \"JavaRuntime.json\"");
         URL url = new URL(application.guiModuleConfig.hastebinServer + "/documents");
 
-        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        HttpURLConnection connection = IOHelper.newConnectionPost(url);
         connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.setRequestMethod("POST");
         connection.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
         connection.setRequestProperty("Accept", "application/json");
-        connection.addRequestProperty("User-Agent", "Mozilla/4.76");
-        connection.setConnectTimeout(10000);
         try (OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream(), StandardCharsets.UTF_8)) {
             writer.write(log);
             writer.flush();
