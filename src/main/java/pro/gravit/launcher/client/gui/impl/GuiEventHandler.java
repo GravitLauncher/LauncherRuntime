@@ -54,7 +54,7 @@ public class GuiEventHandler implements RequestService.EventHandler {
                 }
                 AbstractScene scene = application.getCurrentScene();
                 if(scene instanceof ServerMenuScene || scene instanceof ServerInfoScene || scene instanceof SettingsScene | scene instanceof OptionsScene) {
-                    scene.reset();
+                    scene.contextHelper.runInFxThread(scene::reset);
                 }
             }
         } catch (Throwable e) {
