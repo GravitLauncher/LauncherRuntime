@@ -22,18 +22,18 @@ public abstract class AbstractVisualComponent {
     protected final FXExecutorService fxExecutor;
     protected AbstractStage currentStage;
     protected Pane layout;
+    protected boolean isResetOnShow = false;
+    boolean isInit;
     private String sysFxmlPath;
     private Parent sysFxmlRoot;
     private CompletableFuture<Node> sysFxmlFuture;
-    boolean isInit;
-    protected boolean isResetOnShow = false;
 
     protected AbstractVisualComponent(String fxmlPath, JavaFXApplication application) {
         this.application = application;
         this.sysFxmlPath = fxmlPath;
         this.contextHelper = new ContextHelper(this);
         this.fxExecutor = new FXExecutorService(contextHelper);
-        if(application.guiModuleConfig.lazy) {
+        if (application.guiModuleConfig.lazy) {
             this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
         }
     }
@@ -61,7 +61,7 @@ public abstract class AbstractVisualComponent {
     protected synchronized Parent getFxmlRoot() {
         try {
             if (sysFxmlRoot == null) {
-                if(sysFxmlFuture == null) {
+                if (sysFxmlFuture == null) {
                     this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
                 }
                 sysFxmlRoot = (Parent) sysFxmlFuture.get();

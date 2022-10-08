@@ -31,23 +31,6 @@ public class ContextHelper {
         return result;
     }
 
-    public <T> T runCallback(GuiExceptionCallback<T> callback) {
-        try {
-            return callback.call();
-        } catch (Throwable throwable) {
-            errorHandling(throwable);
-            return null;
-        }
-    }
-
-    public void runCallback(GuiExceptionRunnable callback) {
-        try {
-            callback.call();
-        } catch (Throwable throwable) {
-            errorHandling(throwable);
-        }
-    }
-
     public static CompletableFuture<Void> runInFxThreadStatic(GuiExceptionRunnable callback) {
         CompletableFuture<Void> result = new CompletableFuture<>();
         if (Platform.isFxApplicationThread()) {
@@ -68,6 +51,23 @@ public class ContextHelper {
             });
         }
         return result;
+    }
+
+    public <T> T runCallback(GuiExceptionCallback<T> callback) {
+        try {
+            return callback.call();
+        } catch (Throwable throwable) {
+            errorHandling(throwable);
+            return null;
+        }
+    }
+
+    public void runCallback(GuiExceptionRunnable callback) {
+        try {
+            callback.call();
+        } catch (Throwable throwable) {
+            errorHandling(throwable);
+        }
     }
 
     public final <T> CompletableFuture<T> runInFxThread(GuiExceptionCallback<T> callback) {

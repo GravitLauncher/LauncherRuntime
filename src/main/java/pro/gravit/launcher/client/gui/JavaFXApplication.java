@@ -4,7 +4,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import pro.gravit.launcher.*;
+import pro.gravit.launcher.Launcher;
+import pro.gravit.launcher.LauncherConfig;
+import pro.gravit.launcher.LauncherEngine;
+import pro.gravit.launcher.NewLauncherSettings;
 import pro.gravit.launcher.api.DialogService;
 import pro.gravit.launcher.client.*;
 import pro.gravit.launcher.client.events.ClientExitPhase;
@@ -15,7 +18,9 @@ import pro.gravit.launcher.client.gui.config.GuiModuleConfig;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.config.StdSettingsManager;
 import pro.gravit.launcher.client.gui.helper.EnFSHelper;
-import pro.gravit.launcher.client.gui.impl.*;
+import pro.gravit.launcher.client.gui.impl.GuiEventHandler;
+import pro.gravit.launcher.client.gui.impl.GuiObjectsContainer;
+import pro.gravit.launcher.client.gui.impl.MessageManager;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.service.*;
 import pro.gravit.launcher.client.gui.stage.PrimaryStage;
@@ -28,7 +33,6 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.auth.AuthRequest;
-import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandCategory;
 import pro.gravit.utils.command.CommandHandler;
@@ -41,7 +45,9 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.PropertyResourceBundle;
+import java.util.ResourceBundle;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,6 +57,7 @@ public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
     private static final AtomicBoolean IS_NOGUI = new AtomicBoolean(false);
     private static Path runtimeDirectory = null;
+    private static Path enfsDirectory;
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newWorkStealingPool(4);
     public RuntimeSettings runtimeSettings;
@@ -70,7 +77,7 @@ public class JavaFXApplication extends Application {
     private PrimaryStage mainStage;
     private boolean debugMode;
     private ResourceBundle resources;
-    private static Path enfsDirectory;
+    private CommandCategory runtimeCategory;
 
     public JavaFXApplication() {
         INSTANCE.set(this);
@@ -78,6 +85,28 @@ public class JavaFXApplication extends Application {
 
     public static JavaFXApplication getInstance() {
         return INSTANCE.get();
+    }
+
+    public static URL getResourceURL(String name) throws IOException {
+        if (runtimeDirectory != null) {
+            Path target = runtimeDirectory.resolve(name);
+            if (!Files.exists(target))
+                throw new FileNotFoundException(String.format("File runtime/%s not found", name));
+            return target.toUri().toURL();
+        } else if (enfsDirectory != null) {
+            return getResourceEnFs(name);
+        } else {
+            return Launcher.getResourceURL(name);
+        }
+    }
+
+    private static URL getResourceEnFs(String name) throws IOException {
+        return EnFSHelper.getURL(enfsDirectory.resolve(name).toString().replaceAll("\\\\", "/"));
+        //return EnFS.main.getURL(enfsDirectory.resolve(name));
+    }
+
+    public static void setNoGUIMode(boolean isNogui) {
+        IS_NOGUI.set(isNogui);
     }
 
     public AbstractScene getCurrentScene() {
@@ -163,8 +192,8 @@ public class JavaFXApplication extends Application {
             DialogService.setDialogImpl(dialogService);
             DialogService.setNotificationImpl(dialogService);
         }
-        if(offlineService.isOfflineMode()) {
-            if(!offlineService.isAvailableOfflineMode() && !debugMode) {
+        if (offlineService.isOfflineMode()) {
+            if (!offlineService.isAvailableOfflineMode() && !debugMode) {
                 messageManager.showDialog(getTranslation("runtime.offline.dialog.header"), getTranslation("runtime.offline.dialog.text"), Platform::exit, Platform::exit, false);
                 return;
             }
@@ -178,7 +207,7 @@ public class JavaFXApplication extends Application {
             if (!IS_NOGUI.get()) {
                 mainStage.setScene(gui.loginScene);
                 mainStage.show();
-                if(offlineService.isOfflineMode()) {
+                if (offlineService.isOfflineMode()) {
                     messageManager.createNotification(getTranslation("runtime.offline.notification.header"), getTranslation("runtime.offline.notification.text"));
                 }
             } else {
@@ -202,12 +231,10 @@ public class JavaFXApplication extends Application {
     }
 
     public void resetDirectory() throws IOException {
-        if(enfsDirectory != null) {
+        if (enfsDirectory != null) {
             enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
         }
     }
-
-    private CommandCategory runtimeCategory;
 
     private void registerCommands() {
         runtimeCategory = new BaseCommandCategory();
@@ -223,7 +250,6 @@ public class JavaFXApplication extends Application {
         runtimeCategory.registerCommand("runtime", new RuntimeCommand(this));
     }
 
-
     @Override
     public void stop() {
         LogHelper.debug("JavaFX method stop invoked");
@@ -236,24 +262,6 @@ public class JavaFXApplication extends Application {
 
     private InputStream getResource(String name) throws IOException {
         return IOHelper.newInput(getResourceURL(name));
-    }
-
-    public static URL getResourceURL(String name) throws IOException {
-        if (runtimeDirectory != null) {
-            Path target = runtimeDirectory.resolve(name);
-            if (!Files.exists(target))
-                throw new FileNotFoundException(String.format("File runtime/%s not found", name));
-            return target.toUri().toURL();
-        } else if (enfsDirectory != null) {
-            return getResourceEnFs(name);
-        } else {
-            return Launcher.getResourceURL(name);
-        }
-    }
-
-    private static URL getResourceEnFs(String name) throws IOException {
-        return EnFSHelper.getURL(enfsDirectory.resolve(name).toString().replaceAll("\\\\", "/"));
-        //return EnFS.main.getURL(enfsDirectory.resolve(name));
     }
 
     public URL tryResource(String name) {
@@ -278,10 +286,6 @@ public class JavaFXApplication extends Application {
             runtimeSettings.profileSettings.put(uuid, settings);
         }
         return settings;
-    }
-
-    public static void setNoGUIMode(boolean isNogui) {
-        IS_NOGUI.set(isNogui);
     }
 
     public void setMainScene(AbstractScene scene) throws Exception {

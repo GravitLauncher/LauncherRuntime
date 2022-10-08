@@ -22,9 +22,11 @@ import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.auth.SetProfileRequest;
-import pro.gravit.utils.helper.*;
+import pro.gravit.utils.helper.CommonHelper;
+import pro.gravit.utils.helper.JVMHelper;
+import pro.gravit.utils.helper.JavaHelper;
+import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -123,7 +125,7 @@ public class ServerInfoScene extends AbstractScene {
                 }
             });
         };
-        if(profile.getVersion().compareTo(ClientProfile.Version.MC164) <= 0) {
+        if (profile.getVersion().compareTo(ClientProfile.Version.MC164) <= 0) {
             application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, null, false, next);
         } else {
             application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, profile.getAssetIndex(), next);
@@ -132,10 +134,10 @@ public class ServerInfoScene extends AbstractScene {
 
     private void doLaunchClient(Path assetDir, HashedDir assetHDir, Path clientDir, HashedDir clientHDir, ClientProfile profile, OptionalView view, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
         RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-        if(javaVersion == null) {
+        if (javaVersion == null) {
             javaVersion = application.javaService.getRecommendJavaVersion(profile);
         }
-        if(javaVersion == null) {
+        if (javaVersion == null) {
             javaVersion = JavaHelper.JavaVersion.getCurrentJavaVersion();
         }
         ClientLauncherProcess clientLauncherProcess = new ClientLauncherProcess(clientDir, assetDir, javaVersion,
@@ -188,12 +190,16 @@ public class ServerInfoScene extends AbstractScene {
     }
 
     private void showJavaAlert(ClientProfile profile) {
-        if((JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM32 || JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0) {
+        if ((JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM32 || JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0) {
             application.messageManager.showDialog(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.header"),
-                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.description"), profile.getRecommendJavaVersion()), () -> {}, () -> {}, true);
+                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.lwjgl2.description"), profile.getRecommendJavaVersion()), () -> {
+                    }, () -> {
+                    }, true);
         } else {
             application.messageManager.showDialog(application.getTranslation("runtime.scenes.serverinfo.javaalert.header"),
-                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.description"), profile.getRecommendJavaVersion()), () -> {}, () -> {}, true);
+                    String.format(application.getTranslation("runtime.scenes.serverinfo.javaalert.description"), profile.getRecommendJavaVersion()), () -> {
+                    }, () -> {
+                    }, true);
         }
     }
 
@@ -205,25 +211,25 @@ public class ServerInfoScene extends AbstractScene {
             hideOverlay(0, (ev) -> {
                 RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
                 JavaHelper.JavaVersion javaVersion = null;
-                for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
-                    if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
+                for (JavaHelper.JavaVersion v : application.javaService.javaVersions) {
+                    if (v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
                         javaVersion = v;
                     }
                 }
-                if(javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
+                if (javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
                     try {
                         javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
                     } catch (Throwable e) {
-                        if(LogHelper.isDevEnabled()) {
+                        if (LogHelper.isDevEnabled()) {
                             LogHelper.error(e);
                         }
                         LogHelper.warning("Incorrect java path %s", profileSettings.javaPath);
                     }
                 }
-                if(javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
+                if (javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
                     javaVersion = application.javaService.getRecommendJavaVersion(profile);
                 }
-                if(javaVersion == null) {
+                if (javaVersion == null) {
                     showJavaAlert(profile);
                     return;
                 }
@@ -236,10 +242,10 @@ public class ServerInfoScene extends AbstractScene {
                         errorHandle(e);
                     }
                     application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, true, application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
+                        if (JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
                             Path javaFile = finalJavaVersion.jvmDir.resolve("bin").resolve("java");
-                            if(Files.exists(javaFile)) {
-                                if(!javaFile.toFile().setExecutable(true)) {
+                            if (Files.exists(javaFile)) {
+                                if (!javaFile.toFile().setExecutable(true)) {
                                     LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
                                 }
                             }

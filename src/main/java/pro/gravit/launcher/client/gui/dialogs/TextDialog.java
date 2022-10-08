@@ -9,12 +9,10 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import java.util.function.Consumer;
 
 public class TextDialog extends AbstractDialog {
-    private String header;
-    private String text;
-
     private final Consumer<String> onAccept;
     private final Runnable onClose;
-
+    private String header;
+    private String text;
     private Label textHeader;
     private Label textDescription;
     private TextField textField;

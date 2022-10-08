@@ -20,7 +20,7 @@ public class StateService {
 
     public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if(rawAuthResult.oauth != null) {
+        if (rawAuthResult.oauth != null) {
             Request.setOAuth(authId, rawAuthResult.oauth);
         }
     }
@@ -50,7 +50,7 @@ public class StateService {
     }
 
     public boolean checkPermission(String name) {
-        if(rawAuthResult == null || rawAuthResult.permissions == null) {
+        if (rawAuthResult == null || rawAuthResult.permissions == null) {
             return false;
         }
         return rawAuthResult.permissions.hasPerm(name);

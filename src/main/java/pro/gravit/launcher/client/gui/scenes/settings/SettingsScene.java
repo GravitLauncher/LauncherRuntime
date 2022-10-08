@@ -98,9 +98,9 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDir = newDir;
             String oldDir = DirBridge.dirUpdates.toString();
             DirBridge.dirUpdates = newDir;
-            for(ClientProfile profile : application.stateService.getProfiles()) {
+            for (ClientProfile profile : application.stateService.getProfiles()) {
                 RuntimeSettings.ProfileSettings settings = application.getProfileSettings(profile);
-                if(settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
+                if (settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
                     settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
                 }
             }

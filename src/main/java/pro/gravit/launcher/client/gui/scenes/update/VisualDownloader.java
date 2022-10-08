@@ -7,7 +7,6 @@ import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.events.request.UpdateRequestEvent;
 import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
@@ -15,7 +14,6 @@ import pro.gravit.launcher.hasher.HashedFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
 import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
-import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.update.UpdateRequest;
 import pro.gravit.utils.Downloader;
 import pro.gravit.utils.helper.IOHelper;
@@ -25,7 +23,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -34,18 +35,14 @@ public class VisualDownloader {
     private final AtomicLong totalDownloaded = new AtomicLong(0);
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
-
-    private long totalSize;
-    private Downloader downloader;
-
     private final ProgressBar progressBar;
     private final Text speed;
     private final Label volume;
-
     private final Consumer<Throwable> errorHandle;
     private final Consumer<String> addLog;
-
     private final ExecutorService executor;
+    private long totalSize;
+    private Downloader downloader;
 
     public VisualDownloader(JavaFXApplication application, ProgressBar progressBar, Text speed, Label volume, Consumer<Throwable> errorHandle, Consumer<String> addLog) {
         this.application = application;
@@ -177,19 +174,20 @@ public class VisualDownloader {
             Path localAssetIndexPath = dir.resolve(assetIndexPath);
             boolean needUpdateIndex;
             HashedDir.FindRecursiveResult result = targetHDir.findRecursive(assetIndexPath);
-            if(!(result.entry instanceof HashedFile)) {
+            if (!(result.entry instanceof HashedFile)) {
                 addLog.accept(String.format("ERROR: assetIndex %s not found", assetIndex));
                 errorHandle.accept(new RuntimeException("assetIndex not found"));
                 return;
-            };
-            if(Files.exists(localAssetIndexPath)) {
+            }
+            ;
+            if (Files.exists(localAssetIndexPath)) {
                 HashedFile file = new HashedFile(localAssetIndexPath, Files.size(localAssetIndexPath), true);
-                needUpdateIndex = !((HashedFile)result.entry).isSame(file);
+                needUpdateIndex = !((HashedFile) result.entry).isSame(file);
             } else {
                 IOHelper.createParentDirs(localAssetIndexPath);
                 needUpdateIndex = true;
             }
-            if(needUpdateIndex) {
+            if (needUpdateIndex) {
                 List<AsyncDownloader.SizedFile> adds = new ArrayList<>(1);
                 adds.add(new AsyncDownloader.SizedFile(assetIndexPath, ((HashedFile) result.entry).size));
                 downloadFiles(dir, adds, baseUrl, () -> {
@@ -318,17 +316,6 @@ public class VisualDownloader {
         }
     }
 
-    private static class PathRemapperData {
-        public String key;
-        public String value;
-
-        public PathRemapperData(String key, String value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
-
-
     private void updateProgress(long oldValue, long newValue) {
         double add = (double) (newValue - oldValue) / (double) totalSize; // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
@@ -362,5 +349,15 @@ public class VisualDownloader {
 
     public boolean isCanceled() {
         return downloader.isCanceled();
+    }
+
+    private static class PathRemapperData {
+        public String key;
+        public String value;
+
+        public PathRemapperData(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
     }
 }

@@ -24,8 +24,8 @@ public class TriggerManager {
     public void process(ClientProfile profile, OptionalView view) {
         TriggerManagerContext context = new TriggerManagerContext(profile);
         for (OptionalFile optional : view.all) {
-            if(optional.limited) {
-                if(!stateService.checkPermission(String.format("launcher.runtime.optionals.%s.%s.show", profile.getUUID(), optional.name.toLowerCase(Locale.ROOT)))) {
+            if (optional.limited) {
+                if (!stateService.checkPermission(String.format("launcher.runtime.optionals.%s.%s.show", profile.getUUID(), optional.name.toLowerCase(Locale.ROOT)))) {
                     view.disable(optional, null);
                     optional.visible = false;
                 } else {

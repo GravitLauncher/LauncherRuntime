@@ -27,7 +27,7 @@ public class LoginAuthButtonComponent {
         this.authActive = LookupHelper.lookup(layout, "#authActive");
         this.authBorder = LookupHelper.lookup(authActive, "#authBorder");
         this.button = LookupHelper.lookup(authActive, "#authButton");
-        this.authsvg = ((Pane)button.getGraphic()).getChildren().get(0);
+        this.authsvg = ((Pane) button.getGraphic()).getChildren().get(0);
         this.button.setOnMouseEntered(e -> {
             this.authBorder.setVisible(true);
         });

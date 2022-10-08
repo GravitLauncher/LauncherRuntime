@@ -88,6 +88,10 @@ public class RuntimeSettings extends UserSettings {
         @LauncherNetworkAPI
         public String javaPath;
 
+        public ProfileSettings() {
+
+        }
+
         public static ProfileSettings getDefault(JavaService javaService, ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
             ClientProfile.ProfileDefaultSettings defaultSettings = profile.getSettings();
@@ -95,14 +99,10 @@ public class RuntimeSettings extends UserSettings {
             settings.autoEnter = defaultSettings.autoEnter;
             settings.fullScreen = defaultSettings.fullScreen;
             JavaHelper.JavaVersion version = javaService.getRecommendJavaVersion(profile);
-            if(version != null) {
+            if (version != null) {
                 settings.javaPath = version.jvmDir.toString();
             }
             return settings;
-        }
-
-        public ProfileSettings() {
-
         }
     }
 

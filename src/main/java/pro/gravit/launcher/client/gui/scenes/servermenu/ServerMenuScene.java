@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -32,6 +31,19 @@ public class ServerMenuScene extends AbstractScene {
         super("scenes/servermenu/servermenu.fxml", application);
     }
 
+    public static boolean putAvatarToImageView(JavaFXApplication application, String username, ImageView imageView) {
+        int width = (int) imageView.getFitWidth();
+        int height = (int) imageView.getFitHeight();
+        Image head = application.skinManager.getScaledFxSkinHead(username, width, height);
+        if (head == null) return false;
+        imageView.setImage(head);
+        return true;
+    }
+
+    public static ServerButtonComponent getServerButton(JavaFXApplication application, ClientProfile profile) {
+        return new ServerButtonComponent(application, profile);
+    }
+
     @Override
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
@@ -56,24 +68,6 @@ public class ServerMenuScene extends AbstractScene {
         });
         reset();
         isResetOnShow = true;
-    }
-
-    static class ServerButtonCache {
-        public ServerButtonComponent serverButton;
-        public int position;
-    }
-
-    public static boolean putAvatarToImageView(JavaFXApplication application, String username, ImageView imageView) {
-        int width = (int) imageView.getFitWidth();
-        int height = (int) imageView.getFitHeight();
-        Image head = application.skinManager.getScaledFxSkinHead(username, width, height);
-        if (head == null) return false;
-        imageView.setImage(head);
-        return true;
-    }
-
-    public static ServerButtonComponent getServerButton(JavaFXApplication application, ClientProfile profile) {
-        return new ServerButtonComponent(application, profile);
     }
 
     @Override
@@ -139,5 +133,10 @@ public class ServerMenuScene extends AbstractScene {
     private void changeServer(ClientProfile profile) {
         application.stateService.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
+    }
+
+    static class ServerButtonCache {
+        public ServerButtonComponent serverButton;
+        public int position;
     }
 }

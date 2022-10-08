@@ -36,17 +36,6 @@ public class LookupHelper {
         return Optional.of((T) current);
     }
 
-    public static class Point2D {
-        public double x;
-        public double y;
-
-        public Point2D(double x, double y) {
-            this.x = x;
-            this.y = y;
-        }
-
-    }
-
     public static <T extends Node> Point2D getAbsoluteCords(Node child, Node parent) {
         Point2D point2D = new Point2D(0, 0);
         // Node current = child //Crash in runtime
@@ -58,6 +47,17 @@ public class LookupHelper {
             if (current == null) break;
         }
         return point2D;
+    }
+
+    public static class Point2D {
+        public double x;
+        public double y;
+
+        public Point2D(double x, double y) {
+            this.x = x;
+            this.y = y;
+        }
+
     }
 
     public static class LookupException extends RuntimeException {

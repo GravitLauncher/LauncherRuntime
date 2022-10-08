@@ -6,13 +6,11 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 
 public class ApplyDialog extends AbstractDialog {
-    private String header;
-    private String text;
-
     private final Runnable onAccept;
     private final Runnable onDeny;
     private final Runnable onClose;
-
+    private String header;
+    private String text;
     private Label textHeader;
     private Label textDescription;
 

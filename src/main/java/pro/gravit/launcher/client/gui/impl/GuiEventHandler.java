@@ -13,7 +13,6 @@ import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.WebSocketEvent;
-import pro.gravit.launcher.request.websockets.ClientWebSocketService;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.UUID;

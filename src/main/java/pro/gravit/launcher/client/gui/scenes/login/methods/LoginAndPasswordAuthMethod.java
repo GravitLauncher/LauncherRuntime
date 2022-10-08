@@ -103,14 +103,14 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             login.textProperty().addListener(l -> {
                 authButton.setActive(!login.getText().isEmpty());
             });
-            
+
             if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
-                    application.openURL(application.guiModuleConfig.createAccountURL));
+                LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
+                        application.openURL(application.guiModuleConfig.createAccountURL));
             if (application.guiModuleConfig.forgotPassURL != null)
                 LookupHelper.<Text>lookup(layout, "#forgotPass").setOnMouseClicked((e) ->
                         application.openURL(application.guiModuleConfig.forgotPassURL));
-            
+
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
                 authButton.setActive(true);

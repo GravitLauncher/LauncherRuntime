@@ -1,11 +1,14 @@
 package pro.gravit.launcher.client;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.HardwareReportRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
 import pro.gravit.launcher.utils.HWIDProvider;
-import pro.gravit.utils.helper.*;
+import pro.gravit.utils.helper.CommonHelper;
+import pro.gravit.utils.helper.LogHelper;
+import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.IOException;
 
@@ -29,7 +32,7 @@ public class RuntimeSecurityService {
                 application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
                         .thenAccept((event1) -> {
                             Request.addExtendedToken("publicKey", event1.extendedToken);
-                            if(event1.hardwareExtendedToken != null) {
+                            if (event1.hardwareExtendedToken != null) {
                                 Request.addExtendedToken("hardware", event1.hardwareExtendedToken);
                             }
                             if (!event1.needHardwareInfo) {

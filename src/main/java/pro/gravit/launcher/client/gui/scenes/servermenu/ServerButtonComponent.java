@@ -56,7 +56,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
             }
         });
         application.pingService.getPingReport(profile.getDefaultServerProfile().name).thenAccept((report) -> {
-            if(report == null) {
+            if (report == null) {
                 LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
             } else {
                 LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(report.playersOnline));
