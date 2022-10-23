@@ -117,6 +117,12 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     private void swapOverlay(Pane newOverlay, EventHandler<ActionEvent> onFinished) {
         if (currentOverlayNode == null)
             throw new IllegalStateException("Try swap null overlay");
+        if (hideTransformStarted) {
+            if (onFinished != null) {
+                contextHelper.runInFxThread(() -> onFinished.handle(null));
+            }
+        }
+        hideTransformStarted = true;
         Pane root = (Pane) scene.getRoot();
         fade(currentOverlayNode, 0, 1.0, 0.0, (e) -> {
             if (currentOverlayNode != newOverlay) {
@@ -128,7 +134,12 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             currentOverlayNode = newOverlay;
             newOverlay.toFront();
             newOverlay.requestFocus();
-            fade(newOverlay, 0.0, 0.0, 1.0, onFinished);
+            fade(newOverlay, 0.0, 0.0, 1.0, (ev) -> {
+                hideTransformStarted = false;
+                if(onFinished != null) {
+                    onFinished.handle(ev);
+                }
+            });
         });
     }
 

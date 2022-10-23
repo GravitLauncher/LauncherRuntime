@@ -241,11 +241,12 @@ public class VisualDownloader {
         totalDownloaded.set(0);
         lastUpdateTime.set(System.currentTimeMillis());
         lastDownloaded.set(0);
-        totalSize = 0;
         progressBar.progressProperty().setValue(0);
     }
 
     private List<AsyncDownloader.SizedFile> getFilesList(Path dir, LinkedList<PathRemapperData> pathRemapper, HashedDir mismatch) throws IOException {
+        totalSize = 0;
+
         final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
         mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
             String urlPath = path;
