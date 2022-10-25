@@ -23,13 +23,13 @@ public class ConsoleScene extends AbstractScene {
     }
 
     public static String getLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s %s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"), JVMHelper.JVM_BITS,
-                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+        return String.format("Launcher %s | Java %d(%s %s) x%d | %s %s",
+            Version.getVersion(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"), JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(), JVMHelper.ARCH_TYPE);
     }
 
     public static String getMiniLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS,
-                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+        return String.format("Launcher %s | Java %d(%s) x%d | %s %s",
+            Version.getVersion(), JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(), JVMHelper.ARCH_TYPE);
     }
 
     @Override
