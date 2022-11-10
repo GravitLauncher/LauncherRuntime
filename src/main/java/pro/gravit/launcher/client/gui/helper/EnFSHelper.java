@@ -51,10 +51,10 @@ public class EnFSHelper {
         Set<String> themePaths;
         String startThemePrefix;
         if (theme != null) {
-            startThemePrefix = String.format("themes/%s/", theme);
             if (themesCached.contains(theme)) {
                 return enfsDirectory;
             }
+            startThemePrefix = String.format("themes/%s/", theme);
             EnFS.main.newDirectory(enfsDirectory);
             themePaths = new HashSet<>();
             // First stage - collect themes path
@@ -63,6 +63,7 @@ public class EnFSHelper {
                     themePaths.add(name.substring(startThemePrefix.length()));
                 }
             });
+            themesCached.add(theme);
         } else {
             startThemePrefix = "themes/common/";
             themePaths = Collections.emptySet();

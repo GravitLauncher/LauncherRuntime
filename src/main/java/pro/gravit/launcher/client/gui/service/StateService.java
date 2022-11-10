@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.service;
 
 import pro.gravit.launcher.events.request.AuthRequestEvent;
+import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
@@ -17,12 +18,35 @@ public class StateService {
     private List<ClientProfile> profiles;
     private ClientProfile profile;
     private Map<ClientProfile, OptionalView> optionalViewMap;
+    private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
 
     public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
         if(rawAuthResult.oauth != null) {
             Request.setOAuth(authId, rawAuthResult.oauth);
         }
+    }
+
+    public void setAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability info) {
+        this.authAvailability = info;
+    }
+
+    public GetAvailabilityAuthRequestEvent.AuthAvailability getAuthAvailability() {
+        return authAvailability;
+    }
+
+    public boolean isSupportedAuthFeature(String feature) {
+        if(authAvailability == null || authAvailability.apiFeatures == null) {
+            return false;
+        }
+        return authAvailability.apiFeatures.contains(feature);
+    }
+
+    public String getApiUrl() {
+        if(authAvailability == null || authAvailability.apiUrl == null) {
+            return null;
+        }
+        return authAvailability.apiUrl;
     }
 
     public Map<ClientProfile, OptionalView> getOptionalViewMap() {
