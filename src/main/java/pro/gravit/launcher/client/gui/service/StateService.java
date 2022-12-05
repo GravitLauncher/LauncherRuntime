@@ -73,6 +73,12 @@ public class StateService {
         return rawAuthResult.playerProfile.username;
     }
 
+    public String getMainRole() {
+        if (rawAuthResult == null || rawAuthResult.permissions == null || rawAuthResult.permissions.getRoles() == null || rawAuthResult.permissions.getRoles().isEmpty())
+            return "";
+        return rawAuthResult.permissions.getRoles().get(0);
+    }
+
     public boolean checkPermission(String name) {
         if(rawAuthResult == null || rawAuthResult.permissions == null) {
             return false;
