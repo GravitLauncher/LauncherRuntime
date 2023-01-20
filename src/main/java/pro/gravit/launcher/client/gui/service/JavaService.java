@@ -30,7 +30,7 @@ public class JavaService {
                         int build = Integer.parseInt(matcher.group("build"));
                         JVMHelper.ARCH arch = JVMHelper.ARCH.valueOf(matcher.group("arch"));
                         boolean javafx = Boolean.parseBoolean(matcher.group("javafx"));
-                        if (arch != JVMHelper.ARCH_TYPE) {
+                        if (!isArchAvailable(arch)) {
                             continue;
                         }
                         if(!JVMHelper.OS_TYPE.name.equals(os)) {
@@ -50,6 +50,16 @@ public class JavaService {
             versions.addAll(JavaHelper.findJava());
         }
         javaVersions = Collections.unmodifiableList(versions);
+    }
+
+    public boolean isArchAvailable(JVMHelper.ARCH arch) {
+        if(JVMHelper.ARCH_TYPE == arch) {
+            return true;
+        }
+        if(arch == JVMHelper.ARCH.X86_64 && JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE && !JVMHelper.isJVMMatchesSystemArch()) {
+            return true;
+        }
+        return false;
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
