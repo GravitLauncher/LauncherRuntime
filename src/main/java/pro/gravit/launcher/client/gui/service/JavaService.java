@@ -56,7 +56,8 @@ public class JavaService {
         if(JVMHelper.ARCH_TYPE == arch) {
             return true;
         }
-        if(arch == JVMHelper.ARCH.X86_64 && JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE && !JVMHelper.isJVMMatchesSystemArch()) {
+        if(arch == JVMHelper.ARCH.X86_64 && JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE &&
+                (( JVMHelper.ARCH_TYPE == JVMHelper.ARCH.X86 && !JVMHelper.isJVMMatchesSystemArch()) || JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64)) {
             return true;
         }
         return false;
