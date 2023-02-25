@@ -5,6 +5,7 @@ import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
+import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 
@@ -61,9 +62,10 @@ public class StateService {
         this.profiles = rawProfilesResult.profiles;
         this.profiles.sort(ClientProfile::compareTo);
         if (this.optionalViewMap == null) this.optionalViewMap = new HashMap<>();
-        else this.optionalViewMap.clear();
         for (ClientProfile profile : profiles) {
-            this.optionalViewMap.put(profile, new OptionalView(profile));
+            OptionalView oldView = this.optionalViewMap.get(profile);
+            OptionalView newView = oldView != null ? new OptionalView(profile, oldView) : new OptionalView(profile);
+            this.optionalViewMap.put(profile, newView);
         }
     }
 
