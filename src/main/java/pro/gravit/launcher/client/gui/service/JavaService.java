@@ -68,7 +68,6 @@ public class JavaService {
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
         return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
-                || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE)
                 || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
     }
 
