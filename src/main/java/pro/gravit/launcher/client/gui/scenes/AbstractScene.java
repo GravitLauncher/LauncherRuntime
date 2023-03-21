@@ -37,7 +37,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     private Node currentOverlayNode;
     private AbstractOverlay currentOverlay;
     private AtomicInteger enabled = new AtomicInteger(0);
-    private boolean hideTransformStarted = false;
+    private volatile boolean hideTransformStarted = false;
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         super(fxmlPath, application);

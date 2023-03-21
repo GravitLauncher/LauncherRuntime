@@ -78,11 +78,10 @@ public class JavaRuntimeModule extends LauncherModule {
         }
         try {
             Method m = JavaFXApplication.class.getMethod(new String(Base64.getDecoder().decode("c3RhcnQ=")), Stage.class); // Fix proguard remapping
-            LogHelper.warning("Method %s", m.toGenericString());
-            if(Modifier.isAbstract(m.getModifiers())) {
-                throw new RuntimeException("Method start is abstract");
+            if(m.getDeclaringClass() != JavaFXApplication.class) {
+                throw new RuntimeException("Method start not override");
             }
-        } catch (Exception exception) {
+        } catch (Throwable exception) {
             LogHelper.error(exception);
             noInitMethodAlert();
             LauncherEngine.exitLauncher(0);
