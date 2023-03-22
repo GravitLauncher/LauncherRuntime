@@ -102,8 +102,13 @@ public class DebugScene extends AbstractScene {
     }
 
     public void onProcess(Process process) {
-        if (readThread != null && readThread.isAlive())
+        if (readThread != null && readThread.isAlive()) {
             readThread.interrupt();
+            try {
+                readThread.join(1000);
+            } catch (InterruptedException ignored) {
+            }
+        }
         if (currentProcess != null && currentProcess.isAlive())
             currentProcess.destroyForcibly();
         readThread = CommonHelper.newThread("Client Process Console Reader", true, () -> {

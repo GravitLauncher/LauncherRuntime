@@ -49,6 +49,9 @@ public class SkinManager {
             Optional<Image> result = fxImageRef.get();
             if (result == null) { // It is normal
                 BufferedImage image = getFullImage();
+                if(image == null) {
+                    return null;
+                }
                 result = Optional.ofNullable(convertToFxImage(image));
                 fxImageRef = new SoftReference<>(result);
             }
@@ -59,6 +62,9 @@ public class SkinManager {
             Optional<BufferedImage> result = avatarRef.get();
             if (result == null) { // It is normal
                 BufferedImage image = getFullImage();
+                if(image == null) {
+                    return null;
+                }
                 result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
                 avatarRef = new SoftReference<>(result);
             }
@@ -69,6 +75,9 @@ public class SkinManager {
             Optional<Image> result = fxAvatarRef.get();
             if (result == null) { // It is normal
                 BufferedImage image = getHeadImage();
+                if(image == null) {
+                    return null;
+                }
                 result = Optional.ofNullable(convertToFxImage(image));
                 fxAvatarRef = new SoftReference<>(result);
             }
@@ -143,6 +152,9 @@ public class SkinManager {
 
     public Image getScaledFxSkinHead(String username, int width, int height) {
         BufferedImage image = getSkinHead(username);
+        if(image == null) {
+            return null;
+        }
         return convertToFxImage(scaleImage(image, width, height));
     }
 
