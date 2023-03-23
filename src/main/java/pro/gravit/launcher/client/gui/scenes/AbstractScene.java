@@ -34,8 +34,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     protected Scene scene;
     protected Pane header;
     protected Pane disablePane;
-    private Node currentOverlayNode;
-    private AbstractOverlay currentOverlay;
+    private volatile Node currentOverlayNode;
+    private volatile AbstractOverlay currentOverlay;
     private AtomicInteger enabled = new AtomicInteger(0);
     private volatile boolean hideTransformStarted = false;
 
