@@ -128,11 +128,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
             if (currentOverlayNode != newOverlay) {
                 ObservableList<Node> child = root.getChildren();
                 int index = child.indexOf(currentOverlayNode);
-                if(index < 0) {
-                    child.add(newOverlay);
-                } else {
-                    child.set(index, newOverlay);
-                }
+                child.set(index, newOverlay);
             }
             newOverlay.setLayoutX((root.getPrefWidth() - newOverlay.getPrefWidth()) / 2.0);
             newOverlay.setLayoutY((root.getPrefHeight() - newOverlay.getPrefHeight()) / 2.0);

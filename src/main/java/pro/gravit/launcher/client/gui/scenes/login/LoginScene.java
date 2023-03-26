@@ -107,8 +107,6 @@ public class LoginScene extends AbstractScene {
                     changeAuthAvailability(auth.list.get(0));
                 }
                 hideOverlay(0, (event) -> {
-                    if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
-                        contextHelper.runCallback(this::loginWithGui);
                     if(application.isDebugMode()) {
                         postInit();
                     }
