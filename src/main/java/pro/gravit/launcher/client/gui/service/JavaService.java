@@ -37,7 +37,7 @@ public class JavaService {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
-                        LogHelper.debug("In-Launcher Java Version found: Java %db%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
+                        LogHelper.debug("In-Launcher Java Version found: Java %d b%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
                         JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, arch, javafx);
                         versions.add(javaVersion);
                     } else {
