@@ -69,8 +69,10 @@ public class ServerButtonComponent extends AbstractVisualComponent {
         };
         for(ClientProfile.ServerProfile serverProfile : profile.getServers()) {
             application.pingService.getPingReport(serverProfile.name).thenAccept((report) -> {
-                currentOnline.addAndGet(report.playersOnline);
-                maxOnline.addAndGet(report.maxPlayers);
+                if(report != null) {
+                    currentOnline.addAndGet(report.playersOnline);
+                    maxOnline.addAndGet(report.maxPlayers);
+                }
                 update.run();
             });
         }
