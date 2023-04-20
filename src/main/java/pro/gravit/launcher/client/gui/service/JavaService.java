@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui.service;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.ClientProfileVersions;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.JavaHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -68,7 +69,7 @@ public class JavaService {
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
         return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
-                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
+                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfileVersions.MINECRAFT_1_12_2) <= 0);
     }
 
     public boolean contains(Path dir) {
