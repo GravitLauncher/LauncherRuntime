@@ -14,6 +14,7 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.net.URL;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ServerButtonComponent extends AbstractVisualComponent {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
@@ -55,13 +56,24 @@ public class ServerButtonComponent extends AbstractVisualComponent {
                 LogHelper.error(e);
             }
         });
-        application.pingService.getPingReport(profile.getDefaultServerProfile().name).thenAccept((report) -> {
-            if(report == null) {
-                LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
-            } else {
-                LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(report.playersOnline));
-            }
-        });
+        AtomicLong currentOnline = new AtomicLong(0);
+        AtomicLong maxOnline = new AtomicLong(0);
+        Runnable update = () -> {
+            contextHelper.runInFxThread(() -> {
+                if(currentOnline.get() == 0 && maxOnline.get() == 0) {
+                    LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
+                } else {
+                    LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(currentOnline.get()));
+                }
+            });
+        };
+        for(ClientProfile.ServerProfile serverProfile : profile.getServers()) {
+            application.pingService.getPingReport(serverProfile.name).thenAccept((report) -> {
+                currentOnline.addAndGet(report.playersOnline);
+                maxOnline.addAndGet(report.maxPlayers);
+                update.run();
+            });
+        }
         saveButton = LookupHelper.lookup(layout, "#save");
         resetButton = LookupHelper.lookup(layout, "#reset");
     }
