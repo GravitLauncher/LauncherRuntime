@@ -68,8 +68,7 @@ public class JavaService {
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
-                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfileVersions.MINECRAFT_1_12_2) <= 0);
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion();
     }
 
     public boolean contains(Path dir) {
