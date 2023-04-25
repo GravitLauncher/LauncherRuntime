@@ -1,5 +1,5 @@
 plugins {
-    id 'org.openjfx.javafxplugin' version '0.0.10'
+    id 'org.openjfx.javafxplugin' version '0.0.13'
     id 'java-library'
     id 'maven-publish'
     id 'signing'
@@ -7,13 +7,13 @@ plugins {
     id 'eclipse'
 }
 javafx {
-    version = "12"
+    version = "17"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web']
 }
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 group 'pro.gravit.launcher'
-version '2.1.0'
+version '2.1.2'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
 
 task sourcesJar(type: Jar) {
@@ -57,9 +57,9 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.3.1"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.3.1"
-    implementation "pro.gravit.launcher:launcher-client-api:5.3.1"
+    implementation "pro.gravit.launcher:launcher-core:5.4.0-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.4.0-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-client-api:5.4.0-SNAPSHOT"
     implementation "pro.gravit.utils.enfs:enfs:1.0.0-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'

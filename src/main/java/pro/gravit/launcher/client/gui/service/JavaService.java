@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui.service;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.ClientProfileVersions;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.JavaHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -30,14 +31,14 @@ public class JavaService {
                         int build = Integer.parseInt(matcher.group("build"));
                         JVMHelper.ARCH arch = JVMHelper.ARCH.valueOf(matcher.group("arch"));
                         boolean javafx = Boolean.parseBoolean(matcher.group("javafx"));
-                        if (arch != JVMHelper.ARCH_TYPE) {
+                        if (!isArchAvailable(arch)) {
                             continue;
                         }
                         if(!JVMHelper.OS_TYPE.name().equals(os)) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
-                        LogHelper.debug("In-Launcher Java Version found: Java %db%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
+                        LogHelper.debug("In-Launcher Java Version found: Java %d b%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
                         JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, arch, javafx);
                         versions.add(javaVersion);
                     } else {
@@ -52,10 +53,22 @@ public class JavaService {
         javaVersions = Collections.unmodifiableList(versions);
     }
 
+    public boolean isArchAvailable(JVMHelper.ARCH arch) {
+        if(JVMHelper.ARCH_TYPE == arch) {
+            return true;
+        }
+        if(arch == JVMHelper.ARCH.X86_64 && JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE &&
+                (( JVMHelper.ARCH_TYPE == JVMHelper.ARCH.X86 && !JVMHelper.isJVMMatchesSystemArch()) || JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64)) {
+            return true;
+        }
+        if(arch == JVMHelper.ARCH.X86_64 && JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX && JVMHelper.ARCH_TYPE == JVMHelper.ARCH.ARM64) {
+            return true;
+        }
+        return false;
+    }
+
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
-                || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE)
-                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion();
     }
 
     public boolean contains(Path dir) {

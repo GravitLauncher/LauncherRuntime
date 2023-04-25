@@ -16,6 +16,7 @@ import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.File;
@@ -25,6 +26,9 @@ import java.text.MessageFormat;
 import java.util.function.Consumer;
 
 public class SettingsScene extends AbstractScene {
+
+    private final static long MAX_JAVA_MEMORY_X64 = 32*1024;
+    private final static long MAX_JAVA_MEMORY_X32 = 1536;
     private Pane componentList;
     private Label ramLabel;
     private Slider ramSlider;
@@ -52,12 +56,14 @@ public class SettingsScene extends AbstractScene {
 
         ramSlider = LookupHelper.lookup(layout, "#ramSlider");
         ramLabel = LookupHelper.lookup(layout, "#ramLabel");
+        long maxSystemMemory;
         try {
             SystemInfo systemInfo = new SystemInfo();
-            ramSlider.setMax(systemInfo.getHardware().getMemory().getTotal() >> 20);
+            maxSystemMemory =(systemInfo.getHardware().getMemory().getTotal() >> 20);
         } catch (Throwable e) {
-            ramSlider.setMax(2048);
+            maxSystemMemory = 2048;
         }
+        ramSlider.setMax(Math.min(maxSystemMemory, getJavaMaxMemory()));
 
         ramSlider.setSnapToTicks(true);
         ramSlider.setShowTickMarks(true);
@@ -129,6 +135,13 @@ public class SettingsScene extends AbstractScene {
             }
         }));
         reset();
+    }
+
+    private long getJavaMaxMemory() {
+        if(application.javaService.isArchAvailable(JVMHelper.ARCH.X86_64) || application.javaService.isArchAvailable(JVMHelper.ARCH.ARM64)) {
+            return MAX_JAVA_MEMORY_X64;
+        }
+        return MAX_JAVA_MEMORY_X32;
     }
 
     @Override
