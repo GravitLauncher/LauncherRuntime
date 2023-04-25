@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 
    <!-- Отступы-->
    <padding>

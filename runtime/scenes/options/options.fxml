@@ -9,7 +9,7 @@
 <!-- DrLeonardo refactor -->
 
 <Pane fx:id="optionsPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur"
-      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+      xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <Pane id="header" prefHeight="100.0" prefWidth="900.0">

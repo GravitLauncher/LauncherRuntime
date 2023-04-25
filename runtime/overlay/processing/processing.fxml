@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <Pane id="header" prefHeight="100.0" prefWidth="900.0">

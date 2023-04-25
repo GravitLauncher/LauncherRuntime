@@ -7,7 +7,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="189.0" styleClass="b-20" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="189.0" styleClass="b-20" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
    <Pane id="serverButtonLayout" prefHeight="339.0" prefWidth="189.0" styleClass="serverButtons">
       <children>
 

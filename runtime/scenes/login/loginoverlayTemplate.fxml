@@ -10,7 +10,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
     <Pane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur">
 
         <!-- Вертикальная полоса -->

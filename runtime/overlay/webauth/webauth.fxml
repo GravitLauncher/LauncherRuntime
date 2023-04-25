@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1" >
+<Pane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" >
 
     <!-- Описание браузера -->
     <Label id="headerDescription" alignment="CENTER" contentDisplay="CENTER" layoutY="1.0" prefHeight="62.0" prefWidth="600.0" text="%runtime.overlay.webauth.webauth.web-description" textAlignment="CENTER" />
