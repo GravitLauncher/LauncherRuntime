@@ -34,7 +34,7 @@ public class JavaService {
                         if (!isArchAvailable(arch)) {
                             continue;
                         }
-                        if(!JVMHelper.OS_TYPE.name.equals(os)) {
+                        if(!JVMHelper.OS_TYPE.name().equals(os)) {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
