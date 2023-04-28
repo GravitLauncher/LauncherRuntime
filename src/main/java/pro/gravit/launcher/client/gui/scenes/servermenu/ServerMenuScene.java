@@ -117,15 +117,16 @@ public class ServerMenuScene extends AbstractScene {
         });
         CommonHelper.newThread("ServerPinger", true, () -> {
             for (ClientProfile profile : lastProfiles) {
-                ClientProfile.ServerProfile serverProfile = profile.getDefaultServerProfile();
-                if (!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
-                try {
-                    ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
-                    ServerPinger.Result result = pinger.ping();
-                    contextHelper.runInFxThread(() -> {
-                        application.pingService.addReport(serverProfile.name, result);
-                    });
-                } catch (IOException ignored) {
+                for(ClientProfile.ServerProfile serverProfile : profile.getServers()) {
+                    if (!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
+                    try {
+                        ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
+                        ServerPinger.Result result = pinger.ping();
+                        contextHelper.runInFxThread(() -> {
+                            application.pingService.addReport(serverProfile.name, result);
+                        });
+                    } catch (IOException ignored) {
+                    }
                 }
             }
         }).start();

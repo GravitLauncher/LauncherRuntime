@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui.service;
 import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.ClientProfileVersions;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.JavaHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -37,7 +38,7 @@ public class JavaService {
                             continue;
                         }
                         Path javaDirectory = DirBridge.dirUpdates.resolve(javaDir);
-                        LogHelper.debug("In-Launcher Java Version found: Java %db%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
+                        LogHelper.debug("In-Launcher Java Version found: Java %d b%d %s javafx %s", version, build, arch.name, Boolean.toString(javafx));
                         JavaHelper.JavaVersion javaVersion = new JavaHelper.JavaVersion(javaDirectory, version, build, arch, javafx);
                         versions.add(javaVersion);
                     } else {
@@ -67,9 +68,7 @@ public class JavaService {
     }
 
     public boolean isIncompatibleJava(JavaHelper.JavaVersion version, ClientProfile profile) {
-        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion()
-                || (!version.enabledJavaFX && profile.getRuntimeInClientConfig() != ClientProfile.RuntimeInClientConfig.NONE)
-                || ( (version.arch == JVMHelper.ARCH.ARM32 || version.arch == JVMHelper.ARCH.ARM64) && profile.getVersion().compareTo(ClientProfile.Version.MC112) <= 0);
+        return version.version > profile.getMaxJavaVersion() || version.version < profile.getMinJavaVersion();
     }
 
     public boolean contains(Path dir) {
@@ -103,6 +102,10 @@ public class JavaService {
                 if (result.version < version.version) {
                     result = version;
                     continue;
+                }
+                if((result.arch == JVMHelper.ARCH.X86 && version.arch == JVMHelper.ARCH.X86_64) ||
+                        (result.arch == JVMHelper.ARCH.X86_64 && version.arch == JVMHelper.ARCH.ARM64)) {
+                    result = version;
                 }
                 if (result.version == version.version && result.build < version.build) {
                     result = version;

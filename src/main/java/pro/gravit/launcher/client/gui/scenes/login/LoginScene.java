@@ -95,6 +95,9 @@ public class LoginScene extends AbstractScene {
                 this.auth = auth.list;
                 authList.setVisible(auth.list.size() != 1);
                 for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
+                    if(!authAvailability.visible) {
+                        continue;
+                    }
                     if (application.runtimeSettings.lastAuth == null) {
                         if (authAvailability.name.equals("std") || this.authAvailability == null) {
                             changeAuthAvailability(authAvailability);
@@ -107,8 +110,6 @@ public class LoginScene extends AbstractScene {
                     changeAuthAvailability(auth.list.get(0));
                 }
                 hideOverlay(0, (event) -> {
-                    if (application.runtimeSettings.password != null && application.runtimeSettings.autoAuth)
-                        contextHelper.runCallback(this::loginWithGui);
                     if(application.isDebugMode()) {
                         postInit();
                     }
