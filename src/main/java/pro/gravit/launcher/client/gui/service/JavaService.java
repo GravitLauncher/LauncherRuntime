@@ -103,6 +103,10 @@ public class JavaService {
                     result = version;
                     continue;
                 }
+                if((result.arch == JVMHelper.ARCH.X86 && version.arch == JVMHelper.ARCH.X86_64) ||
+                        (result.arch == JVMHelper.ARCH.X86_64 && version.arch == JVMHelper.ARCH.ARM64)) {
+                    result = version;
+                }
                 if (result.version == version.version && result.build < version.build) {
                     result = version;
                 }
