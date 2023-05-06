@@ -214,7 +214,7 @@ public class VisualDownloader {
     }
 
     private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl, Runnable onSuccess) throws Exception {
-        resetProgress();
+        ContextHelper.runInFxThreadStatic(this::resetProgress).get(1000, TimeUnit.MILLISECONDS);
         downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
             @Override
             public void apply(long fullDiff) {
