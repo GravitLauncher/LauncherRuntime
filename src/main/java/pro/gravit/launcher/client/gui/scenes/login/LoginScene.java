@@ -250,7 +250,8 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void reset() {
-
+        authFlow.authFlow.clear();
+        authFlow.authFlow.add(0);
     }
 
     @Override
