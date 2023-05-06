@@ -35,8 +35,8 @@ public class VisualDownloader {
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
 
-    private long totalSize;
-    private Downloader downloader;
+    private volatile long totalSize;
+    private volatile Downloader downloader;
 
     private final ProgressBar progressBar;
     private final Text speed;
@@ -214,27 +214,28 @@ public class VisualDownloader {
     }
 
     private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl, Runnable onSuccess) throws Exception {
-        ContextHelper.runInFxThreadStatic(this::resetProgress).get(1000, TimeUnit.MILLISECONDS);
-        downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
-            @Override
-            public void apply(long fullDiff) {
-                {
-                    long old = totalDownloaded.getAndAdd(fullDiff);
-                    updateProgress(old, old + fullDiff);
+        ContextHelper.runInFxThreadStatic(this::resetProgress).thenAccept((x) -> {
+            downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
+                @Override
+                public void apply(long fullDiff) {
+                    {
+                        long old = totalDownloaded.getAndAdd(fullDiff);
+                        updateProgress(old, old + fullDiff);
+                    }
                 }
-            }
 
-            @Override
-            public void onComplete(Path path) {
+                @Override
+                public void onComplete(Path path) {
 
-            }
-        }, executor, application.guiModuleConfig.downloadThreads);
-        downloader.getFuture()
-                .thenAccept((e) -> onSuccess.run())
-                .exceptionally((e) -> {
-                    ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
-                    return null;
-                });
+                }
+            }, executor, application.guiModuleConfig.downloadThreads);
+            downloader.getFuture()
+                    .thenAccept((e) -> onSuccess.run())
+                    .exceptionally((e) -> {
+                        ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
+                        return null;
+                    });
+        });
     }
 
     private void resetProgress() {
