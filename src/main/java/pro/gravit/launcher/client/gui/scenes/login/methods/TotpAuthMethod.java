@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -21,6 +22,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         this.accessor = accessor;
         this.application = accessor.getApplication();
         this.overlay = application.gui.registerOverlay(TotpOverlay.class);
+        this.overlay.accessor = accessor;
     }
 
     @Override
@@ -66,8 +68,10 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
     }
 
     public static class TotpOverlay extends AbstractOverlay {
+        private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField[] textFields;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+        private LoginScene.LoginSceneAccessor accessor;
 
         public TotpOverlay(JavaFXApplication application) {
             super("scenes/login/logintotp.fxml", application);
@@ -80,6 +84,10 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
 
         @Override
         protected void doInit() {
+            LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
+                accessor.hideOverlay(0, null);
+                future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
+            });
             Pane sub = (Pane) LookupHelper.<Button>lookup(layout, "#auth2fa", "#authButton").getGraphic();
             textFields = new TextField[6];
             for (int i = 0; i < 6; ++i) {
