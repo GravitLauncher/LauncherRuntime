@@ -257,8 +257,7 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void reset() {
-        authFlow.authFlow.clear();
-        authFlow.authFlow.add(0);
+        authFlow.reset();
     }
 
     @Override
@@ -469,6 +468,10 @@ public class LoginScene extends AbstractScene {
 
         public void init(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
             this.authAvailability = authAvailability;
+            reset();
+        }
+
+        public void reset() {
             authFlow.clear();
             authFlow.add(0);
         }
@@ -522,6 +525,7 @@ public class LoginScene extends AbstractScene {
                 login(e.login, e.password, authAvailability, result);
             }).exceptionally((e) -> {
                 e = e.getCause();
+                reset();
                 isLoginStarted = false;
                 if (e instanceof AbstractAuthMethod.UserAuthCanceledException) {
                     return null;
