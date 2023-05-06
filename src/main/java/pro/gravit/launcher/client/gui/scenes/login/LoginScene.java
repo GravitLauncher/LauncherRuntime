@@ -88,64 +88,71 @@ public class LoginScene extends AbstractScene {
         authToggleGroup = new ToggleGroup();
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
-        {
-            LauncherRequest launcherRequest = new LauncherRequest();
-            GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
-            processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
-                this.auth = auth.list;
-                authList.setVisible(auth.list.size() != 1);
-                for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
-                    if(!authAvailability.visible) {
-                        continue;
-                    }
-                    if (application.runtimeSettings.lastAuth == null) {
-                        if (authAvailability.name.equals("std") || this.authAvailability == null) {
-                            changeAuthAvailability(authAvailability);
-                        }
-                    } else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
-                        changeAuthAvailability(authAvailability);
-                    addAuthAvailability(authAvailability);
-                }
-                if(this.authAvailability == null && auth.list.size() > 0) {
-                    changeAuthAvailability(auth.list.get(0));
-                }
-                hideOverlay(0, (event) -> {
-                    if(application.isDebugMode()) {
-                        postInit();
-                    }
-                });
-            }), null);
-            if (!application.isDebugMode()) {
-                processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
-                    if (result.launcherExtendedToken != null) {
-                        Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
-                    }
-                    if (result.needUpdate) {
-                        try {
-                            LogHelper.debug("Start update processing");
-                            disable();
-                            StdJavaRuntimeProvider.updatePath = LauncherUpdater.prepareUpdate(new URL(result.url));
-                            LogHelper.debug("Exit with Platform.exit");
-                            Platform.exit();
-                            return;
-                        } catch (Throwable e) {
-                            contextHelper.runInFxThread(() -> {
-                                errorHandle(e);
-                            });
-                            try {
-                                Thread.sleep(1500);
-                                LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
-                                Platform.exit();
-                            } catch (Throwable ex) {
-                                LauncherEngine.exitLauncher(0);
-                            }
-                        }
-                    }
-                    LogHelper.dev("Launcher update processed");
-                    postInit();
-                }, (event) -> LauncherEngine.exitLauncher(0));
-            }
+        if (!application.isDebugMode()) {
+            // we would like to wait till launcher request success before start availability auth.
+            // otherwise it will try to access same vars same time, and this causes a lot of multi-thread based errors
+            // launcherRequest().finally(getAvailabilityAuth().finally(postInit()))
+            launcherRequest();
+        } else {
+            getAvailabilityAuth();
         }
+    }
+
+    private void launcherRequest() {
+        LauncherRequest launcherRequest = new LauncherRequest();
+        processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest, (result) -> {
+            if (result.launcherExtendedToken != null) {
+                Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME, result.launcherExtendedToken);
+            }
+            if (result.needUpdate) {
+                try {
+                    LogHelper.debug("Start update processing");
+                    disable();
+                    StdJavaRuntimeProvider.updatePath = LauncherUpdater.prepareUpdate(new URL(result.url));
+                    LogHelper.debug("Exit with Platform.exit");
+                    Platform.exit();
+                    return;
+                } catch (Throwable e) {
+                    contextHelper.runInFxThread(() -> {
+                        errorHandle(e);
+                    });
+                    try {
+                        Thread.sleep(1500);
+                        LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
+                        Platform.exit();
+                    } catch (Throwable ex) {
+                        LauncherEngine.exitLauncher(0);
+                    }
+                }
+            }
+            LogHelper.dev("Launcher update processed");
+            getAvailabilityAuth();
+        }, (event) -> LauncherEngine.exitLauncher(0));
+    }
+    private void getAvailabilityAuth() {
+        GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
+        processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
+            this.auth = auth.list;
+            authList.setVisible(auth.list.size() != 1);
+            for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
+                if(!authAvailability.visible) {
+                    continue;
+                }
+                if (application.runtimeSettings.lastAuth == null) {
+                    if (authAvailability.name.equals("std") || this.authAvailability == null) {
+                        changeAuthAvailability(authAvailability);
+                    }
+                } else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
+                    changeAuthAvailability(authAvailability);
+                addAuthAvailability(authAvailability);
+            }
+            if(this.authAvailability == null && auth.list.size() > 0) {
+                changeAuthAvailability(auth.list.get(0));
+            }
+            hideOverlay(0, (event) -> {
+                postInit();
+            });
+        }), null);
     }
 
     private void postInit() {
