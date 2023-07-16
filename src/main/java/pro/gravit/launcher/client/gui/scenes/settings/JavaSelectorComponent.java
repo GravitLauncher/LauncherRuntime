@@ -17,6 +17,7 @@ public class JavaSelectorComponent {
     private final Label javaError;
     private final RuntimeSettings.ProfileSettingsView profileSettings;
     private final ClientProfile profile;
+    private final JavaService javaService;
 
     public JavaSelectorComponent(JavaService javaService, Pane layout, RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
         comboBox = LookupHelper.lookup(layout, "#javaCombo");
@@ -25,7 +26,12 @@ public class JavaSelectorComponent {
         javaPath = LookupHelper.lookup(layout, "#javaPath");
         javaError = LookupHelper.lookup(layout, "#javaError");
         this.profileSettings = profileSettings;
+        this.javaService = javaService;
         comboBox.setConverter(new JavaVersionConverter(profile));
+        reset();
+    }
+
+    public void reset() {
         boolean reset = true;
         for (JavaHelper.JavaVersion version : javaService.javaVersions) {
             if(javaService.isIncompatibleJava(version, profile)) {

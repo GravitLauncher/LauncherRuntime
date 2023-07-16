@@ -110,6 +110,8 @@ public class SettingsScene extends AbstractScene {
                     settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
                 }
             }
+            application.javaService.update();
+            javaSelector.reset();
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
         LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction((e) ->

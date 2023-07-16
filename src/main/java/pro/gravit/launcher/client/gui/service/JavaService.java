@@ -15,9 +15,15 @@ import java.util.regex.Pattern;
 
 public class JavaService {
     private static final Pattern JAVA_VERSION_PATTERN = Pattern.compile("Java (?<version>.+) b(?<build>.+) (?<os>.+) (?<arch>.+) javafx (?<javafx>.+)");
-    public final List<JavaHelper.JavaVersion> javaVersions;
+    public volatile List<JavaHelper.JavaVersion> javaVersions;
+    private final JavaFXApplication application;
 
     public JavaService(JavaFXApplication application) {
+        this.application = application;
+        update();
+    }
+
+    public void update() {
         List<JavaHelper.JavaVersion> versions = new LinkedList<>();
         {
             if (application.guiModuleConfig.javaList != null) {
@@ -51,6 +57,7 @@ public class JavaService {
             versions.addAll(JavaHelper.findJava());
         }
         javaVersions = Collections.unmodifiableList(versions);
+
     }
 
     public boolean isArchAvailable(JVMHelper.ARCH arch) {
