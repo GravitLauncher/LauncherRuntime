@@ -24,17 +24,6 @@
     -fx-pref-width: 14px;
     -fx-pref-height: 14px;
 }
-#ramSlider > .colored-track {
-    -fx-background-color: -fx-violet-hover;
-    -fx-pref-height: 4px;
-}
-#ramSlider > .animated-thumb {
-    -fx-background-color: transparent;
-}
-#ramSlider > .slider-value {
-    -fx-fill: -fx-white;
-    -fx-stroke: -fx-white;
-}
 .ramtext {
     -fx-font-size: 14px;
     -fx-background-color: -fx-grayD;
