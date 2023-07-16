@@ -109,15 +109,23 @@ public class ServerInfoScene extends AbstractScene {
     }
 
     private void downloadClients(ClientProfile profile, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
-        Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
-        LogHelper.info("Start update to %s", target.toString());
+        Path assetsDir;
+        try {
+            assetsDir = DirBridge.getAppDataDir().getParent().resolve(".minecraft").resolve("assets"); // TODO
+            if(!Files.exists(assetsDir)) {
+                Files.createDirectories(assetsDir);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        LogHelper.info("Start update to %s", assetsDir.toString());
         Consumer<HashedDir> next = (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
             application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient, profile.getClientUpdateMatcher(), true, application.stateService.getOptionalView(), true, (clientHDir) -> {
                 LogHelper.info("Success update");
                 try {
-                    doLaunchClient(target, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), javaVersion, jvmHDir);
+                    doLaunchClient(assetsDir, assetHDir, targetClient, clientHDir, profile, application.stateService.getOptionalView(), javaVersion, jvmHDir);
                 } catch (Throwable e) {
                     LogHelper.error(e);
                     ContextHelper.runInFxThreadStatic(() -> application.gui.updateScene.addLog(String.format("launchClient error %s:%s", e.getClass().getName(), e.getMessage())));
@@ -125,9 +133,9 @@ public class ServerInfoScene extends AbstractScene {
             });
         };
         if(profile.getVersion().compareTo(ClientProfileVersions.MINECRAFT_1_6_4) <= 0) {
-            application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, null, false, next);
+            application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), assetsDir, profile.getAssetUpdateMatcher(), true, null, false, next);
         } else {
-            application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), target, profile.getAssetUpdateMatcher(), true, profile.getAssetIndex(), next);
+            application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), assetsDir, profile.getAssetUpdateMatcher(), true, profile.getAssetIndex(), next);
         }
     }
 
