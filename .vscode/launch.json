@@ -1,0 +1,43 @@
+{
+    // Используйте IntelliSense, чтобы узнать о возможных атрибутах.
+    // Наведите указатель мыши, чтобы просмотреть описания существующих атрибутов.
+    // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug",
+            "request": "launch",
+            "mainClass": "pro.gravit.launcher.debug.DebugMain",
+            "vmArgs": [
+                "-Dlauncher.debug=true",
+                "-Dlauncher.stacktrace=true",
+                "-Dlauncherdebug.modules=pro.gravit.launcher.client.JavaRuntimeModule",
+                "-Dlauncherdebug.projectname=GravitLauncherDebug",
+                "-Dlauncherdebug.websocket=wss://launcher.gravit-support.ru/api"
+            ],
+            "classPaths": [
+                "$Auto",
+                "JavaRuntime.main"
+            ]
+        },
+        {
+            "type": "java",
+            "name": "Debug DEV",
+            "request": "launch",
+            "mainClass": "pro.gravit.launcher.debug.DebugMain",
+            "vmArgs": [
+                "-Dlauncher.debug=true",
+                "-Dlauncher.stacktrace=true",
+                "-Dlauncher.dev=true",
+                "-Dlauncherdebug.modules=pro.gravit.launcher.client.JavaRuntimeModule",
+                "-Dlauncherdebug.projectname=GravitLauncherDebug",
+                "-Dlauncherdebug.websocket=wss://launcher.gravit-support.ru/api"
+            ],
+            "classPaths": [
+                "$Auto",
+                "JavaRuntime.main"
+            ]
+        }
+    ]
+}
