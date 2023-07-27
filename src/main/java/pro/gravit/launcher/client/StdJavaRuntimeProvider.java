@@ -71,8 +71,5 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
 
     @Override
     public void init(boolean clientInstance) {
-        if (clientInstance) {
-            JavaFXApplication.setNoGUIMode(true);
-        }
     }
 }

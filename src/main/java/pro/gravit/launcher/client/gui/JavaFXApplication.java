@@ -49,7 +49,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
-    private static final AtomicBoolean IS_NOGUI = new AtomicBoolean(false);
     private static Path runtimeDirectory = null;
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newWorkStealingPool(4);
@@ -175,14 +174,10 @@ public class JavaFXApplication extends Application {
             gui = new GuiObjectsContainer(this);
             gui.init();
             //
-            if (!IS_NOGUI.get()) {
-                mainStage.setScene(gui.loginScene);
-                mainStage.show();
-                if(offlineService.isOfflineMode()) {
-                    messageManager.createNotification(getTranslation("runtime.offline.notification.header"), getTranslation("runtime.offline.notification.text"));
-                }
-            } else {
-                Platform.setImplicitExit(false);
+            mainStage.setScene(gui.loginScene);
+            mainStage.show();
+            if(offlineService.isOfflineMode()) {
+                messageManager.createNotification(getTranslation("runtime.offline.notification.header"), getTranslation("runtime.offline.notification.text"));
             }
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
@@ -278,10 +273,6 @@ public class JavaFXApplication extends Application {
             runtimeSettings.profileSettings.put(uuid, settings);
         }
         return settings;
-    }
-
-    public static void setNoGUIMode(boolean isNogui) {
-        IS_NOGUI.set(isNogui);
     }
 
     public void setMainScene(AbstractScene scene) throws Exception {
