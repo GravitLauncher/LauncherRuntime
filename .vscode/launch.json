@@ -13,7 +13,7 @@
                 "-Dlauncher.debug=true",
                 "-Dlauncher.stacktrace=true",
                 "-Dlauncherdebug.modules=pro.gravit.launcher.client.JavaRuntimeModule",
-                "-Dlauncherdebug.projectname=GravitLauncherDebug",
+                "-Dlauncherdebug.projectname=MineCraft", // Изменить на projectName из конфигурации LaunchServer.json
                 "-Dlauncherdebug.websocket=wss://launcher.gravit-support.ru/api"
             ],
             "classPaths": [
@@ -31,7 +31,7 @@
                 "-Dlauncher.stacktrace=true",
                 "-Dlauncher.dev=true",
                 "-Dlauncherdebug.modules=pro.gravit.launcher.client.JavaRuntimeModule",
-                "-Dlauncherdebug.projectname=GravitLauncherDebug",
+                "-Dlauncherdebug.projectname=MineCraft", // Изменить на projectName из конфигурации LaunchServer.json
                 "-Dlauncherdebug.websocket=wss://launcher.gravit-support.ru/api"
             ],
             "classPaths": [
