@@ -185,76 +185,26 @@ public class LoginScene extends AbstractScene {
         authList.getChildren().add(radio);
     }
 
-    private volatile boolean processingEnabled = false;
-
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
-        Pane root = (Pane) getFxmlRoot();
-        LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton.getLayout(), layout);
-        LogHelper.debug("X: %f, Y: %f", authAbsPosition.x, authAbsPosition.y);
-        double authLayoutX = authButton.getLayout().getLayoutX();
-        double authLayoutY = authButton.getLayout().getLayoutY();
-        String oldText = authButton.getText();
-        if (!processingEnabled) {
-            contextHelper.runInFxThread(() -> {
-                disable();
-                layout.getChildren().remove(authButton.getLayout());
-                root.getChildren().add(authButton.getLayout());
-                authButton.getLayout().setLayoutX(authAbsPosition.x);
-                authButton.getLayout().setLayoutY(authAbsPosition.y);
-            });
-            authButton.disable();
-            processingEnabled = true;
-        }
-        contextHelper.runInFxThread(() -> {
-            authButton.setText(text);
-        });
-        Runnable processingOff = () -> {
-            if (!processingEnabled) return;
-            contextHelper.runInFxThread(() -> {
-                enable();
-                root.getChildren().remove(authButton.getLayout());
-                layout.getChildren().add(authButton.getLayout());
-                authButton.getLayout().setLayoutX(authLayoutX);
-                authButton.getLayout().setLayoutY(authLayoutY);
-                authButton.setText(oldText);
-            });
-            authButton.enable();
-            processingEnabled = false;
-        };
-        try {
-            application.service.request(request).thenAccept((result) -> {
-                onSuccess.accept(result);
-                processingOff.run();
-            }).exceptionally((exc) -> {
-                onError.accept(exc.getCause().getMessage());
-                processingOff.run();
-                return null;
-            });
-        } catch (IOException e) {
-            processingOff.run();
-            errorHandle(e);
-        }
+        processRequest(text, request, onSuccess, (thr) -> {
+            onError.accept(thr.getCause().getMessage());
+        }, null);
     }
 
 
     @Override
     public void errorHandle(Throwable e) {
         super.errorHandle(e);
-        Pane root = (Pane) getFxmlRoot();
         double authLayoutX = authButton.getLayout().getLayoutX();
         double authLayoutY = authButton.getLayout().getLayoutY();
-        if (!processingEnabled) return;
         contextHelper.runInFxThread(() -> {
             enable();
-            root.getChildren().remove(authButton.getLayout());
-            layout.getChildren().add(authButton.getLayout());
             authButton.getLayout().setLayoutX(authLayoutX);
             authButton.getLayout().setLayoutY(authLayoutY);
             authButton.setText("ERROR");
             authButton.setError();
         });
         authButton.enable();
-        processingEnabled = false;
     }
 
     @Override
