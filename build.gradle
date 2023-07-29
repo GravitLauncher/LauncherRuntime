@@ -10,8 +10,8 @@ javafx {
     version = "17"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web']
 }
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
+sourceCompatibility = '17'
+targetCompatibility = '17'
 group 'pro.gravit.launcher'
 version '2.2.2'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
@@ -35,7 +35,8 @@ tasks.withType(JavaCompile) {
 jar {
     manifest.attributes("Module-Main-Class": mainClassName,
             "Module-Config-Class": "pro.gravit.launcher.client.gui.config.GuiModuleConfig",
-            "Module-Config-Name": "JavaRuntime")
+            "Module-Config-Name": "JavaRuntime",
+            "Required-Modern-Java": "true")
     jar.archiveFileName = "JavaRuntime_lmodule.jar"
 }
 
@@ -60,6 +61,7 @@ dependencies {
     implementation "pro.gravit.launcher:launcher-core:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-ws-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-client-api:5.5.0-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-client-start-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-client-starter-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.utils.enfs:enfs:1.0.0-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'

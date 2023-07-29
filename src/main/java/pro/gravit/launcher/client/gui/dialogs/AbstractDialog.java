@@ -18,6 +18,11 @@ public abstract class AbstractDialog extends AbstractVisualComponent {
     }
 
     @Override
+    protected void doPostInit() throws Exception {
+
+    }
+
+    @Override
     public void reset() {
 
     }

@@ -1,5 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
@@ -67,7 +69,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
-        accessor.hideOverlay(10, (r) -> {
+        overlay.hide((r) -> {
             future.complete(null);
         });
         return future;
@@ -92,6 +94,10 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
             return "webView";
         }
 
+        public void hide(EventHandler<ActionEvent> onFinished) {
+            hide(10, onFinished);
+        }
+
         @Override
         protected void doInit() {
             ScrollPane webViewPane = LookupHelper.lookup(layout, "#webview");
@@ -101,7 +107,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
                 if (future != null) {
                     future.completeExceptionally(new UserAuthCanceledException());
                 }
-                accessor.hideOverlay(0, null);
+                hide(null);
             });
         }
 

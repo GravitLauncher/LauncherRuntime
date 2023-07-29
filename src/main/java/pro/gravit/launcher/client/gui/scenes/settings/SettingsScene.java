@@ -91,7 +91,7 @@ public class SettingsScene extends AbstractScene {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle(application.getTranslation("runtime.scenes.settings.dirTitle"));
             directoryChooser.setInitialDirectory(DirBridge.dir.toFile());
-            File choose = directoryChooser.showDialog(application.getMainStage().stage);
+            File choose = directoryChooser.showDialog(application.getMainStage().getStage());
             if (choose == null)
                 return;
             Path newDir = choose.toPath().toAbsolutePath();

@@ -1,0 +1,21 @@
+
+
+/*-- Приветствие --*/
+#welcome {
+    -fx-font-size: 12px;
+    -fx-align-items: center;
+}
+#otherWelcome {
+    -fx-font-size: 14px;
+    -fx-text-align: center;
+}
+
+#playerName {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-align-items: center;
+}
+#welcome {
+    -fx-font-size: 14px;
+    -fx-align-items: center;
+}

@@ -89,7 +89,12 @@ public abstract class AbstractVisualComponent {
         isInit = true;
     }
 
+    public void postInit() throws Exception {
+        doPostInit();
+    }
+
     protected abstract void doInit() throws Exception;
+    protected abstract void doPostInit() throws Exception;
 
     public abstract void reset();
 

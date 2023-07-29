@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui.impl;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.overlays.ProcessingOverlay;
+import pro.gravit.launcher.client.gui.overlays.WelcomeOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
@@ -25,6 +26,7 @@ public class GuiObjectsContainer {
     private final Set<AbstractOverlay> overlays = new HashSet<>();
     private final Set<AbstractScene> scenes = new HashSet<>();
     public ProcessingOverlay processingOverlay;
+    public WelcomeOverlay welcomeOverlay;
     public UpdateScene updateScene;
     public DebugScene debugScene;
 
@@ -44,6 +46,7 @@ public class GuiObjectsContainer {
     public void init() {
         loginScene = registerScene(LoginScene.class);
         processingOverlay = registerOverlay(ProcessingOverlay.class);
+        welcomeOverlay = registerOverlay(WelcomeOverlay.class);
 
         serverMenuScene = registerScene(ServerMenuScene.class);
         serverInfoScene = registerScene(ServerInfoScene.class);

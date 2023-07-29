@@ -203,59 +203,57 @@ public class ServerInfoScene extends AbstractScene {
         if (profile == null)
             return;
         processRequest(application.getTranslation("runtime.overlay.processing.text.setprofile"), new SetProfileRequest(profile), (result) -> contextHelper.runInFxThread(() -> {
-            hideOverlay(0, (ev) -> {
-                RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
-                JavaHelper.JavaVersion javaVersion = null;
-                for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
-                    if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
-                        javaVersion = v;
+            RuntimeSettings.ProfileSettings profileSettings = application.getProfileSettings();
+            JavaHelper.JavaVersion javaVersion = null;
+            for(JavaHelper.JavaVersion v : application.javaService.javaVersions) {
+                if(v.jvmDir.toAbsolutePath().toString().equals(profileSettings.javaPath)) {
+                    javaVersion = v;
+                }
+            }
+            if(javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
+                try {
+                    javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
+                } catch (Throwable e) {
+                    if(LogHelper.isDevEnabled()) {
+                        LogHelper.error(e);
                     }
+                    LogHelper.warning("Incorrect java path %s", profileSettings.javaPath);
                 }
-                if(javaVersion == null && profileSettings.javaPath != null && !application.guiModuleConfig.forceDownloadJava) {
-                    try {
-                        javaVersion = JavaHelper.JavaVersion.getByPath(Paths.get(profileSettings.javaPath));
-                    } catch (Throwable e) {
-                        if(LogHelper.isDevEnabled()) {
-                            LogHelper.error(e);
-                        }
-                        LogHelper.warning("Incorrect java path %s", profileSettings.javaPath);
-                    }
+            }
+            if(javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
+                javaVersion = application.javaService.getRecommendJavaVersion(profile);
+            }
+            if(javaVersion == null) {
+                showJavaAlert(profile);
+                return;
+            }
+            String jvmDirName = getJavaDirName(javaVersion.jvmDir);
+            if (jvmDirName != null) {
+                final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
+                try {
+                    switchScene(application.gui.updateScene);
+                } catch (Exception e) {
+                    errorHandle(e);
                 }
-                if(javaVersion == null || application.javaService.isIncompatibleJava(javaVersion, profile)) {
-                    javaVersion = application.javaService.getRecommendJavaVersion(profile);
-                }
-                if(javaVersion == null) {
-                    showJavaAlert(profile);
-                    return;
-                }
-                String jvmDirName = getJavaDirName(javaVersion.jvmDir);
-                if (jvmDirName != null) {
-                    final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
-                    try {
-                        switchScene(application.gui.updateScene);
-                    } catch (Exception e) {
-                        errorHandle(e);
-                    }
-                    application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, true, application.stateService.getOptionalView(), false, (jvmHDir) -> {
-                        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
-                            Path javaFile = finalJavaVersion.jvmDir.resolve("bin").resolve("java");
-                            if(Files.exists(javaFile)) {
-                                if(!javaFile.toFile().setExecutable(true)) {
-                                    LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
-                                }
+                application.gui.updateScene.sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, true, application.stateService.getOptionalView(), false, (jvmHDir) -> {
+                    if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
+                        Path javaFile = finalJavaVersion.jvmDir.resolve("bin").resolve("java");
+                        if(Files.exists(javaFile)) {
+                            if(!javaFile.toFile().setExecutable(true)) {
+                                LogHelper.warning("Set permission for %s unsuccessful", javaFile.toString());
                             }
                         }
-                        downloadClients(profile, finalJavaVersion, jvmHDir);
-                    });
-                } else {
-                    try {
-                        switchScene(application.gui.updateScene);
-                    } catch (Exception e) {
-                        errorHandle(e);
                     }
-                    downloadClients(profile, javaVersion, null);
+                    downloadClients(profile, finalJavaVersion, jvmHDir);
+                });
+            } else {
+                try {
+                    switchScene(application.gui.updateScene);
+                } catch (Exception e) {
+                    errorHandle(e);
                 }
-            });
+                downloadClients(profile, javaVersion, null);
+            }
         }), null);
     }
 }

@@ -1,6 +1,10 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import javafx.geometry.Pos;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.dialogs.*;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -27,7 +31,13 @@ public class MessageManager {
     }
 
     public void initDialogInScene(AbstractScene scene, AbstractDialog dialog) {
-        Pane root = (Pane) scene.getFxmlRoot();
+        Pane dialogRoot = (Pane) dialog.getFxmlRoot();
+        VBox vbox = new VBox();
+        vbox.setAlignment(Pos.CENTER);
+        HBox hBox = new HBox();
+        hBox.getChildren().add(dialogRoot);
+        vbox.getChildren().add(hBox);
+        hBox.setAlignment(Pos.CENTER);
         if (!dialog.isInit()) {
             try {
                 dialog.currentStage = scene.currentStage;
@@ -36,39 +46,28 @@ public class MessageManager {
                 scene.errorHandle(e);
             }
         }
-        Pane dialogRoot = (Pane) dialog.getFxmlRoot();
         dialog.setOnClose(() -> {
-            root.getChildren().remove(dialogRoot);
-            if (!(dialog instanceof NotificationDialog)) {
-                scene.enable();
-            }
+            scene.currentStage.pull(vbox);
+            vbox.getChildren().clear();
+            hBox.getChildren().clear();
         });
-        if (dialog instanceof NotificationDialog) {
-
-            NotificationDialog.NotificationSlot slot = new NotificationDialog.NotificationSlot((scrollTo) -> {
-                dialogRoot.setLayoutY(dialogRoot.getLayoutY() + scrollTo);
-            }, ((Pane) dialog.getFxmlRoot()).getPrefHeight() + 20);
-            NotificationDialog notificationDialog = (NotificationDialog) dialog;
-            notificationDialog.setPosition(PositionHelper.PositionInfo.BOTTOM_RIGHT, slot);
-        } else {
-            scene.disable();
-        }
-        LookupHelper.Point2D coords = dialog.getSceneCoords(root);
-        dialogRoot.setLayoutX(coords.x);
-        dialogRoot.setLayoutY(coords.y);
-        LogHelper.info("X: %f Y: %f", coords.x, coords.y);
-        root.getChildren().add(dialogRoot);
+        scene.disable();
+        scene.currentStage.push(vbox);
     }
 
     public void createNotification(String head, String message, boolean isLauncher) {
         NotificationDialog dialog = new NotificationDialog(application, head, message);
         if (isLauncher) {
-            AbstractScene scene = application.getCurrentScene();
-            if (scene == null) {
-                throw new NullPointerException("Try show launcher notification in application.getCurrentScene() == null");
+            AbstractStage stage = application.getMainStage();
+            if (stage == null) {
+                throw new NullPointerException("Try show launcher notification in application.getMainStage() == null");
             }
             ContextHelper.runInFxThreadStatic(() -> {
-                initDialogInScene(scene, dialog);
+                dialog.init();
+                stage.pushNotification(dialog.getFxmlRoot());
+                dialog.setOnClose(() -> {
+                    stage.pullNotification(dialog.getFxmlRoot());
+                });
             });
         } else {
             AtomicReference<DialogStage> stage = new AtomicReference<>(null);
