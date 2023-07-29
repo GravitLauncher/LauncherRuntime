@@ -96,16 +96,6 @@
     -fx-stroke: -fx-black2C;
 }
 
-/*-- Приветствие --*/
-#welcome {
-    -fx-font-size: 12px;
-    -fx-align-items: center;
-}
-#otherWelcome {
-    -fx-font-size: 14px;
-    -fx-text-align: center;
-}
-
 /*-- Веб авторизация --*/
 #webAuth {
     -fx-font-weight: bold;
@@ -150,15 +140,9 @@
     -fx-fill: -fx-grayD !important;
 }
 
-/*-- Приветствие игрока --*/
-#text-2fa,
-#playerName {
+#text-2fa {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
-    -fx-align-items: center;
-}
-#welcome {
-    -fx-font-size: 14px;
     -fx-align-items: center;
 }
 

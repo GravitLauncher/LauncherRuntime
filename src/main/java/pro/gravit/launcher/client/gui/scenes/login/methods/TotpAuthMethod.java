@@ -52,13 +52,13 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
     @Override
     public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthTotpDetails details) {
         overlay.future = new CompletableFuture<>();
+        overlay.hide();
         return overlay.future;
     }
 
     @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
-        accessor.hideOverlay(0, (e) -> future.complete(null));
         return future;
     }
 
@@ -82,10 +82,14 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
             return "totp";
         }
 
+        public void hide() {
+            hide(0, (e) -> future.complete(null));
+        }
+
         @Override
         protected void doInit() {
             LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
-                accessor.hideOverlay(0, null);
+                hide(0, null);
                 future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
             });
             Pane sub = (Pane) LookupHelper.<Button>lookup(layout, "#auth2fa", "#authButton").getGraphic();

@@ -61,7 +61,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
-        accessor.hideOverlay(0, (e) -> future.complete(null));
+        overlay.hide(0, (e) -> future.complete(null));
         return future;
     }
 
@@ -97,7 +97,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
                 future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword)));
             });
             LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
-                accessor.hideOverlay(0, null);
+                hide(0, null);
                 future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
             });
             login.textProperty().addListener(l -> {

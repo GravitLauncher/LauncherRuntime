@@ -166,18 +166,6 @@
       </Pane>
      </Pane>
 
-    <!-- Приветствие игрока -->
-   <Pane id="player" layoutX="224.0" layoutY="198.0" prefHeight="104.0" prefWidth="676.0" visible="false">
-      <children>
-         <ImageView id="playerHead" fitHeight="53.0" fitWidth="53.0" layoutX="13.0" layoutY="26.0" pickOnBounds="true" preserveRatio="true">
-            <image>
-               <Image url="@../../images/icons/default.png" />
-            </image></ImageView>
-         <Label id="playerName" layoutX="79.0" layoutY="15.0" prefHeight="49.0" prefWidth="486.0" text="PLAYER123456" />
-         <Label id="welcome" layoutX="79.0" layoutY="57.0" text="%runtime.scenes.login.welcome" />
-      </children>
-   </Pane>
-
     <!-- Подключение стилей-->
     <stylesheets>
         <URL value="@login.css" />

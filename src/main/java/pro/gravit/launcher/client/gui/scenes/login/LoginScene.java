@@ -7,7 +7,6 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Background;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -88,6 +87,11 @@ public class LoginScene extends AbstractScene {
         authToggleGroup = new ToggleGroup();
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
+    }
+
+    @Override
+    protected void doPostInit() throws Exception {
+
         if (!application.isDebugMode()) {
             // we would like to wait till launcher request success before start availability auth.
             // otherwise it will try to access same vars same time, and this causes a lot of multi-thread based errors
@@ -131,7 +135,7 @@ public class LoginScene extends AbstractScene {
     }
     private void getAvailabilityAuth() {
         GetAvailabilityAuthRequest getAvailabilityAuthRequest = new GetAvailabilityAuthRequest();
-        processRequest(application.getTranslation("runtime.overlay.processing.text.authAvailability"), getAvailabilityAuthRequest, (auth) -> contextHelper.runInFxThread(() -> {
+        processing(getAvailabilityAuthRequest, application.getTranslation("runtime.overlay.processing.text.authAvailability"), (auth) -> contextHelper.runInFxThread(() -> {
             this.auth = auth.list;
             authList.setVisible(auth.list.size() != 1);
             for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
@@ -149,13 +153,11 @@ public class LoginScene extends AbstractScene {
             if(this.authAvailability == null && auth.list.size() > 0) {
                 changeAuthAvailability(auth.list.get(0));
             }
-            hideOverlay(0, (event) -> {
-                postInit();
-            });
+            runAutoAuth();
         }), null);
     }
 
-    private void postInit() {
+    private void runAutoAuth() {
         if(application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
             contextHelper.runInFxThread(this::loginWithGui);
         }
@@ -186,7 +188,7 @@ public class LoginScene extends AbstractScene {
     private volatile boolean processingEnabled = false;
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {
-        Pane root = (Pane) scene.getRoot();
+        Pane root = (Pane) getFxmlRoot();
         LookupHelper.Point2D authAbsPosition = LookupHelper.getAbsoluteCords(authButton.getLayout(), layout);
         LogHelper.debug("X: %f, Y: %f", authAbsPosition.x, authAbsPosition.y);
         double authLayoutX = authButton.getLayout().getLayoutX();
@@ -238,7 +240,7 @@ public class LoginScene extends AbstractScene {
     @Override
     public void errorHandle(Throwable e) {
         super.errorHandle(e);
-        Pane root = (Pane) scene.getRoot();
+        Pane root = (Pane) getFxmlRoot();
         double authLayoutX = authButton.getLayout().getLayoutX();
         double authLayoutY = authButton.getLayout().getLayoutY();
         if (!processingEnabled) return;
@@ -362,35 +364,11 @@ public class LoginScene extends AbstractScene {
             }
         }
         contextHelper.runInFxThread(() -> {
-            Optional<Node> player = LookupHelper.lookupIfPossible(scene.getRoot(), "#player");
-            if (player.isPresent()) {
-                LookupHelper.<Label>lookupIfPossible(player.get(), "#playerName").ifPresent((e) -> e.setText(application.stateService.getUsername()));
-                LookupHelper.<ImageView>lookupIfPossible(player.get(), "#playerHead").ifPresent(
-                        (h) -> {
-                            try {
-                                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
-                                clip.setArcWidth(h.getFitWidth());
-                                clip.setArcHeight(h.getFitHeight());
-                                h.setClip(clip);
-                                Image image = application.skinManager.getScaledFxSkinHead(result.playerProfile.username, (int) h.getFitWidth(), (int) h.getFitHeight());
-                                if (image != null)
-                                    h.setImage(image);
-                            } catch (Throwable e) {
-                                LogHelper.warning("Skin head error");
-                            }
-                        }
-                );
-                player.get().setVisible(true);
-                disable();
-                fade(player.get(), 2000.0, 0.0, 1.0, (e) -> {
-                            enable();
-                            onGetProfiles();
-                            player.get().setVisible(false);
-                        }
-                );
-            } else {
-                onGetProfiles();
-            }
+            showOverlay(application.gui.welcomeOverlay, (e) -> {
+                application.gui.welcomeOverlay.hide(2000, (f) -> {
+                    onGetProfiles();
+                });
+            });
         });
     }
 
@@ -402,7 +380,6 @@ public class LoginScene extends AbstractScene {
                 application.triggerManager.process(profile, application.stateService.getOptionalView(profile));
             }
             contextHelper.runInFxThread(() -> {
-                hideOverlay(0, null);
                 application.securityService.startRequest();
                 if (application.gui.optionsScene != null) {
                     try {
@@ -441,10 +418,6 @@ public class LoginScene extends AbstractScene {
     public class LoginSceneAccessor {
         public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
             LoginScene.this.showOverlay(overlay, onFinished);
-        }
-
-        public void hideOverlay(double delay, EventHandler<ActionEvent> onFinished) {
-            LoginScene.this.hideOverlay(delay, onFinished);
         }
 
         public AuthService getAuthService() {

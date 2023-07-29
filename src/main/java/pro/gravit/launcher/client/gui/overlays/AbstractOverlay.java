@@ -18,16 +18,24 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
         super.init();
     }
 
-    protected final void hide(double delay, AbstractScene scene, EventHandler<ActionEvent> onFinished) {
+    public final void hide(double delay, EventHandler<ActionEvent> onFinished) {
         if (!isInit())
             throw new IllegalStateException("Using method hide before init");
-        scene.hideOverlay(delay, (e) -> {
-            if (onFinished != null)
-                onFinished.handle(e);
+        fade(getFxmlRoot(), delay, 1.0, 0.0, (f) -> {
+            if(onFinished != null) {
+                onFinished.handle(f);
+            }
+            currentStage.pull(getFxmlRoot());
+            currentStage.enable();
         });
     }
 
     protected abstract void doInit();
+
+    @Override
+    protected void doPostInit() throws Exception {
+
+    }
 
     public abstract void reset();
 
@@ -37,12 +45,18 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     public void enable() {
     }
 
-    public Pane show(AbstractStage stage) throws Exception {
+    public void show(AbstractStage stage, EventHandler<ActionEvent> onFinished) throws Exception {
         if (!isInit()) {
             init();
         }
         this.currentStage = stage;
         currentStage.enableMouseDrag(layout);
-        return layout;
+        currentStage.push(getFxmlRoot());
+        currentStage.disable();
+        fade(getFxmlRoot(), 100, 0.0, 1.0, (f) -> {
+            if(onFinished != null) {
+                onFinished.handle(f);
+            }
+        });
     }
 }

@@ -80,6 +80,11 @@ public class ServerButtonComponent extends AbstractVisualComponent {
         resetButton = LookupHelper.lookup(layout, "#reset");
     }
 
+    @Override
+    protected void doPostInit() throws Exception {
+
+    }
+
     public void setOnMouseClicked(EventHandler<? super MouseEvent> eventHandler) {
         layout.setOnMouseClicked(eventHandler);
     }
