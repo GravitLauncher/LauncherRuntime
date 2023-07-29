@@ -38,7 +38,7 @@ public abstract class AbstractVisualComponent {
         }
     }
 
-    public static void fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
+    public static FadeTransition fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
         if (onFinished != null)
             fadeTransition.setOnFinished(onFinished);
@@ -46,6 +46,7 @@ public abstract class AbstractVisualComponent {
         fadeTransition.setFromValue(from);
         fadeTransition.setToValue(to);
         fadeTransition.play();
+        return fadeTransition;
     }
 
     public Pane getLayout() {

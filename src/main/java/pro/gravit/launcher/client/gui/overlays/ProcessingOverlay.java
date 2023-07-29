@@ -60,6 +60,7 @@ public class ProcessingOverlay extends AbstractOverlay {
                     application.service.request(request).thenAccept((result) -> {
                         LogHelper.dev("RequestFuture complete normally");
                         onSuccess.accept(result);
+                        hide(0, null);
                     }).exceptionally((error) -> {
                         if (onException != null) onException.accept(error);
                         ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));

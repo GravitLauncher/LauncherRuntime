@@ -78,6 +78,10 @@ public abstract class AbstractStage {
         stackPane.getChildren().add(node);
     }
 
+    public boolean contains(Node node) {
+        return stackPane.getChildren().contains(node);
+    }
+
     public void pull(Node node) {
         stackPane.getChildren().remove(node);
     }

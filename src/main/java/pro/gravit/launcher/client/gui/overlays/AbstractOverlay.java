@@ -1,14 +1,21 @@
 package pro.gravit.launcher.client.gui.overlays;
 
+import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+
 public abstract class AbstractOverlay extends AbstractVisualComponent {
+    private final AtomicInteger useCounter = new AtomicInteger(0);
+    private final AtomicReference<FadeTransition> fadeTransition = new AtomicReference<>();
 
     protected AbstractOverlay(String fxmlPath, JavaFXApplication application) {
         super(fxmlPath, application);
@@ -19,15 +26,22 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     public final void hide(double delay, EventHandler<ActionEvent> onFinished) {
+        if(useCounter.decrementAndGet() != 0) {
+            contextHelper.runInFxThread(() -> {
+                onFinished.handle(null);
+            });
+            return;
+        }
         if (!isInit())
             throw new IllegalStateException("Using method hide before init");
-        fade(getFxmlRoot(), delay, 1.0, 0.0, (f) -> {
+        fadeTransition.set(fade(getFxmlRoot(), delay, 1.0, 0.0, (f) -> {
             if(onFinished != null) {
                 onFinished.handle(f);
             }
             currentStage.pull(getFxmlRoot());
             currentStage.enable();
-        });
+            fadeTransition.set(null);
+        }));
     }
 
     protected abstract void doInit();
@@ -49,11 +63,29 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
         if (!isInit()) {
             init();
         }
+        if(useCounter.incrementAndGet() != 1) {
+            contextHelper.runInFxThread(() -> {
+                onFinished.handle(null);
+            });
+            return;
+        }
+        if(fadeTransition.get() != null) {
+            fadeTransition.get().playFromStart();
+            fadeTransition.get().stop();
+            contextHelper.runInFxThread(() -> {
+                if(onFinished != null) {
+                    onFinished.handle(null);
+                }
+            });
+            fadeTransition.set(null);
+            return;
+        }
+        Node root = getFxmlRoot();
         this.currentStage = stage;
         currentStage.enableMouseDrag(layout);
-        currentStage.push(getFxmlRoot());
+        currentStage.push(root);
         currentStage.disable();
-        fade(getFxmlRoot(), 100, 0.0, 1.0, (f) -> {
+        fade(root, 100, 0.0, 1.0, (f) -> {
             if(onFinished != null) {
                 onFinished.handle(f);
             }
