@@ -5,6 +5,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
+import javafx.util.Duration;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
@@ -70,7 +71,7 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
             return;
         }
         if(fadeTransition.get() != null) {
-            fadeTransition.get().playFromStart();
+            fadeTransition.get().jumpTo(Duration.ZERO);
             fadeTransition.get().stop();
             contextHelper.runInFxThread(() -> {
                 if(onFinished != null) {
