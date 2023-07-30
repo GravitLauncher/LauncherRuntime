@@ -58,6 +58,15 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
     }
 
     @Override
+    public void onAuthClicked() {
+    }
+
+    @Override
+    public void onUserCancel() {
+
+    }
+
+    @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
         return future;

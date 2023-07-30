@@ -16,6 +16,7 @@ import pro.gravit.launcher.client.StdJavaRuntimeProvider;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.login.methods.*;
@@ -52,10 +53,11 @@ public class LoginScene extends AbstractScene {
     private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth;
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
+    private Pane content;
+    private AbstractVisualComponent contentComponent;
     private LoginAuthButtonComponent authButton;
     private final AuthService authService = new AuthService(application);
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
-    private ToggleGroup authToggleGroup;
     private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
     private final AuthFlow authFlow = new AuthFlow();
 
@@ -78,6 +80,7 @@ public class LoginScene extends AbstractScene {
         autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
+        content = LookupHelper.lookup(layout, "#content");
         if (application.guiModuleConfig.createAccountURL != null)
             LookupHelper.<Text>lookup(header, "#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
@@ -95,6 +98,9 @@ public class LoginScene extends AbstractScene {
             public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String string) {
                 return null;
             }
+        });
+        authList.setOnAction((e) -> {
+            changeAuthAvailability(authList.getSelectionModel().getSelectedItem());
         });
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
@@ -175,6 +181,7 @@ public class LoginScene extends AbstractScene {
     }
 
     public void changeAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
+        boolean isChanged = this.authAvailability != authAvailability;
         this.authAvailability = authAvailability;
         this.application.stateService.setAuthAvailability(authAvailability);
         this.authList.selectionModelProperty().get().select(authAvailability);
@@ -271,6 +278,13 @@ public class LoginScene extends AbstractScene {
 
     private void loginWithGui() {
         authButton.unsetError();
+        {
+            var method = authFlow.getAuthMethodOnShow();
+            if(method != null) {
+                method.onAuthClicked();
+                return;
+            }
+        }
         if (tryOAuthLogin()) return;
         authFlow.start().thenAccept((result) -> {
             contextHelper.runInFxThread(() -> {
@@ -372,12 +386,26 @@ public class LoginScene extends AbstractScene {
             LoginScene.this.showOverlay(overlay, onFinished);
         }
 
+        public void showContent(AbstractVisualComponent component) throws Exception {
+            component.init();
+            component.postInit();
+            if(contentComponent != null) {
+                content.getChildren().clear();
+            }
+            contentComponent = component;
+            content.getChildren().add(component.getLayout());
+        }
+
         public AuthService getAuthService() {
             return authService;
         }
 
         public JavaFXApplication getApplication() {
             return application;
+        }
+
+        public LoginAuthButtonComponent getAuthButton() {
+            return authButton;
         }
 
         public void errorHandle(Throwable e) {
@@ -390,6 +418,7 @@ public class LoginScene extends AbstractScene {
     public class AuthFlow {
         private final List<Integer> authFlow = new ArrayList<>();
         private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
+        private volatile AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> authMethodOnShow;
 
         public void init(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
             this.authAvailability = authAvailability;
@@ -399,6 +428,14 @@ public class LoginScene extends AbstractScene {
         public void reset() {
             authFlow.clear();
             authFlow.add(0);
+            if(authMethodOnShow != null) {
+                authMethodOnShow.onUserCancel();
+            }
+            if(content.getChildren().size() != 0) {
+                content.getChildren().clear();
+                authButton.setActive(true);
+            }
+            authMethodOnShow = null;
         }
 
         private CompletableFuture<LoginAndPasswordResult> tryLogin(String resentLogin, AuthRequest.AuthPasswordInterface resentPassword) {
@@ -410,9 +447,22 @@ public class LoginScene extends AbstractScene {
             for (int i : authFlow) {
                 GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
                 final AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> authMethod = detailsToMethod(details);
-                if (authFuture == null) authFuture = authMethod.show(details).thenCompose((e) -> authMethod.auth(details));
+                if (authFuture == null) authFuture = authMethod.show(details)
+                        .thenCompose((x) -> {
+                            authMethodOnShow = authMethod;
+                            return CompletableFuture.completedFuture(x);
+                        })
+                        .thenCompose((e) -> authMethod.auth(details))
+                        .thenCompose((x) -> {
+                            authMethodOnShow = null;
+                            return CompletableFuture.completedFuture(x);
+                        });
                 else {
                     authFuture = authFuture.thenCompose(e -> authMethod.show(details).thenApply(x -> e));
+                    authFuture = authFuture.thenCompose((x) -> {
+                        authMethodOnShow = authMethod;
+                        return CompletableFuture.completedFuture(x);
+                    });
                     authFuture = authFuture.thenCompose(first -> authMethod.auth(details).thenApply(second -> {
                         AuthRequest.AuthPasswordInterface password;
                         String login = null;
@@ -438,10 +488,18 @@ public class LoginScene extends AbstractScene {
                         }
                         return new LoginAndPasswordResult(login, password);
                     }));
+                    authFuture = authFuture.thenCompose((x) -> {
+                        authMethodOnShow = null;
+                        return CompletableFuture.completedFuture(x);
+                    });
                 }
                 authFuture = authFuture.thenCompose(e -> authMethod.hide().thenApply(x -> e));
             }
             return authFuture;
+        }
+
+        public AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> getAuthMethodOnShow() {
+            return authMethodOnShow;
         }
 
         private void start(CompletableFuture<SuccessAuth> result, String resentLogin, AuthRequest.AuthPasswordInterface resentPassword) {
