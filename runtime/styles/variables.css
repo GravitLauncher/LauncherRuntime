@@ -3,25 +3,26 @@
 /*-- Var library colors --*/
 
 * {
-    -fx-green: #09BC6A;
-    -fx-green-hover: #15D37C;
-    -fx-greenTr: rgba(9, 188, 106, 0.12);
+    -fx-green: #22EAB5;
+    -fx-green-hover: #22EAB5;
+    -fx-greenTr: rgba(34, 234, 181, 0.12);
+    -fx-black: #000000;
     -fx-black2C: #2C2C2C;
     -fx-black2C-hover: #626262;
     -fx-white: #FFFFFF;
     -fx-whiteG: #FAFAFF;
-    -fx-grayTr: rgba(224, 224, 224, 0.28);
+    -fx-grayTr: rgba(205, 205, 205, 0.22);
     -fx-grayTr-hover: rgba(178, 178, 178, 0.28);
     -fx-grayDTr: rgba(53, 53, 53, 0.38);
     -fx-grayLTr: rgba(182, 182, 182, 0.12);
     -fx-grayLDTr: rgba(120, 120, 120, 0.16);
     -fx-grayD: #5E5E5E;
-    -fx-red: #F5223B;
-    -fx-red-hover: #F6596C;
-    -fx-redTr: rgba(245, 34, 59, 0.12);
+    -fx-red: #FF6F80;
+    -fx-red-hover: #FF6F80;
+    -fx-redTr: rgba(255, 111, 128, 0.22);
     -fx-gray: #F2F2F2;
     -fx-violet: #6B36FF;
-    -fx-violet-hover: #875CFF;
+    -fx-violet-hover: linear-gradient(to bottom right, #8D4CE0 0%, #5711FA 100%);
     -fx-header: #A4B3BA;
     -fx-header-hover: #D0D6D9;
 
