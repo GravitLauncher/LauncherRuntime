@@ -1,4 +1,4 @@
-package pro.gravit.launcher.client.gui.scenes.update;
+package pro.gravit.launcher.client.gui.utils;
 
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherNetworkAPI;
