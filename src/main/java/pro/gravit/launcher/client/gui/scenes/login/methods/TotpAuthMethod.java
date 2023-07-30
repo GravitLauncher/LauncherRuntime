@@ -3,6 +3,7 @@ package pro.gravit.launcher.client.gui.scenes.login.methods;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -96,15 +97,24 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
             textFields = new TextField[6];
             for (int i = 0; i < 6; ++i) {
                 textFields[i] = LookupHelper.lookup(sub, "#" + (i + 1) + "st");
-                if (i != 5) {
-                    TextField field = textFields[i];
-                    int finalI = i;
-                    field.textProperty().addListener(l -> {
-                        if (field.getText().length() == 1) {
-                            textFields[finalI + 1].requestFocus();
+                TextField field = textFields[i];
+                int finalI = i;
+                field.textProperty().addListener(l -> {
+                    int len = field.getText().length();
+                    if (len == 1) {
+                        if(finalI == 5) {
+                            return;
                         }
-                    });
-                } else {
+                        textFields[finalI + 1].requestFocus();
+                    }
+                });
+                field.setOnKeyReleased((key) -> {
+                    if(key.getCode() == KeyCode.BACK_SPACE && finalI != 0) {
+                        textFields[finalI - 1].setText("");
+                        textFields[finalI - 1].requestFocus();
+                    }
+                });
+                if (i == 5) {
                     textFields[i].textProperty().addListener(l -> {
                         AuthTOTPPassword password = new AuthTOTPPassword();
                         password.totp = getCode();
