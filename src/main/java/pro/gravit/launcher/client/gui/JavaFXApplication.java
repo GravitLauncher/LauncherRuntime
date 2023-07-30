@@ -162,7 +162,6 @@ public class JavaFXApplication extends Application {
             DialogService.setDialogImpl(dialogService);
             DialogService.setNotificationImpl(dialogService);
         }
-        ConsoleManager.unlock(); //TODO remove me
         if(offlineService.isOfflineMode()) {
             if(!offlineService.isAvailableOfflineMode() && !debugMode) {
                 messageManager.showDialog(getTranslation("runtime.offline.dialog.header"), getTranslation("runtime.offline.dialog.text"), Platform::exit, Platform::exit, false);

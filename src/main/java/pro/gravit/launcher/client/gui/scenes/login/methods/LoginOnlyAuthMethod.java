@@ -76,7 +76,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
 
         public LoginOnlyOverlay(JavaFXApplication application) {
-            super("scenes/login/loginonly.fxml", application);
+            super("scenes/login/methods/loginonly.fxml", application);
         }
 
         @Override

@@ -74,7 +74,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         private LoginScene.LoginSceneAccessor accessor;
 
         public TotpOverlay(JavaFXApplication application) {
-            super("scenes/login/logintotp.fxml", application);
+            super("scenes/login/methods/totp.fxml", application);
         }
 
         @Override

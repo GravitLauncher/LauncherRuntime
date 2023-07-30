@@ -79,7 +79,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
 
         public LoginAndPasswordOverlay(JavaFXApplication application) {
-            super("scenes/login/loginpassword.fxml", application);
+            super("scenes/login/methods/loginpassword.fxml", application);
         }
 
         @Override
