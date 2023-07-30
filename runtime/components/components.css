@@ -63,7 +63,7 @@
     -fx-background-radius: 5px;
 }
 #online {
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-black;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }

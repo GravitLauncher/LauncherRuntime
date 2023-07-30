@@ -125,7 +125,7 @@
     -fx-background-color: transparent;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-black;
 }
 
 /*-- Надпись названия продукта --*/
