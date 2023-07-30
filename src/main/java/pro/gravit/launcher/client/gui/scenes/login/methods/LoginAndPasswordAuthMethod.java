@@ -5,6 +5,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
@@ -21,8 +23,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     public LoginAndPasswordAuthMethod(LoginScene.LoginSceneAccessor accessor) {
         this.accessor = accessor;
         this.application = accessor.getApplication();
-        this.overlay = application.gui.registerOverlay(LoginAndPasswordOverlay.class);
-        this.overlay.accessor = accessor;
+        this.overlay = new LoginAndPasswordOverlay(application);
     }
 
     @Override
@@ -38,7 +39,11 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     public CompletableFuture<Void> show(AuthPasswordDetails details) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         try {
-            accessor.showOverlay(overlay, (e) -> future.complete(null));
+            //accessor.showOverlay(overlay, (e) -> future.complete(null));
+            ContextHelper.runInFxThreadStatic(() -> {
+                accessor.showContent(overlay);
+                future.complete(null);
+            });
         } catch (Exception e) {
             accessor.errorHandle(e);
         }
@@ -59,10 +64,18 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     @Override
+    public void onAuthClicked() {
+        overlay.future.complete(overlay.getResult());
+    }
+
+    @Override
+    public void onUserCancel() {
+        overlay.future.completeExceptionally(LoginAndPasswordOverlay.USER_AUTH_CANCELED_EXCEPTION);
+    }
+
+    @Override
     public CompletableFuture<Void> hide() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        overlay.hide(0, (e) -> future.complete(null));
-        return future;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -70,12 +83,10 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         return true;
     }
 
-    public static class LoginAndPasswordOverlay extends AbstractOverlay {
+    public class LoginAndPasswordOverlay extends AbstractVisualComponent {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
         private TextField password;
-        private LoginAuthButtonComponent authButton;
-        private LoginScene.LoginSceneAccessor accessor;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
 
         public LoginAndPasswordOverlay(JavaFXApplication application) {
@@ -87,40 +98,36 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             return "loginandpassword";
         }
 
+        public LoginScene.LoginAndPasswordResult getResult() {
+            String rawLogin = login.getText();
+            String rawPassword = password.getText();
+            return new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword));
+        }
+
         @Override
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
             password = LookupHelper.lookup(layout, "#password");
-            authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, e -> {
-                String rawLogin = login.getText();
-                String rawPassword = password.getText();
-                future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword)));
-            });
-            LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
-                hide(0, null);
-                future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
-            });
+
             login.textProperty().addListener(l -> {
-                authButton.setActive(!login.getText().isEmpty());
+                accessor.getAuthButton().setActive(!login.getText().isEmpty());
             });
-            
-            if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
-                    application.openURL(application.guiModuleConfig.createAccountURL));
-            if (application.guiModuleConfig.forgotPassURL != null)
-                LookupHelper.<Text>lookup(layout, "#forgotPass").setOnMouseClicked((e) ->
-                        application.openURL(application.guiModuleConfig.forgotPassURL));
             
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
-                authButton.setActive(true);
+                accessor.getAuthButton().setActive(true);
             } else {
-                authButton.setActive(false);
+                accessor.getAuthButton().setActive(false);
             }
             if (application.runtimeSettings.password != null) {
                 password.getStyleClass().add("hasSaved");
                 password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             }
+
+        }
+
+        @Override
+        protected void doPostInit() throws Exception {
 
         }
 
@@ -132,6 +139,16 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             password.setPromptText(application.getTranslation("runtime.scenes.login.password"));
             password.setText("");
             login.setText("");
+        }
+
+        @Override
+        public void disable() {
+
+        }
+
+        @Override
+        public void enable() {
+
         }
     }
 }

@@ -67,6 +67,15 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     }
 
     @Override
+    public void onAuthClicked() {
+    }
+
+    @Override
+    public void onUserCancel() {
+
+    }
+
+    @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
         overlay.hide((r) -> {

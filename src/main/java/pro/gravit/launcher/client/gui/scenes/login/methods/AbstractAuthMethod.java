@@ -13,6 +13,8 @@ public abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEve
     public abstract CompletableFuture<Void> show(T details);
 
     public abstract CompletableFuture<LoginScene.LoginAndPasswordResult> auth(T details);
+    public abstract void onAuthClicked();
+    public abstract void onUserCancel();
 
     public abstract CompletableFuture<Void> hide();
 

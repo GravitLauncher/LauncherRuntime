@@ -5,6 +5,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
@@ -22,8 +24,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
     public LoginOnlyAuthMethod(LoginScene.LoginSceneAccessor accessor) {
         this.accessor = accessor;
         this.application = accessor.getApplication();
-        this.overlay = application.gui.registerOverlay(LoginOnlyOverlay.class);
-        this.overlay.accessor = accessor;
+        this.overlay = new LoginOnlyOverlay(application);
     }
 
     @Override
@@ -39,7 +40,10 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
     public CompletableFuture<Void> show(AuthLoginOnlyDetails details) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         try {
-            accessor.showOverlay(overlay, (e) -> future.complete(null));
+            ContextHelper.runInFxThreadStatic(() -> {
+                accessor.showContent(overlay);
+                future.complete(null);
+            });
         } catch (Exception e) {
             accessor.errorHandle(e);
         }
@@ -57,10 +61,18 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
     }
 
     @Override
+    public void onAuthClicked() {
+        overlay.future.complete(overlay.getResult());
+    }
+
+    @Override
+    public void onUserCancel() {
+        overlay.future.completeExceptionally(LoginOnlyOverlay.USER_AUTH_CANCELED_EXCEPTION);
+    }
+
+    @Override
     public CompletableFuture<Void> hide() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        overlay.hide(0, (e) -> future.complete(null));
-        return future;
+        return CompletableFuture.completedFuture(null);
     }
 
     @Override
@@ -68,11 +80,9 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
         return true;
     }
 
-    public static class LoginOnlyOverlay extends AbstractOverlay {
+    public class LoginOnlyOverlay extends AbstractVisualComponent {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
-        private LoginAuthButtonComponent authButton;
-        private LoginScene.LoginSceneAccessor accessor;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
 
         public LoginOnlyOverlay(JavaFXApplication application) {
@@ -84,25 +94,22 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
             return "loginonly";
         }
 
+        public LoginScene.LoginAndPasswordResult getResult() {
+            String rawLogin = login.getText();
+            return new LoginScene.LoginAndPasswordResult(rawLogin, null);
+        }
+
         @Override
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
-            authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, e -> {
-                String rawLogin = login.getText();
-                future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, null));
-            });
-            LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
-                hide(0, null);
-                future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
-            });
             login.textProperty().addListener(l -> {
-                authButton.setActive(!login.getText().isEmpty());
+                accessor.getAuthButton().setActive(!login.getText().isEmpty());
             });
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
-                authButton.setActive(true);
+                accessor.getAuthButton().setActive(true);
             } else {
-                authButton.setActive(false);
+                accessor.getAuthButton().setActive(false);
             }
         
             if (application.guiModuleConfig.createAccountURL != null)
@@ -113,10 +120,25 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
                         application.openURL(application.guiModuleConfig.forgotPassURL));
         }
 
+        @Override
+        protected void doPostInit() throws Exception {
+
+        }
+
 
         @Override
         public void reset() {
             login.setText("");
+        }
+
+        @Override
+        public void disable() {
+
+        }
+
+        @Override
+        public void enable() {
+
         }
     }
 }
