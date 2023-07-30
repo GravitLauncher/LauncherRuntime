@@ -50,6 +50,7 @@ public class MessageManager {
             scene.currentStage.pull(vbox);
             vbox.getChildren().clear();
             hBox.getChildren().clear();
+            scene.currentStage.enable();
         });
         scene.disable();
         scene.currentStage.push(vbox);
