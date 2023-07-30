@@ -29,7 +29,9 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     public final void hide(double delay, EventHandler<ActionEvent> onFinished) {
         if(useCounter.decrementAndGet() != 0) {
             contextHelper.runInFxThread(() -> {
-                onFinished.handle(null);
+                if(onFinished != null) {
+                    onFinished.handle(null);
+                }
             });
             return;
         }
@@ -66,7 +68,9 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
         }
         if(useCounter.incrementAndGet() != 1) {
             contextHelper.runInFxThread(() -> {
-                onFinished.handle(null);
+                if(onFinished != null) {
+                    onFinished.handle(null);
+                }
             });
             return;
         }
