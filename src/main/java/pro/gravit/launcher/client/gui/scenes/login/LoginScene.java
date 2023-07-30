@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.util.StringConverter;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.StdJavaRuntimeProvider;
 import pro.gravit.launcher.client.events.ClientExitPhase;
@@ -53,7 +54,7 @@ public class LoginScene extends AbstractScene {
     private CheckBox autoenter;
     private LoginAuthButtonComponent authButton;
     private final AuthService authService = new AuthService(application);
-    private VBox authList;
+    private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
     private ToggleGroup authToggleGroup;
     private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
     private final AuthFlow authFlow = new AuthFlow();
@@ -70,21 +71,31 @@ public class LoginScene extends AbstractScene {
     @Override
     public void doInit() {
         authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, (e) -> contextHelper.runCallback(this::loginWithGui));
-        savePasswordCheckBox = LookupHelper.lookup(layout, "#leftPane", "#savePassword");
+        savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
         if (application.runtimeSettings.password != null || application.runtimeSettings.oauthAccessToken != null) {
-            LookupHelper.<CheckBox>lookup(layout, "#leftPane", "#savePassword").setSelected(true);
+            LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
         }
         autoenter = LookupHelper.<CheckBox>lookup(layout, "#autoenter");
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
         if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(header, "#controls", "#registerPane", "#createAccount").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header, "#createAccount").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.createAccountURL));
         if (application.guiModuleConfig.forgotPassURL != null)
-            LookupHelper.<Text>lookup(header, "#controls", "#links", "#forgotPass").setOnMouseClicked((e) ->
+            LookupHelper.<Text>lookup(header, "#forgotPass").setOnMouseClicked((e) ->
                     application.openURL(application.guiModuleConfig.forgotPassURL));
-        authList = LookupHelper.<VBox>lookup(layout, "#authList");
-        authToggleGroup = new ToggleGroup();
+        authList = LookupHelper.lookup(layout, "#authList");
+        authList.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(GetAvailabilityAuthRequestEvent.AuthAvailability object) {
+                return object == null ? "null" : object.displayName;
+            }
+
+            @Override
+            public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String string) {
+                return null;
+            }
+        });
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
     }
@@ -166,23 +177,14 @@ public class LoginScene extends AbstractScene {
     public void changeAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
         this.authAvailability = authAvailability;
         this.application.stateService.setAuthAvailability(authAvailability);
+        this.authList.selectionModelProperty().get().select(authAvailability);
         authFlow.init(authAvailability);
         LogHelper.info("Selected auth: %s", authAvailability.name);
     }
 
     public void addAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
-        RadioButton radio = new RadioButton();
-        radio.setToggleGroup(authToggleGroup);
-        radio.setId("authRadio");
-        radio.setText(authAvailability.displayName);
-        if (this.authAvailability == authAvailability) {
-            radio.fire();
-        }
-        radio.setOnAction((e) -> {
-            changeAuthAvailability(authAvailability);
-        });
+        authList.getItems().add(authAvailability);
         LogHelper.info("Added %s: %s", authAvailability.name, authAvailability.displayName);
-        authList.getChildren().add(radio);
     }
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess, Consumer<String> onError) {

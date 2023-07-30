@@ -26,6 +26,7 @@ public abstract class AbstractVisualComponent {
     private Parent sysFxmlRoot;
     private CompletableFuture<Node> sysFxmlFuture;
     boolean isInit;
+    boolean isPostInit;
     protected boolean isResetOnShow = false;
 
     protected AbstractVisualComponent(String fxmlPath, JavaFXApplication application) {
@@ -91,7 +92,10 @@ public abstract class AbstractVisualComponent {
     }
 
     public void postInit() throws Exception {
-        doPostInit();
+        if(!isPostInit) {
+            doPostInit();
+            isPostInit = true;
+        }
     }
 
     protected abstract void doInit() throws Exception;
