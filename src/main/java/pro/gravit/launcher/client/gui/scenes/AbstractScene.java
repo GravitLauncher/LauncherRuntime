@@ -163,7 +163,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         if (layout == root) {
             throw new IllegalStateException("AbstractScene.disable() failed: layout == root");
         }
-        ffect(new GaussianBlur(20));
+        layout.effect(new GaussianBlur(20));
         if (disablePane == null) {
             disablePane = new Pane();
             disablePane.setPrefHeight(root.getPrefHeight());
