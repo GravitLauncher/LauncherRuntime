@@ -96,7 +96,9 @@ public class GuiObjectsContainer {
     @SuppressWarnings("unchecked")
     public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(application);
+            T instance = (T) MethodHandles
+                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
             overlays.add(instance);
             return instance;
         } catch (Throwable e) {
@@ -108,7 +110,9 @@ public class GuiObjectsContainer {
     @SuppressWarnings("unchecked")
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(application);
+            T instance = (T) MethodHandles
+                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
             scenes.add(instance);
             return instance;
         } catch (Throwable e) {

@@ -1,8 +1,6 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../styles/global.css";
 @import "../styles/variables.css";
-
 /*-- Уведомления --*/
 .text-font-head {
     -fx-text-fill: -fx-black2C;
@@ -16,7 +14,6 @@
 #notificationPane {
     -fx-background-radius: 10px 0px 0px 10px;
 }
-
 /*-- Блок сервера --*/
 .serverButtons {
     -fx-background-color: -fx-grayTr;
@@ -39,8 +36,6 @@
 #serverLogo {
     -fx-background-position: center;
 }
-
-
 /*-- Информация о сервере --*/
 #nameServer {
     -fx-fill: -fx-black2C;
@@ -55,8 +50,6 @@
     -fx-fill: -fx-black2C;
     -fx-font-size: 12px;
 }
-
-
 /*-- Индикатор онлайна --*/
 #block-online {
     -fx-background-color: -fx-green;
@@ -67,8 +60,6 @@
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-
-
 /*-- Кнопка сохранить (для всех сцен) --*/
 #save {
     -fx-font-weight: bold;

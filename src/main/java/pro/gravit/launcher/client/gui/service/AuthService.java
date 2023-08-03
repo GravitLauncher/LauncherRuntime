@@ -28,7 +28,8 @@ public class AuthService {
         return new AuthPlainPassword(plainPassword);
     }
 
-    public AuthRequest.AuthPasswordInterface make2FAPassword(AuthRequest.AuthPasswordInterface firstPassword, String totp) {
+    public AuthRequest.AuthPasswordInterface make2FAPassword(AuthRequest.AuthPasswordInterface firstPassword,
+            String totp) {
         Auth2FAPassword auth2FAPassword = new Auth2FAPassword();
         auth2FAPassword.firstPassword = firstPassword;
         auth2FAPassword.secondPassword = new AuthTOTPPassword();
@@ -37,14 +38,13 @@ public class AuthService {
     }
 
     public List<AuthRequest.AuthPasswordInterface> getListFromPassword(AuthRequest.AuthPasswordInterface password) {
-        if(password instanceof Auth2FAPassword) {
+        if (password instanceof Auth2FAPassword auth2FAPassword) {
             List<AuthRequest.AuthPasswordInterface> list = new ArrayList<>();
-            Auth2FAPassword auth2FAPassword = (Auth2FAPassword) password;
             list.add(auth2FAPassword.firstPassword);
             list.add(auth2FAPassword.secondPassword);
             return list;
-        } else if(password instanceof AuthMultiPassword) {
-            return ((AuthMultiPassword) password).list;
+        } else if (password instanceof AuthMultiPassword authMultiPassword) {
+            return authMultiPassword.list;
         } else {
             List<AuthRequest.AuthPasswordInterface> list = new ArrayList<>(1);
             list.add(password);
@@ -53,10 +53,10 @@ public class AuthService {
     }
 
     public AuthRequest.AuthPasswordInterface getPasswordFromList(List<AuthRequest.AuthPasswordInterface> password) {
-        if(password.size() == 1) {
+        if (password.size() == 1) {
             return password.get(0);
         }
-        if(password.size() == 2) {
+        if (password.size() == 2) {
             Auth2FAPassword pass = new Auth2FAPassword();
             pass.firstPassword = password.get(0);
             pass.secondPassword = password.get(1);
@@ -68,7 +68,9 @@ public class AuthService {
     }
 
     public AuthRequest makeAuthRequest(String login, AuthRequest.AuthPasswordInterface password, String authId) {
-        return new AuthRequest(login, password, authId, false, application.isDebugMode() ? AuthRequest.ConnectTypes.API : AuthRequest.ConnectTypes.CLIENT);
+        return new AuthRequest(login, password, authId, false, application.isDebugMode()
+                ? AuthRequest.ConnectTypes.API
+                : AuthRequest.ConnectTypes.CLIENT);
     }
 
     private byte[] encryptAESPassword(String password) throws Exception {

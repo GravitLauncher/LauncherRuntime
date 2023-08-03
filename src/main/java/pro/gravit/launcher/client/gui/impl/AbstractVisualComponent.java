@@ -34,15 +34,15 @@ public abstract class AbstractVisualComponent {
         this.sysFxmlPath = fxmlPath;
         this.contextHelper = new ContextHelper(this);
         this.fxExecutor = new FXExecutorService(contextHelper);
-        if(application.guiModuleConfig.lazy) {
+        if (application.guiModuleConfig.lazy) {
             this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
         }
     }
 
-    public static FadeTransition fade(Node region, double delay, double from, double to, EventHandler<ActionEvent> onFinished) {
+    public static FadeTransition fade(Node region, double delay, double from, double to,
+            EventHandler<ActionEvent> onFinished) {
         FadeTransition fadeTransition = new FadeTransition(Duration.millis(100), region);
-        if (onFinished != null)
-            fadeTransition.setOnFinished(onFinished);
+        if (onFinished != null) fadeTransition.setOnFinished(onFinished);
         fadeTransition.setDelay(Duration.millis(delay));
         fadeTransition.setFromValue(from);
         fadeTransition.setToValue(to);
@@ -63,7 +63,7 @@ public abstract class AbstractVisualComponent {
     protected synchronized Parent getFxmlRoot() {
         try {
             if (sysFxmlRoot == null) {
-                if(sysFxmlFuture == null) {
+                if (sysFxmlFuture == null) {
                     this.sysFxmlFuture = application.fxmlFactory.getAsync(sysFxmlPath);
                 }
                 sysFxmlRoot = (Parent) sysFxmlFuture.get();
@@ -76,8 +76,8 @@ public abstract class AbstractVisualComponent {
             if (cause instanceof CompletionException) {
                 cause = cause.getCause();
             }
-            if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
+            if (cause instanceof RuntimeException runtimeException) {
+                throw runtimeException;
             }
             throw new FXMLFactory.FXMLLoadException(cause);
         }
@@ -92,13 +92,14 @@ public abstract class AbstractVisualComponent {
     }
 
     public void postInit() throws Exception {
-        if(!isPostInit) {
+        if (!isPostInit) {
             doPostInit();
             isPostInit = true;
         }
     }
 
     protected abstract void doInit() throws Exception;
+
     protected abstract void doPostInit() throws Exception;
 
     public abstract void reset();
@@ -119,7 +120,7 @@ public abstract class AbstractVisualComponent {
             message = e.getMessage();
         }
         if (message == null) {
-            message = String.format("%s: %s", e.getClass().getName(), e.getMessage());
+            message = "%s: %s".formatted(e.getClass().getName(), e.getMessage());
         } else {
             message = application.getTranslation("runtime.request.".concat(message), message);
         }

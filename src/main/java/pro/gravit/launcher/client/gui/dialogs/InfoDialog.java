@@ -25,14 +25,12 @@ public class InfoDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if (isInit())
-            textDescription.setText(text);
+        if (isInit()) textDescription.setText(text);
     }
 
     public void setText(String text) {
         this.text = text;
-        if (isInit())
-            textHeader.setText(header);
+        if (isInit()) textHeader.setText(header);
     }
 
     @Override

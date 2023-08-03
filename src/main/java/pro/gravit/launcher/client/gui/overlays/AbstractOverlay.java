@@ -4,12 +4,10 @@ import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
-import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
-import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -27,18 +25,17 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     public final void hide(double delay, EventHandler<ActionEvent> onFinished) {
-        if(useCounter.decrementAndGet() != 0) {
+        if (useCounter.decrementAndGet() != 0) {
             contextHelper.runInFxThread(() -> {
-                if(onFinished != null) {
+                if (onFinished != null) {
                     onFinished.handle(null);
                 }
             });
             return;
         }
-        if (!isInit())
-            throw new IllegalStateException("Using method hide before init");
+        if (!isInit()) throw new IllegalStateException("Using method hide before init");
         fadeTransition.set(fade(getFxmlRoot(), delay, 1.0, 0.0, (f) -> {
-            if(onFinished != null) {
+            if (onFinished != null) {
                 onFinished.handle(f);
             }
             currentStage.pull(getFxmlRoot());
@@ -66,19 +63,19 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
         if (!isInit()) {
             init();
         }
-        if(useCounter.incrementAndGet() != 1) {
+        if (useCounter.incrementAndGet() != 1) {
             contextHelper.runInFxThread(() -> {
-                if(onFinished != null) {
+                if (onFinished != null) {
                     onFinished.handle(null);
                 }
             });
             return;
         }
-        if(fadeTransition.get() != null) {
+        if (fadeTransition.get() != null) {
             fadeTransition.get().jumpTo(Duration.ZERO);
             fadeTransition.get().stop();
             contextHelper.runInFxThread(() -> {
-                if(onFinished != null) {
+                if (onFinished != null) {
                     onFinished.handle(null);
                 }
             });
@@ -91,7 +88,7 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
         currentStage.push(root);
         currentStage.disable();
         fade(root, 100, 0.0, 1.0, (f) -> {
-            if(onFinished != null) {
+            if (onFinished != null) {
                 onFinished.handle(f);
             }
         });

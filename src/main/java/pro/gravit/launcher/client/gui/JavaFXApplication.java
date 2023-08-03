@@ -28,7 +28,6 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestService;
 import pro.gravit.launcher.request.auth.AuthRequest;
-import pro.gravit.launcher.request.websockets.StdWebSocketService;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandCategory;
 import pro.gravit.utils.command.CommandHandler;
@@ -44,7 +43,6 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class JavaFXApplication extends Application {
@@ -103,7 +101,9 @@ public class JavaFXApplication extends Application {
         }
         runtimeSettings = (RuntimeSettings) settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME);
         runtimeSettings.apply();
-        DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
+        DirBridge.dirUpdates = runtimeSettings.updatesDir == null
+                ? DirBridge.defaultUpdatesDir
+                : runtimeSettings.updatesDir;
         service = Request.getRequestService();
         service.registerEventHandler(new GuiEventHandler(this));
         stateService = new StateService();
@@ -146,8 +146,7 @@ public class JavaFXApplication extends Application {
             }
         }
         // System loading
-        if (runtimeSettings.locale == null)
-            runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
+        if (runtimeSettings.locale == null) runtimeSettings.locale = RuntimeSettings.DEFAULT_LOCALE;
         try {
             updateLocaleResources(runtimeSettings.locale.name);
         } catch (Throwable e) {
@@ -162,22 +161,25 @@ public class JavaFXApplication extends Application {
             DialogService.setDialogImpl(dialogService);
             DialogService.setNotificationImpl(dialogService);
         }
-        if(offlineService.isOfflineMode()) {
-            if(!offlineService.isAvailableOfflineMode() && !debugMode) {
-                messageManager.showDialog(getTranslation("runtime.offline.dialog.header"), getTranslation("runtime.offline.dialog.text"), Platform::exit, Platform::exit, false);
+        if (offlineService.isOfflineMode()) {
+            if (!offlineService.isAvailableOfflineMode() && !debugMode) {
+                messageManager.showDialog(getTranslation("runtime.offline.dialog.header"),
+                                          getTranslation("runtime.offline.dialog.text"),
+                                          Platform::exit, Platform::exit, false);
                 return;
             }
         }
         try {
-            mainStage = new PrimaryStage(stage, String.format("%s Launcher", config.projectName));
+            mainStage = new PrimaryStage(stage, "%s Launcher".formatted(config.projectName));
             // Overlay loading
             gui = new GuiObjectsContainer(this);
             gui.init();
             //
             mainStage.setScene(gui.loginScene);
             mainStage.show();
-            if(offlineService.isOfflineMode()) {
-                messageManager.createNotification(getTranslation("runtime.offline.notification.header"), getTranslation("runtime.offline.notification.text"));
+            if (offlineService.isOfflineMode()) {
+                messageManager.createNotification(getTranslation("runtime.offline.notification.header"),
+                                                  getTranslation("runtime.offline.notification.text"));
             }
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
@@ -190,14 +192,14 @@ public class JavaFXApplication extends Application {
     }
 
     public void updateLocaleResources(String locale) throws IOException {
-        try (InputStream input = getResource(String.format("runtime_%s.properties", locale))) {
+        try (InputStream input = getResource("runtime_%s.properties".formatted(locale))) {
             resources = new PropertyResourceBundle(input);
         }
         fxmlFactory = new FXMLFactory(resources, workers);
     }
 
     public void resetDirectory() throws IOException {
-        if(enfsDirectory != null) {
+        if (enfsDirectory != null) {
             enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
         }
     }
@@ -236,8 +238,7 @@ public class JavaFXApplication extends Application {
     public static URL getResourceURL(String name) throws IOException {
         if (runtimeDirectory != null) {
             Path target = runtimeDirectory.resolve(name);
-            if (!Files.exists(target))
-                throw new FileNotFoundException(String.format("File runtime/%s not found", name));
+            if (!Files.exists(target)) throw new FileNotFoundException("File runtime/%s not found".formatted(name));
             return target.toUri().toURL();
         } else if (enfsDirectory != null) {
             return getResourceEnFs(name);
@@ -291,7 +292,7 @@ public class JavaFXApplication extends Application {
     }
 
     public final String getTranslation(String name) {
-        return getTranslation(name, String.format("'%s'", name));
+        return getTranslation(name, "'%s'".formatted(name));
     }
 
     public final String getTranslation(String key, String defaultValue) {

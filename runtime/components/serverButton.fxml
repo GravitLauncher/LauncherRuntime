@@ -8,41 +8,40 @@
 <!-- DrLeonardo refactor -->
 
 <Pane fx:id="serverButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="339.0" prefWidth="189.0" styleClass="b-20" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1">
-   <Pane id="serverButtonLayout" prefHeight="339.0" prefWidth="189.0" styleClass="serverButtons">
-      <children>
-
-         <!-- Лого сервера -->
-         <ImageView id="serverLogo" fitHeight="242.0" fitWidth="151.0" layoutX="18.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
+    <Pane id="serverButtonLayout" prefHeight="339.0" prefWidth="189.0" styleClass="serverButtons">
+        <!-- Лого сервера -->
+        <ImageView id="serverLogo" fitHeight="242.0" fitWidth="151.0" layoutX="18.0" layoutY="19.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../images/servers/example.png" />
-         </ImageView>
+        </ImageView>
 
-         <!-- Онлайн сервера -->
-         <Pane id="block-online" layoutX="115.0" layoutY="8.0" prefHeight="35.0" prefWidth="48.0">
-            <children>
-               <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" text="?" />
-            </children>
-         </Pane>
+        <!-- Онлайн сервера -->
+        <Pane id="block-online" layoutX="115.0" layoutY="8.0" prefHeight="35.0" prefWidth="48.0">
+            <Label id="online" alignment="CENTER" prefHeight="35.0" prefWidth="48.0" text="?" />
+        </Pane>
 
-         <!-- Информация сервера -->
-         <Label id="nameServer" alignment="CENTER" layoutY="277.0" prefHeight="29.0" prefWidth="189.0" text="SERVERNAME" textAlignment="CENTER" />
-         <Label id="genreServer" alignment="CENTER" layoutY="302.0" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" />
+        <!-- Информация сервера -->
+        <Label id="nameServer" alignment="CENTER" layoutY="277.0" prefHeight="29.0" prefWidth="189.0" text="SERVERNAME"
+            textAlignment="CENTER" />
+        <Label id="genreServer" alignment="CENTER" layoutY="302.0" prefHeight="17.0" prefWidth="189.0" text="HITECH"
+            textAlignment="CENTER" />
 
-         <!-- Кнопка сохранить (для других сцен) -->
-         <Button id="save" layoutX="18.0" layoutY="205.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="151.0" text="%runtime.components.serverButton.save" visible="false" />
-         <Button id="reset" layoutX="25.0" layoutY="8.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0" text="%runtime.components.serverButton.reset" visible="false" >
+        <!-- Кнопка сохранить (для других сцен) -->
+        <Button id="save" layoutX="18.0" layoutY="205.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="151.0"
+            text="%runtime.components.serverButton.save" visible="false" />
+        <Button id="reset" layoutX="25.0" layoutY="8.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0"
+            text="%runtime.components.serverButton.reset" visible="false">
             <tooltip>
-               <Tooltip id="resetTooltip" text="%runtime.components.serverButton.resetTooltip" />
+                <Tooltip id="resetTooltip" text="%runtime.components.serverButton.resetTooltip" />
             </tooltip>
-         </Button>
+        </Button>
 
-      </children>
-   </Pane>
+    </Pane>
 
-   <!-- Подключение стилей-->
-   <stylesheets>
-      <URL value="@components.css" />
-      <URL value="@../styles/global.css" />
-      <URL value="@../styles/variables.css" />
-   </stylesheets>
+    <!-- Подключение стилей-->
+    <stylesheets>
+        <URL value="@components.css" />
+        <URL value="@../styles/global.css" />
+        <URL value="@../styles/variables.css" />
+    </stylesheets>
 
 </Pane>

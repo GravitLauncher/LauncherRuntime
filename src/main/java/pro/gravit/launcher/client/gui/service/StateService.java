@@ -5,7 +5,6 @@ import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
-import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.request.Request;
 
@@ -23,7 +22,7 @@ public class StateService {
 
     public void setAuthResult(String authId, AuthRequestEvent rawAuthResult) {
         this.rawAuthResult = rawAuthResult;
-        if(rawAuthResult.oauth != null) {
+        if (rawAuthResult.oauth != null) {
             Request.setOAuth(authId, rawAuthResult.oauth);
         }
     }
@@ -37,14 +36,14 @@ public class StateService {
     }
 
     public boolean isSupportedAuthFeature(String feature) {
-        if(authAvailability == null || authAvailability.apiFeatures == null) {
+        if (authAvailability == null || authAvailability.apiFeatures == null) {
             return false;
         }
         return authAvailability.apiFeatures.contains(feature);
     }
 
     public String getApiUrl() {
-        if(authAvailability == null || authAvailability.apiUrl == null) {
+        if (authAvailability == null || authAvailability.apiUrl == null) {
             return null;
         }
         return authAvailability.apiUrl;
@@ -70,19 +69,20 @@ public class StateService {
     }
 
     public String getUsername() {
-        if (rawAuthResult == null || rawAuthResult.playerProfile == null)
-            return "Player";
+        if (rawAuthResult == null || rawAuthResult.playerProfile == null) return "Player";
         return rawAuthResult.playerProfile.username;
     }
 
     public String getMainRole() {
-        if (rawAuthResult == null || rawAuthResult.permissions == null || rawAuthResult.permissions.getRoles() == null || rawAuthResult.permissions.getRoles().isEmpty())
-            return "";
+        if (rawAuthResult == null
+                || rawAuthResult.permissions == null
+                || rawAuthResult.permissions.getRoles() == null
+                || rawAuthResult.permissions.getRoles().isEmpty()) return "";
         return rawAuthResult.permissions.getRoles().get(0);
     }
 
     public boolean checkPermission(String name) {
-        if(rawAuthResult == null || rawAuthResult.permissions == null) {
+        if (rawAuthResult == null || rawAuthResult.permissions == null) {
             return false;
         }
         return rawAuthResult.permissions.hasPerm(name);
@@ -109,14 +109,12 @@ public class StateService {
     }
 
     public PlayerProfile getPlayerProfile() {
-        if (rawAuthResult == null)
-            return null;
+        if (rawAuthResult == null) return null;
         return rawAuthResult.playerProfile;
     }
 
     public String getAccessToken() {
-        if (rawAuthResult == null)
-            return null;
+        if (rawAuthResult == null) return null;
         return rawAuthResult.accessToken;
     }
 

@@ -46,7 +46,8 @@ public class VisualDownloader {
 
     private final ExecutorService executor;
 
-    public VisualDownloader(JavaFXApplication application, ProgressBar progressBar, Text speed, Label volume, Consumer<Throwable> errorHandle, Consumer<String> addLog) {
+    public VisualDownloader(JavaFXApplication application, ProgressBar progressBar, Text speed, Label volume,
+            Consumer<Throwable> errorHandle, Consumer<String> addLog) {
         this.application = application;
         this.progressBar = progressBar;
         this.speed = speed;
@@ -60,9 +61,10 @@ public class VisualDownloader {
         }, null, true);
     }
 
-    public void sendUpdateAssetRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, String assetIndex, Consumer<HashedDir> onSuccess) {
+    public void sendUpdateAssetRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest,
+            String assetIndex, Consumer<HashedDir> onSuccess) {
         if (application.offlineService.isOfflineMode()) {
-            addLog.accept(String.format("Hashing %s", dirName));
+            addLog.accept("Hashing %s".formatted(dirName));
             application.workers.submit(() -> {
                 try {
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
@@ -92,9 +94,10 @@ public class VisualDownloader {
         }
     }
 
-    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
+    public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
+            boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         if (application.offlineService.isOfflineMode()) {
-            addLog.accept(String.format("Hashing %s", dirName));
+            addLog.accept("Hashing %s".formatted(dirName));
             application.workers.submit(() -> {
                 try {
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
@@ -124,21 +127,24 @@ public class VisualDownloader {
         }
     }
 
-    private void download(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view, boolean optionalsEnabled, Consumer<HashedDir> onSuccess, HashedDir targetHDir, String baseUrl) throws Exception {
-        LinkedList<PathRemapperData> pathRemapper = optionalsEnabled ? getPathRemapper(view, targetHDir) : new LinkedList<>();
-        addLog.accept(String.format("Hashing %s", dirName));
-        if (!IOHelper.exists(dir))
-            Files.createDirectories(dir);
+    private void download(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
+            boolean optionalsEnabled, Consumer<HashedDir> onSuccess, HashedDir targetHDir,
+            String baseUrl) throws Exception {
+        LinkedList<PathRemapperData> pathRemapper = optionalsEnabled
+                ? getPathRemapper(view, targetHDir)
+                : new LinkedList<>();
+        addLog.accept("Hashing %s".formatted(dirName));
+        if (!IOHelper.exists(dir)) Files.createDirectories(dir);
 
         HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
         HashedDir.Diff diff = targetHDir.diff(hashedDir, matcher);
         final List<AsyncDownloader.SizedFile> adds = getFilesList(dir, pathRemapper, diff.mismatch);
 
         LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
-        addLog.accept(String.format("Downloading %s...", dirName));
+        addLog.accept("Downloading %s...".formatted(dirName));
         downloadFiles(dir, adds, baseUrl, () -> {
             try {
-                addLog.accept(String.format("Delete Extra files %s", dirName));
+                addLog.accept("Delete Extra files %s".formatted(dirName));
                 deleteExtraDir(dir, diff.extra, diff.extra.flag);
                 onSuccess.accept(targetHDir);
             } catch (IOException e) {
@@ -147,11 +153,11 @@ public class VisualDownloader {
         });
     }
 
-    private void downloadAsset(String dirName, Path dir, FileNameMatcher matcher, boolean digest, String assetIndex, Consumer<HashedDir> onSuccess, HashedDir targetHDir, String baseUrl) throws Exception {
+    private void downloadAsset(String dirName, Path dir, FileNameMatcher matcher, boolean digest, String assetIndex,
+            Consumer<HashedDir> onSuccess, HashedDir targetHDir, String baseUrl) throws Exception {
         LinkedList<PathRemapperData> pathRemapper = new LinkedList<>();
-        addLog.accept(String.format("Check assetIndex %s", assetIndex));
-        if (!IOHelper.exists(dir))
-            Files.createDirectories(dir);
+        addLog.accept("Check assetIndex %s".formatted(assetIndex));
+        if (!IOHelper.exists(dir)) Files.createDirectories(dir);
         Consumer<HashedDir> downloadAssetRunnable = (assetHDir) -> {
             try {
                 HashedDir hashedDir = new HashedDir(dir, matcher, false, digest);
@@ -159,7 +165,7 @@ public class VisualDownloader {
                 final List<AsyncDownloader.SizedFile> adds = getFilesList(dir, pathRemapper, diff.mismatch);
 
                 LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
-                addLog.accept(String.format("Downloading %s...", dirName));
+                addLog.accept("Downloading %s...".formatted(dirName));
                 downloadFiles(dir, adds, baseUrl, () -> {
                     try {
                         onSuccess.accept(assetHDir);
@@ -176,19 +182,19 @@ public class VisualDownloader {
             Path localAssetIndexPath = dir.resolve(assetIndexPath);
             boolean needUpdateIndex;
             HashedDir.FindRecursiveResult result = targetHDir.findRecursive(assetIndexPath);
-            if(!(result.entry instanceof HashedFile)) {
-                addLog.accept(String.format("ERROR: assetIndex %s not found", assetIndex));
+            if (!(result.entry instanceof HashedFile)) {
+                addLog.accept("ERROR: assetIndex %s not found".formatted(assetIndex));
                 errorHandle.accept(new RuntimeException("assetIndex not found"));
                 return;
-            };
-            if(Files.exists(localAssetIndexPath)) {
+            }
+            if (Files.exists(localAssetIndexPath)) {
                 HashedFile file = new HashedFile(localAssetIndexPath, Files.size(localAssetIndexPath), true);
-                needUpdateIndex = !((HashedFile)result.entry).isSame(file);
+                needUpdateIndex = !((HashedFile) result.entry).isSame(file);
             } else {
                 IOHelper.createParentDirs(localAssetIndexPath);
                 needUpdateIndex = true;
             }
-            if(needUpdateIndex) {
+            if (needUpdateIndex) {
                 List<AsyncDownloader.SizedFile> adds = new ArrayList<>(1);
                 adds.add(new AsyncDownloader.SizedFile(assetIndexPath, ((HashedFile) result.entry).size));
                 downloadFiles(dir, adds, baseUrl, () -> {
@@ -212,7 +218,8 @@ public class VisualDownloader {
         }
     }
 
-    private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl, Runnable onSuccess) throws Exception {
+    private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl,
+            Runnable onSuccess) throws Exception {
         ContextHelper.runInFxThreadStatic(this::resetProgress).thenAccept((x) -> {
             downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
                 @Override
@@ -228,12 +235,10 @@ public class VisualDownloader {
 
                 }
             }, executor, application.guiModuleConfig.downloadThreads);
-            downloader.getFuture()
-                    .thenAccept((e) -> onSuccess.run())
-                    .exceptionally((e) -> {
-                        ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
-                        return null;
-                    });
+            downloader.getFuture().thenAccept((e) -> onSuccess.run()).exceptionally((e) -> {
+                ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
+                return null;
+            });
         });
     }
 
@@ -244,28 +249,28 @@ public class VisualDownloader {
         progressBar.progressProperty().setValue(0);
     }
 
-    private List<AsyncDownloader.SizedFile> getFilesList(Path dir, LinkedList<PathRemapperData> pathRemapper, HashedDir mismatch) throws IOException {
+    private List<AsyncDownloader.SizedFile> getFilesList(Path dir, LinkedList<PathRemapperData> pathRemapper,
+            HashedDir mismatch) throws IOException {
         totalSize = 0;
 
         final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
         mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
             String urlPath = path;
             switch (entry.getType()) {
-                case FILE:
+                case FILE -> {
                     HashedFile file = (HashedFile) entry;
-                    totalSize += file.size;
+                    totalSize += file.size; // TODO: FIX Non-atomic operation on volatile field 'totalSize'
                     for (PathRemapperData remapEntry : pathRemapper) {
                         if (path.startsWith(remapEntry.key)) {
                             urlPath = path.replace(remapEntry.key, remapEntry.value);
-                            LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path, urlPath);
+                            LogHelper.dev("Remap found: injected url path: %s | calculated original url path: %s", path,
+                                          urlPath);
                         }
                     }
                     Files.deleteIfExists(dir.resolve(path));
                     adds.add(new AsyncDownloader.SizedFile(urlPath, path, file.size));
-                    break;
-                case DIR:
-                    Files.createDirectories(dir.resolve(path));
-                    break;
+                }
+                case DIR -> Files.createDirectories(dir.resolve(path));
             }
             return HashedDir.WalkAction.CONTINUE;
         });
@@ -274,8 +279,8 @@ public class VisualDownloader {
 
     private LinkedList<PathRemapperData> getPathRemapper(OptionalView view, HashedDir hdir) {
         for (OptionalAction action : view.getDisabledActions()) {
-            if (action instanceof OptionalActionFile) {
-                ((OptionalActionFile) action).disableInHashedDir(hdir);
+            if (action instanceof OptionalActionFile optionalActionFile) {
+                optionalActionFile.disableInHashedDir(hdir);
             }
         }
         LinkedList<PathRemapperData> pathRemapper = new LinkedList<>();
@@ -301,14 +306,9 @@ public class VisualDownloader {
             HashedEntry entry = mapEntry.getValue();
             HashedEntry.Type entryType = entry.getType();
             switch (entryType) {
-                case FILE:
-                    Files.delete(path);
-                    break;
-                case DIR:
-                    deleteExtraDir(path, (HashedDir) entry, deleteDir || entry.flag);
-                    break;
-                default:
-                    throw new AssertionError("Unsupported hashed entry type: " + entryType.name());
+                case FILE -> Files.delete(path);
+                case DIR -> deleteExtraDir(path, (HashedDir) entry, deleteDir || entry.flag);
+                default -> throw new AssertionError("Unsupported hashed entry type: " + entryType.name());
             }
         }
 
@@ -336,11 +336,11 @@ public class VisualDownloader {
         long lastTime = lastUpdateTime.get();
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastTime >= 130) {
-            String format = String.format(" [%.1f MB]", (double) newValue / (1024.0 * 1024.0), (double) totalSize / (1024.0 * 1024.0));
             double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (currentTime - lastTime) * 1000.0;
-            String speedFormat = String.format("%.2f ", bytesSpeed * 8 / (1000.0 * 1000.0));
+            String speedFormat = "%.2f ".formatted(bytesSpeed * 8 / (1000.0 * 1000.0));
             ContextHelper.runInFxThreadStatic(() -> {
-                volume.setText(format);
+                volume.setText(" [%.1f/%.1f MB]".formatted((double) newValue / (1024.0 * 1024.0),
+                                                           (double) totalSize / (1024.0 * 1024.0)));
                 speed.setText(speedFormat);
             });
             lastUpdateTime.set(currentTime);

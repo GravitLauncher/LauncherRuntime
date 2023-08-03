@@ -19,7 +19,8 @@ public class TextDialog extends AbstractDialog {
     private Label textDescription;
     private TextField textField;
 
-    public TextDialog(JavaFXApplication application, String header, String text, Consumer<String> onAccept, Runnable onClose) {
+    public TextDialog(JavaFXApplication application, String header, String text, Consumer<String> onAccept,
+            Runnable onClose) {
         super("dialogs/text/dialog.fxml", application);
         this.header = header;
         this.text = text;
@@ -29,14 +30,12 @@ public class TextDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if (isInit())
-            textDescription.setText(text);
+        if (isInit()) textDescription.setText(text);
     }
 
     public void setText(String text) {
         this.text = text;
-        if (isInit())
-            textHeader.setText(header);
+        if (isInit()) textHeader.setText(header);
     }
 
     @Override

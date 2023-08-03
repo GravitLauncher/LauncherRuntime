@@ -19,7 +19,8 @@ public class JavaSelectorComponent {
     private final ClientProfile profile;
     private final JavaService javaService;
 
-    public JavaSelectorComponent(JavaService javaService, Pane layout, RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
+    public JavaSelectorComponent(JavaService javaService, Pane layout,
+            RuntimeSettings.ProfileSettingsView profileSettings, ClientProfile profile) {
         comboBox = LookupHelper.lookup(layout, "#javaCombo");
         this.profile = profile;
         comboBox.getItems().clear();
@@ -34,7 +35,7 @@ public class JavaSelectorComponent {
     public void reset() {
         boolean reset = true;
         for (JavaHelper.JavaVersion version : javaService.javaVersions) {
-            if(javaService.isIncompatibleJava(version, profile)) {
+            if (javaService.isIncompatibleJava(version, profile)) {
                 continue;
             }
             comboBox.getItems().add(version);
@@ -43,10 +44,11 @@ public class JavaSelectorComponent {
                 reset = false;
             }
         }
-        if(reset) {
+        if (reset) {
             JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
             if (recommend != null) {
-                LogHelper.warning("Selected Java Version not found. Using %s", recommend.jvmDir.toAbsolutePath().toString());
+                LogHelper.warning("Selected Java Version not found. Using %s",
+                                  recommend.jvmDir.toAbsolutePath().toString());
                 comboBox.getSelectionModel().select(recommend);
                 profileSettings.javaPath = recommend.jvmDir.toAbsolutePath().toString();
             }
@@ -78,7 +80,7 @@ public class JavaSelectorComponent {
             if (object.version == profile.getRecommendJavaVersion()) {
                 postfix = "[RECOMMENDED]";
             }
-            return String.format("Java %d b%d %s", object.version, object.build, postfix);
+            return "Java %d b%d %s".formatted(object.version, object.build, postfix);
         }
 
         @Override

@@ -111,14 +111,14 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
                 field.textProperty().addListener(l -> {
                     int len = field.getText().length();
                     if (len == 1) {
-                        if(finalI == 5) {
+                        if (finalI == 5) {
                             return;
                         }
                         textFields[finalI + 1].requestFocus();
                     }
                 });
                 field.setOnKeyReleased((key) -> {
-                    if(key.getCode() == KeyCode.BACK_SPACE && finalI != 0) {
+                    if (key.getCode() == KeyCode.BACK_SPACE && finalI != 0) {
                         textFields[finalI - 1].setText("");
                         textFields[finalI - 1].requestFocus();
                     }

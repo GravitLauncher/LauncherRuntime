@@ -1,6 +1,5 @@
 /*-- DrLeonardo styles refactor --*/
 @import "./variables.css";
-
 /*-- Подключение шрифтов --*/
 @font-face {
     font-family: 'Open Sans';
@@ -22,26 +21,22 @@
     font-family: 'Open Sans BoldItalic';
     src: url('./OpenSans-BoldItalic.ttf');
 }
-
 Button,
 CheckBox,
 ComboBox,
 RadioButton {
     -fx-cursor: hand;
 }
-
 /*-- Шрифты --*/
 .root {
     -fx-font-family: "Open Sans";
 }
-
 /*-- Вид блоков --*/
 .blocks {
     -fx-padding: 10px;
     -fx-background-color: -fx-white;
     -fx-background-radius: 0;
 }
-
 /*-- Скругление блоков и кнопок --*/
 .b-5 {
     -fx-border-radius: 5px;
@@ -52,13 +47,11 @@ RadioButton {
 .b-20 {
     -fx-border-radius: 20px;
 }
-
 /*-- Управление прозрачностью --*/
 .transparent {
     -fx-background-color: transparent;
     -fx-background-size: cover;
 }
-
 /*-- Импорт фона --*/
 #layout {
     -fx-background-image: url('../images/background.png');
@@ -68,15 +61,13 @@ RadioButton {
     -fx-background-image: url('../images/background-blur.png') !important;
     -fx-background-size: cover;
 }
-
 /* (тех. Кнопки) */
-.invisible{
+.invisible {
     -fx-opacity: 0;
 }
-.visible{
+.visible {
     -fx-opacity: 1;
 }
-
 /*-- Иконки --*/
 .header-button {
     -fx-fill: transparent;
@@ -104,7 +95,6 @@ RadioButton {
 .icon-button-error {
     -fx-fill: -fx-red;
 }
-
 /*-- Информация игрока --*/
 #nickname {
     -fx-font-weight: bold;
@@ -121,10 +111,8 @@ RadioButton {
     -fx-background-color: transparent;
     -fx-font-smoothing-type: lcd;
 }
-
 /*-- Заголовки --*/
 #dialogHeader,
-#headingUpdate,
 #headingDialog,
 #headerDescription {
     -fx-fill: -fx-black2C;
@@ -132,27 +120,24 @@ RadioButton {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
-
 /*-- Блок вывода --*/
 #output-detail {
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 20px;
 }
-
 /* Вывод лога */
-#output-detail > #output {
+#output-detail>#output {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-padding: 10px;
     -fx-font-size: 12px;
     -fx-text-color: -fx-black2C;
 }
-#output-detail > #output .content,
-#output-detail > #output .content {
+#output-detail>#output .content,
+#output-detail>#output .content {
     -fx-background-color: transparent;
     -fx-background-radius: 0;
 }
-
 /*-- Кнопка отправить --*/
 .send-button-text {
     -fx-font-weight: bold;
@@ -164,7 +149,6 @@ RadioButton {
 .send-button-text:pressed {
     -fx-fill: -fx-header-hover;
 }
-
 /*-- Контекстное меню --*/
 .context-menu {
     -fx-background-color: -fx-whiteG;
@@ -176,10 +160,11 @@ RadioButton {
 .menu-item {
     -fx-background-radius: 0px;
 }
-.menu-item:hover, .menu-item:focused {
+.menu-item:hover,
+.menu-item:focused {
     -fx-background-color: -fx-grayLTr;
 }
-.menu-item > .graphic-container {
+.menu-item>.graphic-container {
     -fx-padding: 0em 0.333em 0em 0em;
 }
 .menu-item .label {
@@ -189,8 +174,6 @@ RadioButton {
     -fx-text-fill: -fx-black2C-hover;
     -fx-font-weight: bold;
 }
-
-
 /* check-box элементы */
 .check-box {
     -fx-background-color: transparent;
@@ -218,8 +201,6 @@ RadioButton {
 .check-box:selected .box {
     -fx-background-color: transparent;
 }
-
-
 /* Скролл панели */
 #scroll-pane {
     -fx-background-color: transparent;
@@ -259,11 +240,9 @@ RadioButton {
 .scroll-bar {
     -fx-font-size: 6px;
 }
-.scroll-pane > .corner {
+.scroll-pane>.corner {
     -fx-background-color: transparent;
 }
-
-
 /* choice-box элементы */
 .choice-box .context-menu {
     -fx-background-color: -fx-whiteG;
@@ -272,7 +251,7 @@ RadioButton {
 .choice-box .menu-item:focused {
     -fx-background-color: -fx-violet;
 }
-.choice-box .menu-item > .label {
+.choice-box .menu-item>.label {
     -fx-text-fill: -fx-black2C;
 }
 .choice-box .menu-item:focused>.label {
@@ -282,10 +261,9 @@ RadioButton {
     -fx-background-color: -fx-whiteG;
     -fx-mark-color: -fx-whiteG;
 }
-.choice-box > .label {
+.choice-box>.label {
     -fx-text-fill: -fx-whiteG;
 }
-
 /* combo-box элементы */
 .combo-box {
     -fx-background-color: -fx-grayLDTr;
@@ -299,20 +277,21 @@ RadioButton {
 .combo-box .list-cell {
     -fx-text-fill: -fx-black2C;
 }
-.combo-box-popup .list-view{
+.combo-box-popup .list-view {
     -fx-background-color: -fx-gray;
 }
-.combo-box-popup .list-view .list-cell{
+.combo-box-popup .list-view .list-cell {
     -fx-text-fill: -fx-black2C;
     -fx-padding: 5;
     -fx-background-color: -fx-gray;
 }
-.combo-box-popup .list-view .list-cell:filled:selected, .combo-box-popup .list-view .list-cell:filled:selected:hover{
+.combo-box-popup .list-view .list-cell:filled:selected,
+.combo-box-popup .list-view .list-cell:filled:selected:hover {
     -fx-background-color: -fx-grayTr;
     -fx-text-fill: -fx-black2C-hover;
     -fx-font-weight: bold;
 }
-.combo-box-popup .list-view .list-cell:filled:hover{
+.combo-box-popup .list-view .list-cell:filled:hover {
     -fx-background-color: -fx-grayTr;
     -fx-text-fill: -fx-black2C-hover;
 }
@@ -320,10 +299,10 @@ RadioButton {
     -fx-background-color: -fx-whiteG;
     -fx-text-fill: -fx-black2C;
 }
-.combo-box .arrow{
+.combo-box .arrow {
     -fx-background-color: transparent;
 }
-.combo-box .arrow-button{
+.combo-box .arrow-button {
     -fx-background-image: url('../images/icons/checkbox_arrow_button.png');
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;

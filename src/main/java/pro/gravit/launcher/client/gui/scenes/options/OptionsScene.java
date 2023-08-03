@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.scenes.options;
 
 import com.google.gson.reflect.TypeToken;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
@@ -94,21 +93,21 @@ public class OptionsScene extends AbstractScene {
         this.optionalView = new OptionalView(view);
         watchers.clear();
         for (OptionalFile optionalFile : optionalView.all) {
-            if (!optionalFile.visible)
-                continue;
+            if (!optionalFile.visible) continue;
 
-            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
-                    optionalFile.subTreeLevel, (isSelected) -> {
-                        if (isSelected)
-                            optionalView.enable(optionalFile, true, this::callWatcher);
-                        else
-                            optionalView.disable(optionalFile, this::callWatcher);
-                    });
+            Consumer<Boolean> setCheckBox =
+                    add(optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
+                        optionalFile.subTreeLevel,
+                        (isSelected) -> {
+                            if (isSelected) optionalView.enable(optionalFile, true, this::callWatcher);
+                            else optionalView.disable(optionalFile, this::callWatcher);
+                        });
             watchers.put(optionalFile, setCheckBox);
         }
     }
 
-    public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
+    public Consumer<Boolean> add(String name, String description, boolean value, int padding,
+            Consumer<Boolean> onChanged) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
         Label label = new Label();
@@ -130,8 +129,7 @@ public class OptionsScene extends AbstractScene {
     public void saveAll() throws IOException {
         List<ClientProfile> profiles = application.stateService.getProfiles();
         Map<ClientProfile, OptionalView> optionalViewMap = application.stateService.getOptionalViewMap();
-        if (profiles == null)
-            return;
+        if (profiles == null) return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
         List<OptionalListEntry> list = new ArrayList<>(5);
         for (ClientProfile clientProfile : profiles) {
@@ -156,11 +154,9 @@ public class OptionsScene extends AbstractScene {
     public void loadAll() throws IOException {
         List<ClientProfile> profiles = application.stateService.getProfiles();
         Map<ClientProfile, OptionalView> optionalViewMap = application.stateService.getOptionalViewMap();
-        if (profiles == null)
-            return;
+        if (profiles == null) return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
-        if (!Files.exists(optionsFile))
-            return;
+        if (!Files.exists(optionsFile)) return;
 
         Type collectionType = new TypeToken<List<OptionalListEntry>>() {
         }.getType();
@@ -170,8 +166,9 @@ public class OptionsScene extends AbstractScene {
             for (OptionalListEntry entry : list) {
                 ClientProfile selectedProfile = null;
                 for (ClientProfile clientProfile : profiles) {
-                    if (entry.profileUUID != null ? entry.profileUUID.equals(clientProfile.getUUID()) : clientProfile.getTitle().equals(entry.name))
-                        selectedProfile = clientProfile;
+                    if (entry.profileUUID != null
+                            ? entry.profileUUID.equals(clientProfile.getUUID())
+                            : clientProfile.getTitle().equals(entry.name)) selectedProfile = clientProfile;
                 }
                 if (selectedProfile == null) {
                     LogHelper.warning("Optional: profile %s(%s) not found", entry.name, entry.profileUUID);
@@ -183,12 +180,13 @@ public class OptionsScene extends AbstractScene {
                         OptionalFile file = selectedProfile.getOptionalFile(entryPair.name);
                         if (file.visible) {
                             if (entryPair.mark)
-                                view.enable(file, entryPair.installInfo != null && entryPair.installInfo.isManual, null);
-                            else
-                                view.disable(file, null);
+                                view.enable(file, entryPair.installInfo != null
+                                        && entryPair.installInfo.isManual, null);
+                            else view.disable(file, null);
                         }
                     } catch (Exception exc) {
-                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed", selectedProfile.getTitle(), entryPair.name);
+                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed",
+                                          selectedProfile.getTitle(), entryPair.name);
                     }
                 }
             }
@@ -200,7 +198,8 @@ public class OptionsScene extends AbstractScene {
         public boolean mark;
         public OptionalView.OptionalFileInstallInfo installInfo;
 
-        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled, OptionalView.OptionalFileInstallInfo installInfo) {
+        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled,
+                OptionalView.OptionalFileInstallInfo installInfo) {
             name = optionalFile.name;
             mark = enabled;
             this.installInfo = installInfo;
@@ -217,8 +216,7 @@ public class OptionsScene extends AbstractScene {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             OptionalListEntry that = (OptionalListEntry) o;
-            return Objects.equals(profileUUID, that.profileUUID) &&
-                    Objects.equals(name, that.name);
+            return Objects.equals(profileUUID, that.profileUUID) && Objects.equals(name, that.name);
         }
 
         @Override

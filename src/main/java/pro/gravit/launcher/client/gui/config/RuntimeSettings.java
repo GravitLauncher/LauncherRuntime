@@ -53,20 +53,18 @@ public class RuntimeSettings extends UserSettings {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
         runtimeSettings.autoAuth = false;
         runtimeSettings.updatesDir = DirBridge.defaultUpdatesDir;
-        runtimeSettings.locale = config.locale == null ? LAUNCHER_LOCALE.RUSSIAN : LAUNCHER_LOCALE.valueOf(config.locale);
+        runtimeSettings.locale = config.locale == null
+                ? LAUNCHER_LOCALE.RUSSIAN
+                : LAUNCHER_LOCALE.valueOf(config.locale);
         return runtimeSettings;
     }
 
     public void apply() {
-        if (updatesDirPath != null)
-            updatesDir = Paths.get(updatesDirPath);
+        if (updatesDirPath != null) updatesDir = Paths.get(updatesDirPath);
     }
 
     public enum LAUNCHER_LOCALE {
-        @LauncherNetworkAPI
-        RUSSIAN("ru", "Русский"),
-        @LauncherNetworkAPI
-        ENGLISH("en", "English");
+        @LauncherNetworkAPI RUSSIAN("ru", "Русский"), @LauncherNetworkAPI ENGLISH("en", "English");
         public final String name;
         public final String displayName;
 
@@ -95,7 +93,7 @@ public class RuntimeSettings extends UserSettings {
             settings.autoEnter = defaultSettings.autoEnter;
             settings.fullScreen = defaultSettings.fullScreen;
             JavaHelper.JavaVersion version = javaService.getRecommendJavaVersion(profile);
-            if(version != null) {
+            if (version != null) {
                 settings.javaPath = version.jvmDir.toString();
             }
             return settings;

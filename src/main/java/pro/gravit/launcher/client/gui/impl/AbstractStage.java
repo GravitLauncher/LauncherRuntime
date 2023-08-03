@@ -64,7 +64,7 @@ public abstract class AbstractStage {
         if (visualComponent.isResetOnShow) {
             visualComponent.reset();
         }
-        if(stackPane.getChildren().size() == 0) {
+        if (stackPane.getChildren().size() == 0) {
             stackPane.getChildren().add(visualComponent.getFxmlRoot());
         } else {
             stackPane.getChildren().set(0, visualComponent.getFxmlRoot());
@@ -88,13 +88,13 @@ public abstract class AbstractStage {
 
     public void addAfter(Node node, Node value) {
         int index = stackPane.getChildren().indexOf(node);
-        if(index >= 0) {
-            stackPane.getChildren().add(index+1, value);
+        if (index >= 0) {
+            stackPane.getChildren().add(index + 1, value);
         }
     }
 
     protected void pushNotification(Node node) {
-        if(notifications== null) {
+        if (notifications == null) {
             notifications = new VBox();
             notifications.setAlignment(Pos.BOTTOM_LEFT);
             notifications.setMouseTransparent(true);
@@ -104,7 +104,7 @@ public abstract class AbstractStage {
     }
 
     protected void pullNotification(Node node) {
-        if(notifications != null) {
+        if (notifications != null) {
             notifications.getChildren().remove(node);
         }
     }
@@ -141,7 +141,7 @@ public abstract class AbstractStage {
     public void enable() {
         if (disableCounter.decrementAndGet() != 0) return;
         Pane layout = (Pane) stackPane.getChildren().get(0);
-        layout.setEffect(new GaussianBlur(0));
+        layout.setEffect(null);
         disablePane.setVisible(false);
     }
 }

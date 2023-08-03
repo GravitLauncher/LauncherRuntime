@@ -1,8 +1,6 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../styles/global.css";
 @import "../styles/variables.css";
-
 /*-- Блок диалога --*/
 .dialog {
     -fx-background-color: -fx-white;
@@ -11,14 +9,12 @@
     -fx-border-radius: 20px;
     -fx-background-radius: 20px;
 }
-
 /*-- Текст диалога --*/
 .dialogText {
     -fx-font-size: 12px;
     -fx-text-align: left;
     -fx-text-fill: -fx-black2C;
 }
-
 /*-- Кнопки диалога --*/
 .apply-button {
     -fx-fill: transparent;
@@ -42,7 +38,6 @@
 .apply-Button-text:pressed {
     -fx-text-fill: -fx-green;
 }
-
 .deny-button {
     -fx-fill: transparent;
     -fx-stroke: -fx-red;
@@ -57,7 +52,6 @@
 .deny-Button-text:pressed {
     -fx-text-fill: -fx-red;
 }
-
 /*-- Ввод данных --*/
 #dialogInput {
     -fx-background-color: -fx-whiteG;
@@ -77,5 +71,4 @@
     -fx-background-color: -fx-whiteG;
     -fx-text-fill: -fx-red;
 }
-
 /*-- DrLeonardo styles refactor --*/

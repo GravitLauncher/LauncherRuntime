@@ -16,7 +16,6 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 public class ProcessingOverlay extends AbstractOverlay {
-    private Node spinner;
     private Labeled description;
 
     public ProcessingOverlay(JavaFXApplication application) {
@@ -48,11 +47,13 @@ public class ProcessingOverlay extends AbstractOverlay {
         description.setText(e.toString());
     }
 
-    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request, Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request,
+            Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
         processRequest(scene, message, request, onSuccess, null, onError);
     }
 
-    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request, Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
+    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request,
+            Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
         try {
             scene.showOverlay(this, (e) -> {
                 try {
