@@ -23,7 +23,8 @@ public class PositionHelper {
         throw new UnsupportedOperationException();
     }
 
-    public static LookupHelper.Point2D calculate(PositionInfo info, double width, double height, double offsetX, double offsetY, double maxX, double maxY) {
+    public static LookupHelper.Point2D calculate(PositionInfo info, double width, double height, double offsetX,
+            double offsetY, double maxX, double maxY) {
         double x = info.startX;
         double y = info.startY;
         x = Math.min(x, maxX);

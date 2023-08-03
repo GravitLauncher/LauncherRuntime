@@ -1,25 +1,22 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
-
 /*-- Вывод данных --*/
 #settings-detail {
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 20px;
 }
-
 /* RAM настройки */
 #ramLabel {
     -fx-font-weight: bold;
     -fx-font-size: 12px;
     -fx-text-fill: -fx-black2C;
 }
-#ramSlider > .track {
+#ramSlider>.track {
     -fx-background-color: -fx-ramGR;
     -fx-pref-height: 4px;
 }
-#ramSlider > .thumb {
+#ramSlider>.thumb {
     -fx-background-image: url("../../images/icons/thumb.png");
     -fx-pref-width: 14px;
     -fx-pref-height: 14px;
@@ -32,7 +29,6 @@
     -fx-font-size: 16px;
     -fx-text-fill: -fx-grayD;
 }
-
 /*-- Чекбоксы --*/
 .settings-container {
     -fx-background-color: transparent;
@@ -48,7 +44,6 @@
     -fx-font-size: 12px;
     -fx-label-padding: 0 20 0 30px;
 }
-
 /* Смена директорий */
 #folder {
     -fx-background-color: -fx-gray;
@@ -73,8 +68,6 @@
 #changeDir:pressed {
     -fx-text-fill: -fx-header-hover;
 }
-
-
 /* Описание Java */
 #javaError {
     -fx-font-size: 14px;
@@ -85,18 +78,17 @@
 #javaSelect {
     -fx-background-color: -fx-grayLTr;
 }
-#javaSelect > #javaHeader {
+#javaSelect>#javaHeader {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-fill: -fx-black2C;
 }
-#javaSelect > .javaDesc {
+#javaSelect>.javaDesc {
     -fx-fill: -fx-black2C;
     -fx-font-size: 12px;
 }
-#javaSelect > #javaPath {
+#javaSelect>#javaPath {
     -fx-font-size: 10px;
     -fx-fill: -fx-grayD;
 }
-
 /*-- DrLeonardo styles refactor --*/

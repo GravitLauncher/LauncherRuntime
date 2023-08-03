@@ -1,8 +1,6 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
-
 /*-- Информация о загрузке --*/
 #outputUpdate {
     -fx-background-color: -fx-grayTr;
@@ -19,27 +17,25 @@
 #description.error {
     -fx-text-fill: -fx-red;
 }
-
 /*-- Вывод данных --*/
 #update-detail {
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 20px;
 }
-#update-detail > .speed {
+#update-detail>.speed {
     -fx-fill: -fx-updateGR;
     -fx-text-align: center;
     -fx-font-size: 18px;
     -fx-font-weight: bold;
 }
-#update-detail > .speed-text {
+#update-detail>.speed-text {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
-#update-detail > .speedError {
+#update-detail>.speedError {
     -fx-fill: -fx-red;
     -fx-font-size: 18px;
 }
-
 /* Прогресс бар */
 .progress-bar {
     -fx-indeterminate-bar-flip: false;
@@ -51,18 +47,18 @@
 .progress-indicator .indicator {
     -fx-background-color: transparent;
 }
-.progress-bar > .bar {
+.progress-bar>.bar {
     -fx-background-color: -fx-updateGR;
     -fx-background-insets: 0;
     -fx-background-radius: 0;
     -fx-padding: 0;
 }
-.progress-bar > .track {
+.progress-bar>.track {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-background-radius: 3px;
 }
-.progressError>.bar{
+.progressError>.bar {
     -fx-background-color: -fx-errorGR;
 }
 .progress-lines {
@@ -73,5 +69,4 @@
     -fx-fill: -fx-gray;
     -fx-font-size: 13px;
 }
-
 /*-- DrLeonardo styles refactor --*/

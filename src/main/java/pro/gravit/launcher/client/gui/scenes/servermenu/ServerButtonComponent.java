@@ -29,7 +29,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
     }
 
     private static String getFXMLPath(JavaFXApplication application, ClientProfile profile) {
-        String customFxmlName = String.format(SERVER_BUTTON_CUSTOM_FXML, profile.getUUID());
+        String customFxmlName = SERVER_BUTTON_CUSTOM_FXML.formatted(profile.getUUID());
         URL customFxml = application.tryResource(customFxmlName);
         if (customFxml != null) {
             return customFxmlName;
@@ -58,18 +58,16 @@ public class ServerButtonComponent extends AbstractVisualComponent {
         });
         AtomicLong currentOnline = new AtomicLong(0);
         AtomicLong maxOnline = new AtomicLong(0);
-        Runnable update = () -> {
-            contextHelper.runInFxThread(() -> {
-                if(currentOnline.get() == 0 && maxOnline.get() == 0) {
-                    LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
-                } else {
-                    LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(currentOnline.get()));
-                }
-            });
-        };
-        for(ClientProfile.ServerProfile serverProfile : profile.getServers()) {
+        Runnable update = () -> contextHelper.runInFxThread(() -> {
+            if (currentOnline.get() == 0 && maxOnline.get() == 0) {
+                LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
+            } else {
+                LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(currentOnline.get()));
+            }
+        });
+        for (ClientProfile.ServerProfile serverProfile : profile.getServers()) {
             application.pingService.getPingReport(serverProfile.name).thenAccept((report) -> {
-                if(report != null) {
+                if (report != null) {
                     currentOnline.addAndGet(report.playersOnline);
                     maxOnline.addAndGet(report.maxPlayers);
                 }
@@ -91,15 +89,13 @@ public class ServerButtonComponent extends AbstractVisualComponent {
 
     public void enableSaveButton(String text, EventHandler<ActionEvent> eventHandler) {
         saveButton.setVisible(true);
-        if (text != null)
-            saveButton.setText(text);
+        if (text != null) saveButton.setText(text);
         saveButton.setOnAction(eventHandler);
     }
 
     public void enableResetButton(String text, EventHandler<ActionEvent> eventHandler) {
         resetButton.setVisible(true);
-        if (text != null)
-            resetButton.setText(text);
+        if (text != null) resetButton.setText(text);
         resetButton.setOnAction(eventHandler);
     }
 

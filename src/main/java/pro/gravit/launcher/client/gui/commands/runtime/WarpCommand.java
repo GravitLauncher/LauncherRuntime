@@ -30,9 +30,7 @@ public class WarpCommand extends Command {
         if (application == null) application = JavaFXApplication.getInstance();
         if (args[0].equals("scene")) {
             AbstractScene scene = application.gui.getSceneByName(args[1]);
-            if (scene == null) {
-                throw new IllegalArgumentException(String.format("Scene %s not found", args[1]));
-            }
+            if (scene == null) throw new IllegalArgumentException("Scene %s not found".formatted(args[1]));
             PrimaryStage stage = application.getMainStage();
             ContextHelper.runInFxThreadStatic(() -> {
                 stage.setScene(scene);
@@ -42,20 +40,12 @@ public class WarpCommand extends Command {
             });
         } else if (args[0].equals("overlay")) {
             AbstractOverlay overlay = application.gui.getOverlayByName(args[1]);
-            if (overlay == null) {
-                throw new IllegalArgumentException(String.format("Overlay %s not found", args[1]));
-            }
+            if (overlay == null) throw new IllegalArgumentException("Overlay %s not found".formatted(args[1]));
             PrimaryStage stage = application.getMainStage();
-            if (stage.isNullScene()) {
-                throw new IllegalStateException("Please wrap to scene before");
-            }
+            if (stage.isNullScene()) throw new IllegalStateException("Please wrap to scene before");
             AbstractScene scene = (AbstractScene) stage.getVisualComponent();
-            ContextHelper.runInFxThreadStatic(() -> {
-                scene.showOverlay(overlay, e -> {
-                });
-            });
-        } else {
-            throw new IllegalArgumentException(String.format("%s not found", args[0]));
-        }
+            ContextHelper.runInFxThreadStatic(() -> scene.showOverlay(overlay, e -> {
+            }));
+        } else throw new IllegalArgumentException("%s not found".formatted(args[0]));
     }
 }

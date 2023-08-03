@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
-import javafx.scene.control.Labeled;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,8 +20,6 @@ import java.io.IOException;
 import java.util.*;
 
 public class ServerMenuScene extends AbstractScene {
-    private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
-    private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private ImageView avatar;
 
     private List<ClientProfile> lastProfiles;
@@ -36,19 +33,17 @@ public class ServerMenuScene extends AbstractScene {
     public void doInit() throws Exception {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent(
-                (h) -> {
-                    try {
-                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
-                        clip.setArcWidth(h.getFitWidth());
-                        clip.setArcHeight(h.getFitHeight());
-                        h.setClip(clip);
-                        h.setImage(originalAvatarImage);
-                    } catch (Throwable e) {
-                        LogHelper.warning("Skin head error");
-                    }
-                }
-        );
+        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
+            try {
+                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+                clip.setArcWidth(h.getFitWidth());
+                clip.setArcHeight(h.getFitHeight());
+                h.setClip(clip);
+                h.setImage(originalAvatarImage);
+            } catch (Throwable e) {
+                LogHelper.warning("Skin head error");
+            }
+        });
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         scrollPane.setOnScroll(e -> {
             double offset = e.getDeltaY() / scrollPane.getWidth();
@@ -81,8 +76,10 @@ public class ServerMenuScene extends AbstractScene {
         if (lastProfiles == application.stateService.getProfiles()) return;
         lastProfiles = application.stateService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname").ifPresent((e) -> e.setText(application.stateService.getUsername()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#role").ifPresent((e) -> e.setText(application.stateService.getMainRole()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
+                    .ifPresent((e) -> e.setText(application.stateService.getUsername()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#role")
+                    .ifPresent((e) -> e.setText(application.stateService.getMainRole()));
         avatar.setImage(originalAvatarImage);
         List<ClientProfile> profiles = new ArrayList<>(lastProfiles);
         profiles.sort(Comparator.comparingInt(ClientProfile::getSortIndex).thenComparing(ClientProfile::getTitle));
@@ -102,8 +99,7 @@ public class ServerMenuScene extends AbstractScene {
         application.pingService.clear();
         serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
             EventHandler<? super MouseEvent> handle = (event) -> {
-                if (!event.getButton().equals(MouseButton.PRIMARY))
-                    return;
+                if (!event.getButton().equals(MouseButton.PRIMARY)) return;
                 changeServer(profile);
                 try {
                     switchScene(application.gui.serverInfoScene);
@@ -117,14 +113,13 @@ public class ServerMenuScene extends AbstractScene {
         });
         CommonHelper.newThread("ServerPinger", true, () -> {
             for (ClientProfile profile : lastProfiles) {
-                for(ClientProfile.ServerProfile serverProfile : profile.getServers()) {
+                for (ClientProfile.ServerProfile serverProfile : profile.getServers()) {
                     if (!serverProfile.socketPing || serverProfile.serverAddress == null) continue;
                     try {
                         ServerPinger pinger = new ServerPinger(serverProfile, profile.getVersion());
                         ServerPinger.Result result = pinger.ping();
-                        contextHelper.runInFxThread(() -> {
-                            application.pingService.addReport(serverProfile.name, result);
-                        });
+                        contextHelper.runInFxThread(
+                                () -> application.pingService.addReport(serverProfile.name, result));
                     } catch (IOException ignored) {
                     }
                 }

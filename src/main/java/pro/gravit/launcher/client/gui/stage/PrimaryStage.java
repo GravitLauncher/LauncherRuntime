@@ -2,9 +2,6 @@ package pro.gravit.launcher.client.gui.stage;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.client.gui.JavaFXApplication;

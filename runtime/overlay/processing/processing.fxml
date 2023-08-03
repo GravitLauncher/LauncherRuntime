@@ -13,30 +13,28 @@
 
     <!-- Навбар -->
     <Pane id="header" prefHeight="100.0" prefWidth="900.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <children>
+        <!-- Кнопки управления -->
+        <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
+            <!-- Кнопка закрыть -->
+            <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="553.0"
+                layoutY="30.0" styleClass="icon-button" textOverrun="CLIP">
+                <graphic>
+                    <Pane>
+                        <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE"
+                            styleClass="header-button-text"
+                            text="%runtime.scenes.loginpassword.header-button-text" textAlignment="CENTER"
+                            wrappingWidth="77.921875" />
+                        <SVGPath
+                            content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z"
+                            styleClass="header-button" />
+                    </Pane>
+                </graphic>
+                <tooltip>
+                    <Tooltip id="cancelTooltip" text="%runtime.scenes.loginpassword.cancelTooltip" />
+                </tooltip>
+            </Button>
 
-            <!-- Кнопки управления -->
-            <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
-                <children>
-
-                    <!-- Кнопка закрыть -->
-                    <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="553.0" layoutY="30.0" styleClass="icon-button" textOverrun="CLIP">
-                        <graphic>
-                            <Pane>
-                                <children>
-                                    <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE" styleClass="header-button-text" text="%runtime.scenes.loginpassword.header-button-text" textAlignment="CENTER" wrappingWidth="77.921875" />
-                                    <SVGPath content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z" styleClass="header-button" />
-                                </children>
-                            </Pane>
-                        </graphic>
-                        <tooltip>
-                            <Tooltip id="cancelTooltip" text="%runtime.scenes.loginpassword.cancelTooltip" />
-                        </tooltip>
-                    </Button>
-
-                </children>
-            </Pane>
-        </children>
+        </Pane>
     </Pane>
 
     <!-- Описание процесса -->

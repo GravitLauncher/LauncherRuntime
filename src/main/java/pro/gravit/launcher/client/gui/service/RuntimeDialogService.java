@@ -24,7 +24,8 @@ public class RuntimeDialogService implements DialogService.DialogServiceNotifica
     }
 
     @Override
-    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback) {
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback,
+            Runnable onCloseCallback) {
         messageManager.showApplyDialog(header, text, onApplyCallback, onDenyCallback, onCloseCallback, false);
     }
 

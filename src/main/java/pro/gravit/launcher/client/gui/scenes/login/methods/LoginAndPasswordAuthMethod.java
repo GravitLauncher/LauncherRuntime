@@ -1,14 +1,10 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
-import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
@@ -55,8 +51,8 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         overlay.future = new CompletableFuture<>();
         String login = overlay.login.getText();
         AuthRequest.AuthPasswordInterface password;
-        if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(
-                application.getTranslation("runtime.scenes.login.password.saved"))) {
+        if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(application.getTranslation(
+                "runtime.scenes.login.password.saved"))) {
             password = application.runtimeSettings.password;
             return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(login, password));
         }
@@ -109,10 +105,8 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             login = LookupHelper.lookup(layout, "#login");
             password = LookupHelper.lookup(layout, "#password");
 
-            login.textProperty().addListener(l -> {
-                accessor.getAuthButton().setActive(!login.getText().isEmpty());
-            });
-            
+            login.textProperty().addListener(l -> accessor.getAuthButton().setActive(!login.getText().isEmpty()));
+
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
                 accessor.getAuthButton().setActive(true);

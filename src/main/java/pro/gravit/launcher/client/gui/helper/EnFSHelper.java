@@ -54,7 +54,7 @@ public class EnFSHelper {
             if (themesCached.contains(theme)) {
                 return enfsDirectory;
             }
-            startThemePrefix = String.format("themes/%s/", theme);
+            startThemePrefix = "themes/%s/".formatted(theme);
             EnFS.main.newDirectory(enfsDirectory);
             themePaths = new HashSet<>();
             // First stage - collect themes path

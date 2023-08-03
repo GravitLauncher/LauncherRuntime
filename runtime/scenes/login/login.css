@@ -1,18 +1,14 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
-
 /*-- Вертикальная полоса на главной сцене --*/
-.vline{
+.vline {
     -fx-background-color: -fx-grayTr;
 }
-
 /*-- Ошибки --*/
-.authButtonError{
+.authButtonError {
     -fx-fill: -fx-red;
 }
-
 /*-- Ввод данных --*/
 #login,
 #password {
@@ -33,7 +29,12 @@
     -fx-font-weight: bold;
     -fx-cursor: text;
 }
-#1st,#2st,#3st,#4st,#5st,#6st {
+#1st,
+#2st,
+#3st,
+#4st,
+#5st,
+#6st {
     -fx-background-color: transparent;
     -fx-background-insets: 0.0 5.0 0.0 5.0;
     -fx-padding: 0;
@@ -41,8 +42,6 @@
     -fx-vgap: 0;
     -fx-background-radius: 0;
 }
-
-
 /*-- Чекбоксы --*/
 #savePassword,
 #autoenter {
@@ -54,13 +53,11 @@
 #autoenter:selected {
     -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
-
 /*-- Метод авторизации --*/
 #authList {
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 10px;
 }
-
 /*-- Ссылки --*/
 .createAccount-text {
     -fx-font-weight: bold;
@@ -95,7 +92,6 @@
 .rectangle {
     -fx-stroke: -fx-black2C;
 }
-
 /*-- Веб авторизация --*/
 #webAuth {
     -fx-font-weight: bold;
@@ -104,10 +100,9 @@
     -fx-text-fill: -fx-white;
     -fx-background-color: -fx-green;
 }
-
 /*-- Кнопка входа --*/
 .auth {
-     -fx-fill: -fx-green;
+    -fx-fill: -fx-green;
 }
 .auth2fa {
     -fx-fill: -fx-white;
@@ -127,7 +122,6 @@
     -fx-font-size: 24px;
     -fx-text-fill: -fx-black;
 }
-
 /*-- Надпись названия продукта --*/
 #logoVersion,
 #logoProduct,
@@ -139,13 +133,11 @@
 .logoTextGray {
     -fx-fill: -fx-grayD !important;
 }
-
 #text-2fa {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-align-items: center;
 }
-
 /*-- Стилизация radiobutton's--*/
 .radio-button {
     -fx-background-radius: 5px;
@@ -155,8 +147,8 @@
     -fx-font-size: 10px;
     -fx-text-align: left;
 }
-.radio-button > .radio,
-.radio-button:focused > .radio  {
+.radio-button>.radio,
+.radio-button:focused>.radio {
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
     -fx-background-image: url('../../images/icons/checkbox_off.png');
@@ -176,9 +168,7 @@
     -fx-background-radius: 7px;
     -fx-background-color: -fx-white;
 }
-
 #authRadio {
     -fx-max-width: 99999;
 }
-
 /*-- DrLeonardo styles refactor --*/

@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 public class SettingsScene extends AbstractScene {
 
-    private final static long MAX_JAVA_MEMORY_X64 = 32*1024;
+    private final static long MAX_JAVA_MEMORY_X64 = 32 * 1024;
     private final static long MAX_JAVA_MEMORY_X32 = 1536;
     private Pane componentList;
     private Label ramLabel;
@@ -44,8 +44,7 @@ public class SettingsScene extends AbstractScene {
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
             try {
-                if (application.gui.consoleStage == null)
-                    application.gui.consoleStage = new ConsoleStage(application);
+                if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
                 if (application.gui.consoleStage.isNullScene())
                     application.gui.consoleStage.setScene(application.gui.consoleScene);
                 application.gui.consoleStage.show();
@@ -59,7 +58,7 @@ public class SettingsScene extends AbstractScene {
         long maxSystemMemory;
         try {
             SystemInfo systemInfo = new SystemInfo();
-            maxSystemMemory =(systemInfo.getHardware().getMemory().getTotal() >> 20);
+            maxSystemMemory = (systemInfo.getHardware().getMemory().getTotal() >> 20);
         } catch (Throwable e) {
             maxSystemMemory = 2048;
         }
@@ -71,10 +70,10 @@ public class SettingsScene extends AbstractScene {
         ramSlider.setMinorTickCount(1);
         ramSlider.setMajorTickUnit(1024);
         ramSlider.setBlockIncrement(1024);
-        ramSlider.setLabelFormatter(new StringConverter<Double>() {
+        ramSlider.setLabelFormatter(new StringConverter<>() {
             @Override
             public String toString(Double object) {
-                return String.format("%.0fG", object / 1024);
+                return "%.0fG".formatted(object / 1024);
             }
 
             @Override
@@ -84,16 +83,13 @@ public class SettingsScene extends AbstractScene {
         });
         Hyperlink updateDirLink = LookupHelper.lookup(layout, "#folder", "#path");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
-        updateDirLink.setOnAction((e) -> {
-            application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString());
-        });
+        updateDirLink.setOnAction((e) -> application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString()));
         LookupHelper.<ButtonBase>lookup(layout, "#changeDir").setOnAction((e) -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle(application.getTranslation("runtime.scenes.settings.dirTitle"));
             directoryChooser.setInitialDirectory(DirBridge.dir.toFile());
             File choose = directoryChooser.showDialog(application.getMainStage().getStage());
-            if (choose == null)
-                return;
+            if (choose == null) return;
             Path newDir = choose.toPath().toAbsolutePath();
             try {
                 DirBridge.move(newDir);
@@ -104,9 +100,9 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDir = newDir;
             String oldDir = DirBridge.dirUpdates.toString();
             DirBridge.dirUpdates = newDir;
-            for(ClientProfile profile : application.stateService.getProfiles()) {
+            for (ClientProfile profile : application.stateService.getProfiles()) {
                 RuntimeSettings.ProfileSettings settings = application.getProfileSettings(profile);
-                if(settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
+                if (settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
                     settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
                 }
             }
@@ -114,20 +110,21 @@ public class SettingsScene extends AbstractScene {
             javaSelector.reset();
             updateDirLink.setText(application.runtimeSettings.updatesDirPath);
         });
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction((e) ->
-                application.messageManager.showApplyDialog(application.getTranslation("runtime.scenes.settings.deletedir.header"),
-                        application.getTranslation("runtime.scenes.settings.deletedir.description"),
-                        () -> {
+        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction(
+                (e) -> application.messageManager.showApplyDialog(
+                        application.getTranslation("runtime.scenes.settings.deletedir.header"),
+                        application.getTranslation("runtime.scenes.settings.deletedir.description"), () -> {
                             LogHelper.debug("Delete dir: %s", DirBridge.dirUpdates);
                             try {
                                 IOHelper.deleteDir(DirBridge.dirUpdates, false);
                             } catch (IOException ex) {
                                 LogHelper.error(ex);
-                                application.messageManager.createNotification(application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
-                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.description"));
+                                application.messageManager.createNotification(
+                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
+                                        application.getTranslation(
+                                                "runtime.scenes.settings.deletedir.fail.description"));
                             }
-                        }, () -> {
-                        }, true)));
+                        }, () -> {}, true)));
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#back").ifPresent(a -> a.setOnAction((e) -> {
             try {
                 profileSettings = null;
@@ -140,7 +137,8 @@ public class SettingsScene extends AbstractScene {
     }
 
     private long getJavaMaxMemory() {
-        if(application.javaService.isArchAvailable(JVMHelper.ARCH.X86_64) || application.javaService.isArchAvailable(JVMHelper.ARCH.ARM64)) {
+        if (application.javaService.isArchAvailable(JVMHelper.ARCH.X86_64) || application.javaService.isArchAvailable(
+                JVMHelper.ARCH.ARM64)) {
             return MAX_JAVA_MEMORY_X64;
         }
         return MAX_JAVA_MEMORY_X32;
@@ -149,7 +147,8 @@ public class SettingsScene extends AbstractScene {
     @Override
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
-        javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings, application.stateService.getProfile());
+        javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings,
+                                                 application.stateService.getProfile());
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();
@@ -170,9 +169,7 @@ public class SettingsScene extends AbstractScene {
                 errorHandle(exception);
             }
         });
-        serverButton.enableResetButton(null, (e) -> {
-            reset();
-        });
+        serverButton.enableResetButton(null, (e) -> reset());
         componentList.getChildren().clear();
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
         add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
@@ -185,9 +182,11 @@ public class SettingsScene extends AbstractScene {
     }
 
     public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {
-        String nameKey = String.format("runtime.scenes.settings.properties.%s.name", languageName.toLowerCase());
-        String descriptionKey = String.format("runtime.scenes.settings.properties.%s.description", languageName.toLowerCase());
-        add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName), value, onChanged);
+        String nameKey = "runtime.scenes.settings.properties.%s.name".formatted(languageName.toLowerCase());
+        String descriptionKey = "runtime.scenes.settings.properties.%s.description".formatted(
+                languageName.toLowerCase());
+        add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName),
+            value, onChanged);
     }
 
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
@@ -212,6 +211,9 @@ public class SettingsScene extends AbstractScene {
     }
 
     public void updateRamLabel() {
-        ramLabel.setText(profileSettings.ram == 0 ? application.getTranslation("runtime.scenes.settings.ramAuto") : MessageFormat.format(application.getTranslation("runtime.scenes.settings.ram"), profileSettings.ram));
+        ramLabel.setText(profileSettings.ram == 0
+                                 ? application.getTranslation("runtime.scenes.settings.ramAuto")
+                                 : MessageFormat.format(application.getTranslation("runtime.scenes.settings.ram"),
+                                                        profileSettings.ram));
     }
 }

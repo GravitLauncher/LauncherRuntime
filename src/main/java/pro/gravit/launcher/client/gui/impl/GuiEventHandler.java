@@ -28,32 +28,33 @@ public class GuiEventHandler implements RequestService.EventHandler {
     @Override
     public <T extends WebSocketEvent> boolean eventHandle(T event) {
         LogHelper.dev("Processing event %s", event.getType());
-        if (event instanceof RequestEvent) {
-            if (!((RequestEvent) event).requestUUID.equals(RequestEvent.eventUUID))
-                return false;
+        if (event instanceof RequestEvent requestEvent) {
+            if (!requestEvent.requestUUID.equals(RequestEvent.eventUUID)) return false;
         }
         try {
-            if (event instanceof AuthRequestEvent) {
-                boolean isNextScene = application.getCurrentScene() instanceof LoginScene;
+            if (event instanceof AuthRequestEvent authRequestEvent) {
+                boolean isNextScene = application.getCurrentScene() instanceof LoginScene; //TODO: FIX
                 ((LoginScene) application.getCurrentScene()).isLoginStarted = true;
                 LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
-                application.stateService.setAuthResult(null, (AuthRequestEvent) event);
+                application.stateService.setAuthResult(null, authRequestEvent);
                 if (isNextScene && ((LoginScene) application.getCurrentScene()).isLoginStarted)
                     ((LoginScene) application.getCurrentScene()).onGetProfiles();
             }
-            if(event instanceof ProfilesRequestEvent) {
-                application.stateService.setProfilesResult((ProfilesRequestEvent) event);
-                if(application.stateService.getProfile() != null) {
+            if (event instanceof ProfilesRequestEvent profilesRequestEvent) {
+                application.stateService.setProfilesResult(profilesRequestEvent);
+                if (application.stateService.getProfile() != null) {
                     UUID profileUUID = application.stateService.getProfile().getUUID();
-                    for(ClientProfile profile : application.stateService.getProfiles()) {
-                        if(profile.getUUID().equals(profileUUID)) {
+                    for (ClientProfile profile : application.stateService.getProfiles()) {
+                        if (profile.getUUID().equals(profileUUID)) {
                             application.stateService.setProfile(profile);
                             break;
                         }
                     }
                 }
                 AbstractScene scene = application.getCurrentScene();
-                if(scene instanceof ServerMenuScene || scene instanceof ServerInfoScene || scene instanceof SettingsScene | scene instanceof OptionsScene) {
+                if (scene instanceof ServerMenuScene
+                        || scene instanceof ServerInfoScene
+                        || scene instanceof SettingsScene | scene instanceof OptionsScene) {
                     scene.contextHelper.runInFxThread(scene::reset);
                 }
             }

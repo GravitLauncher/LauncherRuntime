@@ -22,8 +22,8 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class DebugScene extends AbstractScene {
-    private static final long MAX_LENGTH = 1024*32;
-    private static final int REMOVE_LENGTH = 1024*4;
+    private static final long MAX_LENGTH = 1024 * 32;
+    private static final int REMOVE_LENGTH = 1024 * 4;
     public Process currentProcess;
     public Thread writeParametersThread;
     private Thread readThread;
@@ -38,37 +38,38 @@ public class DebugScene extends AbstractScene {
     protected void doInit() {
         output = LookupHelper.lookup(layout, "#output");
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
-            if (currentProcess != null && currentProcess.isAlive())
-                currentProcess.destroyForcibly();
+            if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
         }));
 
-        LookupHelper.<Label>lookupIfPossible(layout, "#version").ifPresent((v) -> v.setText(ConsoleScene.getMiniLauncherInfo()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#version")
+                    .ifPresent((v) -> v.setText(ConsoleScene.getMiniLauncherInfo()));
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
             ClipboardContent clipboardContent = new ClipboardContent();
             clipboardContent.putString(output.getText());
             Clipboard clipboard = Clipboard.getSystemClipboard();
             clipboard.setContent(clipboardContent);
         }));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin").ifPresent((x) -> x.setOnAction((e) -> {
-            String haste = null;
-            try {
-                haste = hastebin(output.getText());
-            } catch (IOException ex) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
-                        application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
-                LogHelper.error(ex);
-            }
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#hastebin")
+                    .ifPresent((x) -> x.setOnAction((e) -> {
+                        String haste = null;
+                        try {
+                            haste = hastebin(output.getText());
+                        } catch (IOException ex) {
+                            application.messageManager.createNotification(
+                                    application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+                                    application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
+                            LogHelper.error(ex);
+                        }
 
-            if (haste == null)
-                return;
+                        if (haste == null) return;
 
-            ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(haste);
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            clipboard.setContent(clipboardContent);
+                        ClipboardContent clipboardContent = new ClipboardContent();
+                        clipboardContent.putString(haste);
+                        Clipboard clipboard = Clipboard.getSystemClipboard();
+                        clipboard.setContent(clipboardContent);
 
-            application.openURL(haste);
-        }));
+                        application.openURL(haste);
+                    }));
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#back").setOnAction((e) -> {
             if (writeParametersThread != null && writeParametersThread.isAlive()) {
                 writeParametersThread.interrupt();
@@ -109,8 +110,7 @@ public class DebugScene extends AbstractScene {
             } catch (InterruptedException ignored) {
             }
         }
-        if (currentProcess != null && currentProcess.isAlive())
-            currentProcess.destroyForcibly();
+        if (currentProcess != null && currentProcess.isAlive()) currentProcess.destroyForcibly();
         readThread = CommonHelper.newThread("Client Process Console Reader", true, () -> {
             InputStream stream = new BufferedInputStream(process.getInputStream());
             byte[] buf = IOHelper.newBuffer();
@@ -137,17 +137,17 @@ public class DebugScene extends AbstractScene {
     public void append(String text) {
         boolean needRun = false;
         synchronized (syncObject) {
-            if(appendString.length() > MAX_LENGTH) {
+            if (appendString.length() > MAX_LENGTH) {
                 appendString = "<logs buffer overflow>\n".concat(text);
             } else {
                 appendString = appendString.concat(text);
             }
-            if(!isOutputRunned) {
+            if (!isOutputRunned) {
                 needRun = true;
                 isOutputRunned = true;
             }
         }
-        if(needRun) {
+        if (needRun) {
             ContextHelper.runInFxThreadStatic(() -> {
                 synchronized (syncObject) {
                     if (output.lengthProperty().get() > MAX_LENGTH) {
@@ -164,8 +164,7 @@ public class DebugScene extends AbstractScene {
     @Override
     public void errorHandle(Throwable e) {
         if (!(e instanceof EOFException)) {
-            if (LogHelper.isDebugEnabled())
-                append(e.toString());
+            if (LogHelper.isDebugEnabled()) append(e.toString());
         }
         if (currentProcess != null && !currentProcess.isAlive()) {
             onProcessExit(currentProcess.exitValue());
@@ -178,7 +177,7 @@ public class DebugScene extends AbstractScene {
     }
 
     private void onProcessExit(int code) {
-        append(String.format("Process exit code %d", code));
+        append("Process exit code %d".formatted(code));
         if (writeParametersThread != null) writeParametersThread.interrupt();
     }
 
@@ -210,16 +209,17 @@ public class DebugScene extends AbstractScene {
 
         if (200 <= statusCode && statusCode < 300)
             reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8);
-        else
-            reader = new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8);
+        else reader = new InputStreamReader(connection.getErrorStream(), StandardCharsets.UTF_8);
         try {
             HasteResponse obj = Launcher.gsonManager.gson.fromJson(reader, HasteResponse.class);
-            application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.success.header"),
+            application.messageManager.createNotification(
+                    application.getTranslation("runtime.overlay.debug.hastebin.success.header"),
                     application.getTranslation("runtime.overlay.debug.hastebin.success.description"));
             return application.guiModuleConfig.hastebinServer + "/" + obj.key;
         } catch (Exception e) {
             if (200 > statusCode || statusCode > 300) {
-                application.messageManager.createNotification(application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
+                application.messageManager.createNotification(
+                        application.getTranslation("runtime.overlay.debug.hastebin.fail.header"),
                         application.getTranslation("runtime.overlay.debug.hastebin.fail.description"));
                 LogHelper.error("JsonRequest failed. Server response code %d", statusCode);
                 throw new IOException(e);

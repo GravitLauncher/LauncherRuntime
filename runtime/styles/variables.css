@@ -1,7 +1,5 @@
 /*-- DrLeonardo styles refactor --*/
-
 /*-- Var library colors --*/
-
 * {
     -fx-green: #22EAB5;
     -fx-green-hover: #22EAB5;
@@ -25,12 +23,9 @@
     -fx-violet-hover: linear-gradient(to bottom right, #8D4CE0 0%, #5711FA 100%);
     -fx-header: #A4B3BA;
     -fx-header-hover: #D0D6D9;
-
     -fx-violetGR: linear-gradient(#8D4CE0 10.39%, #5D35B9 68.07%, #FAFAFF 68.07%);
     -fx-ramGR: linear-gradient(from 50% 50% to 100% 100%, -fx-green, -fx-violet);
-
     -fx-updateGR: linear-gradient(from 20% 20% to 100% 100%, -fx-violet, #5D35B9);
     -fx-errorGR: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #B93639);
 }
-
 /*-- DrLeonardo styles refactor --*/

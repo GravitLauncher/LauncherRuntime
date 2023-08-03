@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.stage;
 
+import javafx.event.Event;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.image.Image;
 import javafx.stage.Screen;
@@ -18,9 +19,7 @@ public class DialogStage extends AbstractStage {
         stage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
-        stage.setOnCloseRequest(e -> {
-            e.consume();
-        });
+        stage.setOnCloseRequest(Event::consume);
         // Icons
         try {
             Image icon = new Image(JavaFXApplication.getResourceURL("favicon.png").toString());

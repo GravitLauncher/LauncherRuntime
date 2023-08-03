@@ -30,21 +30,23 @@
 
     <!-- Поле ввода -->
     <Pane id="cmdinput" layoutY="163.0" prefHeight="58.0" prefWidth="589.0" styleClass="transparent">
-        <children>
-            <TextField id="dialogInput" layoutY="3.0" prefHeight="56.0" prefWidth="588.0" promptText="%runtime.dialogs.text.textInput" />
-            <Button id="dialogSend" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="401.0" layoutY="3.0" prefHeight="56.0" prefWidth="186.0" styleClass="icon-button" textOverrun="CLIP">
-                <graphic>
-                    <Pane prefHeight="48.0" prefWidth="167.0">
-                        <children>
-                            <Text fontSmoothingType="LCD" layoutX="26.0" layoutY="28.0" strokeType="OUTSIDE" styleClass="send-button-text" text="%runtime.dialogs.text.text-send" textAlignment="RIGHT" wrappingWidth="95.921875" />
-                            <SVGPath content="M0.0909119 16.1562L18.6364 8.5L0.0909119 0.84375V6.79861L13.3377 8.5L0.0909119 10.2014V16.1562Z" layoutX="140.0" layoutY="15.0" styleClass="header-button" />
-                        </children>
-                    </Pane>
-                </graphic>
-            </Button>
-        </children>
+        <TextField id="dialogInput" layoutY="3.0" prefHeight="56.0" prefWidth="588.0"
+            promptText="%runtime.dialogs.text.textInput" />
+        <Button id="dialogSend" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="401.0"
+            layoutY="3.0" prefHeight="56.0" prefWidth="186.0" styleClass="icon-button" textOverrun="CLIP">
+            <graphic>
+                <Pane prefHeight="48.0" prefWidth="167.0">
+                    <Text fontSmoothingType="LCD" layoutX="26.0" layoutY="28.0" strokeType="OUTSIDE"
+                        styleClass="send-button-text" text="%runtime.dialogs.text.text-send" textAlignment="RIGHT"
+                        wrappingWidth="95.921875" />
+                    <SVGPath
+                        content="M0.0909119 16.1562L18.6364 8.5L0.0909119 0.84375V6.79861L13.3377 8.5L0.0909119 10.2014V16.1562Z"
+                        layoutX="140.0" layoutY="15.0" styleClass="header-button" />
+                </Pane>
+            </graphic>
+        </Button>
     </Pane>
-    
+
     <!-- Подключение стилей-->
     <stylesheets>
         <URL value="@../dialogs.css" />

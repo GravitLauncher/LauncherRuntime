@@ -57,7 +57,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         overlay.follow(details.url, details.redirectUrl, (r) -> {
             String code = r;
             LogHelper.debug("Code: %s", code);
-            if(code.startsWith("?code=")) {
+            if (code.startsWith("?code=")) {
                 code = r.substring("?code=".length(), r.indexOf("&"));
             }
             LogHelper.debug("Code: %s", code);
@@ -78,9 +78,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
-        overlay.hide((r) -> {
-            future.complete(null);
-        });
+        overlay.hide((r) -> future.complete(null));
         return future;
     }
 

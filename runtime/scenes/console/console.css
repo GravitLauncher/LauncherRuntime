@@ -1,8 +1,6 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
-
 /*-- Ввод данных --*/
 #commandInput {
     -fx-background-color: -fx-whiteG;
@@ -16,5 +14,4 @@
 #commandInput:focused {
     -fx-text-fill: -fx-black2C;
 }
-
 /*-- DrLeonardo styles refactor --*/

@@ -19,22 +19,21 @@ public class WelcomeOverlay extends AbstractOverlay {
 
     @Override
     protected void doInit() {
-        LookupHelper.<Label>lookupIfPossible(layout, "#playerName").ifPresent((e) -> e.setText(application.stateService.getUsername()));
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#playerHead").ifPresent(
-                (h) -> {
-                    try {
-                        javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
-                        clip.setArcWidth(h.getFitWidth());
-                        clip.setArcHeight(h.getFitHeight());
-                        h.setClip(clip);
-                        Image image = application.skinManager.getScaledFxSkinHead(application.stateService.getUsername(), (int) h.getFitWidth(), (int) h.getFitHeight());
-                        if (image != null)
-                            h.setImage(image);
-                    } catch (Throwable e) {
-                        LogHelper.warning("Skin head error");
-                    }
-                }
-        );
+        LookupHelper.<Label>lookupIfPossible(layout, "#playerName")
+                    .ifPresent((e) -> e.setText(application.stateService.getUsername()));
+        LookupHelper.<ImageView>lookupIfPossible(layout, "#playerHead").ifPresent((h) -> {
+            try {
+                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
+                clip.setArcWidth(h.getFitWidth());
+                clip.setArcHeight(h.getFitHeight());
+                h.setClip(clip);
+                Image image = application.skinManager.getScaledFxSkinHead(
+                        application.stateService.getUsername(), (int) h.getFitWidth(), (int) h.getFitHeight());
+                if (image != null) h.setImage(image);
+            } catch (Throwable e) {
+                LogHelper.warning("Skin head error");
+            }
+        });
     }
 
     @Override

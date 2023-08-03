@@ -23,13 +23,16 @@ public class ConsoleScene extends AbstractScene {
     }
 
     public static String getLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s %s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(), System.getProperty("java.version"), JVMHelper.JVM_BITS,
-                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+        return "Launcher %s | Java %d(%s %s) x%d | %s x%d"
+                .formatted(Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(),
+                           System.getProperty("java.version"), JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(),
+                           JVMHelper.OS_BITS);
     }
 
     public static String getMiniLauncherInfo() {
-        return String.format("Launcher %s | Java %d(%s) x%d | %s x%d", Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"), JVMHelper.JVM_BITS,
-                JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+        return "Launcher %s | Java %d(%s) x%d | %s x%d"
+                .formatted(Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"),
+                           JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
     }
 
     @Override
@@ -67,8 +70,7 @@ public class ConsoleScene extends AbstractScene {
 
     private void append(String text) {
         contextHelper.runInFxThread(() -> {
-            if (output.lengthProperty().get() > MAX_LENGTH)
-                output.deleteText(0, REMOVE_LENGTH);
+            if (output.lengthProperty().get() > MAX_LENGTH) output.deleteText(0, REMOVE_LENGTH);
             output.appendText(text.concat("\n"));
         });
     }

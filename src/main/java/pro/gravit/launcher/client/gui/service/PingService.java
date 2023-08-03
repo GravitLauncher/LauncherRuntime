@@ -11,7 +11,7 @@ public class PingService {
 
     public CompletableFuture<PingServerReport> getPingReport(String serverName) {
         CompletableFuture<PingServerReport> report = reports.get(serverName);
-        if(report == null) {
+        if (report == null) {
             report = new CompletableFuture<>();
             reports.put(serverName, report);
         }
@@ -19,7 +19,7 @@ public class PingService {
     }
 
     public void addReports(Map<String, PingServerReport> map) {
-        map.forEach((k,v) -> {
+        map.forEach((k, v) -> {
             CompletableFuture<PingServerReport> report = getPingReport(k);
             report.complete(v);
         });
@@ -32,8 +32,8 @@ public class PingService {
     }
 
     public void clear() {
-        reports.forEach((k,v) -> {
-            if(!v.isDone()) {
+        reports.forEach((k, v) -> {
+            if (!v.isDone()) {
                 v.completeExceptionally(new InterruptedException());
             }
         });

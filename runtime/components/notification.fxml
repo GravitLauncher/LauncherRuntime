@@ -17,9 +17,7 @@
 
    <!-- Картинка уведомления-->
    <ImageView fitHeight="63.0" fitWidth="66.0" layoutX="11.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
-      <image>
-         <Image url="@../images/preloader/logo.png" />
-      </image>
+      <Image url="@../images/preloader/logo.png" />
    </ImageView>
 
    <!-- Текст уведомления-->

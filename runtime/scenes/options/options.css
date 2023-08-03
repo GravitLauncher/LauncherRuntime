@@ -1,14 +1,11 @@
 /*-- DrLeonardo styles refactor --*/
-
 @import "../../styles/global.css";
 @import "../../styles/variables.css";
-
 /*-- Вывод данных --*/
 #options-detail {
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 20px;
 }
-
 /*-- Чекбоксы --*/
 .optional-container {
     -fx-background-color: transparent;
