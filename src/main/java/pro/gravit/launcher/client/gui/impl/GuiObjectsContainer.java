@@ -61,7 +61,7 @@ public class GuiObjectsContainer {
     public void reload() throws Exception {
         Class<? extends AbstractScene> scene = application.getCurrentScene().getClass();
         ContextHelper.runInFxThreadStatic(() -> {
-            application.getMainStage().stage.setScene(null);
+            application.getMainStage().setScene(null);
             application.resetDirectory();
             overlays.clear();
             scenes.clear();
