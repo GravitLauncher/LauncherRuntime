@@ -57,7 +57,10 @@ public abstract class AbstractStage {
 
     public void setScene(AbstractVisualComponent visualComponent) throws Exception {
         if (visualComponent == null) {
-            throw new NullPointerException("Try set null scene");
+            if(stackPane.getChildren().size() != 0) {
+                stackPane.getChildren().set(0, new Pane());
+            }
+            return;
         }
         visualComponent.currentStage = this;
         if (!visualComponent.isInit()) {
