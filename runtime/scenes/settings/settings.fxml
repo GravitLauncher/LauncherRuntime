@@ -18,7 +18,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="settingsPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent, blur" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<Pane fx:id="settingsPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent blur background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <Pane id="header" prefHeight="100.0" prefWidth="900.0">

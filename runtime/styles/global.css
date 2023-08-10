@@ -2,24 +2,8 @@
 @import "./variables.css";
 /*-- Подключение шрифтов --*/
 @font-face {
-    font-family: 'Open Sans';
-    src: url('./OpenSans-Regular.ttf');
-}
-@font-face {
-    font-family: 'Open Sans Bold';
-    src: url('./OpenSans-Bold.ttf');
-}
-@font-face {
-    font-family: 'Open Sans Italic';
-    src: url('./OpenSans-Italic.ttf');
-}
-@font-face {
-    font-family: 'Open Sans Light';
-    src: url('./OpenSans-Light.ttf');
-}
-@font-face {
-    font-family: 'Open Sans BoldItalic';
-    src: url('./OpenSans-BoldItalic.ttf');
+    -fx-font-family: 'Comfortaa';
+    src: url('./Comfortaa-VariableFont_wght.ttf');
 }
 Button,
 CheckBox,
@@ -28,8 +12,8 @@ RadioButton {
     -fx-cursor: hand;
 }
 /*-- Шрифты --*/
-.root {
-    -fx-font-family: "Open Sans";
+#layout {
+    -fx-font-family: 'Comfortaa';
 }
 /*-- Вид блоков --*/
 .blocks {
@@ -53,7 +37,7 @@ RadioButton {
     -fx-background-size: cover;
 }
 /*-- Импорт фона --*/
-#layout {
+.background {
     -fx-background-image: url('../images/background.png');
     -fx-background-size: cover;
 }
