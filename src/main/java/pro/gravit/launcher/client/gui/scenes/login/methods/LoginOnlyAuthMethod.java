@@ -71,8 +71,8 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
     }
 
     @Override
-    public boolean isSavable() {
-        return true;
+    public boolean isOverlay() {
+        return false;
     }
 
     public class LoginOnlyOverlay extends AbstractVisualComponent {

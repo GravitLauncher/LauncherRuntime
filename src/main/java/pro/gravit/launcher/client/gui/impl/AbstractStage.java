@@ -5,6 +5,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.effect.GaussianBlur;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -19,7 +20,8 @@ public abstract class AbstractStage {
     protected final StackPane stackPane;
     protected AbstractVisualComponent visualComponent;
     protected Pane disablePane;
-    protected VBox notifications;
+    protected VBox notificationsVBox;
+    protected AnchorPane notifications;
     private final AtomicInteger disableCounter = new AtomicInteger(0);
 
     protected AbstractStage(Stage stage) {
@@ -95,17 +97,24 @@ public abstract class AbstractStage {
 
     protected void pushNotification(Node node) {
         if (notifications == null) {
-            notifications = new VBox();
-            notifications.setAlignment(Pos.BOTTOM_LEFT);
-            notifications.setMouseTransparent(true);
+            notifications = new AnchorPane();
+            notificationsVBox = new VBox();
+            notificationsVBox.setAlignment(Pos.BOTTOM_RIGHT);
+            notifications.setPickOnBounds(false);
+            notificationsVBox.setPickOnBounds(false);
+            notifications.getChildren().add(notificationsVBox);
+            AnchorPane.setRightAnchor(notificationsVBox, 10.0);
+            AnchorPane.setTopAnchor(notificationsVBox, 10.0);
+            AnchorPane.setBottomAnchor(notificationsVBox, 10.0);
+            notificationsVBox.setSpacing(10.0);
             push(notifications);
         }
-        notifications.getChildren().add(node);
+        notificationsVBox.getChildren().add(node);
     }
 
     protected void pullNotification(Node node) {
         if (notifications != null) {
-            notifications.getChildren().remove(node);
+            notificationsVBox.getChildren().remove(node);
         }
     }
 
