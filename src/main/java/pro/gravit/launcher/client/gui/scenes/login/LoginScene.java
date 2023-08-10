@@ -434,6 +434,9 @@ public class LoginScene extends AbstractScene {
                 content.getChildren().clear();
                 authButton.setActive(true);
             }
+            if(authMethodOnShow != null && !authMethodOnShow.isOverlay()) {
+                loginWithGui();
+            }
             authMethodOnShow = null;
         }
 

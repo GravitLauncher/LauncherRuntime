@@ -75,8 +75,8 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     @Override
-    public boolean isSavable() {
-        return true;
+    public boolean isOverlay() {
+        return false;
     }
 
     public class LoginAndPasswordOverlay extends AbstractVisualComponent {

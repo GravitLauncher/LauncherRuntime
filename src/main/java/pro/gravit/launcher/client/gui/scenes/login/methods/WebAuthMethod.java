@@ -83,8 +83,8 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     }
 
     @Override
-    public boolean isSavable() {
-        return false;
+    public boolean isOverlay() {
+        return true;
     }
 
     public static class WebAuthOverlay extends AbstractOverlay {
