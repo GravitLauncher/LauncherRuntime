@@ -117,7 +117,6 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
                 password.getStyleClass().add("hasSaved");
                 password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             }
-
         }
 
         @Override

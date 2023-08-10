@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.utils;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -21,7 +22,7 @@ public class FXMLFactory {
         this.executorService = executorService;
     }
 
-    public <T> CompletableFuture<T> getAsync(String url) {
+    public <T extends Node> CompletableFuture<T> getAsync(String url) {
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return get(url);
@@ -31,7 +32,7 @@ public class FXMLFactory {
         }, executorService);
     }
 
-    public <T> T get(String url) throws IOException {
+    public <T extends Node> T get(String url) throws IOException {
         long startTime = System.currentTimeMillis();
         FXMLLoader loader = newLoaderInstance(JavaFXApplication.getResourceURL(url));
         long loaderInstanceTime = System.currentTimeMillis();
