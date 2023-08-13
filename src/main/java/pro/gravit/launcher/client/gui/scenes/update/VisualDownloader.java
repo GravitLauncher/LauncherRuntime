@@ -38,7 +38,7 @@ public class VisualDownloader {
     private volatile Downloader downloader;
 
     private final ProgressBar progressBar;
-    private final Text speed;
+    private final Label speed;
     private final Label volume;
 
     private final Consumer<Throwable> errorHandle;
@@ -46,7 +46,7 @@ public class VisualDownloader {
 
     private final ExecutorService executor;
 
-    public VisualDownloader(JavaFXApplication application, ProgressBar progressBar, Text speed, Label volume,
+    public VisualDownloader(JavaFXApplication application, ProgressBar progressBar, Label speed, Label volume,
             Consumer<Throwable> errorHandle, Consumer<String> addLog) {
         this.application = application;
         this.progressBar = progressBar;

@@ -15,13 +15,12 @@ import java.util.function.Consumer;
 
 public class UpdateScene extends AbstractScene {
     private ProgressBar progressBar;
-    private Text speed;
+    private Label speed;
     private Label volume;
     private TextArea logOutput;
-    private Button reload;
     private Button cancel;
-    private Text speedtext;
-    private Text speederr;
+    private Label speedtext;
+    private Label speederr;
 
     private VisualDownloader downloader;
 
@@ -35,7 +34,6 @@ public class UpdateScene extends AbstractScene {
         speed = LookupHelper.lookup(layout, "#speed");
         speederr = LookupHelper.lookup(layout, "#speedErr");
         speedtext = LookupHelper.lookup(layout, "#speed-text");
-        reload = LookupHelper.lookup(layout, "#reload");
         cancel = LookupHelper.lookup(layout, "#cancel");
         volume = LookupHelper.lookup(layout, "#volume");
         logOutput = LookupHelper.lookup(layout, "#outputUpdate");
