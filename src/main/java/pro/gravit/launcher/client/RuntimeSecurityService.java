@@ -30,13 +30,8 @@ public class RuntimeSecurityService {
                 application.service.request(
                                    new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
                                    .thenAccept((event1) -> {
-                                       Request.addExtendedToken("publicKey", event1.extendedToken);
-                                       if (event1.hardwareExtendedToken != null) {
-                                           Request.addExtendedToken("hardware", event1.hardwareExtendedToken);
-                                       }
                                        if (!event1.needHardwareInfo) {
-                                           LogHelper.info("Advanced security level success completed");
-                                           notifyWaitObject(true);
+                                           simpleGetHardwareToken();
                                        } else {
                                            doCollectHardwareInfo(!event1.onlyStatisticInfo);
                                        }
@@ -56,6 +51,22 @@ public class RuntimeSecurityService {
         });
     }
 
+    private void simpleGetHardwareToken() {
+        try {
+            application.service.request(new HardwareReportRequest()).thenAccept((response) -> {
+                LogHelper.info("Advanced security level success completed");
+                notifyWaitObject(true);
+            }).exceptionally((e) -> {
+                application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+                notifyWaitObject(false);
+                return null;
+            });
+        } catch (IOException e) {
+            application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+            notifyWaitObject(false);
+        }
+    }
+
     private void doCollectHardwareInfo(boolean needSerial) {
         CommonHelper.newThread("HardwareInfo Collector Thread", true, () -> {
             try {
@@ -64,7 +75,6 @@ public class RuntimeSecurityService {
                 HardwareReportRequest reportRequest = new HardwareReportRequest();
                 reportRequest.hardware = info;
                 application.service.request(reportRequest).thenAccept((event) -> {
-                    Request.addExtendedToken("hardware", event.extendedToken);
                     LogHelper.info("Advanced security level success completed");
                     notifyWaitObject(true);
                 }).exceptionally((exc) -> {

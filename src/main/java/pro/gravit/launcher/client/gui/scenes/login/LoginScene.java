@@ -121,10 +121,6 @@ public class LoginScene extends AbstractScene {
         LauncherRequest launcherRequest = new LauncherRequest();
         processRequest(application.getTranslation("runtime.overlay.processing.text.launcher"), launcherRequest,
                        (result) -> {
-                           if (result.launcherExtendedToken != null) {
-                               Request.addExtendedToken(LauncherRequestEvent.LAUNCHER_EXTENDED_TOKEN_NAME,
-                                                        result.launcherExtendedToken);
-                           }
                            if (result.needUpdate) {
                                try {
                                    LogHelper.debug("Start update processing");
