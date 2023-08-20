@@ -117,7 +117,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
         }
 
         @Override
-        protected void doPostInit() throws Exception {
+        protected void doPostInit() {
 
         }
 

@@ -27,8 +27,6 @@
    <!-- Подключение стилей-->
    <stylesheets>
       <URL value="@components.css" />
-      <URL value="@../styles/global.css" />
-      <URL value="@../styles/variables.css" />
    </stylesheets>
 
 </Pane>

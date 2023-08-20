@@ -1,7 +1,6 @@
 package pro.gravit.launcher.client.gui.scenes.update;
 
 import javafx.scene.control.*;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
@@ -40,7 +39,6 @@ public class UpdateScene extends AbstractScene {
         logOutput.setText("");
         downloader = new VisualDownloader(application, progressBar, speed, volume, this::errorHandle,
                                           (log) -> contextHelper.runInFxThread(() -> addLog(log)));
-        LookupHelper.<ButtonBase>lookup(layout, "#reload").setOnAction((e) -> reset());
         LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction((e) -> {
             if (downloader.isDownload()) {
                 downloader.cancel();
@@ -75,8 +73,6 @@ public class UpdateScene extends AbstractScene {
         logOutput.clear();
         volume.setText("");
         speed.setText("0");
-        //reload.setDisable(true);
-        //reload.setStyle("-fx-opacity: 0");
         cancel.setDisable(false);
         cancel.setStyle("-fx-opacity: 1");
         progressBar.getStyleClass().removeAll("progress");
@@ -94,8 +90,6 @@ public class UpdateScene extends AbstractScene {
         speedtext.setStyle("-fx-opacity: 0");
         speederr.setStyle("-fx-opacity: 1");
         LogHelper.error(e);
-        //reload.setDisable(false);
-        //reload.setStyle("-fx-opacity: 1");
         cancel.setDisable(true);
         cancel.setStyle("-fx-opacity: 0");
     }

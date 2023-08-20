@@ -42,7 +42,7 @@ public class ApplyDialog extends AbstractDialog {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         textHeader = LookupHelper.lookup(layout, "#headingDialog");
         textDescription = LookupHelper.lookup(layout, "#textDialog");
         textHeader.setText(header);

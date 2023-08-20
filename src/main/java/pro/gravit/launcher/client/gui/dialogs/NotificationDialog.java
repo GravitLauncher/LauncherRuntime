@@ -64,7 +64,7 @@ public class NotificationDialog extends AbstractDialog {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         textHeader = LookupHelper.lookup(layout, "#notificationHeading");
         textDescription = LookupHelper.lookup(layout, "#notificationText");
         layout.setOnMouseClicked((e) -> {

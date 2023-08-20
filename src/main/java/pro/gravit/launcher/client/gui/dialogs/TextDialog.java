@@ -44,7 +44,7 @@ public class TextDialog extends AbstractDialog {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         textHeader = LookupHelper.lookup(layout, "#dialogHeader");
         textDescription = LookupHelper.lookup(layout, "#dialogDescription");
         textField = LookupHelper.lookup(layout, "#dialogInput");

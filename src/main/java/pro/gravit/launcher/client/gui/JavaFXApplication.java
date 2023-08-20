@@ -2,6 +2,8 @@ package pro.gravit.launcher.client.gui;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.*;
@@ -27,6 +29,7 @@ import pro.gravit.launcher.managers.SettingsManager;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestService;
+import pro.gravit.launcher.request.WebSocketEvent;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandCategory;
@@ -44,6 +47,7 @@ import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
 public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
@@ -53,7 +57,9 @@ public class JavaFXApplication extends Application {
     public RuntimeSettings runtimeSettings;
     public RequestService service;
     public GuiObjectsContainer gui;
-    public StateService stateService;
+    public AuthService authService;
+    public ProfilesService profilesService;
+    public LaunchService launchService;
     public GuiModuleConfig guiModuleConfig;
     public MessageManager messageManager;
     public RuntimeSecurityService securityService;
@@ -106,7 +112,9 @@ public class JavaFXApplication extends Application {
                 : runtimeSettings.updatesDir;
         service = Request.getRequestService();
         service.registerEventHandler(new GuiEventHandler(this));
-        stateService = new StateService();
+        authService = new AuthService(this);
+        launchService = new LaunchService(this);
+        profilesService = new ProfilesService();
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
@@ -117,8 +125,18 @@ public class JavaFXApplication extends Application {
         registerCommands();
     }
 
+    public final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
+            Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+        gui.processingOverlay.processRequest(getMainStage(), message, request, onSuccess, onError);
+    }
+
+    public final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
+            Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
+        gui.processingOverlay.processRequest(getMainStage(), message, request, onSuccess, onException, onError);
+    }
+
     @Override
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         // If debugging
         try {
             Class.forName("pro.gravit.launcher.debug.DebugMain", false, JavaFXApplication.class.getClassLoader());
@@ -262,7 +280,7 @@ public class JavaFXApplication extends Application {
     }
 
     public RuntimeSettings.ProfileSettings getProfileSettings() {
-        return getProfileSettings(stateService.getProfile());
+        return getProfileSettings(profilesService.getProfile());
     }
 
     public RuntimeSettings.ProfileSettings getProfileSettings(ClientProfile profile) {
@@ -316,9 +334,9 @@ public class JavaFXApplication extends Application {
     public void saveSettings() throws IOException {
         settingsManager.saveConfig();
         settingsManager.saveHDirStore();
-        if (gui != null && gui.optionsScene != null && stateService != null && stateService.getProfiles() != null) {
+        if (profilesService != null) {
             try {
-                gui.optionsScene.saveAll();
+                profilesService.saveAll();
             } catch (Throwable ex) {
                 LogHelper.error(ex);
             }

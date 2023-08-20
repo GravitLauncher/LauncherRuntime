@@ -46,4 +46,9 @@ public class RuntimeCryptedFile extends FileEntry {
         }
         return new BufferedInputStream(new CipherInputStream(inputStream.get(), cipher));
     }
+
+    @Override
+    public long getContentLength() {
+        return Long.MAX_VALUE;
+    }
 }

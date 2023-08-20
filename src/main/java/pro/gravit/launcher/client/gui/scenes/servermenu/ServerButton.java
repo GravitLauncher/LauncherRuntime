@@ -16,14 +16,14 @@ import pro.gravit.utils.helper.LogHelper;
 import java.net.URL;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ServerButtonComponent extends AbstractVisualComponent {
+public class ServerButton extends AbstractVisualComponent {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     public ClientProfile profile;
     private Button saveButton;
     private Button resetButton;
 
-    protected ServerButtonComponent(JavaFXApplication application, ClientProfile profile) {
+    protected ServerButton(JavaFXApplication application, ClientProfile profile) {
         super(getFXMLPath(application, profile), application);
         this.profile = profile;
     }
@@ -43,7 +43,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         LookupHelper.<Labeled>lookup(layout, "#nameServer").setText(profile.getTitle());
         LookupHelper.<Labeled>lookup(layout, "#genreServer").setText(profile.getVersion().toString());
         LookupHelper.<ImageView>lookupIfPossible(layout, "#serverLogo").ifPresent((a) -> {
@@ -79,7 +79,7 @@ public class ServerButtonComponent extends AbstractVisualComponent {
     }
 
     @Override
-    protected void doPostInit() throws Exception {
+    protected void doPostInit() {
 
     }
 

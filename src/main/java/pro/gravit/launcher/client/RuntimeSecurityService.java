@@ -1,7 +1,6 @@
 package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.HardwareReportRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;

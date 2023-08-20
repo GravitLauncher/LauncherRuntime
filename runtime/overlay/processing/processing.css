@@ -1,6 +1,3 @@
-/*-- DrLeonardo styles refactor --*/
-@import "../../styles/global.css";
-@import "../../styles/variables.css";
 #overlay>#description {
     -fx-fill: -fx-black2C;
     -fx-font-size: 16px;

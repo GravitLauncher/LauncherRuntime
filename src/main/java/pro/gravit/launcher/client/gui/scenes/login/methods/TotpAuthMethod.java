@@ -1,15 +1,10 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.details.AuthTotpDetails;
 import pro.gravit.launcher.request.auth.password.AuthTOTPPassword;
@@ -117,7 +112,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         }
 
         @Override
-        protected void doPostInit() throws Exception {
+        protected void doPostInit() {
 
         }
 

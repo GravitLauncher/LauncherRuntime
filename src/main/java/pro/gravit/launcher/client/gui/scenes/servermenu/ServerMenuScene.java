@@ -12,6 +12,7 @@ import pro.gravit.launcher.client.ServerPinger;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
+import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -30,7 +31,7 @@ public class ServerMenuScene extends AbstractScene {
     }
 
     @Override
-    public void doInit() throws Exception {
+    public void doInit() {
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
@@ -54,32 +55,23 @@ public class ServerMenuScene extends AbstractScene {
     }
 
     static class ServerButtonCache {
-        public ServerButtonComponent serverButton;
+        public ServerButton serverButton;
         public int position;
     }
 
-    public static boolean putAvatarToImageView(JavaFXApplication application, String username, ImageView imageView) {
-        int width = (int) imageView.getFitWidth();
-        int height = (int) imageView.getFitHeight();
-        Image head = application.skinManager.getScaledFxSkinHead(username, width, height);
-        if (head == null) return false;
-        imageView.setImage(head);
-        return true;
-    }
-
-    public static ServerButtonComponent getServerButton(JavaFXApplication application, ClientProfile profile) {
-        return new ServerButtonComponent(application, profile);
+    public static ServerButton getServerButton(JavaFXApplication application, ClientProfile profile) {
+        return new ServerButton(application, profile);
     }
 
     @Override
     public void reset() {
-        if (lastProfiles == application.stateService.getProfiles()) return;
-        lastProfiles = application.stateService.getProfiles();
+        if (lastProfiles == application.profilesService.getProfiles()) return;
+        lastProfiles = application.profilesService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
         LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.setText(application.stateService.getUsername()));
+                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
         LookupHelper.<Label>lookupIfPossible(layout, "#role")
-                    .ifPresent((e) -> e.setText(application.stateService.getMainRole()));
+                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
         avatar.setImage(originalAvatarImage);
         List<ClientProfile> profiles = new ArrayList<>(lastProfiles);
         profiles.sort(Comparator.comparingInt(ClientProfile::getSortIndex).thenComparing(ClientProfile::getTitle));
@@ -125,7 +117,7 @@ public class ServerMenuScene extends AbstractScene {
                 }
             }
         }).start();
-        putAvatarToImageView(application, application.stateService.getUsername(), avatar);
+        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
     }
 
     @Override
@@ -134,7 +126,7 @@ public class ServerMenuScene extends AbstractScene {
     }
 
     private void changeServer(ClientProfile profile) {
-        application.stateService.setProfile(profile);
+        application.profilesService.setProfile(profile);
         application.runtimeSettings.lastProfile = profile.getUUID();
     }
 }

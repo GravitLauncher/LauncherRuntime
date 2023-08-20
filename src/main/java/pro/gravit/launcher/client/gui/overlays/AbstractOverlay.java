@@ -47,7 +47,7 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     protected abstract void doInit();
 
     @Override
-    protected void doPostInit() throws Exception {
+    protected void doPostInit() {
 
     }
 

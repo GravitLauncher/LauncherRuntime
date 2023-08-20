@@ -2,7 +2,6 @@ package pro.gravit.launcher.client.gui.utils;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
-import pro.gravit.launcher.client.gui.service.StateService;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
@@ -13,11 +12,9 @@ import pro.gravit.utils.helper.JavaHelper;
 import java.util.Locale;
 
 public class TriggerManager {
-    private final StateService stateService;
     private final JavaFXApplication application;
 
     public TriggerManager(JavaFXApplication application) {
-        this.stateService = application.stateService;
         this.application = application;
     }
 
@@ -25,7 +22,7 @@ public class TriggerManager {
         TriggerManagerContext context = new TriggerManagerContext(profile);
         for (OptionalFile optional : view.all) {
             if (optional.limited) {
-                if (!stateService.checkPermission("launcher.runtime.optionals.%s.%s.show"
+                if (!application.authService.checkPermission("launcher.runtime.optionals.%s.%s.show"
                                                           .formatted(profile.getUUID(),
                                                                      optional.name.toLowerCase(Locale.ROOT)))) {
                     view.disable(optional, null);
@@ -69,7 +66,7 @@ public class TriggerManager {
 
         @Override
         public String getUsername() {
-            return stateService.getUsername();
+            return application.authService.getUsername();
         }
 
         @Override

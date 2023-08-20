@@ -97,7 +97,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         public LoginScene.LoginAndPasswordResult getResult() {
             String rawLogin = login.getText();
             String rawPassword = password.getText();
-            return new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword));
+            return new LoginScene.LoginAndPasswordResult(rawLogin, application.authService.makePassword(rawPassword));
         }
 
         @Override
@@ -120,7 +120,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         }
 
         @Override
-        protected void doPostInit() throws Exception {
+        protected void doPostInit() {
 
         }
 
