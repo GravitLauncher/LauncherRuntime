@@ -3,7 +3,6 @@ package pro.gravit.launcher.client.gui.scenes.update;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
@@ -34,7 +33,7 @@ public class VisualDownloader {
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
 
-    private volatile long totalSize;
+    private AtomicLong totalSize = new AtomicLong();
     private volatile Downloader downloader;
 
     private final ProgressBar progressBar;
@@ -219,7 +218,7 @@ public class VisualDownloader {
     }
 
     private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl,
-            Runnable onSuccess) throws Exception {
+            Runnable onSuccess) {
         ContextHelper.runInFxThreadStatic(this::resetProgress).thenAccept((x) -> {
             downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
                 @Override
@@ -251,7 +250,7 @@ public class VisualDownloader {
 
     private List<AsyncDownloader.SizedFile> getFilesList(Path dir, LinkedList<PathRemapperData> pathRemapper,
             HashedDir mismatch) throws IOException {
-        totalSize = 0;
+        totalSize.set(0);
 
         final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
         mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
@@ -259,7 +258,7 @@ public class VisualDownloader {
             switch (entry.getType()) {
                 case FILE -> {
                     HashedFile file = (HashedFile) entry;
-                    totalSize += file.size; // TODO: FIX Non-atomic operation on volatile field 'totalSize'
+                    totalSize.addAndGet(file.size); // TODO: FIX Non-atomic operation on volatile field 'totalSize'
                     for (PathRemapperData remapEntry : pathRemapper) {
                         if (path.startsWith(remapEntry.key)) {
                             urlPath = path.replace(remapEntry.key, remapEntry.value);
@@ -330,7 +329,7 @@ public class VisualDownloader {
 
 
     private void updateProgress(long oldValue, long newValue) {
-        double add = (double) (newValue - oldValue) / (double) totalSize; // 0.0 - 1.0
+        double add = (double) (newValue - oldValue) / (double) totalSize.get(); // 0.0 - 1.0
         DoubleProperty property = progressBar.progressProperty();
         property.set(property.get() + add);
         long lastTime = lastUpdateTime.get();
@@ -340,7 +339,7 @@ public class VisualDownloader {
             String speedFormat = "%.2f ".formatted(bytesSpeed * 8 / (1000.0 * 1000.0));
             ContextHelper.runInFxThreadStatic(() -> {
                 volume.setText(" [%.1f/%.1f MB]".formatted((double) newValue / (1024.0 * 1024.0),
-                                                           (double) totalSize / (1024.0 * 1024.0)));
+                                                           (double) totalSize.get() / (1024.0 * 1024.0)));
                 speed.setText(speedFormat);
             });
             lastUpdateTime.set(currentTime);

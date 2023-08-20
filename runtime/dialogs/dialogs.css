@@ -1,6 +1,3 @@
-/*-- DrLeonardo styles refactor --*/
-@import "../styles/global.css";
-@import "../styles/variables.css";
 /*-- Блок диалога --*/
 .dialog {
     -fx-background-color: -fx-white;

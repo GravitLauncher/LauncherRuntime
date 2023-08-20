@@ -19,8 +19,8 @@ import pro.gravit.launcher.client.gui.scenes.login.methods.*;
 import pro.gravit.launcher.client.gui.service.AuthService;
 import pro.gravit.launcher.events.request.AuthRequestEvent;
 import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
-import pro.gravit.launcher.events.request.LauncherRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.profiles.Texture;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.WebSocketEvent;
@@ -52,7 +52,6 @@ public class LoginScene extends AbstractScene {
     private Pane content;
     private AbstractVisualComponent contentComponent;
     private LoginAuthButtonComponent authButton;
-    private final AuthService authService = new AuthService(application);
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
     private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
     private final AuthFlow authFlow = new AuthFlow();
@@ -88,24 +87,14 @@ public class LoginScene extends AbstractScene {
                         .setOnMouseClicked((e) -> application.openURL(application.guiModuleConfig.forgotPassURL));
         }
         authList = LookupHelper.lookup(layout, "#authList");
-        authList.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(GetAvailabilityAuthRequestEvent.AuthAvailability object) {
-                return object == null ? "null" : object.displayName;
-            }
-
-            @Override
-            public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String string) {
-                return null;
-            }
-        });
+        authList.setConverter(new AuthAvailabilityStringConverter());
         authList.setOnAction((e) -> changeAuthAvailability(authList.getSelectionModel().getSelectedItem()));
         authMethods.forEach((k, v) -> v.prepare());
         // Verify Launcher
     }
 
     @Override
-    protected void doPostInit() throws Exception {
+    protected void doPostInit() {
 
         if (!application.isDebugMode()) {
             // we would like to wait till launcher request success before start availability auth.
@@ -181,7 +170,7 @@ public class LoginScene extends AbstractScene {
     public void changeAuthAvailability(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
         boolean isChanged = this.authAvailability != authAvailability; //TODO: FIX
         this.authAvailability = authAvailability;
-        this.application.stateService.setAuthAvailability(authAvailability);
+        this.application.authService.setAuthAvailability(authAvailability);
         this.authList.selectionModelProperty().get().select(authAvailability);
         authFlow.init(authAvailability);
         LogHelper.info("Selected auth: %s", authAvailability.name);
@@ -262,7 +251,7 @@ public class LoginScene extends AbstractScene {
 
     private void loginWithOAuth(AuthOAuthPassword password,
             GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
-        AuthRequest authRequest = authService.makeAuthRequest(null, password, authAvailability.name);
+        AuthRequest authRequest = application.authService.makeAuthRequest(null, password, authAvailability.name);
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"),
                    (result) -> contextHelper.runInFxThread(() -> onSuccessLogin(new SuccessAuth(result, null, null))),
                    (error) -> {
@@ -307,31 +296,33 @@ public class LoginScene extends AbstractScene {
 
     private void onSuccessLogin(SuccessAuth successAuth) {
         AuthRequestEvent result = successAuth.requestEvent;
-        application.stateService.setAuthResult(authAvailability.name, result);
+        application.authService.setAuthResult(authAvailability.name, result);
         boolean savePassword = savePasswordCheckBox.isSelected();
         if (savePassword) {
             application.runtimeSettings.login = successAuth.recentLogin;
             if (result.oauth == null) {
-                if (successAuth.recentPassword != null && checkSavePasswordAvailable(successAuth.recentPassword)) {
-                    application.runtimeSettings.password = successAuth.recentPassword;
-                } else {
-                    LogHelper.warning("2FA/MFA Password not saved");
-                }
+                LogHelper.warning("Password not saved");
             } else {
                 application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
                 application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
                 application.runtimeSettings.oauthExpire = Request.getTokenExpiredTime();
+                application.runtimeSettings.password = null;
             }
             application.runtimeSettings.lastAuth = authAvailability;
         }
         if (result.playerProfile != null
-                && result.playerProfile.assets != null
-                && result.playerProfile.assets.get("SKIN") != null) {
+                && result.playerProfile.assets != null) {
             try {
-                application.skinManager.addSkin(result.playerProfile.username,
-                                                new URL(result.playerProfile.assets.get("SKIN").url));
-                application.skinManager.getSkin(result.playerProfile.username); //Cache skin
-            } catch (Exception ignored) {
+                Texture skin = result.playerProfile.assets.get("SKIN");
+                Texture avatar = result.playerProfile.assets.get("AVATAR");
+                if(skin != null || avatar != null) {
+                    application.skinManager.addSkinWithAvatar(result.playerProfile.username,
+                                                              skin != null ? new URL(skin.url) : null,
+                                                              avatar != null ? new URL(avatar.url) : null);
+                    application.skinManager.getSkin(result.playerProfile.username); //Cache skin
+                }
+            } catch (Exception e) {
+                LogHelper.error(e);
             }
         }
         contextHelper.runInFxThread(() -> showOverlay(application.gui.welcomeOverlay,
@@ -342,17 +333,17 @@ public class LoginScene extends AbstractScene {
     public void onGetProfiles() {
         processing(new ProfilesRequest(), application.getTranslation("runtime.overlay.processing.text.profiles"),
                    (profiles) -> {
-                       application.stateService.setProfilesResult(profiles);
+                       application.profilesService.setProfilesResult(profiles);
                        application.runtimeSettings.profiles = profiles.profiles;
                        for (ClientProfile profile : profiles.profiles) {
                            application.triggerManager
-                                   .process(profile, application.stateService.getOptionalView(profile));
+                                   .process(profile, application.profilesService.getOptionalView(profile));
                        }
                        contextHelper.runInFxThread(() -> {
                            application.securityService.startRequest();
                            if (application.gui.optionsScene != null) {
                                try {
-                                   application.gui.optionsScene.loadAll();
+                                   application.profilesService.loadAll();
                                } catch (Throwable ex) {
                                    errorHandle(ex);
                                }
@@ -377,6 +368,18 @@ public class LoginScene extends AbstractScene {
     public record LoginAndPasswordResult(String login, AuthRequest.AuthPasswordInterface password) {
     }
 
+    private static class AuthAvailabilityStringConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
+        @Override
+        public String toString(GetAvailabilityAuthRequestEvent.AuthAvailability object) {
+            return object == null ? "null" : object.displayName;
+        }
+
+        @Override
+        public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String string) {
+            return null;
+        }
+    }
+
     public class LoginSceneAccessor {
         public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
             LoginScene.this.showOverlay(overlay, onFinished);
@@ -390,10 +393,6 @@ public class LoginScene extends AbstractScene {
             }
             contentComponent = component;
             content.getChildren().add(component.getLayout());
-        }
-
-        public AuthService getAuthService() {
-            return authService;
         }
 
         public JavaFXApplication getApplication() {
@@ -525,7 +524,7 @@ public class LoginScene extends AbstractScene {
                 GetAvailabilityAuthRequestEvent.AuthAvailability authId, CompletableFuture<SuccessAuth> result) {
             isLoginStarted = true;
             LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
-            AuthRequest authRequest = authService.makeAuthRequest(login, password, authId.name);
+            AuthRequest authRequest = application.authService.makeAuthRequest(login, password, authId.name);
             processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"),
                        (event) -> result.complete(new SuccessAuth(event, login, password)), (error) -> {
                         if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
@@ -533,12 +532,6 @@ public class LoginScene extends AbstractScene {
                             application.runtimeSettings.oauthRefreshToken = null;
                             result.completeExceptionally(new RequestException(error));
                         } else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
-                    /*List<Integer> newAuthFlow = new ArrayList<>();
-                    newAuthFlow.add(0);
-                    newAuthFlow.add(1);
-                    AuthRequest.AuthPasswordInterface recentPassword = makeResentPassword(newAuthFlow, password);
-                    authFlow.clear();
-                    authFlow.addAll(newAuthFlow);*/
                             authFlow.clear();
                             authFlow.add(1);
                             contextHelper.runInFxThread(() -> start(result, login, password));
@@ -560,20 +553,6 @@ public class LoginScene extends AbstractScene {
                     });
         }
 
-        /*public AuthRequest.AuthPasswordInterface makeResentPassword(List<Integer> newAuthFlow, AuthRequest.AuthPasswordInterface password) {
-            List<AuthRequest.AuthPasswordInterface> list = authService.getListFromPassword(password);
-            List<AuthRequest.AuthPasswordInterface> result = new ArrayList<>();
-            for(int i=0;i<newAuthFlow.size();++i) {
-                int flowId = newAuthFlow.get(i);
-                if(authFlow.contains(flowId)) {
-                    result.add(list.get(i));
-                    //noinspection RedundantCast
-                    newAuthFlow.remove((int)i);
-                    i--;
-                }
-            }
-            return authService.getPasswordFromList(result);
-        }*/
     }
 
     public static class SuccessAuth {

@@ -20,7 +20,7 @@ public class WelcomeOverlay extends AbstractOverlay {
     @Override
     protected void doInit() {
         LookupHelper.<Label>lookupIfPossible(layout, "#playerName")
-                    .ifPresent((e) -> e.setText(application.stateService.getUsername()));
+                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
         LookupHelper.<ImageView>lookupIfPossible(layout, "#playerHead").ifPresent((h) -> {
             try {
                 javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
@@ -28,7 +28,7 @@ public class WelcomeOverlay extends AbstractOverlay {
                 clip.setArcHeight(h.getFitHeight());
                 h.setClip(clip);
                 Image image = application.skinManager.getScaledFxSkinHead(
-                        application.stateService.getUsername(), (int) h.getFitWidth(), (int) h.getFitHeight());
+                        application.authService.getUsername(), (int) h.getFitWidth(), (int) h.getFitHeight());
                 if (image != null) h.setImage(image);
             } catch (Throwable e) {
                 LogHelper.warning("Skin head error");

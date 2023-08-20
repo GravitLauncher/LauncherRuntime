@@ -85,6 +85,19 @@ public class JavaRuntimeModule extends LauncherModule {
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
 
+    public static String getLauncherInfo() {
+        return "Launcher %s | Java %d(%s %s) x%d | %s x%d"
+                .formatted(Version.getVersion().toString(), JVMHelper.JVM_VERSION, JVMHelper.RUNTIME_MXBEAN.getVmName(),
+                           System.getProperty("java.version"), JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(),
+                           JVMHelper.OS_BITS);
+    }
+
+    public static String getMiniLauncherInfo() {
+        return "Launcher %s | Java %d(%s) x%d | %s x%d"
+                .formatted(Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"),
+                           JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+    }
+
     @Override
     public void init(LauncherInitContext initContext) {
         registerEvent(this::preGuiPhase, ClientPreGuiPhase.class);

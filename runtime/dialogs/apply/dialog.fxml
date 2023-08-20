@@ -59,8 +59,6 @@
     <!-- Подключение стилей-->
     <stylesheets>
         <URL value="@../dialogs.css" />
-        <URL value="@../../styles/global.css" />
-        <URL value="@../../styles/variables.css" />
     </stylesheets>
 
 </Pane>

@@ -63,7 +63,7 @@ dependencies {
     implementation "pro.gravit.launcher:launcher-client-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-client-start-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-client-starter-api:5.5.0-SNAPSHOT"
-    implementation "pro.gravit.utils.enfs:enfs:1.0.0-SNAPSHOT"
+    implementation "pro.gravit.utils.enfs:enfs:2.0.0-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'
     implementation 'com.google.code.gson:gson:2.8.8'

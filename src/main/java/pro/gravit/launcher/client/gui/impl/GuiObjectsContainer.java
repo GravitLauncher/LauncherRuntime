@@ -7,6 +7,7 @@ import pro.gravit.launcher.client.gui.overlays.WelcomeOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
+import pro.gravit.launcher.client.gui.scenes.internal.BrowserScene;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.client.gui.scenes.serverinfo.ServerInfoScene;
@@ -38,6 +39,7 @@ public class GuiObjectsContainer {
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
+    public BrowserScene browserScene;
 
     public GuiObjectsContainer(JavaFXApplication application) {
         this.application = application;
@@ -56,6 +58,7 @@ public class GuiObjectsContainer {
 
         updateScene = registerScene(UpdateScene.class);
         debugScene = registerScene(DebugScene.class);
+        browserScene = registerScene(BrowserScene.class);
     }
 
     public void reload() throws Exception {

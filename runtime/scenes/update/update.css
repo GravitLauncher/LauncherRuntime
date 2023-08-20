@@ -1,6 +1,3 @@
-/*-- DrLeonardo styles refactor --*/
-@import "../../styles/global.css";
-@import "../../styles/variables.css";
 /*-- Информация о загрузке --*/
 #outputUpdate {
     -fx-background-color:  transparent;

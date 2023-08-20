@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SkinManager {
     private static class SkinEntry {
         final URL url;
+        final URL avatarUrl;
         SoftReference<Optional<BufferedImage>> imageRef = new SoftReference<>(null);
         SoftReference<Optional<BufferedImage>> avatarRef = new SoftReference<>(null);
         SoftReference<Optional<Image>> fxImageRef = new SoftReference<>(null);
@@ -32,6 +33,12 @@ public class SkinManager {
 
         private SkinEntry(URL url) {
             this.url = url;
+            this.avatarUrl = null;
+        }
+
+        public SkinEntry(URL url, URL avatarUrl) {
+            this.url = url;
+            this.avatarUrl = avatarUrl;
         }
 
         synchronized BufferedImage getFullImage() {
@@ -57,9 +64,13 @@ public class SkinManager {
         synchronized BufferedImage getHeadImage() {
             Optional<BufferedImage> result = avatarRef.get();
             if (result == null) { // It is normal
-                BufferedImage image = getFullImage();
-                if (image == null) return null;
-                result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
+                if(avatarUrl != null) {
+                    result = Optional.ofNullable(downloadSkin(avatarUrl));
+                } else {
+                    BufferedImage image = getFullImage();
+                    if (image == null) return null;
+                    result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
+                }
                 avatarRef = new SoftReference<>(result);
             }
             return result.orElse(null);
@@ -86,6 +97,10 @@ public class SkinManager {
 
     public void addSkin(String username, URL url) {
         map.put(username, new SkinEntry(url));
+    }
+
+    public void addSkinWithAvatar(String username, URL url, URL avatarUrl) {
+        map.put(username, new SkinEntry(url, avatarUrl));
     }
 
     public BufferedImage getSkin(String username) {
@@ -159,6 +174,9 @@ public class SkinManager {
     }
 
     private static BufferedImage downloadSkin(URL url) {
+        if(url == null) {
+            return null;
+        }
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) url.openConnection();

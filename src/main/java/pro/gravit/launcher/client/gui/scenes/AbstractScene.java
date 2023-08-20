@@ -48,10 +48,10 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         super.init();
     }
 
-    protected abstract void doInit() throws Exception;
+    protected abstract void doInit();
 
     @Override
-    protected void doPostInit() throws Exception {
+    protected void doPostInit() {
 
     }
 
@@ -62,12 +62,12 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
             Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onError);
+        application.gui.processingOverlay.processRequest(currentStage, message, request, onSuccess, onError);
     }
 
     protected final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
             Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
-        application.gui.processingOverlay.processRequest(this, message, request, onSuccess, onException, onError);
+        application.gui.processingOverlay.processRequest(currentStage, message, request, onSuccess, onException, onError);
     }
 
     public void disable() {
@@ -137,7 +137,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
                                application.gui.loginScene.reset();
                                try {
                                    application.saveSettings();
-                                   application.stateService.exit();
+                                   application.authService.exit();
                                    switchScene(application.gui.loginScene);
                                } catch (Exception ex) {
                                    errorHandle(ex);

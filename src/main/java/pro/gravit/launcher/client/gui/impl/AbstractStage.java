@@ -10,6 +10,8 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -30,6 +32,11 @@ public abstract class AbstractStage {
         this.stackPane = new StackPane();
         this.scene = new Scene(stackPane);
         this.stage.setScene(scene);
+        try {
+            this.scene.getStylesheets().add(JavaFXApplication.getResourceURL("styles/global.css").toString());
+        } catch (IOException e) {
+            LogHelper.error(e);
+        }
     }
 
     public void hide() {

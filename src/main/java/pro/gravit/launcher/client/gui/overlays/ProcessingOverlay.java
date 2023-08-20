@@ -2,10 +2,10 @@ package pro.gravit.launcher.client.gui.overlays;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Labeled;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.request.Request;
@@ -47,15 +47,15 @@ public class ProcessingOverlay extends AbstractOverlay {
         description.setText(e.toString());
     }
 
-    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request,
+    public final <T extends WebSocketEvent> void processRequest(AbstractStage stage, String message, Request<T> request,
             Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
-        processRequest(scene, message, request, onSuccess, null, onError);
+        processRequest(stage, message, request, onSuccess, null, onError);
     }
 
-    public final <T extends WebSocketEvent> void processRequest(AbstractScene scene, String message, Request<T> request,
+    public final <T extends WebSocketEvent> void processRequest(AbstractStage stage, String message, Request<T> request,
             Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
         try {
-            scene.showOverlay(this, (e) -> {
+            show(stage, (e) -> {
                 try {
                     description.setText(message);
                     application.service.request(request).thenAccept((result) -> {

@@ -11,7 +11,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
 import pro.gravit.launcher.profiles.ClientProfile;
@@ -100,7 +100,7 @@ public class SettingsScene extends AbstractScene {
             application.runtimeSettings.updatesDir = newDir;
             String oldDir = DirBridge.dirUpdates.toString();
             DirBridge.dirUpdates = newDir;
-            for (ClientProfile profile : application.stateService.getProfiles()) {
+            for (ClientProfile profile : application.profilesService.getProfiles()) {
                 RuntimeSettings.ProfileSettings settings = application.getProfileSettings(profile);
                 if (settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
                     settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
@@ -148,7 +148,7 @@ public class SettingsScene extends AbstractScene {
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
         javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings,
-                                                 application.stateService.getProfile());
+                                                 application.profilesService.getProfile());
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();
@@ -157,13 +157,13 @@ public class SettingsScene extends AbstractScene {
         updateRamLabel();
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        ClientProfile profile = application.stateService.getProfile();
-        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
+        ClientProfile profile = application.profilesService.getProfile();
+        ServerButton serverButton = ServerMenuScene.getServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
         serverButton.enableSaveButton(null, (e) -> {
             try {
                 profileSettings.apply();
-                application.triggerManager.process(profile, application.stateService.getOptionalView());
+                application.triggerManager.process(profile, application.profilesService.getOptionalView());
                 switchScene(application.gui.serverInfoScene);
             } catch (Exception exception) {
                 errorHandle(exception);

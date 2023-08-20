@@ -16,7 +16,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent blur background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent blur background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -80,8 +80,6 @@
     <!-- Подключение стилей-->
     <stylesheets>
         <URL value="@update.css" />
-        <URL value="@../../styles/global.css" />
-        <URL value="@../../styles/variables.css" />
     </stylesheets>
 
 </AnchorPane>

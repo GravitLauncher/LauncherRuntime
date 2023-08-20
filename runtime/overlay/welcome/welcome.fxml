@@ -13,9 +13,8 @@
         <Pane id="player" layoutX="224.0" layoutY="198.0">
             <!-- Подключение стилей-->
             <stylesheets>
-                <URL value="@welcome.css" />
                 <URL value="@../../styles/global.css" />
-                <URL value="@../../styles/variables.css" />
+                <URL value="@welcome.css" />
             </stylesheets>
             <ImageView id="playerHead" fitHeight="53.0" fitWidth="53.0" layoutX="13.0" layoutY="26.0"
                 pickOnBounds="true" preserveRatio="true">

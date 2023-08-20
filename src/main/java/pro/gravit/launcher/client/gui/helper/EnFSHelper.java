@@ -4,6 +4,7 @@ import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
 import pro.gravit.launcher.client.gui.utils.RuntimeCryptedFile;
 import pro.gravit.utils.enfs.EnFS;
+import pro.gravit.utils.enfs.dir.CachedFile;
 import pro.gravit.utils.enfs.dir.FileEntry;
 import pro.gravit.utils.enfs.dir.URLFile;
 import pro.gravit.utils.helper.IOHelper;
@@ -97,13 +98,13 @@ public class EnFSHelper {
             entry = new URLFile(Launcher.getResourceURL(name));
         } else {
             String encodedName = "runtime/" + SecurityHelper.toHex(digest);
-            entry = new RuntimeCryptedFile(() -> {
+            entry = new CachedFile(new RuntimeCryptedFile(() -> {
                 try {
                     return IOHelper.newInput(IOHelper.getResourceURL(encodedName));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            }, SecurityHelper.fromHex(config.runtimeEncryptKey));
+            }, SecurityHelper.fromHex(config.runtimeEncryptKey)));
         }
         return entry;
     }

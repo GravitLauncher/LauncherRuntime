@@ -98,9 +98,9 @@ public abstract class AbstractVisualComponent {
         }
     }
 
-    protected abstract void doInit() throws Exception;
+    protected abstract void doInit();
 
-    protected abstract void doPostInit() throws Exception;
+    protected abstract void doPostInit();
 
     public abstract void reset();
 
