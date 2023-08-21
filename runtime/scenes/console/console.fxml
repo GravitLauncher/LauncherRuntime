@@ -72,6 +72,7 @@
 
     <!-- Подключение стилей-->
     <stylesheets>
+        <URL value="@../../styles/global.css" />
         <URL value="@console.css" />
     </stylesheets>
 
