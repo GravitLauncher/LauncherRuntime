@@ -51,7 +51,7 @@ public class OfflineService {
                         login = oAuthPassword.accessToken;
                     }
                     if (login == null) {
-                        login = "Player%s".formatted(100 + (int) (Math.random() * ((999 - 100) + 1)));
+                        login = "Player";
                     }
                     return new AuthRequestEvent(
                             permissions,
