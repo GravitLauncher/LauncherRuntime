@@ -47,10 +47,10 @@ public class OfflineService {
                 AuthRequest.class, (r) -> {
                     var permissions = new ClientPermissions();
                     String login = r.login;
-                    if(login == null && r.password instanceof AuthOAuthPassword oAuthPassword) {
+                    if (login == null && r.password instanceof AuthOAuthPassword oAuthPassword) {
                         login = oAuthPassword.accessToken;
                     }
-                    if(login == null) {
+                    if (login == null) {
                         login = "Player";
                     }
                     return new AuthRequestEvent(
