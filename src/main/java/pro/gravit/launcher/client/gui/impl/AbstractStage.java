@@ -80,6 +80,10 @@ public abstract class AbstractStage {
         if (stackPane.getChildren().size() == 0) {
             stackPane.getChildren().add(visualComponent.getFxmlRoot());
         } else {
+            var old = stackPane.getChildren().get(0);
+            if(old.getEffect() instanceof GaussianBlur) { // TODO: MAY BE BLUR NEW SCENE (?)
+                old.setEffect(null);
+            }
             stackPane.getChildren().set(0, visualComponent.getFxmlRoot());
         }
         stage.sizeToScene();
