@@ -258,7 +258,7 @@ public class VisualDownloader {
             switch (entry.getType()) {
                 case FILE -> {
                     HashedFile file = (HashedFile) entry;
-                    totalSize.addAndGet(file.size); // TODO: FIX Non-atomic operation on volatile field 'totalSize'
+                    totalSize.addAndGet(file.size);
                     for (PathRemapperData remapEntry : pathRemapper) {
                         if (path.startsWith(remapEntry.key)) {
                             urlPath = path.replace(remapEntry.key, remapEntry.value);
@@ -336,9 +336,9 @@ public class VisualDownloader {
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastTime >= 130) {
             double bytesSpeed = (double) (newValue - lastDownloaded.get()) / (double) (currentTime - lastTime) * 1000.0;
-            String speedFormat = "%.2f ".formatted(bytesSpeed * 8 / (1000.0 * 1000.0));
+            String speedFormat = "%.1f".formatted(bytesSpeed * 8 / (1000.0 * 1000.0));
             ContextHelper.runInFxThreadStatic(() -> {
-                volume.setText(" [%.1f/%.1f MB]".formatted((double) newValue / (1024.0 * 1024.0),
+                volume.setText("%.1f/%.1f MB".formatted((double) newValue / (1024.0 * 1024.0),
                                                            (double) totalSize.get() / (1024.0 * 1024.0)));
                 speed.setText(speedFormat);
             });
