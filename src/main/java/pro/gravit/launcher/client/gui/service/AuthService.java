@@ -132,6 +132,11 @@ public class AuthService {
         return rawAuthResult.permissions.hasPerm(name);
     }
 
+    public boolean checkDebugPermission(String name) {
+        return application.isDebugMode() || (!application.guiModuleConfig.disableDebugPermissions &&
+                checkPermission("launcher.debug."+name));
+    }
+
     public PlayerProfile getPlayerProfile() {
         if (rawAuthResult == null) return null;
         return rawAuthResult.playerProfile;

@@ -20,6 +20,8 @@ public class GuiModuleConfig {
     public boolean lazy;
     @LauncherInject(value = "modules.javaruntime.disableofflinemode")
     public boolean disableOfflineMode;
+    @LauncherInject(value = "modules.javaruntime.disabledebugpermissions")
+    public boolean disableDebugPermissions;
 
     @LauncherInject(value = "modules.javaruntime.autoauth")
     public boolean autoAuth;
