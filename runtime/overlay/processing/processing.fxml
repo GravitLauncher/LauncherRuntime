@@ -5,41 +5,47 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.shape.SVGPath?>
-<?import javafx.scene.text.Text?>
 
 <AnchorPane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
-    <!-- Навбар -->
-    <Pane id="header" prefHeight="100.0" prefWidth="900.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <!-- Кнопки управления -->
-        <Pane id="controls" layoutX="222.0" layoutY="-1.0" prefHeight="100.0" prefWidth="676.0">
-            <!-- Кнопка закрыть -->
-            <Button id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" graphicTextGap="0.0" layoutX="553.0"
-                layoutY="30.0" styleClass="icon-button" textOverrun="CLIP">
+        <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="30.0">
+
+            <!-- Кнопка отменить загрузку (java 11+) -->
+            <Button id="cancel" alignment="CENTER" contentDisplay="CENTER" layoutX="676.0" layoutY="-4.0" styleClass="icon-button" textAlignment="CENTER" visible="false">
                 <graphic>
-                    <Pane>
-                        <Text fontSmoothingType="LCD" layoutX="2.0" layoutY="19.0" strokeType="OUTSIDE"
-                            styleClass="header-button-text"
-                            text="%runtime.scenes.loginpassword.header-button-text" textAlignment="CENTER"
-                            wrappingWidth="77.921875" />
-                        <SVGPath
-                            content="M1 6C1 5.17157 1.67157 4.5 2.5 4.5H78.5C79.3284 4.5 80 5.17157 80 6V26C80 26.8284 79.3284 27.5 78.5 27.5H2.5C1.67157 27.5 1 26.8284 1 26V6Z"
-                            styleClass="header-button" />
-                    </Pane>
+                    <SVGPath content="M492.857 4C491.286 4 490 5.28599 490 6.85714V25.1429C490 26.714 491.286 28 492.857 28H511.143C512.714 28 514 26.714 514 25.1429V6.85714C514 5.28599 512.714 4 511.143 4H492.857ZM492.857 5.14286H511.143C512.096 5.14286 512.857 5.90372 512.857 6.85714V25.1429C512.857 26.0963 512.096 26.8571 511.143 26.8571H492.857C491.904 26.8571 491.143 26.0963 491.143 25.1429V6.85714C491.143 5.90372 491.904 5.14286 492.857 5.14286Z M495 16C495 12.134 498.134 9 502 9C505.866 9 509 12.134 509 16C509 19.866 505.866 23 502 23C498.134 23 495 19.866 495 16Z M500.707 13.293C500.512 13.0975 500.256 13 500 13C499.744 13 499.489 13.0975 499.293 13.293C498.902 13.684 498.902 14.3161 499.293 14.7071L500.586 16L499.293 17.293C498.902 17.684 498.902 18.3161 499.293 18.7071C499.488 18.9021 499.744 19 500 19C500.256 19 500.512 18.9021 500.707 18.7071L502 17.4141L503.293 18.7071C503.488 18.9021 503.744 19 504 19C504.256 19 504.512 18.9021 504.707 18.7071C505.098 18.3161 505.098 17.684 504.707 17.293L503.414 16L504.707 14.7071C505.098 14.3161 505.098 13.684 504.707 13.293C504.316 12.902 503.684 12.902 503.293 13.293L502 14.586L500.707 13.293Z" styleClass="icon-button-error" />
                 </graphic>
                 <tooltip>
-                    <Tooltip id="cancelTooltip" text="%runtime.scenes.loginpassword.cancelTooltip" />
+                    <Tooltip id="cancelTooltip" text="%runtime.scenes.update.cancelTooltip" />
                 </tooltip>
             </Button>
 
-        </Pane>
-    </Pane>
+            <!-- Кнопка свернуть -->
+            <Button id="minimize" layoutX="760.0" mnemonicParsing="false" styleClass="icon-button">
+                <graphic>
+                    <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM10.2143 20C9.58968 20 9.07143 20.5183 9.07143 21.1429V22.2857C9.07143 22.9103 9.58968 23.4286 10.2143 23.4286H22.7857C23.4103 23.4286 23.9286 22.9103 23.9286 22.2857V21.1429C23.9286 20.5183 23.4103 20 22.7857 20H10.2143ZM10.2143 21.1429H22.7857V22.2857H10.2143V21.1429Z" styleClass="icon-button-color" />
+                </graphic>
+                <tooltip>
+                    <Tooltip id="minimizeTooltip" text="%runtime.scenes.login.minimizeTooltip" />
+                </tooltip>
+            </Button>
 
+            <Button id="exit" graphicTextGap="0.0" layoutX="802.0" mnemonicParsing="false" styleClass="icon-button">
+                <graphic>
+                    <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" styleClass="icon-button-color" />
+                </graphic>
+                <tooltip>
+                    <Tooltip id="exitTooltip" text="%runtime.scenes.login.exitTooltip" />
+                </tooltip>
+            </Button>
+        </HBox>
+    </AnchorPane>
     <!-- Описание процесса -->
     <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="337.0" prefHeight="66.0" prefWidth="832.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" />
-    <SVGPath content="M0 -2.28322C0 -3.01097 0.395307 -3.68128 1.03217 -4.03345L193.46 -110.441C194.086 -110.787 194.849 -110.772 195.462 -110.402L245.964 -79.9119C247.266 -79.1258 247.248 -77.2316 245.932 -76.4692L62.8001 29.6162C62.1827 29.9738 61.8026 30.6333 61.8026 31.3468V186.626C61.8026 187.354 62.1984 188.024 62.836 188.376L190.221 258.697C190.816 259.025 191.538 259.029 192.136 258.707L322.793 188.372C323.441 188.023 323.845 187.347 323.845 186.611V31.5293C323.845 30.7209 323.359 29.992 322.612 29.6821L285.222 14.1623C284.637 13.9194 283.971 13.9681 283.428 14.2937L159.187 88.7161C158.584 89.0774 158.215 89.7288 158.215 90.4318V122.629C158.215 123.339 158.592 123.997 159.205 124.355L193.111 144.181C194.444 144.96 196.12 143.999 196.12 142.454V113.411C196.12 112.711 196.486 112.062 197.085 111.7L281.256 60.7623C282.589 59.9557 284.292 60.9154 284.292 62.4734V161.242C284.292 161.936 283.932 162.58 283.342 162.944L192.226 219.173C191.582 219.57 190.77 219.57 190.126 219.173L99.0098 162.944C98.4195 162.58 98.0601 161.936 98.0601 161.242V54.3293C98.0601 53.6172 98.4387 52.9588 99.0543 52.6006L283.341 -54.6261C283.933 -54.9704 284.66 -54.9881 285.268 -54.6728L382.921 -4.02242C383.584 -3.67854 384 -2.9939 384 -2.24703V218.655C384 219.375 383.612 220.04 382.985 220.395L192.166 328.44C191.552 328.787 190.801 328.786 190.188 328.436L1.00816 220.397C0.384761 220.041 0 219.378 0 218.66V-2.28322Z" layoutX="256.0" layoutY="118.0" scaleX="0.5" scaleY="0.5" styleClass="logo" visible="true" />
 
     <!-- Подключение стилей-->
     <stylesheets>
