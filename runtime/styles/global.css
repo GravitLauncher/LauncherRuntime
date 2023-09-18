@@ -11,6 +11,9 @@ ComboBox,
 RadioButton {
     -fx-cursor: hand;
 }
+.root {
+    -fx-background-color: transparent;
+}
 /*-- Шрифты --*/
 #layout {
     -fx-font-family: 'Comfortaa';

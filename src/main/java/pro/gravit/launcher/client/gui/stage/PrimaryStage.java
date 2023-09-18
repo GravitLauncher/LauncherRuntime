@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.stage;
 
 import javafx.application.Platform;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -16,6 +17,7 @@ public class PrimaryStage extends AbstractStage {
         primaryStage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
+        scene.setFill(Color.TRANSPARENT);
         // Icons
         try {
             Image icon = new Image(JavaFXApplication.getResourceURL("favicon.png").toString());

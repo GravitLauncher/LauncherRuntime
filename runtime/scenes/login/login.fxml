@@ -19,7 +19,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="layout" fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="transparent background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Вертикальная полоса -->
     <Pane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="330.0" styleClass="vline" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">

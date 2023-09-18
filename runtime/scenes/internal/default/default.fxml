@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.Label?>
-<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent blur background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Label id="headingDialog" layoutX="51.0" layoutY="39.0" prefHeight="25.0" prefWidth="417.0" text="%runtime.scenes.options.headingOptional" AnchorPane.topAnchor="39.0" />

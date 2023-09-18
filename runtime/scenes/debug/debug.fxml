@@ -13,7 +13,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="transparent blur background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
 
    <!-- Навбар -->
