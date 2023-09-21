@@ -294,6 +294,6 @@ RadioButton {
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
     -fx-background-position: center center;
-    -fx-background-size: 50% 25%;
+    -fx-background-size: 20px 11px;
 }
 /*-- DrLeonardo styles refactor --*/

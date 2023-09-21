@@ -7,11 +7,14 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Text?>
@@ -19,44 +22,39 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="layout" fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1-internal" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Вертикальная полоса -->
-    <Pane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="330.0" styleClass="vline" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <!-- Чекбоксы -->
-        <CheckBox id="autoenter" layoutX="37.0" layoutY="366.0" prefHeight="18.0" prefWidth="276.0" text="%runtime.scenes.login.autoenter" wrapText="true">
-            <padding>
-                <Insets left="5.0" />
-            </padding>
-        </CheckBox>
-        <CheckBox id="savePassword" layoutX="37.0" layoutY="396.0" prefHeight="18.0" prefWidth="276.0" text="%runtime.scenes.login.savePassword" wrapText="true">
-            <padding>
-                <Insets left="5.0" />
-            </padding>
-        </CheckBox>
-        <ComboBox id="authList" layoutX="35.0" layoutY="440.0" prefHeight="37.0" prefWidth="276.0" />
-
-        <!-- Блок атворизации -->
-        <Pane id="authButtonBlock" fx:id="auth" layoutX="64.0" layoutY="135.0">
-            <!-- Не активная кнопка -->
-            <Pane id="authUnactive" layoutX="23.270000457763672" layoutY="26.489999771118164">
-                <SVGPath content="M0.26709 44.9194C0.26709 44.1917 0.662337 43.5215 1.29913 43.1693L77.4534 1.05051C78.0795 0.704254 78.8428 0.718781 79.4552 1.0886L97.4402 11.9491C98.7421 12.7352 98.7249 14.6292 97.409 15.3916L26.1156 56.6982C25.4983 57.0559 25.1182 57.7153 25.1182 58.4288V119.484C25.1182 120.212 25.514 120.883 26.1515 121.235L76.1853 148.86C76.7804 149.189 77.5016 149.192 78.1001 148.87L129.435 121.231C130.083 120.882 130.487 120.205 130.487 119.47V58.6113C130.487 57.803 130 57.0741 129.254 56.7642L115.513 51.0595C114.928 50.8165 114.262 50.8653 113.718 51.191L64.8581 80.4643C64.2551 80.8256 63.886 81.4769 63.886 82.1799V93.7656C63.886 94.4761 64.263 95.1333 64.8763 95.492L76.1184 102.067C77.4517 102.846 79.128 101.885 79.128 100.34V91.4181C79.128 90.7183 79.4938 90.0694 80.0924 89.7071L111.547 70.6686C112.88 69.8618 114.582 70.8216 114.582 72.3796V109.314C114.582 110.007 114.223 110.652 113.633 111.016L78.1904 132.892C77.5465 133.289 76.7334 133.289 76.0895 132.892L40.6471 111.016C40.0569 110.652 39.6976 110.007 39.6976 109.314V67.6703C39.6976 66.9583 40.0762 66.2999 40.6916 65.9417L113.632 23.4941C114.224 23.1496 114.951 23.1319 115.559 23.4473L153.596 43.1803C154.259 43.5242 154.675 44.2088 154.675 44.9556V132.374C154.675 133.095 154.288 133.759 153.661 134.115L78.1297 176.889C77.516 177.237 76.7646 177.235 76.1522 176.885L1.27512 134.116C0.651796 133.76 0.26709 133.097 0.26709 132.379V44.9194Z" styleClass="logo" />
-            </Pane>
-
-            <!-- Активная кнопка -->
-            <Pane id="authActive" prefHeight="231.0" prefWidth="202.0">
-                <SVGPath id="authBorder" content="M99.9273 1.3606C101.453 0.515599 103.308 0.526451 104.824 1.38924L199.474 55.2744C201.036 56.1635 202 57.8224 202 59.6195V170.677C202 172.48 201.029 174.144 199.458 175.031L102.783 229.603C101.248 230.469 99.3711 230.464 97.8417 229.588L2.51653 175.036C0.960216 174.145 0 172.489 0 170.696V59.6588C0 57.8407 0.986863 56.1659 2.57724 55.285L99.9273 1.3606Z" disable="true" visible="false" />
-                <Button id="authButton" alignment="CENTER" cacheShape="false" centerShape="false" contentDisplay="CENTER" defaultButton="true" graphicTextGap="0.0" layoutX="23.0" layoutY="27.0" prefHeight="177.0" prefWidth="156.0" scaleShape="false" snapToPixel="false" text="%runtime.scenes.login.goAuth">
-                    <graphic>
-                        <Pane>
-                            <SVGPath id="authsvg" content="M76.0685 0.856649C77.5961 0.00865024 79.4555 0.0195405 80.9731 0.885369L152.153 41.4968C153.713 42.3865 154.675 44.0442 154.675 45.8396V129.559C154.675 131.361 153.706 133.023 152.137 133.911L79.4214 175.047C77.8847 175.917 76.0034 175.911 74.4719 175.033L2.77956 133.916C1.22553 133.024 0.26709 131.37 0.26709 129.578V45.8789C0.26709 44.0625 1.25218 42.389 2.84032 41.5073L76.0685 0.856649Z" strokeMiterLimit="0.0" styleClass="auth" />
-                        </Pane>
-                    </graphic>
-                </Button>
-            </Pane>
-
-        </Pane>
-    </Pane>
+    <AnchorPane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="380.0" styleClass="vline" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox layoutX="35.0" layoutY="366.0" spacing="5.0" AnchorPane.bottomAnchor="32.0" AnchorPane.leftAnchor="32.0" AnchorPane.rightAnchor="32.0">
+         <children>
+            <VBox spacing="5.0">
+               <children>
+                    <!-- Чекбоксы -->
+                    <CheckBox id="autoenter" prefHeight="18.0" prefWidth="276.0" text="%runtime.scenes.login.autoenter" wrapText="true">
+                        <padding>
+                            <Insets left="5.0" />
+                        </padding>
+                    </CheckBox>
+                    <CheckBox id="savePassword" prefHeight="18.0" prefWidth="276.0" text="%runtime.scenes.login.savePassword" wrapText="true">
+                        <padding>
+                            <Insets left="5.0" />
+                        </padding>
+                    </CheckBox>
+               </children>
+               <padding>
+                  <Insets left="20.0" />
+               </padding>
+            </VBox>
+              <ComboBox id="authList" maxWidth="1.7976931348623157E308" prefHeight="70.0" />
+         </children>
+      </VBox>
+      <ImageView id="logo" fitHeight="178.0" fitWidth="186.0" layoutX="97.0" layoutY="113.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../images/logo.png" />
+         </image>
+      </ImageView>
+    </AnchorPane>
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <!-- Кнопки управления -->
         <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="30.0">
@@ -104,13 +102,18 @@
                 </tooltip>
             </Button>
         </HBox>
-        <TextFlow layoutX="110.0" layoutY="39.0">
+        <TextFlow layoutX="126.0" layoutY="39.0">
             <Text id="logoName" text="%runtime.scenes.login.logoName" />
             <Text id="logoProduct" styleClass="logoTextGray" text="%runtime.scenes.login.logoProduct" />
             <Text id="logoVersion" text="%runtime.scenes.login.logoVersion" />
         </TextFlow>
     </AnchorPane>
-    <StackPane id="content" layoutX="386.0" layoutY="100.0" prefHeight="395.0" prefWidth="509.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="330.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="100.0" />
+   <VBox alignment="CENTER_LEFT" layoutX="330.0" layoutY="100.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="412.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+      <children>
+          <StackPane id="content" />
+         <Button id="authButton" defaultButton="true" mnemonicParsing="false" prefHeight="20.0" prefWidth="300.0" styleClass="unactiveButton" text="%runtime.scenes.login.goAuth" />
+      </children>
+   </VBox>
 
     <!-- Подключение стилей-->
     <stylesheets>

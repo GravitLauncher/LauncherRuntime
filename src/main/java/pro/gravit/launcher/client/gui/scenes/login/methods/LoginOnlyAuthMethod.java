@@ -6,6 +6,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
+import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.details.AuthLoginOnlyDetails;
 
@@ -97,12 +98,14 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
         @Override
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
-            login.textProperty().addListener(l -> accessor.getAuthButton().setActive(!login.getText().isEmpty()));
+            login.textProperty().addListener(l -> accessor.getAuthButton().setState(login.getText().isEmpty()
+                                                                                            ? LoginAuthButtonComponent.AuthButtonState.UNACTIVE
+                                                                                            : LoginAuthButtonComponent.AuthButtonState.ACTIVE));
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
-                accessor.getAuthButton().setActive(true);
+                accessor.getAuthButton().setState(LoginAuthButtonComponent.AuthButtonState.ACTIVE);
             } else {
-                accessor.getAuthButton().setActive(false);
+                accessor.getAuthButton().setState(LoginAuthButtonComponent.AuthButtonState.UNACTIVE);
             }
 
             if (application.guiModuleConfig.createAccountURL != null) {

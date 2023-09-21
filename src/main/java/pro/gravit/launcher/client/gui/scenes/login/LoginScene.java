@@ -67,7 +67,7 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void doInit() {
-        authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application,
+        authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButton"), application,
                                                   (e) -> contextHelper.runCallback(this::loginWithGui));
         savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
         if (application.runtimeSettings.password != null || application.runtimeSettings.oauthAccessToken != null) {
@@ -190,16 +190,11 @@ public class LoginScene extends AbstractScene {
     @Override
     public void errorHandle(Throwable e) {
         super.errorHandle(e);
-        double authLayoutX = authButton.getLayout().getLayoutX();
-        double authLayoutY = authButton.getLayout().getLayoutY();
         contextHelper.runInFxThread(() -> {
             enable();
-            authButton.getLayout().setLayoutX(authLayoutX);
-            authButton.getLayout().setLayoutY(authLayoutY);
             authButton.setText("ERROR");
-            authButton.setError();
+            authButton.setState(LoginAuthButtonComponent.AuthButtonState.ERROR);
         });
-        authButton.enable();
     }
 
     @Override
@@ -273,7 +268,7 @@ public class LoginScene extends AbstractScene {
     }
 
     private void loginWithGui() {
-        authButton.unsetError();
+        authButton.setState(LoginAuthButtonComponent.AuthButtonState.UNACTIVE);
         {
             var method = authFlow.getAuthMethodOnShow();
             if (method != null) {
@@ -427,7 +422,7 @@ public class LoginScene extends AbstractScene {
             }
             if (content.getChildren().size() != 0) {
                 content.getChildren().clear();
-                authButton.setActive(true);
+                authButton.setState(LoginAuthButtonComponent.AuthButtonState.ACTIVE);
             }
             if(authMethodOnShow != null && !authMethodOnShow.isOverlay()) {
                 loginWithGui();

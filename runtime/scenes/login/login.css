@@ -98,26 +98,28 @@
     -fx-background-color: -fx-green;
 }
 /*-- Кнопка входа --*/
-.auth {
-    -fx-fill: -fx-green;
-}
-.auth2fa {
-    -fx-fill: -fx-white;
-}
-.logo {
-    -fx-fill: -fx-black2C;
-}
-#authBorder {
-    -fx-fill: -fx-greenTr;
-}
-#logoBorder {
-    -fx-fill: -fx-grayLTr;
-}
 #authButton {
-    -fx-background-color: transparent;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-text-fill: -fx-black;
+}
+.activeButton {
+    -fx-background-color: -fx-green;
+}
+.activeButton:hover {
+    -fx-background-color: -fx-green-hover;
+}
+.unactiveButton {
+    -fx-background-color: -fx-grayLTr;
+}
+.unactiveButton:hover {
+    -fx-background-color: -fx-grayLTr;
+}
+.errorButton {
+    -fx-background-color: -fx-red;
+}
+.errorButton:hover {
+    -fx-background-color: -fx-red-hover;
 }
 /*-- Надпись названия продукта --*/
 #logoVersion,

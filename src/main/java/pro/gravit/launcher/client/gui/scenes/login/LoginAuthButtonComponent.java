@@ -2,55 +2,52 @@ package pro.gravit.launcher.client.gui.scenes.login;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
-import javafx.scene.shape.SVGPath;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 
 public class LoginAuthButtonComponent {
     private final JavaFXApplication application;
-    private final Pane layout;
-    private final Pane authUnActive;
-    private final Pane authActive;
-    private final SVGPath authBorder;
     private final Button button;
-
-    private final Node authsvg;
     private boolean isDisabled;
+    private AuthButtonState state = AuthButtonState.UNACTIVE;
 
-    public LoginAuthButtonComponent(Pane authButton, JavaFXApplication application,
+    public static enum AuthButtonState {
+        ACTIVE("activeButton"), UNACTIVE("unactiveButton"), ERROR("errorButton");
+        private final String styleClass;
+
+        public String getStyleClass() {
+            return styleClass;
+        }
+
+        AuthButtonState(String styleClass) {
+            this.styleClass = styleClass;
+        }
+    }
+
+    public LoginAuthButtonComponent(Button authButton, JavaFXApplication application,
             EventHandler<ActionEvent> eventHandler) {
         this.application = application;
-        this.layout = authButton;
-        this.authUnActive = LookupHelper.lookup(layout, "#authUnactive");
-        this.authActive = LookupHelper.lookup(layout, "#authActive");
-        this.authBorder = LookupHelper.lookup(authActive, "#authBorder");
-        this.button = LookupHelper.lookup(authActive, "#authButton");
-        this.authsvg = ((Pane) button.getGraphic()).getChildren().get(0);
-        this.button.setOnMouseEntered(e -> this.authBorder.setVisible(true));
-        this.button.setOnMouseExited(e -> this.authBorder.setVisible(false));
+        this.button = authButton;
         this.button.setOnAction(eventHandler);
     }
 
-    public void setActive(boolean value) {
-        authUnActive.setVisible(!value);
-        authActive.setVisible(value);
+    public AuthButtonState getState() {
+        return state;
     }
 
-    public void disable() {
-        isDisabled = true;
-        this.button.setDisable(true);
-    }
-
-    public void enable() {
-        isDisabled = false;
-        this.button.setDisable(false);
-    }
-
-    public Pane getLayout() {
-        return layout;
+    public void setState(AuthButtonState state) {
+        if(state == null) {
+            throw new NullPointerException("State can't be null");
+        }
+        if(state == this.state) {
+            return;
+        }
+        if(this.state != null) {
+            button.getStyleClass().remove(this.state.getStyleClass());
+        }
+        button.getStyleClass().add(state.getStyleClass());
     }
 
     public String getText() {
@@ -59,17 +56,5 @@ public class LoginAuthButtonComponent {
 
     public void setText(String text) {
         button.setText(text);
-    }
-
-    public void setError() {
-        authBorder.setStyle("-fx-fill: -fx-redTr");
-        authsvg.getStyleClass().removeAll("auth");
-        authsvg.getStyleClass().add("authButtonError");
-    }
-
-    public void unsetError() {
-        authBorder.setStyle("-fx-fill: -fx-greenTr");
-        authsvg.getStyleClass().removeAll("authButtonError");
-        authsvg.getStyleClass().add("auth");
     }
 }
