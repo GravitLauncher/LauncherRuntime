@@ -6,10 +6,10 @@
 
 <!-- DrLeonardo refactor -->
 
-<Pane fx:id="totpMethod" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
-    <PasswordField id="totp" layoutY="127.0" layoutX="20" prefHeight="43.0" prefWidth="295.0" promptText="%runtime.scenes.login.password" />
+<VBox fx:id="totpMethod" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
+    <PasswordField id="totp" prefHeight="43.0" prefWidth="295.0" promptText="%runtime.scenes.login.password" />
 
     <!-- Подключение стилей-->
     <stylesheets>
     </stylesheets>
-</Pane>
+</VBox>

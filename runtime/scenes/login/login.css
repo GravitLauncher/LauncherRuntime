@@ -55,6 +55,19 @@
     -fx-background-color: -fx-grayTr;
     -fx-background-radius: 10px;
 }
+/*-- Поля --*/
+#login {
+      -fx-background-image:url('../../images/icons/user.png');
+      -fx-background-repeat: no-repeat;
+      -fx-background-position: left center;
+      -fx-padding: 0 0 0 24px;
+}
+#password, #totp {
+      -fx-background-image:url('../../images/icons/lock.png');
+      -fx-background-repeat: no-repeat;
+      -fx-background-position: left center;
+      -fx-padding: 0 0 0 24px;
+}
 /*-- Ссылки --*/
 .createAccount-text {
     -fx-font-weight: bold;
