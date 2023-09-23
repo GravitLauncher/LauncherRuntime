@@ -4,12 +4,13 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
-import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -19,22 +20,15 @@ import java.util.concurrent.atomic.AtomicLong;
 public class ServerButton extends AbstractVisualComponent {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
     private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
+    private static final String SERVER_BUTTON_DEFAULT_IMAGE = "images/servers/example.png";
     public ClientProfile profile;
     private Button saveButton;
     private Button resetButton;
+    private Labeled serverLogo;
 
     protected ServerButton(JavaFXApplication application, ClientProfile profile) {
-        super(getFXMLPath(application, profile), application);
+        super(SERVER_BUTTON_FXML, application);
         this.profile = profile;
-    }
-
-    private static String getFXMLPath(JavaFXApplication application, ClientProfile profile) {
-        String customFxmlName = SERVER_BUTTON_CUSTOM_FXML.formatted(profile.getUUID());
-        URL customFxml = application.tryResource(customFxmlName);
-        if (customFxml != null) {
-            return customFxmlName;
-        }
-        return SERVER_BUTTON_FXML;
     }
 
     @Override
@@ -46,16 +40,14 @@ public class ServerButton extends AbstractVisualComponent {
     protected void doInit() {
         LookupHelper.<Labeled>lookup(layout, "#nameServer").setText(profile.getTitle());
         LookupHelper.<Labeled>lookup(layout, "#genreServer").setText(profile.getVersion().toString());
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#serverLogo").ifPresent((a) -> {
-            try {
-                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(a.getFitWidth(), a.getFitHeight());
-                clip.setArcWidth(20.0);
-                clip.setArcHeight(20.0);
-                a.setClip(clip);
-            } catch (Throwable e) {
-                LogHelper.error(e);
-            }
-        });
+        this.serverLogo = LookupHelper.lookup(layout, "#serverLogo");
+        URL logo = application.tryResource(SERVER_BUTTON_DEFAULT_IMAGE);
+        if(logo != null) {
+            this.serverLogo.setBackground(new Background(new BackgroundImage(new Image(logo.toString()),
+                                                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                                                                             BackgroundPosition.CENTER, new BackgroundSize(0.0, 0.0, true, true, false, true))));
+            JavaFxUtils.setRadius(this.serverLogo, 20.0);
+        }
         AtomicLong currentOnline = new AtomicLong(0);
         AtomicLong maxOnline = new AtomicLong(0);
         Runnable update = () -> contextHelper.runInFxThread(() -> {

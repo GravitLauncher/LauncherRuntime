@@ -30,9 +30,6 @@
 .serverButtonsActive {
     -fx-background-color: -fx-grayTr-hover;
 }
-#serverLogo {
-    -fx-background-position: center;
-}
 /*-- Информация о сервере --*/
 #nameServer {
     -fx-fill: -fx-black2C;
@@ -48,12 +45,12 @@
     -fx-font-size: 12px;
 }
 /*-- Индикатор онлайна --*/
-#block-online {
+.online-green {
     -fx-background-color: -fx-green;
-    -fx-background-radius: 5px;
 }
 #online {
-    -fx-text-fill: -fx-black;
+    -fx-background-radius: 5px;
+    -fx-text-fill: -fx-white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }

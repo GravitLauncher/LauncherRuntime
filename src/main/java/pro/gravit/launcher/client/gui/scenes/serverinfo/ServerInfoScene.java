@@ -9,6 +9,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
@@ -32,10 +33,7 @@ public class ServerInfoScene extends AbstractScene {
         originalAvatarImage = avatar.getImage();
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
             try {
-                javafx.scene.shape.Rectangle clip = new javafx.scene.shape.Rectangle(h.getFitWidth(), h.getFitHeight());
-                clip.setArcWidth(h.getFitWidth());
-                clip.setArcHeight(h.getFitHeight());
-                h.setClip(clip);
+                JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
                 h.setImage(originalAvatarImage);
             } catch (Throwable e) {
                 LogHelper.warning("Skin head error");
