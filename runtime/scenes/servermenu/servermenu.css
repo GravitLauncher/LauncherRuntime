@@ -1,0 +1,12 @@
+#customization {
+    -fx-background-color: rgba(0,0,0,0.7);
+    -fx-background-radius: 8px;
+    -fx-opacity: 0;
+    -fx-effect: none;
+}
+#customization:hover {
+    -fx-opacity: 1;
+}
+#customization>.icons {
+    -fx-fill: -fx-white;
+}

@@ -98,18 +98,8 @@ public class AuthService {
         return authAvailability;
     }
 
-    public boolean isSupportedAuthFeature(String feature) {
-        if (authAvailability == null || authAvailability.apiFeatures == null) {
-            return false;
-        }
-        return authAvailability.apiFeatures.contains(feature);
-    }
-
-    public String getApiUrl() {
-        if (authAvailability == null || authAvailability.apiUrl == null) {
-            return null;
-        }
-        return authAvailability.apiUrl;
+    public boolean isFeatureAvailable(String name) {
+        return authAvailability.features != null && authAvailability.features.contains(name);
     }
 
     public String getUsername() {

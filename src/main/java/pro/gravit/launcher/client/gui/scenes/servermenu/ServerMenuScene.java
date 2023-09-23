@@ -14,6 +14,7 @@ import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
+import pro.gravit.launcher.events.request.GetAssetUploadInfoRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -116,6 +117,12 @@ public class ServerMenuScene extends AbstractScene {
             }
         }).start();
         JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
+        if(application.authService.isFeatureAvailable(GetAssetUploadInfoRequestEvent.FEATURE_NAME)) {
+            LookupHelper.lookupIfPossible(layout, "#customization").ifPresent((h) -> {
+                h.setVisible(true);
+                // TODO
+            });
+        }
     }
 
     @Override

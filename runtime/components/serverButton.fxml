@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="serverButton" fx:id="serverButton" minHeight="350.0" minWidth="175.0" styleClass="b-20" xmlns="http://javafx.com/javafx/20.0.1-internal" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="serverButton" fx:id="serverButton" prefHeight="350.0" prefWidth="175.0" styleClass="b-20" xmlns="http://javafx.com/javafx/20.0.1-internal" xmlns:fx="http://javafx.com/fxml/1">
    <Label id="serverLogo" layoutX="33.0" layoutY="123.0" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
       <Label id="online" alignment="CENTER" minWidth="35.0" prefHeight="35.0" styleClass="online-green" text="?" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="6.0" />
 
@@ -17,8 +17,8 @@
      <Label id="genreServer" alignment="CENTER" layoutY="302.0" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
 
      <!-- Кнопка сохранить (для других сцен) -->
-     <Button id="save" layoutX="18.0" layoutY="205.0" mnemonicParsing="false" prefHeight="55.0" prefWidth="151.0" text="%runtime.components.serverButton.save" visible="false" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="213.0" />
-     <Button id="reset" layoutX="25.0" layoutY="8.0" mnemonicParsing="false" prefHeight="35.0" prefWidth="81.0" text="%runtime.components.serverButton.reset" visible="false">
+     <Button id="save" layoutX="18.0" layoutY="205.0" mnemonicParsing="false" prefHeight="55.0" text="%runtime.components.serverButton.save" visible="false" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="213.0" />
+     <Button id="reset" layoutX="25.0" layoutY="8.0" minWidth="75.0" mnemonicParsing="false" prefHeight="35.0" text="%runtime.components.serverButton.reset" visible="false" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="6.0">
          <tooltip>
              <Tooltip id="resetTooltip" text="%runtime.components.serverButton.resetTooltip" />
          </tooltip>
