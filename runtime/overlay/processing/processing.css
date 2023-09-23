@@ -1,12 +1,5 @@
-#overlay>#description {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 16px;
-}
-#overlay>#description.error {
-    -fx-text-fill: -fx-red;
-}
-#overlay>.logo {
-    -fx-fill: -fx-black2C;
-    -fx-opacity: 0.03;
+#header-text {
+    -fx-font-weight: 800;
+    -fx-font-size: 18px;
 }
 /*-- DrLeonardo styles refactor --*/

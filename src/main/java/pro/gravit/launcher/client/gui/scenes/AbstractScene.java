@@ -70,62 +70,13 @@ public abstract class AbstractScene extends AbstractVisualComponent {
         application.gui.processingOverlay.processRequest(currentStage, message, request, onSuccess, onException, onError);
     }
 
-    public void disable() {
-        currentStage.disable();
-    }
-
-    public void enable() {
-        currentStage.enable();
-    }
-
-    public abstract void reset();
-
-    private void sceneBaseInit() {
-        if (header == null) {
-            LogHelper.warning("Scene %s header button(#close, #hide) deprecated", getName());
-            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#close")
-                        .ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(layout, "#hide")
-                        .ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
-        } else {
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#exit")
-                        .ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#minimize")
-                        .ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#lang").ifPresent((b) -> {
-
-                b.setContextMenu(makeLangContextMenu());
-                b.setOnMousePressed((e) -> {
-                    if (!e.isPrimaryButtonDown()) return;
-                    b.getContextMenu().show(b, e.getScreenX(), e.getScreenY());
-                });
-            });
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth").ifPresent(b -> b.setOnAction(
-                    (e) -> application.messageManager.showApplyDialog(
-                            application.getTranslation("runtime.scenes.settings.exitDialog.header"),
-                            application.getTranslation("runtime.scenes.settings.exitDialog.description"),
-                            this::userExit, () -> {}, true)));
-        }
-        currentStage.enableMouseDrag(layout);
-    }
-
-    private ContextMenu makeLangContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getStyleClass().add("langChoice");
-        for (RuntimeSettings.LAUNCHER_LOCALE locale : RuntimeSettings.LAUNCHER_LOCALE.values()) {
-            MenuItem item = new MenuItem(locale.displayName);
-            item.setOnAction(e -> {
-                try {
-                    application.updateLocaleResources(locale.name);
-                    application.runtimeSettings.locale = locale;
-                    application.gui.reload();
-                } catch (Exception exception) {
-                    errorHandle(exception);
-                }
-            });
-            contextMenu.getItems().add(item);
-        }
-        return contextMenu;
+    protected void sceneBaseInit() {
+        initBasicControls(header);
+        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#deauth").ifPresent(b -> b.setOnAction(
+                (e) -> application.messageManager.showApplyDialog(
+                        application.getTranslation("runtime.scenes.settings.exitDialog.header"),
+                        application.getTranslation("runtime.scenes.settings.exitDialog.description"),
+                        this::userExit, () -> {}, true)));
     }
 
     protected void userExit() {
@@ -145,6 +96,16 @@ public abstract class AbstractScene extends AbstractVisualComponent {
                            });
                        }, (event) -> {});
     }
+
+    public void disable() {
+        currentStage.disable();
+    }
+
+    public void enable() {
+        currentStage.enable();
+    }
+
+    public abstract void reset();
 
     protected void switchScene(AbstractScene scene) throws Exception {
         currentStage.setScene(scene);

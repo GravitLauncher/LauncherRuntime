@@ -3,7 +3,23 @@
 /*-- Подключение шрифтов --*/
 @font-face {
     -fx-font-family: 'Comfortaa';
-    src: url('./Comfortaa-VariableFont_wght.ttf');
+    src: url('./Comfortaa-Regular.ttf');
+}
+@font-face {
+    -fx-font-family: 'Comfortaa Bold';
+    src: url('./Comfortaa-Bold.ttf');
+}
+@font-face {
+    -fx-font-family: 'Comfortaa Light';
+    src: url('./Comfortaa-Light.ttf');
+}
+@font-face {
+    -fx-font-family: 'Comfortaa SemiBold';
+    src: url('./Comfortaa-SemiBold.ttf');
+}
+@font-face {
+    -fx-font-family: 'Comfortaa Medium';
+    src: url('./Comfortaa-Medium.ttf');
 }
 Button,
 CheckBox,

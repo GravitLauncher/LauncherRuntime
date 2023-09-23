@@ -4,11 +4,14 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
-<AnchorPane fx:id="overlay" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="overlay" prefHeight="500.0" prefWidth="900.0" styleClass="transparent" xmlns="http://javafx.com/javafx/20.0.1-internal" xmlns:fx="http://javafx.com/fxml/1">
 
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <!-- Кнопки управления -->
@@ -44,8 +47,22 @@
             </Button>
         </HBox>
     </AnchorPane>
-    <!-- Описание процесса -->
-    <Label id="description" alignment="CENTER" contentDisplay="CENTER" layoutX="32.0" layoutY="337.0" prefHeight="66.0" prefWidth="832.0" text="%runtime.overlay.processing.processing.description" textAlignment="CENTER" wrapText="true" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" />
+   <VBox alignment="CENTER" layoutX="30.0" layoutY="413.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
+      <children>
+         <Label id="header-text" alignment="CENTER" text="%runtime.overlay.processing.processing.description" />
+          <!-- Описание процесса -->
+          <Label id="description" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" wrapText="true" />
+      </children>
+   </VBox>
+   <HBox alignment="CENTER" layoutX="349.0" layoutY="132.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
+      <children>
+         <ImageView id="logo" fitHeight="205.0" fitWidth="448.0" pickOnBounds="true" preserveRatio="true">
+            <image>
+               <Image url="@../../images/logo.png" />
+            </image>
+         </ImageView>
+      </children>
+   </HBox>
 
     <!-- Подключение стилей-->
     <stylesheets>
