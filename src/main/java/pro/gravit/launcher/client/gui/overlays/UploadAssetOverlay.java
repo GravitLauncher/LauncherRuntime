@@ -62,10 +62,12 @@ public class UploadAssetOverlay extends CenterOverlay {
     }
 
     public void onAssetUploadInfo(AssetUploadInfoRequestEvent event) {
-        uploadSkin.setVisible(event.uploadSkin);
-        uploadCape.setVisible(event.uploadCape);
+        boolean uploadSkinAvailable = event.available.contains("SKIN");
+        boolean uploadCapeAvailable = event.available.contains("CAPE");
+        uploadSkin.setVisible(uploadSkinAvailable);
+        uploadCape.setVisible(uploadCapeAvailable);
         this.slimSupportConf = event.slimSupportConf;
-        if(event.uploadSkin) {
+        if(uploadSkinAvailable) {
             switch (event.slimSupportConf) {
                 case USER -> useSlim.setVisible(true);
                 case UNSUPPORTED, SERVER -> useSlim.setVisible(false);
