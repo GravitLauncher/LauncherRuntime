@@ -1,6 +1,6 @@
 /*-- Информация сервера --*/
 #server-detail {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 20px;
 }
 #server-detail>#serverName {

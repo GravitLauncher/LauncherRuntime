@@ -220,24 +220,28 @@ public class VisualDownloader {
     private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl,
             Runnable onSuccess) {
         ContextHelper.runInFxThreadStatic(this::resetProgress).thenAccept((x) -> {
-            downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
-                @Override
-                public void apply(long fullDiff) {
-                    {
-                        long old = totalDownloaded.getAndAdd(fullDiff);
-                        updateProgress(old, old + fullDiff);
+            try {
+                downloader = Downloader.downloadList(adds, baseUrl, dir, new Downloader.DownloadCallback() {
+                    @Override
+                    public void apply(long fullDiff) {
+                        {
+                            long old = totalDownloaded.getAndAdd(fullDiff);
+                            updateProgress(old, old + fullDiff);
+                        }
                     }
-                }
 
-                @Override
-                public void onComplete(Path path) {
+                    @Override
+                    public void onComplete(Path path) {
 
-                }
-            }, executor, application.guiModuleConfig.downloadThreads);
-            downloader.getFuture().thenAccept((e) -> onSuccess.run()).exceptionally((e) -> {
+                    }
+                }, executor, application.guiModuleConfig.downloadThreads);
+                downloader.getFuture().thenAccept((e) -> onSuccess.run()).exceptionally((e) -> {
+                    ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
+                    return null;
+                });
+            } catch (Throwable e) {
                 ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
-                return null;
-            });
+            }
         });
     }
 

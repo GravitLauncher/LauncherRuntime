@@ -176,4 +176,8 @@ public abstract class AbstractVisualComponent {
         LogHelper.error(e);
         application.messageManager.createNotification("Error", message);
     }
+
+    protected Parent getFxmlRootPrivate() {
+        return getFxmlRoot();
+    }
 }

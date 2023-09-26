@@ -31,7 +31,7 @@ public class RuntimeDialogService implements DialogService.DialogServiceNotifica
 
     @Override
     public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback) {
-        messageManager.showTextDialog(header, onApplyCallback, onCloseCallback, false);
+        throw new UnsupportedOperationException();
     }
 
     @Override

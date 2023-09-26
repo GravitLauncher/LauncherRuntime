@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -14,8 +15,9 @@ import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
-import pro.gravit.launcher.events.request.GetAssetUploadInfoRequestEvent;
+import pro.gravit.launcher.events.request.GetAssetUploadUrlRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.utils.helper.CommonHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -116,13 +118,28 @@ public class ServerMenuScene extends AbstractScene {
                 }
             }
         }).start();
-        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
-        if(application.authService.isFeatureAvailable(GetAssetUploadInfoRequestEvent.FEATURE_NAME)) {
-            LookupHelper.lookupIfPossible(layout, "#customization").ifPresent((h) -> {
+        resetAvatar();
+        if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
+            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
                 h.setVisible(true);
-                // TODO
+                h.setOnAction((a) -> {
+                    processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
+                        contextHelper.runInFxThread(() -> {
+                            showOverlay(application.gui.uploadAssetOverlay, (f) -> {
+                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
+                            });
+                        });
+                    }, this::errorHandle, (e) -> {});
+                });
             });
         }
+    }
+
+    public void resetAvatar() {
+        if(avatar == null) {
+            return;
+        }
+        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
     }
 
     @Override

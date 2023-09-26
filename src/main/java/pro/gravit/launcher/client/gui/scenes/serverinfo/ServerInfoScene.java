@@ -81,10 +81,17 @@ public class ServerInfoScene extends AbstractScene {
         serverButtonContainer.getChildren().clear();
         serverButton = ServerMenuScene.getServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
+        resetAvatar();
         serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"),
                                       (e) -> {
                                         runClient();
                                       });
+    }
+
+    public void resetAvatar() {
+        if(avatar == null) {
+            return;
+        }
         JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
     }
 

@@ -37,9 +37,6 @@ public class DialogCommand extends Command {
                                                                  () -> LogHelper.info("Dialog deny callback"),
                                                                  () -> LogHelper.info("Dialog close callback"),
                                                                  isLauncher);
-            case "dialogTextInput" ->
-                    messageManager.showTextDialog(header, (text) -> LogHelper.info("Dialog apply callback: %s", text),
-                                                  () -> LogHelper.info("Dialog cancel callback"), isLauncher);
         }
     }
 }

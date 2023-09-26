@@ -13,7 +13,7 @@
 }
 /*-- Блок сервера --*/
 .serverButtons {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 20px;
 }
 #serverButton {
@@ -21,14 +21,14 @@
     -fx-cursor: hand;
 }
 #serverButton:hover {
-    -fx-background-color: -fx-grayTr-hover;
+    -fx-background-color: -fx-glass-hover;
 }
 #serverButtonSelected,
 #serverButtonPressed {
-    -fx-background-color: -fx-grayTr-hover;
+    -fx-background-color: -fx-glass-hover;
 }
 .serverButtonsActive {
-    -fx-background-color: -fx-grayTr-hover;
+    -fx-background-color: -fx-glass-hover;
 }
 /*-- Информация о сервере --*/
 #nameServer {

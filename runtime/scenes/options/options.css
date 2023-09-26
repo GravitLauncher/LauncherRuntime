@@ -1,6 +1,6 @@
 /*-- Вывод данных --*/
 #options-detail {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 20px;
 }
 /*-- Чекбоксы --*/

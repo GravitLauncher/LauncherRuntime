@@ -6,6 +6,7 @@ import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.helper.PositionHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.*;

@@ -1,6 +1,6 @@
 /*-- Вертикальная полоса на главной сцене --*/
 .vline {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
 }
 /*-- Ошибки --*/
 .authButtonError {
@@ -52,7 +52,7 @@
 }
 /*-- Метод авторизации --*/
 #authList {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 10px;
 }
 /*-- Поля --*/
@@ -123,27 +123,16 @@
     -fx-background-color: -fx-green-hover;
 }
 .unactiveButton {
-    -fx-background-color: -fx-grayLTr;
+    -fx-background-color: -fx-blackCE;
 }
 .unactiveButton:hover {
-    -fx-background-color: -fx-grayLTr;
+    -fx-background-color: -fx-blackCE-hover;
 }
 .errorButton {
     -fx-background-color: -fx-red;
 }
 .errorButton:hover {
     -fx-background-color: -fx-red-hover;
-}
-/*-- Надпись названия продукта --*/
-#logoVersion,
-#logoProduct,
-#logoName {
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-    -fx-fill: -fx-grayDTr;
-}
-.logoTextGray {
-    -fx-fill: -fx-grayD !important;
 }
 #text-2fa {
     -fx-font-weight: bold;
@@ -168,7 +157,7 @@
 }
 .radio-button:selected {
     -fx-background-radius: 5px;
-    -fx-background-color: -fx-grayLDTr;
+    -fx-background-color: -fx-glass;
     -fx-text-fill: -fx-black2C-hover;
 }
 .radio-button .radio:selected {

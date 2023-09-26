@@ -1,6 +1,6 @@
 /*-- Вывод данных --*/
 #settings-detail {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 20px;
 }
 /* RAM настройки */
@@ -73,7 +73,7 @@
     -fx-text-fill: -fx-red;
 }
 #javaSelect {
-    -fx-background-color: -fx-grayLTr;
+    -fx-background-color: -fx-glass;
 }
 #javaSelect>#javaHeader {
     -fx-font-size: 14px;

@@ -102,11 +102,6 @@
                 </tooltip>
             </Button>
         </HBox>
-        <TextFlow layoutX="126.0" layoutY="39.0">
-            <Text id="logoName" text="%runtime.scenes.login.logoName" />
-            <Text id="logoProduct" styleClass="logoTextGray" text="%runtime.scenes.login.logoProduct" />
-            <Text id="logoVersion" text="%runtime.scenes.login.logoVersion" />
-        </TextFlow>
     </AnchorPane>
    <VBox alignment="CENTER_LEFT" layoutX="330.0" layoutY="100.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="412.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
       <children>

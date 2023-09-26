@@ -6,6 +6,7 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
+import pro.gravit.launcher.client.gui.overlays.CenterOverlay;
 
 import java.util.ArrayList;
 import java.util.List;

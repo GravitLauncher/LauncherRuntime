@@ -99,6 +99,15 @@ public class SkinManager {
         map.put(username, new SkinEntry(url));
     }
 
+    public void addOrReplaceSkin(String username, URL url) {
+        SkinEntry entry = map.get(username);
+        if(entry == null) {
+            map.put(username, new SkinEntry(url));
+        } else {
+            map.put(username, new SkinEntry(url, entry.avatarUrl));
+        }
+    }
+
     public void addSkinWithAvatar(String username, URL url, URL avatarUrl) {
         map.put(username, new SkinEntry(url, avatarUrl));
     }
