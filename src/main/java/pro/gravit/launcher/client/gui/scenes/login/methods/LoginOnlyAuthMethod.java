@@ -9,6 +9,7 @@ import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.details.AuthLoginOnlyDetails;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -39,6 +40,9 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
             ContextHelper.runInFxThreadStatic(() -> {
                 accessor.showContent(overlay);
                 future.complete(null);
+            }).exceptionally((th) -> {
+                LogHelper.error(th);
+                return null;
             });
         } catch (Exception e) {
             accessor.errorHandle(e);
@@ -106,16 +110,6 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
                 accessor.getAuthButton().setState(LoginAuthButtonComponent.AuthButtonState.ACTIVE);
             } else {
                 accessor.getAuthButton().setState(LoginAuthButtonComponent.AuthButtonState.UNACTIVE);
-            }
-
-            if (application.guiModuleConfig.createAccountURL != null) {
-                LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked(
-                        (e) -> application.openURL(application.guiModuleConfig.createAccountURL));
-            }
-
-            if (application.guiModuleConfig.forgotPassURL != null) {
-                LookupHelper.<Text>lookup(layout, "#forgotPass")
-                            .setOnMouseClicked((e) -> application.openURL(application.guiModuleConfig.forgotPassURL));
             }
         }
 

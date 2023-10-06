@@ -9,6 +9,7 @@ import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -40,6 +41,9 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             ContextHelper.runInFxThreadStatic(() -> {
                 accessor.showContent(overlay);
                 future.complete(null);
+            }).exceptionally((th) -> {
+                LogHelper.error(th);
+                return null;
             });
         } catch (Exception e) {
             accessor.errorHandle(e);
