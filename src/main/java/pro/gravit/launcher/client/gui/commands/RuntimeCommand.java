@@ -15,6 +15,7 @@ public class RuntimeCommand extends Command {
         this.childCommands.put("notify", new NotifyCommand(application.messageManager));
         this.childCommands.put("theme", new ThemeCommand(application));
         this.childCommands.put("info", new InfoCommand(application));
+        this.childCommands.put("getsize", new GetSizeCommand(application));
     }
 
     @Override
