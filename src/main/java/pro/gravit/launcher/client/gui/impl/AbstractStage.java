@@ -32,12 +32,6 @@ public abstract class AbstractStage {
         this.stackPane = new StackPane();
         this.scene = new Scene(stackPane);
         this.stage.setScene(scene);
-        this.stage.widthProperty().addListener((o, oldValue, newValue) -> {
-            stackPane.setPrefWidth(newValue.doubleValue());
-        });
-        this.stage.heightProperty().addListener((o, oldValue, newValue) -> {
-            stackPane.setPrefHeight(newValue.doubleValue());
-        });
         try {
             this.scene.getStylesheets().add(JavaFXApplication.getResourceURL("styles/global.css").toString());
         } catch (IOException e) {

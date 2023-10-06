@@ -15,7 +15,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="layout" fx:id="serverPane" prefHeight="588.0" prefWidth="929.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1-internal" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="serverPane" prefHeight="588.0" prefWidth="929.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -87,7 +87,7 @@
     </AnchorPane>
 
     <!-- Блок списка серверов -->
-    <ScrollPane id="servers" fx:id="serverlist" layoutX="33.0" layoutY="119.0" prefHeight="360.0" prefWidth="836.0" vbarPolicy="NEVER" vmax="0.0" AnchorPane.bottomAnchor="54.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="85.0">
+    <ScrollPane id="servers" fx:id="serverlist" layoutX="33.0" layoutY="119.0" prefHeight="360.0" prefWidth="836.0" vbarPolicy="NEVER" vmax="0.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="174.0">
         <HBox alignment="CENTER" prefHeight="360.0" spacing="20.0" />
     </ScrollPane>
 
