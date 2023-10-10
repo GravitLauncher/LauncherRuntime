@@ -15,7 +15,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="layout" fx:id="serverPane" prefHeight="588.0" prefWidth="929.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="serverPane" prefHeight="558.0" prefWidth="929.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -53,15 +53,15 @@
         </HBox>
       <HBox layoutX="53.0" layoutY="31.0" spacing="15.0" AnchorPane.leftAnchor="73.0">
          <children>
-            <StackPane>
+            <StackPane prefHeight="32.0" prefWidth="32.0">
                <children>
             
             
                     <!-- Аватар игрока -->
-                    <ImageView id="avatar" fitHeight="39.0" fitWidth="39.0" smooth="false">
+                    <ImageView id="avatar" fitHeight="32.0" fitWidth="32.0" smooth="false">
                         <Image url="@../../images/icons/default.png" />
                     </ImageView>
-                  <Button id="customization" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" visible="false">
+                  <Button id="customization" graphicTextGap="0.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" visible="false">
                      <graphic>
                         <SVGPath content="M10.6667 6.1665H14.6667V7.49984H10.6667V6.1665ZM9.33333 8.83317V7.49984H10.6667L10.6667 8.83317L9.33333 8.83317ZM6.66667 10.1665V8.83317H9.33333V10.1665H6.66667ZM5.33333 11.4998V10.1665L6.66667 10.1665V11.4998L5.33333 11.4998ZM5.33333 15.4998L4 15.4998V11.4998H5.33333V15.4998ZM5.33333 15.4998H10V16.8332H5.33333V15.4998ZM16 8.83317H14.6667L14.6667 7.49984H16V8.83317ZM18.6667 11.4998H17.3333H16V10.1665V8.83317L17.3333 8.83317V10.1665H18.6667V11.4998ZM18.6667 15.4998V11.4998L20 11.4998V15.4998H18.6667ZM18.6667 15.4998L18.6667 16.8332H14V15.4998L18.6667 15.4998ZM11.3333 9.49984H12.6667V10.8332H14V12.1665L15.3333 12.1665V13.4998H12.6667V16.8332H11.3333V13.4998H8.66667V12.1665L10 12.1665V10.8332H11.3333V9.49984Z" styleClass="icons" />
                      </graphic>
@@ -72,10 +72,10 @@
                <children>
             
                     <!-- Никнейм игрока -->
-                    <Label id="nickname" prefHeight="20.0" prefWidth="282.0" text="PLAYER123" />
+                    <Label id="nickname" prefHeight="15.0" prefWidth="282.0" text="PLAYER123" />
             
                     <!-- Счет игрока -->
-                    <Label id="role" prefHeight="20.0" prefWidth="282.0">
+                    <Label id="role" prefHeight="15.0" prefWidth="282.0">
                         <tooltip>
                             <Tooltip id="moneyTooltip" text="%runtime.scenes.servermenu.moneyTooltip" />
                         </tooltip>
@@ -87,7 +87,7 @@
     </AnchorPane>
 
     <!-- Блок списка серверов -->
-    <ScrollPane id="servers" fx:id="serverlist" layoutX="33.0" layoutY="119.0" prefHeight="360.0" prefWidth="836.0" vbarPolicy="NEVER" vmax="0.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="174.0">
+    <ScrollPane id="servers" fx:id="serverlist" layoutX="33.0" layoutY="119.0" prefHeight="370.0" prefWidth="836.0" vbarPolicy="NEVER" vmax="0.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="174.0">
         <HBox alignment="CENTER" prefHeight="360.0" spacing="20.0" />
     </ScrollPane>
 

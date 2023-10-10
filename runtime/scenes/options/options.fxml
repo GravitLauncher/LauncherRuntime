@@ -23,7 +23,7 @@
         <!-- Кнопка назад -->
         <Button id="back" layoutY="28.0" mnemonicParsing="false" styleClass="icon-button" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="30.0">
             <graphic>
-                <SVGPath content="M5.93055 21.0346C3.9787 19.0819 3.97907 15.9167 5.93137 13.9644L18.2032 1.69251C18.592 1.30377 18.592 0.680306 18.2032 0.29156C17.8145 -0.0971866 17.191 -0.0971866 16.8023 0.29156L0.29156 16.8023C-0.0971866 17.191 -0.0971866 17.8145 0.29156 18.2032L16.8023 34.7066C16.993 34.8973 17.2497 35 17.4991 35C17.7485 35 18.0052 34.9046 18.1959 34.7066C18.5846 34.3179 18.5846 33.6944 18.1959 33.3057L5.93055 21.0346Z" styleClass="icon-button-color" />
+                <SVGPath content="M16 3H13.5V5.57143H16V3ZM11 5.57145H13.5V8.14288H11V5.57145ZM6 10.7143H8.5V8.14289H11V10.7143H8.5V13.2857H6V10.7143ZM13.5 18.4286H16V21H13.5V18.4286H11V15.8572H13.5V18.4286ZM11 13.2857H8.5V15.8572H11V13.2857Z" styleClass="icon-button-color" />
             </graphic>
             <tooltip>
                 <Tooltip id="backTooltip" text="%runtime.scenes.options.backTooltip" />

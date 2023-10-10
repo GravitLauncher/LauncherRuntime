@@ -1,14 +1,13 @@
 /*-- Информация сервера --*/
-#server-detail {
+#leftpanel {
     -fx-background-color: -fx-glass;
-    -fx-background-radius: 20px;
 }
-#server-detail>#serverName {
+#serverName {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-text-color: -fx-black2C;
 }
-#server-detail>#serverDescription {
+#serverDescription {
     -fx-font-style: normal;
     -fx-font-weight: normal;
     -fx-font-size: 14px;

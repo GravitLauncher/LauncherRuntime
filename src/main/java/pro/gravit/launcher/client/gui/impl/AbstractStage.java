@@ -65,7 +65,7 @@ public abstract class AbstractStage {
 
     public void setScene(AbstractVisualComponent visualComponent) throws Exception {
         if (visualComponent == null) {
-            if(stackPane.getChildren().size() != 0) {
+            if(!stackPane.getChildren().isEmpty()) {
                 stackPane.getChildren().set(0, new Pane());
             }
             return;
@@ -77,7 +77,7 @@ public abstract class AbstractStage {
         if (visualComponent.isResetOnShow) {
             visualComponent.reset();
         }
-        if (stackPane.getChildren().size() == 0) {
+        if (stackPane.getChildren().isEmpty()) {
             stackPane.getChildren().add(visualComponent.getFxmlRoot());
         } else {
             var old = stackPane.getChildren().get(0);

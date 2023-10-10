@@ -100,11 +100,6 @@ public class JavaFXApplication extends Application {
         NewLauncherSettings settings = settingsManager.getConfig();
         if (settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME) == null)
             settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault(guiModuleConfig));
-        try {
-            settingsManager.loadHDirStore();
-        } catch (Exception e) {
-            LogHelper.error(e);
-        }
         runtimeSettings = (RuntimeSettings) settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME);
         runtimeSettings.apply();
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null

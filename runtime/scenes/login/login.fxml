@@ -21,7 +21,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="layout" fx:id="loginPane" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" fx:id="loginPane" prefHeight="558.0" prefWidth="929.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Вертикальная полоса -->
     <AnchorPane id="leftPane" layoutX="45.0" prefHeight="500.0" prefWidth="380.0" styleClass="vline" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
