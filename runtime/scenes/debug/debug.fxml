@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -13,7 +14,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
 
    <!-- Навбар -->
@@ -31,7 +32,7 @@
 
 
       <!-- Кнопка назад -->
-      <Button id="back" mnemonicParsing="false" styleClass="icon-button" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="30.0">
+      <Button id="back" layoutX="14.0" layoutY="39.0" mnemonicParsing="false" styleClass="icon-button" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="39.0">
          <graphic>
             <SVGPath content="M16 3H13.5V5.57143H16V3ZM11 5.57145H13.5V8.14288H11V5.57145ZM6 10.7143H8.5V8.14289H11V10.7143H8.5V13.2857H6V10.7143ZM13.5 18.4286H16V21H13.5V18.4286H11V15.8572H13.5V18.4286ZM11 13.2857H8.5V15.8572H11V13.2857Z" styleClass="icon-button-color" />
          </graphic>
@@ -41,6 +42,18 @@
       </Button>
       <!-- Кнопки управления -->
       <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="30.0">
+         <Button id="copy" alignment="CENTER" contentDisplay="CENTER">
+            <tooltip>
+               <Tooltip id="killTooltip" text="%runtime.scenes.debug.killTooltip" />
+            </tooltip>
+            <graphic>
+               <SVGPath content="M 6.85714,4 C 5.28599,4 4,5.28599 4,6.85714 V 25.1429 C 4,26.714 5.28599,28 6.85714,28 H 25.1429 C 26.714,28 28,26.714 28,25.1429 V 6.85714 C 28,5.28599 26.714,4 25.1429,4 Z m 0,1.14286 H 25.1429 c 0.9534,0 1.7142,0.76086 1.7142,1.71428 V 25.1429 c 0,0.9534 -0.7608,1.7142 -1.7142,1.7142 H 6.85714 c -0.95342,0 -1.71428,-0.7608 -1.71428,-1.7142 V 6.85714 c 0,-0.95342 0.76086,-1.71428 1.71428,-1.71428 z M 22.2,20.0222 H 12.5556 V 9 h 5.5111 v 4.1333 h 1.3778 v -1.3777 h -1.3778 v -1.3778 h 1.3778 v 1.3778 h 1.3777 v 1.3777 H 22.2 Z m -8.2666,-9.6444 v 8.2666 h 6.8888 V 14.5111 H 16.6889 V 10.3778 Z M 9.80005,11.7556 H 11.1778 V 21.4 h 8.2667 v 1.3778 h -8.2667 v 0 H 9.80005 v 0 V 21.4 Z" styleClass="icon-button-color" />
+            </graphic>
+            <styleClass>
+               <String fx:value="icon-button" />
+               <String fx:value="copy" />
+            </styleClass>
+         </Button>
 
          <!-- Кнопка убить процесс -->
          <Button id="kill" alignment="CENTER" contentDisplay="CENTER" layoutX="718.0" styleClass="icon-button, kill">
