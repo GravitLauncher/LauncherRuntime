@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.net.URL?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
@@ -20,12 +19,10 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="layout" prefHeight="558.0" prefWidth="929.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <AnchorPane id="leftpanel" layoutX="141.0" layoutY="404.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
 
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-   
-       <Label id="ramLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="526.0" layoutY="10.0" prefHeight="30.0" prefWidth="127.0" />
-       <Slider id="ramSlider" layoutX="64.0" layoutY="39.0" prefHeight="17.0" prefWidth="589.0" />
 
          <!-- Кнопка назад -->
          <Button id="back" layoutX="21.0" layoutY="26.0" mnemonicParsing="false" styleClass="icon-button">
@@ -85,59 +82,68 @@
         </HBox>
     </AnchorPane>
 
-    <!-- Блок настроек-->
-    <Pane id="settings-detail" layoutX="241.0" layoutY="119.0" prefHeight="340.0" prefWidth="624.0">
-        <ScrollPane id="settingslist" prefHeight="340.0">
-            <VBox fx:id="componentList" prefWidth="622.0">
-                <VBox styleClass="settings-container">
-                    <CheckBox mnemonicParsing="false" styleClass="settings-checkbox" text="Для ознакомления" />
-                    <Label styleClass="settings-label" text="Пример описания" wrapText="true" />
-                </VBox>
-                <VBox styleClass="settings-container">
-                    <CheckBox mnemonicParsing="false" selected="true" styleClass="settings-checkbox" text="Для ознакомления" />
-                    <Label styleClass="settings-label" text="Пример описания" wrapText="true" />
-                </VBox>
-                <VBox styleClass="settings-container">
-                    <CheckBox mnemonicParsing="false" selected="true" styleClass="settings-checkbox" text="Для ознакомления" />
-                    <Label styleClass="settings-label" text="Пример описания" wrapText="true" />
-                </VBox>
-            </VBox>
-        </ScrollPane>
-    </Pane>
-
-    <!-- Папка проекта-->
-    <Pane id="folder" layoutX="241.0" layoutY="418.0" prefHeight="40.0" prefWidth="624.0">
-        <!-- Путь к папкам-->
-        <Hyperlink id="path" focusTraversable="false" prefHeight="40.0" prefWidth="478.0" text="C:/Users">
-            <padding>
-                <Insets left="28.0" right="10.0" />
-            </padding>
-        </Hyperlink>
-
-        <!-- Смена пути-->
-        <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="435.0" prefHeight="40.0" prefWidth="190.0" styleClass="icon-button" text="%runtime.scenes.settings.dirText">
-            <graphic>
-                <SVGPath content="M11.8547 19.5L10.1661 20.9917V13.5882C10.1661 13.2634 9.86787 13 9.5 13C9.13213 13 8.83387 13.2634 8.83387 13.5882V20.9917L7.14529 19.5C6.88964 19.2663 6.46794 19.2599 6.20335 19.4855C5.93875 19.7113 5.93143 20.0836 6.18692 20.3173C6.19229 20.3222 6.19782 20.3269 6.20335 20.3317L9.02838 22.8271C9.09001 22.8813 9.16303 22.9246 9.24353 22.954C9.40746 23.0153 9.59254 23.0153 9.75647 22.954C9.83697 22.9246 9.90999 22.8813 9.97162 22.8271L12.7967 20.3317C13.0613 20.106 13.0686 19.7337 12.8131 19.5C12.5574 19.2663 12.1357 19.2599 11.8711 19.4855C11.8656 19.4902 11.8601 19.4951 11.8547 19.5Z M17.2188 6.33333H9.8176C9.79383 6.29801 9.76614 6.2654 9.73512 6.23592L7.70802 4.32556C7.48783 4.1165 7.19371 3.99972 6.88756 4H1.78125C0.797417 4 0 4.78343 0 5.75V16.25C0 17.2166 0.797417 18 1.78125 18H7.125C7.4529 18 7.71875 17.7388 7.71875 17.4167C7.71875 17.0945 7.4529 16.8333 7.125 16.8333H1.78125C1.45335 16.8333 1.1875 16.5721 1.1875 16.25V5.75C1.1875 5.42786 1.45335 5.16667 1.78125 5.16667H6.88756L8.87479 7.041C9.09919 7.32981 9.44767 7.49957 9.8176 7.5H17.2188C17.5466 7.5 17.8125 7.76119 17.8125 8.08333V16.25C17.8125 16.5721 17.5466 16.8333 17.2188 16.8333H11.875C11.5471 16.8333 11.2812 17.0945 11.2812 17.4167C11.2812 17.7388 11.5471 18 11.875 18H17.2188C18.2026 18 19 17.2166 19 16.25V8.08333C19 7.1169 18.2026 6.33333 17.2188 6.33333Z" styleClass="icon-button-color" />
-            </graphic>
-            <tooltip>
-                <Tooltip id="changedirTooltip" text="%runtime.scenes.settings.changedirTooltip" />
-            </tooltip>
-        </Button>
-    </Pane>
-
     <!-- Кнопка сервера-->
-    <Pane id="serverButton" layoutX="34.0" layoutY="119.0" prefHeight="340.0" prefWidth="190.0" />
-
-    <!-- Выбор Java -->
-    <Pane id="javaSelect" layoutX="241.0" layoutY="325.0" prefHeight="93.0" prefWidth="624.0">
-        <Label id="javaHeader" layoutX="31.0" layoutY="6.0" prefHeight="20.0" prefWidth="290.0" text="%runtime.scenes.settings.javaHeader" />
-        <Label id="javaError" layoutX="313.0" layoutY="6.0" prefHeight="20.0" prefWidth="290.0" text="%runtime.scenes.settings.javaError" textAlignment="RIGHT" visible="false" />
-        <Label id="javaPath" layoutX="29.0" layoutY="68.0" prefHeight="18.0" prefWidth="568.0" text="C:/Users" />
-        <Pane layoutX="18.0" layoutY="32.0" prefHeight="36.0" prefWidth="583.0">
-            <ComboBox id="javaCombo" prefWidth="240.0" styleClass="combo-box" />
-            <Text layoutX="250.0" layoutY="18.0" styleClass="javaDesc" text="%runtime.scenes.settings.javaDesc" textOrigin="CENTER" wrappingWidth="323.0" />
-        </Pane>
-    </Pane>
+    <Pane id="serverButton" layoutX="34.0" layoutY="119.0" prefHeight="340.0" prefWidth="190.0" AnchorPane.leftAnchor="65.0" AnchorPane.topAnchor="148.0" />
+     <ScrollPane id="settingslist" fitToWidth="true" layoutX="300.0" layoutY="130.0" prefHeight="340.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
+      <VBox spacing="15.0">
+         <children>
+            <VBox id="settings-list" styleClass="settings-card">
+               <children>
+                      <HBox styleClass="settings-container">
+                          <CheckBox mnemonicParsing="false" styleClass="settings-checkbox" />
+                     <VBox>
+                        <children>
+                                <Label styleClass="settings-label-header" text="Имя" wrapText="true" />
+                           <Label styleClass="settings-label" text="Описание" wrapText="true" />
+                        </children>
+                     </VBox>
+                      </HBox>
+               </children>
+            </VBox>
+            <VBox styleClass="settings-card">
+               <children>
+                  <Label styleClass="settings-header" text="JAVA" />
+                  <HBox spacing="10.0">
+                     <children>
+                           <ComboBox id="javaCombo" prefWidth="240.0" styleClass="combo-box" />
+                           <Text styleClass="javaDesc" text="%runtime.scenes.settings.javaDesc" textOrigin="CENTER" wrappingWidth="323.0" />
+                     </children>
+                  </HBox>
+                    <Label id="javaPath" prefHeight="18.0" prefWidth="568.0" text="C:/Users" />
+                    <Label id="javaError" prefHeight="20.0" prefWidth="290.0" text="%runtime.scenes.settings.javaError" textAlignment="RIGHT" visible="false" />
+               </children>
+            </VBox>
+            <VBox styleClass="settings-card">
+               <children>
+                  <Label styleClass="settings-header" text="CHANGE DIRECTORY" />
+               
+                               <!-- Папка проекта-->
+                   <HBox id="folder" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="624.0">
+                       <!-- Путь к папкам-->
+                       <Hyperlink id="path" focusTraversable="false" maxWidth="1.7976931348623157E308" prefHeight="18.0" text="C:/Users" HBox.hgrow="ALWAYS" />
+               
+                                   <!-- Смена пути-->
+                       <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="435.0" prefHeight="40.0" styleClass="icon-button" text="%runtime.scenes.settings.dirText">
+                           <graphic>
+                               <SVGPath content="M12 6.3999H6.4H5V7.7999V16.1999V17.5999H19V16.1999L19 9.1999V7.7999H17.6H12V6.3999ZM10.6 9.1999H17.6V16.1999H6.4V7.7999H10.6V9.1999ZM14.7998 11.9999H13.4V10.5999H12V11.9999H13.3998V13.3999H14.7998V11.9999ZM14.7998 11.9999H16.1998V10.5999H14.7998L14.7998 11.9999ZM16.1998 13.3999H14.7998V14.7999H16.1998V13.3999ZM13.4 13.3999H12V14.7999H13.4V13.3999Z" styleClass="icon-button-color" />
+                           </graphic>
+                           <tooltip>
+                               <Tooltip id="changedirTooltip" text="%runtime.scenes.settings.changedirTooltip" />
+                           </tooltip>
+                       </Button>
+                   </HBox>
+               </children>
+            </VBox>
+            <VBox styleClass="settings-card">
+               <children>
+                  <Label styleClass="settings-header" text="RAM" />
+                   <Slider id="ramSlider" prefHeight="17.0" prefWidth="589.0" />
+                  <Label id="ramLabel" text="Label" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+     </ScrollPane>
 
     <!-- Подключение стилей-->
     <stylesheets>

@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.settings;
 
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -30,6 +31,7 @@ public class SettingsScene extends AbstractScene {
     private final static long MAX_JAVA_MEMORY_X64 = 32 * 1024;
     private final static long MAX_JAVA_MEMORY_X32 = 1536;
     private Pane componentList;
+    private Pane settingsList;
     private Label ramLabel;
     private Slider ramSlider;
     private RuntimeSettings.ProfileSettingsView profileSettings;
@@ -42,6 +44,7 @@ public class SettingsScene extends AbstractScene {
     @Override
     protected void doInit() {
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
+        settingsList = LookupHelper.lookup(componentList, "#settings-list");
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
             try {
                 if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
@@ -53,13 +56,14 @@ public class SettingsScene extends AbstractScene {
             }
         });
 
-        ramSlider = LookupHelper.lookup(layout, "#ramSlider");
-        ramLabel = LookupHelper.lookup(layout, "#ramLabel");
+        ramSlider = LookupHelper.lookup(componentList, "#ramSlider");
+        ramLabel = LookupHelper.lookup(componentList, "#ramLabel");
         long maxSystemMemory;
         try {
             SystemInfo systemInfo = new SystemInfo();
             maxSystemMemory = (systemInfo.getHardware().getMemory().getTotal() >> 20);
         } catch (Throwable e) {
+            LogHelper.error(e);
             maxSystemMemory = 2048;
         }
         ramSlider.setMax(Math.min(maxSystemMemory, getJavaMaxMemory()));
@@ -81,10 +85,10 @@ public class SettingsScene extends AbstractScene {
                 return null;
             }
         });
-        Hyperlink updateDirLink = LookupHelper.lookup(layout, "#folder", "#path");
+        Hyperlink updateDirLink = LookupHelper.lookup(componentList, "#folder", "#path");
         updateDirLink.setText(DirBridge.dirUpdates.toAbsolutePath().toString());
         updateDirLink.setOnAction((e) -> application.openURL(DirBridge.dirUpdates.toAbsolutePath().toString()));
-        LookupHelper.<ButtonBase>lookup(layout, "#changeDir").setOnAction((e) -> {
+        LookupHelper.<ButtonBase>lookup(componentList, "#changeDir").setOnAction((e) -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle(application.getTranslation("runtime.scenes.settings.dirTitle"));
             directoryChooser.setInitialDirectory(DirBridge.dir.toFile());
@@ -147,7 +151,7 @@ public class SettingsScene extends AbstractScene {
     @Override
     public void reset() {
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
-        javaSelector = new JavaSelectorComponent(application.javaService, layout, profileSettings,
+        javaSelector = new JavaSelectorComponent(application.javaService, componentList, profileSettings,
                                                  application.profilesService.getProfile());
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -170,7 +174,7 @@ public class SettingsScene extends AbstractScene {
             }
         });
         serverButton.enableResetButton(null, (e) -> reset());
-        componentList.getChildren().clear();
+        settingsList.getChildren().clear();
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
         add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
         add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value);
@@ -190,24 +194,25 @@ public class SettingsScene extends AbstractScene {
     }
 
     public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
-        VBox vBox = new VBox();
+        HBox hBox = new HBox();
         CheckBox checkBox = new CheckBox();
+        Label header = new Label();
         Label label = new Label();
-
-        vBox.getChildren().add(checkBox);
-        vBox.getChildren().add(label);
-        vBox.getStyleClass().add("settings-container");
-
-        checkBox.setSelected(value);
-        checkBox.setText(name);
-        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
+        VBox vBox = new VBox();
+        hBox.getStyleClass().add("settings-container");
         checkBox.getStyleClass().add("settings-checkbox");
-
+        header.getStyleClass().add("settings-label-header");
+        label.getStyleClass().add("settings-label");
+        checkBox.setSelected(value);
+        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
+        header.setText(name);
         label.setText(description);
         label.setWrapText(true);
-        label.getStyleClass().add("settings-label");
-
-        componentList.getChildren().add(vBox);
+        vBox.getChildren().add(header);
+        vBox.getChildren().add(label);
+        hBox.getChildren().add(checkBox);
+        hBox.getChildren().add(vBox);
+        settingsList.getChildren().add(hBox);
     }
 
     public void updateRamLabel() {

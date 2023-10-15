@@ -1,7 +1,4 @@
 /*-- Информация сервера --*/
-#leftpanel {
-    -fx-background-color: -fx-glass;
-}
 #serverName {
     -fx-font-weight: bold;
     -fx-font-size: 24px;

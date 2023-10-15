@@ -18,52 +18,19 @@
     -fx-pref-width: 14px;
     -fx-pref-height: 14px;
 }
-.ramtext {
+.settings-header {
     -fx-font-size: 14px;
-    -fx-background-color: -fx-grayD;
+    -fx-font-weight: 800;
 }
-#ramInfo {
-    -fx-font-size: 16px;
-    -fx-text-fill: -fx-grayD;
+.settings-card {
+    -fx-spacing: 10;
 }
-/*-- Чекбоксы --*/
 .settings-container {
-    -fx-background-color: transparent;
-    -fx-padding: 15 0 0 15px;
+    -fx-spacing: 10;
 }
-.settings-checkbox {
-    -fx-fill: -fx-black2C;
+.settings-label-header {
     -fx-font-size: 14px;
-    -fx-font-weight: bold;
-}
-.settings-label {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 12px;
-    -fx-label-padding: 0 20 0 30px;
-}
-/* Смена директорий */
-#folder {
-    -fx-background-color: -fx-gray;
-    -fx-background-radius: 0 0 20 20;
-    -fx-cursor: hand;
-}
-#patch {
-    -fx-font-size: 14px;
-    -fx-fill: -fx-grayD;
-}
-#patch:visited {
-    -fx-font-size: 14px;
-    -fx-fill: -fx-header;
-}
-#changeDir {
-    -fx-font-weight: bold;
-    -fx-font-size: 10px;
-    -fx-text-fill: -fx-header;
-    -fx-background-color: transparent;
-}
-#changeDir:hover,
-#changeDir:pressed {
-    -fx-text-fill: -fx-header-hover;
+    -fx-font-weight: 800;
 }
 /* Описание Java */
 #javaError {
@@ -87,5 +54,13 @@
 #javaSelect>#javaPath {
     -fx-font-size: 10px;
     -fx-fill: -fx-grayD;
+}
+#folder {
+    -fx-background-color: -fx-glass;
+    -fx-background-radius: 5px;
+}
+#changeDir {
+    -fx-background-color: -fx-white;
+    -fx-background-radius: 0 5px 5px 0;
 }
 /*-- DrLeonardo styles refactor --*/
