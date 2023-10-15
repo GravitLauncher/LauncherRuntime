@@ -23,9 +23,10 @@
    <AnchorPane id="leftpanel" layoutX="141.0" layoutY="404.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
 
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Label layoutX="311.0" layoutY="28.0" prefHeight="37.0" prefWidth="559.0" styleClass="scene-header" text="%runtime.scenes.settings.header" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="30.0" />
 
          <!-- Кнопка назад -->
-         <Button id="back" layoutX="21.0" layoutY="26.0" mnemonicParsing="false" styleClass="icon-button">
+         <Button id="back" layoutX="22.0" layoutY="33.0" mnemonicParsing="false" styleClass="icon-button">
              <graphic>
                  <SVGPath content="M16 3H13.5V5.57143H16V3ZM11 5.57145H13.5V8.14288H11V5.57145ZM6 10.7143H8.5V8.14289H11V10.7143H8.5V13.2857H6V10.7143ZM13.5 18.4286H16V21H13.5V18.4286H11V15.8572H13.5V18.4286ZM11 13.2857H8.5V15.8572H11V13.2857Z" styleClass="icon-button-color" />
              </graphic>
@@ -83,7 +84,7 @@
     </AnchorPane>
 
     <!-- Кнопка сервера-->
-    <Pane id="serverButton" layoutX="34.0" layoutY="119.0" prefHeight="340.0" prefWidth="190.0" AnchorPane.leftAnchor="65.0" AnchorPane.topAnchor="148.0" />
+    <Pane id="serverButton" layoutX="34.0" layoutY="119.0" prefHeight="340.0" prefWidth="190.0" AnchorPane.leftAnchor="62.0" AnchorPane.topAnchor="148.0" />
      <ScrollPane id="settingslist" fitToWidth="true" layoutX="300.0" layoutY="130.0" prefHeight="340.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
       <VBox spacing="15.0">
          <children>
@@ -102,7 +103,7 @@
             </VBox>
             <VBox styleClass="settings-card">
                <children>
-                  <Label styleClass="settings-header" text="JAVA" />
+                  <Label styleClass="settings-header" text="%runtime.scenes.settings.header.java" />
                   <HBox spacing="10.0">
                      <children>
                            <ComboBox id="javaCombo" prefWidth="240.0" styleClass="combo-box" />
@@ -115,7 +116,7 @@
             </VBox>
             <VBox styleClass="settings-card">
                <children>
-                  <Label styleClass="settings-header" text="CHANGE DIRECTORY" />
+                  <Label styleClass="settings-header" text="%runtime.scenes.settings.header.changeDirectory" />
                
                                <!-- Папка проекта-->
                    <HBox id="folder" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="624.0">
@@ -136,7 +137,7 @@
             </VBox>
             <VBox styleClass="settings-card">
                <children>
-                  <Label styleClass="settings-header" text="RAM" />
+                  <Label styleClass="settings-header" text="%runtime.scenes.settings.header.ram" />
                    <Slider id="ramSlider" prefHeight="17.0" prefWidth="589.0" />
                   <Label id="ramLabel" text="Label" />
                </children>

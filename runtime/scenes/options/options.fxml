@@ -15,13 +15,13 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Label id="headingDialog" layoutX="51.0" layoutY="39.0" prefHeight="25.0" prefWidth="417.0" text="%runtime.scenes.options.headingOptional" AnchorPane.topAnchor="39.0" />
         <!-- Кнопка назад -->
-        <Button id="back" layoutY="28.0" mnemonicParsing="false" styleClass="icon-button" AnchorPane.leftAnchor="15.0" AnchorPane.topAnchor="30.0">
+        <Button id="back" layoutX="14.0" layoutY="39.0" mnemonicParsing="false" styleClass="icon-button" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="39.0">
             <graphic>
                 <SVGPath content="M16 3H13.5V5.57143H16V3ZM11 5.57145H13.5V8.14288H11V5.57145ZM6 10.7143H8.5V8.14289H11V10.7143H8.5V13.2857H6V10.7143ZM13.5 18.4286H16V21H13.5V18.4286H11V15.8572H13.5V18.4286ZM11 13.2857H8.5V15.8572H11V13.2857Z" styleClass="icon-button-color" />
             </graphic>

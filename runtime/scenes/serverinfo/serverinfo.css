@@ -1,9 +1,4 @@
 /*-- Информация сервера --*/
-#serverName {
-    -fx-font-weight: bold;
-    -fx-font-size: 24px;
-    -fx-text-color: -fx-black2C;
-}
 #serverDescription {
     -fx-font-style: normal;
     -fx-font-weight: normal;

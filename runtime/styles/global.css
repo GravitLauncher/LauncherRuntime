@@ -37,6 +37,11 @@ RadioButton {
 #leftpanel {
     -fx-background-color: -fx-glass;
 }
+.scene-header {
+    -fx-font-weight: bold;
+    -fx-font-size: 24px;
+    -fx-text-color: -fx-black2C;
+}
 /*-- Вид блоков --*/
 .blocks {
     -fx-padding: 10px;
