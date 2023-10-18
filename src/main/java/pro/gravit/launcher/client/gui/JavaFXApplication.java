@@ -328,7 +328,6 @@ public class JavaFXApplication extends Application {
 
     public void saveSettings() throws IOException {
         settingsManager.saveConfig();
-        settingsManager.saveHDirStore();
         if (profilesService != null) {
             try {
                 profilesService.saveAll();
