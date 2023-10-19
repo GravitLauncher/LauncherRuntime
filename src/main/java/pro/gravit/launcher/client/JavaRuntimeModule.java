@@ -67,7 +67,7 @@ public class JavaRuntimeModule extends LauncherModule {
     public static void noEnFSAlert() {
         String message = """
                 Запуск лаунчера невозможен из-за ошибки расшифровки рантайма.
-                Установите Java 17 с поддержкой JavaFX для исправления этой проблемы
+                Администраторам: установите библиотеку EnFS для исправления этой проблемы
                 """;
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }

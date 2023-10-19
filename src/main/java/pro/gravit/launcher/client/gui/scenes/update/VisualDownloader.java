@@ -33,7 +33,7 @@ public class VisualDownloader {
     private final AtomicLong lastUpdateTime = new AtomicLong(0);
     private final AtomicLong lastDownloaded = new AtomicLong(0);
 
-    private AtomicLong totalSize = new AtomicLong();
+    private final AtomicLong totalSize = new AtomicLong();
     private volatile Downloader downloader;
 
     private final ProgressBar progressBar;
@@ -42,11 +42,12 @@ public class VisualDownloader {
 
     private final Consumer<Throwable> errorHandle;
     private final Consumer<String> addLog;
+    private final Consumer<UpdateScene.DownloadStatus> updateStatus;
 
     private final ExecutorService executor;
 
     public VisualDownloader(JavaFXApplication application, ProgressBar progressBar, Label speed, Label volume,
-            Consumer<Throwable> errorHandle, Consumer<String> addLog) {
+            Consumer<Throwable> errorHandle, Consumer<String> addLog, Consumer<UpdateScene.DownloadStatus> updateStatus) {
         this.application = application;
         this.progressBar = progressBar;
         this.speed = speed;
@@ -58,17 +59,21 @@ public class VisualDownloader {
             thread.setDaemon(true);
             return thread;
         }, null, true);
+        this.updateStatus = updateStatus;
     }
 
     public void sendUpdateAssetRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest,
             String assetIndex, Consumer<HashedDir> onSuccess) {
         if (application.offlineService.isOfflineMode()) {
             addLog.accept("Hashing %s".formatted(dirName));
+            updateStatus.accept(UpdateScene.DownloadStatus.HASHING);
             application.workers.submit(() -> {
                 try {
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
+                    updateStatus.accept(UpdateScene.DownloadStatus.COMPLETE);
                     onSuccess.accept(hashedDir);
                 } catch (IOException e) {
+                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                     errorHandle.accept(e);
                 }
             });
@@ -76,19 +81,23 @@ public class VisualDownloader {
         }
         UpdateRequest request = new UpdateRequest(dirName);
         try {
+            updateStatus.accept(UpdateScene.DownloadStatus.REQUEST);
             application.service.request(request).thenAccept(event -> {
                 LogHelper.dev("Start updating %s", dirName);
                 try {
                     downloadAsset(dirName, dir, matcher, digest, assetIndex, onSuccess, event.hdir, event.url);
                 } catch (Exception e) {
+                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                     ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
                 }
             }).exceptionally((error) -> {
+                updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                 ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(error.getCause()));
                 // hide(2500, scene, onError);
                 return null;
             });
         } catch (IOException e) {
+            updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
             errorHandle.accept(e);
         }
     }
@@ -97,11 +106,14 @@ public class VisualDownloader {
             boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
         if (application.offlineService.isOfflineMode()) {
             addLog.accept("Hashing %s".formatted(dirName));
+            updateStatus.accept(UpdateScene.DownloadStatus.HASHING);
             application.workers.submit(() -> {
                 try {
                     HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
+                    updateStatus.accept(UpdateScene.DownloadStatus.COMPLETE);
                     onSuccess.accept(hashedDir);
                 } catch (IOException e) {
+                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                     errorHandle.accept(e);
                 }
             });
@@ -109,19 +121,23 @@ public class VisualDownloader {
         }
         UpdateRequest request = new UpdateRequest(dirName);
         try {
+            updateStatus.accept(UpdateScene.DownloadStatus.REQUEST);
             application.service.request(request).thenAccept(event -> {
                 LogHelper.dev("Start updating %s", dirName);
                 try {
                     download(dirName, dir, matcher, digest, view, optionalsEnabled, onSuccess, event.hdir, event.url);
                 } catch (Exception e) {
+                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                     ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
                 }
             }).exceptionally((error) -> {
+                updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                 ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(error.getCause()));
                 // hide(2500, scene, onError);
                 return null;
             });
         } catch (IOException e) {
+            updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
             errorHandle.accept(e);
         }
     }
@@ -133,6 +149,7 @@ public class VisualDownloader {
                 ? getPathRemapper(view, targetHDir)
                 : new LinkedList<>();
         addLog.accept("Hashing %s".formatted(dirName));
+        updateStatus.accept(UpdateScene.DownloadStatus.HASHING);
         if (!IOHelper.exists(dir)) Files.createDirectories(dir);
 
         HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
@@ -144,9 +161,11 @@ public class VisualDownloader {
         downloadFiles(dir, adds, baseUrl, () -> {
             try {
                 addLog.accept("Delete Extra files %s".formatted(dirName));
+                updateStatus.accept(UpdateScene.DownloadStatus.DELETE);
                 deleteExtraDir(dir, diff.extra, diff.extra.flag);
                 onSuccess.accept(targetHDir);
             } catch (IOException e) {
+                updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                 errorHandle.accept(e);
             }
         });
@@ -167,12 +186,15 @@ public class VisualDownloader {
                 addLog.accept("Downloading %s...".formatted(dirName));
                 downloadFiles(dir, adds, baseUrl, () -> {
                     try {
+                        updateStatus.accept(UpdateScene.DownloadStatus.COMPLETE);
                         onSuccess.accept(assetHDir);
                     } catch (Exception e) {
+                        updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                         errorHandle.accept(e);
                     }
                 });
             } catch (Throwable e) {
+                updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                 errorHandle.accept(e);
             }
         };
@@ -183,6 +205,7 @@ public class VisualDownloader {
             HashedDir.FindRecursiveResult result = targetHDir.findRecursive(assetIndexPath);
             if (!(result.entry instanceof HashedFile)) {
                 addLog.accept("ERROR: assetIndex %s not found".formatted(assetIndex));
+                updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                 errorHandle.accept(new RuntimeException("assetIndex not found"));
                 return;
             }
@@ -202,6 +225,7 @@ public class VisualDownloader {
                         AssetIndexHelper.modifyHashedDir(index, targetHDir);
                         downloadAssetRunnable.accept(targetHDir);
                     } catch (Exception e) {
+                        updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                         errorHandle.accept(e);
                     }
                 });
@@ -211,6 +235,7 @@ public class VisualDownloader {
                     AssetIndexHelper.modifyHashedDir(index, targetHDir);
                     downloadAssetRunnable.accept(targetHDir);
                 } catch (Exception e) {
+                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                     errorHandle.accept(e);
                 }
             }
@@ -235,11 +260,14 @@ public class VisualDownloader {
 
                     }
                 }, executor, application.guiModuleConfig.downloadThreads);
+                updateStatus.accept(UpdateScene.DownloadStatus.DOWNLOAD);
                 downloader.getFuture().thenAccept((e) -> onSuccess.run()).exceptionally((e) -> {
+                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                     ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
                     return null;
                 });
             } catch (Throwable e) {
+                updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
                 ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
             }
         });

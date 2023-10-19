@@ -1,6 +1,5 @@
 package pro.gravit.launcher.client.gui;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
@@ -226,14 +225,7 @@ public class SkinManager {
 
     private static Image convertToFxImage(BufferedImage image) {
         if (image == null) return null;
-        try {
-            return SwingFXUtils.toFXImage(image, null);
-        } catch (Throwable e) {
-            if (LogHelper.isDebugEnabled()) {
-                LogHelper.error(e);
-            }
-            return convertToFxImageJava8(image);
-        }
+        return convertToFxImageJava8(image);
     }
 
     private static Image convertToFxImageJava8(BufferedImage image) {

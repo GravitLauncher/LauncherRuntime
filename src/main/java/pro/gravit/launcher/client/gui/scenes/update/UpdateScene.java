@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.scenes.update;
 
 import javafx.scene.control.*;
+import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
@@ -10,6 +11,8 @@ import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.nio.file.Path;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class UpdateScene extends AbstractScene {
@@ -20,8 +23,10 @@ public class UpdateScene extends AbstractScene {
     private Button cancel;
     private Label speedtext;
     private Label speederr;
+    private Pane speedon;
 
     private VisualDownloader downloader;
+    private volatile DownloadStatus downloadStatus = DownloadStatus.COMPLETE;
 
     public UpdateScene(JavaFXApplication application) {
         super("scenes/update/update.fxml", application);
@@ -32,17 +37,18 @@ public class UpdateScene extends AbstractScene {
         progressBar = LookupHelper.lookup(layout, "#progress");
         speed = LookupHelper.lookup(layout, "#speed");
         speederr = LookupHelper.lookup(layout, "#speedErr");
+        speedon = LookupHelper.lookup(layout, "#speedOn");
         speedtext = LookupHelper.lookup(layout, "#speed-text");
         cancel = LookupHelper.lookup(layout, "#cancel");
         volume = LookupHelper.lookup(layout, "#volume");
         logOutput = LookupHelper.lookup(layout, "#outputUpdate");
         logOutput.setText("");
         downloader = new VisualDownloader(application, progressBar, speed, volume, this::errorHandle,
-                                          (log) -> contextHelper.runInFxThread(() -> addLog(log)));
+                                          (log) -> contextHelper.runInFxThread(() -> addLog(log)), this::onUpdateStatus);
         LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction((e) -> {
-            if (downloader.isDownload()) {
+            if (downloadStatus == DownloadStatus.DOWNLOAD && downloader.isDownload()) {
                 downloader.cancel();
-            } else {
+            } else if(downloadStatus == DownloadStatus.ERROR || downloadStatus == DownloadStatus.COMPLETE) {
                 try {
                     switchScene(application.gui.serverInfoScene);
                 } catch (Exception exception) {
@@ -50,6 +56,11 @@ public class UpdateScene extends AbstractScene {
                 }
             }
         });
+    }
+
+    private void onUpdateStatus(DownloadStatus newStatus) {
+        this.downloadStatus = newStatus;
+        LogHelper.debug("Update download status: %s", newStatus.toString());
     }
 
     public void sendUpdateAssetRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest,
@@ -74,28 +85,31 @@ public class UpdateScene extends AbstractScene {
         volume.setText("");
         speed.setText("0");
         cancel.setDisable(false);
-        cancel.setStyle("-fx-opacity: 1");
         progressBar.getStyleClass().removeAll("progress");
         speed.getStyleClass().removeAll("speedError");
-        speed.setStyle("-fx-opacity: 1");
-        speedtext.setStyle("-fx-opacity: 1");
-        speederr.setStyle("-fx-opacity: 0");
+        speederr.setVisible(false);
+        speedon.setVisible(true);
     }
 
     @Override
     public void errorHandle(Throwable e) {
+        if(e instanceof CompletionException) {
+            e = e.getCause();
+        }
         addLog("Exception %s: %s".formatted(e.getClass(), e.getMessage() == null ? "" : e.getMessage()));
         progressBar.getStyleClass().add("progressError");
-        speed.setStyle("-fx-opacity: 0");
-        speedtext.setStyle("-fx-opacity: 0");
-        speederr.setStyle("-fx-opacity: 1");
+        speederr.setVisible(true);
+        speedon.setVisible(false);
         LogHelper.error(e);
         cancel.setDisable(true);
-        cancel.setStyle("-fx-opacity: 0");
     }
 
     @Override
     public String getName() {
         return "update";
+    }
+
+    public enum DownloadStatus {
+        ERROR, HASHING, REQUEST, DOWNLOAD, COMPLETE, DELETE
     }
 }
