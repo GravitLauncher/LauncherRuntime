@@ -111,7 +111,6 @@
                      </children>
                   </HBox>
                     <Label id="javaPath" prefHeight="18.0" prefWidth="568.0" text="C:/Users" />
-                    <Label id="javaError" prefHeight="20.0" prefWidth="290.0" text="%runtime.scenes.settings.javaError" textAlignment="RIGHT" visible="false" />
                </children>
             </VBox>
             <VBox styleClass="settings-card">

@@ -14,7 +14,6 @@ import pro.gravit.utils.helper.LogHelper;
 public class JavaSelectorComponent {
     private final ComboBox<JavaHelper.JavaVersion> comboBox;
     private final Label javaPath;
-    private final Label javaError;
     private final RuntimeSettings.ProfileSettingsView profileSettings;
     private final ClientProfile profile;
     private final JavaService javaService;
@@ -25,7 +24,6 @@ public class JavaSelectorComponent {
         this.profile = profile;
         comboBox.getItems().clear();
         javaPath = LookupHelper.lookup(layout, "#javaPath");
-        javaError = LookupHelper.lookup(layout, "#javaError");
         this.profileSettings = profileSettings;
         this.javaService = javaService;
         comboBox.setConverter(new JavaVersionConverter(profile));
