@@ -9,6 +9,7 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.events.request.AssetUploadInfoRequestEvent;
 import pro.gravit.launcher.profiles.Texture;
 import pro.gravit.launcher.request.Request;
+import pro.gravit.launcher.request.RequestException;
 import pro.gravit.launcher.request.cabinet.GetAssetUploadUrl;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
@@ -129,13 +130,20 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                         application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
                                                         application.gui.serverMenuScene.resetAvatar();
                                                         application.gui.serverInfoScene.resetAvatar();
+                                                        contextHelper.runInFxThread(() -> {
+                                                            application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
+                                                        });
                                                     } catch (IOException ex) {
                                                         errorHandle(ex);
                                                     }
+                                                } else {
+                                                    try(Reader reader = new InputStreamReader(new ByteArrayInputStream(response.body()))) {
+                                                        UploadError error = Launcher.gsonManager.gson.fromJson(reader, UploadError.class);
+                                                        errorHandle(new RequestException(error.error));
+                                                    } catch (Exception ex) {
+                                                        errorHandle(ex);
+                                                    }
                                                 }
-                                                contextHelper.runInFxThread(() -> {
-                                                    application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
-                                                });
                 }).exceptionally((th) -> {
                     errorHandle(th);
                     return null;
@@ -159,34 +167,17 @@ public class UploadAssetOverlay extends CenterOverlay {
 
     }
 
-    public static final class UserTexture {
-        private final String url;
-        private final String digest;
-        private final Map<String, String> metadata;
-
-        public UserTexture(String url, String digest, Map<String, String> metadata) {
-            this.url = url;
-            this.digest = digest;
-            this.metadata = metadata;
-        }
-
-        Texture toLauncherTexture() {
-                return new Texture(url, SecurityHelper.fromHex(digest), metadata);
-            }
-
-        public String url() {
-            return url;
-        }
-
-        public String digest() {
-            return digest;
-        }
-
-        public Map<String, String> metadata() {
-            return metadata;
-        }
+    public record UploadError(String error) {
 
     }
+
+    public record UserTexture(String url, String digest, Map<String, String> metadata) {
+
+        Texture toLauncherTexture() {
+            return new Texture(url, SecurityHelper.fromHex(digest), metadata);
+        }
+
+        }
 
     @Override
     public void reset() {
