@@ -22,10 +22,11 @@
     -fx-background-color: -fx-violetTr;
     -fx-background-radius: 10px;
     -fx-text-fill: -fx-black2C;
-    -fx-padding: 0px 5px 0px 5px;
+    -fx-padding: 2px 5px 2px 5px;
 }
 .optional-library-container {
     -fx-spacing: 10;
+    -fx-padding: 0 20 0 30px;
 }
 #tabPane {
     -fx-tab-min-height: 40px;
