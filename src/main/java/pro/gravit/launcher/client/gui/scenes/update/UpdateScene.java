@@ -84,7 +84,6 @@ public class UpdateScene extends AbstractScene {
         logOutput.clear();
         volume.setText("");
         speed.setText("0");
-        cancel.setDisable(false);
         progressBar.getStyleClass().removeAll("progress");
         speed.getStyleClass().removeAll("speedError");
         speederr.setVisible(false);
@@ -101,7 +100,6 @@ public class UpdateScene extends AbstractScene {
         speederr.setVisible(true);
         speedon.setVisible(false);
         LogHelper.error(e);
-        cancel.setDisable(true);
     }
 
     @Override
