@@ -36,6 +36,6 @@ public class RuntimeDialogService implements DialogService.DialogServiceNotifica
 
     @Override
     public void createNotification(NotificationEvent.NotificationType type, String head, String message) {
-        messageManager.createNotification(head, message, false);
+        messageManager.createNotification(head, message);
     }
 }
