@@ -15,6 +15,7 @@
     -fx-glass-hover: rgba(178, 178, 178, 0.28);
     -fx-grayD: #94A1A8;
     -fx-grayA: #A4B3BA;
+    -fx-grayATr: rgba(164, 179, 186, 0.24);
     -fx-bg2: #FAFAFF;
     -fx-red: #FF6F80;
     -fx-red-hover: #FF6F80;
@@ -22,6 +23,7 @@
     -fx-gray: #F2F2F2;
     -fx-violet: #6B36FF;
     -fx-violet-hover: linear-gradient(to bottom right, #8D4CE0 0%, #5711FA 100%);
+    -fx-violetTr: rgba(107, 54, 255, 0.18);
     -fx-header: #A4B3BA;
     -fx-header-hover: #D0D6D9;
     -fx-violetGR: linear-gradient(#8D4CE0 10.39%, #5D35B9 68.07%, #FAFAFF 68.07%);

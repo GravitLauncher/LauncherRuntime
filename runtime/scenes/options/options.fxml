@@ -4,12 +4,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.shape.SVGPath?>
 
 <!-- DrLeonardo refactor -->
@@ -80,11 +80,20 @@
 
     <!-- Кнопка сервера-->
     <Pane id="serverButton" layoutX="34.0" layoutY="119.0" prefHeight="340.0" prefWidth="190.0" AnchorPane.leftAnchor="62.0" AnchorPane.topAnchor="148.0" />
-    <ScrollPane id="optionslist" fitToWidth="true" layoutX="300.0" layoutY="130.0" prefHeight="340.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
-      <content>
-         <VBox prefHeight="200.0" prefWidth="100.0" />
-      </content>
-    </ScrollPane>
+   <TabPane id="tabPane" layoutX="323.0" layoutY="118.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="320.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="100.0">
+      <tabs>
+         <Tab text="Test Tab">
+           <content>
+             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+           </content>
+         </Tab>
+         <Tab text="Test Tab 2">
+            <content>
+               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+         </Tab>
+      </tabs>
+   </TabPane>
 
     <!-- Подключение стилей-->
     <stylesheets>

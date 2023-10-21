@@ -1,10 +1,9 @@
 package pro.gravit.launcher.client.gui.scenes.options;
 
+import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -20,7 +19,8 @@ import java.util.*;
 import java.util.function.Consumer;
 
 public class OptionsScene extends AbstractScene {
-    private Pane componentList;
+    private TabPane tabPane;
+    private final Map<String, Tab> tabs = new HashMap<>();
     private OptionalView optionalView;
 
     public OptionsScene(JavaFXApplication application) {
@@ -29,7 +29,7 @@ public class OptionsScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
+        tabPane = LookupHelper.lookup(layout, "#tabPane");
     }
 
     @Override
@@ -48,11 +48,13 @@ public class OptionsScene extends AbstractScene {
             }
         });
         serverButton.enableResetButton(null, (e) -> {
-            componentList.getChildren().clear();
+            tabPane.getTabs().clear();
+            tabs.clear();
             application.profilesService.setOptionalView(profile, new OptionalView(profile));
             addProfileOptionals(application.profilesService.getOptionalView());
         });
-        componentList.getChildren().clear();
+        tabPane.getTabs().clear();
+        tabs.clear();
         LookupHelper.<Button>lookupIfPossible(header, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverInfoScene);
@@ -83,20 +85,34 @@ public class OptionsScene extends AbstractScene {
         watchers.clear();
         for (OptionalFile optionalFile : optionalView.all) {
             if (!optionalFile.visible) continue;
+            List<String> libraries = optionalFile.dependencies == null ? List.of() : Arrays.stream(
+                    optionalFile.dependencies).map(OptionalFile::getName).toList();
 
             Consumer<Boolean> setCheckBox =
-                    add(optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
+                    add(optionalFile.category == null ? "GLOBAL" : optionalFile.category, optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
                         optionalFile.subTreeLevel,
                         (isSelected) -> {
                             if (isSelected) optionalView.enable(optionalFile, true, this::callWatcher);
                             else optionalView.disable(optionalFile, this::callWatcher);
-                        });
+                        }, libraries);
             watchers.put(optionalFile, setCheckBox);
         }
     }
 
-    public Consumer<Boolean> add(String name, String description, boolean value, int padding,
-            Consumer<Boolean> onChanged) {
+    public VBox addTab(String name, String displayName) {
+        Tab tab = new Tab();
+        tab.setText(displayName);
+        VBox vbox = new VBox();
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(vbox);
+        tab.setContent(scrollPane);
+        tabs.put(name, tab);
+        tabPane.getTabs().add(tab);
+        return vbox;
+    }
+
+    public Consumer<Boolean> add(String tab, String name, String description, boolean value, int padding,
+            Consumer<Boolean> onChanged, List<String> libraries) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
         Label label = new Label();
@@ -111,7 +127,28 @@ public class OptionsScene extends AbstractScene {
         label.setText(description);
         label.setWrapText(true);
         label.getStyleClass().add("optional-label");
-        componentList.getChildren().add(vBox);
+        if(!libraries.isEmpty()) {
+            HBox hBox = new HBox();
+            hBox.getStyleClass().add("optional-library-container");
+            for(var l : libraries) {
+                Label lib = new Label();
+                lib.setText(l);
+                lib.getStyleClass().add("optional-library");
+                hBox.getChildren().add(lib);
+            }
+            vBox.getChildren().add(hBox);
+        }
+        VBox components;
+        boolean needSelect = tabs.isEmpty();
+        if(tabs.containsKey(tab)) {
+            components = (VBox) ((ScrollPane)tabs.get(tab).getContent()).getContent();
+        } else {
+            components = addTab(tab, application.getTranslation(String.format("runtime.scenes.options.tabs.%s", tab), tab));
+        }
+        components.getChildren().add(vBox);
+        if(needSelect) {
+            tabPane.getSelectionModel().select(0);
+        }
         return checkBox::setSelected;
     }
 
