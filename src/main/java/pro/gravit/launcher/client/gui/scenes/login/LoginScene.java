@@ -212,23 +212,7 @@ public class LoginScene extends AbstractScene {
                 application.runtimeSettings.lastAuth.name) && application.runtimeSettings.oauthAccessToken != null) {
             if (application.runtimeSettings.oauthExpire != 0
                     && application.runtimeSettings.oauthExpire < System.currentTimeMillis()) {
-                RefreshTokenRequest request = new RefreshTokenRequest(authAvailability.name,
-                                                                      application.runtimeSettings.oauthRefreshToken);
-                processing(request, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
-                    application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
-                    application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
-                    application.runtimeSettings.oauthExpire = result.oauth.expire == 0
-                            ? 0
-                            : System.currentTimeMillis() + result.oauth.expire;
-                    Request.setOAuth(authAvailability.name, result.oauth);
-                    AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
-                    LogHelper.info("Login with OAuth AccessToken");
-                    loginWithOAuth(password, authAvailability);
-                }, (error) -> {
-                    application.runtimeSettings.oauthAccessToken = null;
-                    application.runtimeSettings.oauthRefreshToken = null;
-                    contextHelper.runInFxThread(this::loginWithGui);
-                });
+                refreshToken();
                 return true;
             }
             Request.setOAuth(authAvailability.name,
@@ -238,18 +222,42 @@ public class LoginScene extends AbstractScene {
                              application.runtimeSettings.oauthExpire);
             AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
             LogHelper.info("Login with OAuth AccessToken");
-            loginWithOAuth(password, authAvailability);
+            loginWithOAuth(password, authAvailability, true);
             return true;
         }
         return false;
     }
 
+    private void refreshToken() {
+        RefreshTokenRequest request = new RefreshTokenRequest(authAvailability.name,
+                                                              application.runtimeSettings.oauthRefreshToken);
+        processing(request, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
+            application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
+            application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
+            application.runtimeSettings.oauthExpire = result.oauth.expire == 0
+                    ? 0
+                    : System.currentTimeMillis() + result.oauth.expire;
+            Request.setOAuth(authAvailability.name, result.oauth);
+            AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
+            LogHelper.info("Login with OAuth AccessToken");
+            loginWithOAuth(password, authAvailability, false);
+        }, (error) -> {
+            application.runtimeSettings.oauthAccessToken = null;
+            application.runtimeSettings.oauthRefreshToken = null;
+            contextHelper.runInFxThread(this::loginWithGui);
+        });
+    }
+
     private void loginWithOAuth(AuthOAuthPassword password,
-            GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
+            GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability, boolean refreshIfError) {
         AuthRequest authRequest = application.authService.makeAuthRequest(null, password, authAvailability.name);
         processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"),
                    (result) -> contextHelper.runInFxThread(() -> onSuccessLogin(new SuccessAuth(result, null, null))),
                    (error) -> {
+                        if(refreshIfError && error.equals(AuthRequestEvent.OAUTH_TOKEN_EXPIRE)) {
+                            refreshToken();
+                            return;
+                        }
                        if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
                            application.runtimeSettings.oauthAccessToken = null;
                            application.runtimeSettings.oauthRefreshToken = null;
