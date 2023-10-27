@@ -64,7 +64,7 @@ public class ProcessingOverlay extends AbstractOverlay {
                         hide(0, null);
                     }).exceptionally((error) -> {
                         if (onException != null) onException.accept(error);
-                        ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
+                        else ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
                         hide(2500, onError);
                         return null;
                     });
