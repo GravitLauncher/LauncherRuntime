@@ -3,7 +3,6 @@ package pro.gravit.launcher.client.gui.scenes.update;
 import javafx.beans.property.DoubleProperty;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
-import pro.gravit.launcher.AsyncDownloader;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.utils.AssetIndexHelper;
@@ -11,11 +10,11 @@ import pro.gravit.launcher.hasher.FileNameMatcher;
 import pro.gravit.launcher.hasher.HashedDir;
 import pro.gravit.launcher.hasher.HashedEntry;
 import pro.gravit.launcher.hasher.HashedFile;
+import pro.gravit.launcher.modern.Downloader;
 import pro.gravit.launcher.profiles.optional.OptionalView;
 import pro.gravit.launcher.profiles.optional.actions.OptionalAction;
 import pro.gravit.launcher.profiles.optional.actions.OptionalActionFile;
 import pro.gravit.launcher.request.update.UpdateRequest;
-import pro.gravit.utils.Downloader;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -154,7 +153,7 @@ public class VisualDownloader {
 
         HashedDir hashedDir = new HashedDir(dir, matcher, false /* TODO */, digest);
         HashedDir.Diff diff = targetHDir.diff(hashedDir, matcher);
-        final List<AsyncDownloader.SizedFile> adds = getFilesList(dir, pathRemapper, diff.mismatch);
+        final List<Downloader.SizedFile> adds = getFilesList(dir, pathRemapper, diff.mismatch);
 
         LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
         addLog.accept("Downloading %s...".formatted(dirName));
@@ -180,7 +179,7 @@ public class VisualDownloader {
             try {
                 HashedDir hashedDir = new HashedDir(dir, matcher, false, digest);
                 HashedDir.Diff diff = assetHDir.diff(hashedDir, matcher);
-                final List<AsyncDownloader.SizedFile> adds = getFilesList(dir, pathRemapper, diff.mismatch);
+                final List<Downloader.SizedFile> adds = getFilesList(dir, pathRemapper, diff.mismatch);
 
                 LogHelper.info("Diff %d %d", diff.mismatch.size(), diff.extra.size());
                 addLog.accept("Downloading %s...".formatted(dirName));
@@ -217,8 +216,8 @@ public class VisualDownloader {
                 needUpdateIndex = true;
             }
             if (needUpdateIndex) {
-                List<AsyncDownloader.SizedFile> adds = new ArrayList<>(1);
-                adds.add(new AsyncDownloader.SizedFile(assetIndexPath, ((HashedFile) result.entry).size));
+                List<Downloader.SizedFile> adds = new ArrayList<>(1);
+                adds.add(new Downloader.SizedFile(assetIndexPath, ((HashedFile) result.entry).size));
                 downloadFiles(dir, adds, baseUrl, () -> {
                     try {
                         AssetIndexHelper.AssetIndex index = AssetIndexHelper.parse(localAssetIndexPath);
@@ -242,7 +241,7 @@ public class VisualDownloader {
         }
     }
 
-    private void downloadFiles(Path dir, List<AsyncDownloader.SizedFile> adds, String baseUrl,
+    private void downloadFiles(Path dir, List<Downloader.SizedFile> adds, String baseUrl,
             Runnable onSuccess) {
         ContextHelper.runInFxThreadStatic(this::resetProgress).thenAccept((x) -> {
             try {
@@ -280,11 +279,11 @@ public class VisualDownloader {
         progressBar.progressProperty().setValue(0);
     }
 
-    private List<AsyncDownloader.SizedFile> getFilesList(Path dir, LinkedList<PathRemapperData> pathRemapper,
+    private List<Downloader.SizedFile> getFilesList(Path dir, LinkedList<PathRemapperData> pathRemapper,
             HashedDir mismatch) throws IOException {
         totalSize.set(0);
 
-        final List<AsyncDownloader.SizedFile> adds = new ArrayList<>();
+        final List<Downloader.SizedFile> adds = new ArrayList<>();
         mismatch.walk(IOHelper.CROSS_SEPARATOR, (path, name, entry) -> {
             String urlPath = path;
             switch (entry.getType()) {
@@ -299,7 +298,7 @@ public class VisualDownloader {
                         }
                     }
                     Files.deleteIfExists(dir.resolve(path));
-                    adds.add(new AsyncDownloader.SizedFile(urlPath, path, file.size));
+                    adds.add(new Downloader.SizedFile(urlPath, path, file.size));
                 }
                 case DIR -> Files.createDirectories(dir.resolve(path));
             }

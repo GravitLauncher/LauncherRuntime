@@ -59,6 +59,7 @@ repositories {
 
 dependencies {
     implementation "pro.gravit.launcher:launcher-core:5.5.0-SNAPSHOT"
+    implementation "pro.gravit.launcher:launcher-modern-core:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-ws-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-client-api:5.5.0-SNAPSHOT"
     implementation "pro.gravit.launcher:launcher-client-start-api:5.5.0-SNAPSHOT"
