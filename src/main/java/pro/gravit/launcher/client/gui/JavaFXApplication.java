@@ -35,6 +35,7 @@ import pro.gravit.utils.command.BaseCommandCategory;
 import pro.gravit.utils.command.CommandCategory;
 import pro.gravit.utils.command.CommandHandler;
 import pro.gravit.utils.helper.IOHelper;
+import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.FileNotFoundException;
@@ -93,6 +94,9 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void init() throws Exception {
+        if(JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE) {
+            System.setProperty("prism.lcdtext", "false");
+        }
         guiModuleConfig = new GuiModuleConfig();
         settingsManager = new StdSettingsManager();
         UserSettings.providers.register(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.class);
