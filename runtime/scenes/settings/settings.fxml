@@ -123,7 +123,7 @@
                        <Hyperlink id="path" focusTraversable="false" maxWidth="1.7976931348623157E308" prefHeight="18.0" text="C:/Users" HBox.hgrow="ALWAYS" />
                
                                    <!-- Смена пути-->
-                       <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="435.0" prefHeight="40.0" styleClass="icon-button" text="%runtime.scenes.settings.dirText">
+                       <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" layoutX="435.0" minWidth="215.0" prefHeight="40.0" styleClass="icon-button" text="%runtime.scenes.settings.dirText">
                            <graphic>
                                <SVGPath content="M12 6.3999H6.4H5V7.7999V16.1999V17.5999H19V16.1999L19 9.1999V7.7999H17.6H12V6.3999ZM10.6 9.1999H17.6V16.1999H6.4V7.7999H10.6V9.1999ZM14.7998 11.9999H13.4V10.5999H12V11.9999H13.3998V13.3999H14.7998V11.9999ZM14.7998 11.9999H16.1998V10.5999H14.7998L14.7998 11.9999ZM16.1998 13.3999H14.7998V14.7999H16.1998V13.3999ZM13.4 13.3999H12V14.7999H13.4V13.3999Z" styleClass="icon-button-color" />
                            </graphic>
