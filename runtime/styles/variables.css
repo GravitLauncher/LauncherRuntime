@@ -23,6 +23,7 @@
     -fx-gray: #F2F2F2;
     -fx-violet: #6B36FF;
     -fx-violet-hover: linear-gradient(to bottom right, #8D4CE0 0%, #5711FA 100%);
+    -fx-violet-hover2: rgba(210, 208, 225, 0.66);
     -fx-violetTr: rgba(107, 54, 255, 0.18);
     -fx-header: #A4B3BA;
     -fx-header-hover: #D0D6D9;

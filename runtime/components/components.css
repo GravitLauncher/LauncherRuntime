@@ -19,17 +19,16 @@
 #serverButton {
     -fx-background-radius: 20px;
     -fx-cursor: hand;
+    -fx-background-color: -fx-glass;
 }
 #serverButton:hover {
-    -fx-background-color: -fx-glass-hover;
+    -fx-background-color: -fx-violet-hover2;
 }
 #serverButtonSelected,
 #serverButtonPressed {
-    -fx-background-color: -fx-glass-hover;
+    -fx-background-color: -fx-violet-hover2;
 }
-.serverButtonsActive {
-    -fx-background-color: -fx-glass-hover;
-}
+
 /*-- Информация о сервере --*/
 #nameServer {
     -fx-fill: -fx-black2C;
