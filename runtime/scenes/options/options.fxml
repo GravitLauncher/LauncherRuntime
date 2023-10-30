@@ -21,12 +21,12 @@
         <Label layoutX="311.0" layoutY="28.0" prefHeight="37.0" prefWidth="559.0" styleClass="scene-header" text="%runtime.scenes.options.header" AnchorPane.leftAnchor="320.0" AnchorPane.topAnchor="30.0" />
 
         <!-- Кнопка назад -->
-        <Button id="back" layoutX="22.0" layoutY="33.0" mnemonicParsing="false" styleClass="icon-button">
+        <Button id="back" layoutY="29.0" mnemonicParsing="false" prefHeight="24.0" prefWidth="24.0" styleClass="icon-button" AnchorPane.leftAnchor="29.0" AnchorPane.topAnchor="36.0">
             <graphic>
                 <SVGPath content="M16 3H13.5V5.57143H16V3ZM11 5.57145H13.5V8.14288H11V5.57145ZM6 10.7143H8.5V8.14289H11V10.7143H8.5V13.2857H6V10.7143ZM13.5 18.4286H16V21H13.5V18.4286H11V15.8572H13.5V18.4286ZM11 13.2857H8.5V15.8572H11V13.2857Z" styleClass="icon-button-color" />
             </graphic>
             <tooltip>
-                <Tooltip id="backTooltip" text="%runtime.scenes.options.backTooltip" />
+                <Tooltip id="backTooltip" text="%runtime.scenes.serverinfo.backTooltip" />
             </tooltip>
         </Button>
         <!-- Заголовок сцены -->
