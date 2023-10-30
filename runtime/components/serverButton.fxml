@@ -8,7 +8,7 @@
 
 <!-- DrLeonardo refactor -->
 
-<AnchorPane id="serverButton" fx:id="serverButton" prefHeight="350.0" prefWidth="175.0" styleClass="b-20" xmlns="http://javafx.com/javafx/20.0.1-internal" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane id="serverButton" fx:id="serverButton" minWidth="-Infinity" prefHeight="350.0" prefWidth="175.0" styleClass="b-20" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
    <Label id="serverLogo" layoutX="33.0" layoutY="123.0" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
       <Label id="online" alignment="CENTER" minWidth="35.0" prefHeight="35.0" styleClass="online-green" text="?" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="6.0" />
 
