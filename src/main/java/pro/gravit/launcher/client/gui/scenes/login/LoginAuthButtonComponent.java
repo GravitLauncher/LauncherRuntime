@@ -10,8 +10,8 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 public class LoginAuthButtonComponent {
     private final JavaFXApplication application;
     private final Button button;
-    private boolean isDisabled;
     private AuthButtonState state = AuthButtonState.UNACTIVE;
+    private String originalText;
 
     public static enum AuthButtonState {
         ACTIVE("activeButton"), UNACTIVE("unactiveButton"), ERROR("errorButton");
@@ -31,6 +31,7 @@ public class LoginAuthButtonComponent {
         this.application = application;
         this.button = authButton;
         this.button.setOnAction(eventHandler);
+        this.originalText = button.getText();
     }
 
     public AuthButtonState getState() {
@@ -48,6 +49,12 @@ public class LoginAuthButtonComponent {
             button.getStyleClass().remove(this.state.getStyleClass());
         }
         button.getStyleClass().add(state.getStyleClass());
+        if(state == AuthButtonState.ERROR) {
+            button.setText("ERROR");
+        } else if(this.state == AuthButtonState.ERROR) {
+            button.setText(originalText);
+        }
+        this.state = state;
     }
 
     public String getText() {
@@ -56,5 +63,6 @@ public class LoginAuthButtonComponent {
 
     public void setText(String text) {
         button.setText(text);
+        originalText = text;
     }
 }

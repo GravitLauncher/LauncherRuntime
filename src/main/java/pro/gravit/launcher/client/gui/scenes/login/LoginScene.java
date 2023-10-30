@@ -192,7 +192,6 @@ public class LoginScene extends AbstractScene {
         super.errorHandle(e);
         contextHelper.runInFxThread(() -> {
             enable();
-            authButton.setText("ERROR");
             authButton.setState(LoginAuthButtonComponent.AuthButtonState.ERROR);
         });
     }
