@@ -160,6 +160,7 @@ public class LaunchService {
                         final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
                         try {
                             stage.setScene(application.gui.updateScene);
+                            application.gui.updateScene.reset();
                         } catch (Exception e) {
                             future.completeExceptionally(e);
                         }
@@ -184,6 +185,7 @@ public class LaunchService {
                     } else {
                         try {
                             stage.setScene(application.gui.updateScene);
+                            application.gui.updateScene.reset();
                         } catch (Exception e) {
                             future.completeExceptionally(e);
                         }
