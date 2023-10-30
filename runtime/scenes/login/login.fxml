@@ -102,7 +102,7 @@
             </Button>
         </HBox>
     </AnchorPane>
-   <VBox alignment="CENTER_LEFT" layoutX="330.0" layoutY="100.0" pickOnBounds="false" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="412.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+   <VBox alignment="CENTER_LEFT" fillWidth="false" layoutX="330.0" layoutY="100.0" pickOnBounds="false" spacing="10.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="412.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
       <children>
           <StackPane id="content" />
          <Button id="authButton" defaultButton="true" mnemonicParsing="false" prefHeight="20.0" prefWidth="300.0" styleClass="unactiveButton" text="%runtime.scenes.login.goAuth" />
