@@ -132,6 +132,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
 
         @Override
         public void reset() {
+            if(totpField == null) return;
             totpField.setText("");
         }
 

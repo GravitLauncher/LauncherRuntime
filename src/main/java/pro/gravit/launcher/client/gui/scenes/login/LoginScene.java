@@ -200,6 +200,9 @@ public class LoginScene extends AbstractScene {
     @Override
     public void reset() {
         authFlow.reset();
+        for(var e : authMethods.values()) {
+            e.reset();
+        }
     }
 
     @Override

@@ -121,6 +121,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
 
         @Override
         public void reset() {
+            if(login == null) return;
             login.setText("");
         }
 
