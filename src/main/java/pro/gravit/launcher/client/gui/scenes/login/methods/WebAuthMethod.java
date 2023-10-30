@@ -1,8 +1,9 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
@@ -55,7 +56,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         overlay.follow(details.url, details.redirectUrl, (r) -> {
             String code = r;
             LogHelper.debug("Code: %s", code);
-            if(code.startsWith("?code=")) {
+            if (code.startsWith("?code=")) {
                 code = r.substring("?code=".length(), r.indexOf("&"));
             }
             LogHelper.debug("Code: %s", code);
@@ -65,17 +66,24 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     }
 
     @Override
+    public void onAuthClicked() {
+    }
+
+    @Override
+    public void onUserCancel() {
+
+    }
+
+    @Override
     public CompletableFuture<Void> hide() {
         CompletableFuture<Void> future = new CompletableFuture<>();
-        accessor.hideOverlay(10, (r) -> {
-            future.complete(null);
-        });
+        overlay.hide((r) -> future.complete(null));
         return future;
     }
 
     @Override
-    public boolean isSavable() {
-        return false;
+    public boolean isOverlay() {
+        return true;
     }
 
     public static class WebAuthOverlay extends AbstractOverlay {
@@ -92,6 +100,10 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
             return "webView";
         }
 
+        public void hide(EventHandler<ActionEvent> onFinished) {
+            hide(10, onFinished);
+        }
+
         @Override
         protected void doInit() {
             ScrollPane webViewPane = LookupHelper.lookup(layout, "#webview");
@@ -101,7 +113,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
                 if (future != null) {
                     future.completeExceptionally(new UserAuthCanceledException());
                 }
-                accessor.hideOverlay(0, null);
+                hide(null);
             });
         }
 

@@ -33,7 +33,7 @@ public class FXExecutorService implements ExecutorService {
     }
 
     @Override
-    public boolean awaitTermination(long l, TimeUnit timeUnit) throws InterruptedException {
+    public boolean awaitTermination(long l, TimeUnit timeUnit) {
         return false;
     }
 
@@ -53,22 +53,25 @@ public class FXExecutorService implements ExecutorService {
     }
 
     @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection) {
         return null;
     }
 
     @Override
-    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection, long l, TimeUnit timeUnit) throws InterruptedException {
+    public <T> List<Future<T>> invokeAll(Collection<? extends Callable<T>> collection, long l,
+            TimeUnit timeUnit) {
         return null;
     }
 
     @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> collection) throws InterruptedException, ExecutionException {
+    public <T> T invokeAny(
+            Collection<? extends Callable<T>> collection) {
         return null;
     }
 
     @Override
-    public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l, TimeUnit timeUnit) throws InterruptedException, ExecutionException, TimeoutException {
+    public <T> T invokeAny(Collection<? extends Callable<T>> collection, long l,
+            TimeUnit timeUnit) {
         return null;
     }
 

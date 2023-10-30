@@ -16,7 +16,8 @@ public class ApplyDialog extends AbstractDialog {
     private Label textHeader;
     private Label textDescription;
 
-    public ApplyDialog(JavaFXApplication application, String header, String text, Runnable onAccept, Runnable onDeny, Runnable onClose) {
+    public ApplyDialog(JavaFXApplication application, String header, String text, Runnable onAccept, Runnable onDeny,
+            Runnable onClose) {
         super("dialogs/apply/dialog.fxml", application);
         this.header = header;
         this.text = text;
@@ -27,14 +28,12 @@ public class ApplyDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if (isInit())
-            textDescription.setText(text);
+        if (isInit()) textDescription.setText(text);
     }
 
     public void setText(String text) {
         this.text = text;
-        if (isInit())
-            textHeader.setText(header);
+        if (isInit()) textHeader.setText(header);
     }
 
     @Override
@@ -43,7 +42,7 @@ public class ApplyDialog extends AbstractDialog {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         textHeader = LookupHelper.lookup(layout, "#headingDialog");
         textDescription = LookupHelper.lookup(layout, "#textDialog");
         textHeader.setText(header);

@@ -14,9 +14,13 @@ public abstract class AbstractAuthMethod<T extends GetAvailabilityAuthRequestEve
 
     public abstract CompletableFuture<LoginScene.LoginAndPasswordResult> auth(T details);
 
+    public abstract void onAuthClicked();
+
+    public abstract void onUserCancel();
+
     public abstract CompletableFuture<Void> hide();
 
-    public abstract boolean isSavable();
+    public abstract boolean isOverlay();
 
     public static class UserAuthCanceledException extends RuntimeException {
         public UserAuthCanceledException() {

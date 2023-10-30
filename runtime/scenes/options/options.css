@@ -1,14 +1,8 @@
-/*-- DrLeonardo styles refactor --*/
-
-@import "../../styles/global.css";
-@import "../../styles/variables.css";
-
 /*-- Вывод данных --*/
 #options-detail {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 20px;
 }
-
 /*-- Чекбоксы --*/
 .optional-container {
     -fx-background-color: transparent;
@@ -23,5 +17,42 @@
     -fx-fill: -fx-black2C;
     -fx-font-size: 12px;
     -fx-label-padding: 0 20 0 30px;
+}
+.optional-library {
+    -fx-background-color: -fx-violetTr;
+    -fx-background-radius: 10px;
+    -fx-text-fill: -fx-black2C;
+    -fx-padding: 2px 5px 2px 5px;
+}
+.optional-library-container {
+    -fx-spacing: 10;
+    -fx-padding: 0 20 0 30px;
+}
+#tabPane {
+    -fx-tab-min-height: 40px;
+    -fx-open-tab-animation: none;
+    -fx-close-tab-animation: none;
+}
+#tabPane .tab-header-background {
+    -fx-background-color: transparent;
+}
+#tabPane .tab:selected {
+    -fx-background-color: transparent, -fx-violet;
+}
+#tabPane .tab {
+    -fx-background-color: transparent, -fx-grayATr;
+    -fx-background-radius: 10px;
+    -fx-background-insets: 0 2.5 0 2.5;
+    -fx-padding: 0px 20px 0px 20px;
+}
+#tabPane .tab .tab-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-black;
+}
+#tabPane .tab:selected .tab-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: 800;
+    -fx-text-fill: -fx-white;
 }
 /*-- DrLeonardo styles refactor --*/

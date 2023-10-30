@@ -2,8 +2,10 @@ package pro.gravit.launcher.client.gui.helper;
 
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherConfig;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.utils.RuntimeCryptedFile;
 import pro.gravit.utils.enfs.EnFS;
+import pro.gravit.utils.enfs.dir.CachedFile;
 import pro.gravit.utils.enfs.dir.FileEntry;
 import pro.gravit.utils.enfs.dir.URLFile;
 import pro.gravit.utils.helper.IOHelper;
@@ -36,14 +38,23 @@ public class EnFSHelper {
     }
 
     public static void initEnFS() throws IOException {
-        if (JVMHelper.JVM_VERSION == 8) {
-            // Java 8 not supported `java.net.spi.URLStreamHandlerProvider`
-            LogHelper.info("Java pkgs: %s", System.getProperty("java.protocol.handler.pkgs"));
-            // Format: {PKG}.{PROTOCOL}.Handler
-            // Result class: pro.gravit.util.enfs.protocol.enfs.Handler
-            System.setProperty("java.protocol.handler.pkgs", "pro.gravit.utils.enfs.protocol");
-        }
         EnFS.main.newDirectory(Paths.get(BASE_DIRECTORY));
+        if(LogHelper.isDevEnabled() || JavaFXApplication.getInstance().isDebugMode()) {
+            EnFS.DEBUG_OUTPUT = new LauncherEnFsDebugOutput();
+        }
+    }
+
+    private static class LauncherEnFsDebugOutput implements EnFS.DebugOutput {
+
+        @Override
+        public void debug(String str) {
+            LogHelper.debug(str);
+        }
+
+        @Override
+        public void debug(String format, Object... args) {
+            LogHelper.debug(format, args);
+        }
     }
 
     public static Path initEnFSDirectory(LauncherConfig config, String theme) throws IOException {
@@ -54,7 +65,7 @@ public class EnFSHelper {
             if (themesCached.contains(theme)) {
                 return enfsDirectory;
             }
-            startThemePrefix = String.format("themes/%s/", theme);
+            startThemePrefix = "themes/%s/".formatted(theme);
             EnFS.main.newDirectory(enfsDirectory);
             themePaths = new HashSet<>();
             // First stage - collect themes path
@@ -97,13 +108,13 @@ public class EnFSHelper {
             entry = new URLFile(Launcher.getResourceURL(name));
         } else {
             String encodedName = "runtime/" + SecurityHelper.toHex(digest);
-            entry = new RuntimeCryptedFile(() -> {
+            entry = new CachedFile(new RuntimeCryptedFile(() -> {
                 try {
                     return IOHelper.newInput(IOHelper.getResourceURL(encodedName));
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            }, SecurityHelper.fromHex(config.runtimeEncryptKey));
+            }, SecurityHelper.fromHex(config.runtimeEncryptKey)));
         }
         return entry;
     }

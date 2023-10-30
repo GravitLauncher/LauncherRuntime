@@ -9,7 +9,8 @@ public class StdSettingsManager extends SettingsManager {
     @Override
     public NewLauncherSettings getDefaultConfig() {
         NewLauncherSettings newLauncherSettings = new NewLauncherSettings();
-        newLauncherSettings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault(new GuiModuleConfig()));
+        newLauncherSettings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME,
+                                             RuntimeSettings.getDefault(new GuiModuleConfig()));
         return newLauncherSettings;
     }
 }

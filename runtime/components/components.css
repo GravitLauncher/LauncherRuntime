@@ -1,8 +1,3 @@
-/*-- DrLeonardo styles refactor --*/
-
-@import "../styles/global.css";
-@import "../styles/variables.css";
-
 /*-- Уведомления --*/
 .text-font-head {
     -fx-text-fill: -fx-black2C;
@@ -16,30 +11,23 @@
 #notificationPane {
     -fx-background-radius: 10px 0px 0px 10px;
 }
-
 /*-- Блок сервера --*/
 .serverButtons {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 20px;
 }
 #serverButton {
     -fx-background-radius: 20px;
     -fx-cursor: hand;
+    -fx-background-color: -fx-glass;
 }
 #serverButton:hover {
-    -fx-background-color: -fx-grayTr-hover;
+    -fx-background-color: -fx-violet-hover2;
 }
 #serverButtonSelected,
 #serverButtonPressed {
-    -fx-background-color: -fx-grayTr-hover;
+    -fx-background-color: -fx-violet-hover2;
 }
-.serverButtonsActive {
-    -fx-background-color: -fx-grayTr-hover;
-}
-#serverLogo {
-    -fx-background-position: center;
-}
-
 
 /*-- Информация о сервере --*/
 #nameServer {
@@ -55,20 +43,16 @@
     -fx-fill: -fx-black2C;
     -fx-font-size: 12px;
 }
-
-
 /*-- Индикатор онлайна --*/
-#block-online {
+.online-green {
     -fx-background-color: -fx-green;
-    -fx-background-radius: 5px;
 }
 #online {
+    -fx-background-radius: 5px;
     -fx-text-fill: -fx-white;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-
-
 /*-- Кнопка сохранить (для всех сцен) --*/
 #save {
     -fx-font-weight: bold;

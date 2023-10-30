@@ -1,13 +1,8 @@
-/*-- DrLeonardo styles refactor --*/
-
-@import "../../styles/global.css";
-@import "../../styles/variables.css";
-
 /*-- Информация о загрузке --*/
 #outputUpdate {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color:  transparent;
     -fx-background-radius: 20px;
-    -fx-fill: fx-black2C;
+    -fx-fill: transparent;
     -fx-padding: 7 0 0 10px;
     -fx-font-size: 12px;
 }
@@ -19,31 +14,32 @@
 #description.error {
     -fx-text-fill: -fx-red;
 }
-
 /*-- Вывод данных --*/
 #update-detail {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-white;
     -fx-background-radius: 20px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 30, 0, 0, 0);
 }
-#update-detail > .speed {
-    -fx-fill: -fx-updateGR;
+.speed {
+    -fx-text-fill: linear-gradient(to right, #7248A7 0%, #2C03A8 100%);
     -fx-text-align: center;
-    -fx-font-size: 18px;
+    -fx-font-size: 48px;
     -fx-font-weight: bold;
 }
-#update-detail > .speed-text {
-    -fx-font-size: 12px;
+.speed-text {
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-#update-detail > .speedError {
-    -fx-fill: -fx-red;
-    -fx-font-size: 18px;
+.speedError {
+    -fx-text-fill: -fx-red;
+    -fx-font-size: 48px;
 }
-
 /* Прогресс бар */
 .progress-bar {
     -fx-indeterminate-bar-flip: false;
     -fx-background-color: -fx-whiteG;
+    -fx-background-radius: 0px 10px 10px 0px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 30, 0, 0, 0);
 }
 .progress-indicator {
     -fx-background-color: transparent;
@@ -51,18 +47,18 @@
 .progress-indicator .indicator {
     -fx-background-color: transparent;
 }
-.progress-bar > .bar {
+.progress-bar>.bar {
     -fx-background-color: -fx-updateGR;
     -fx-background-insets: 0;
     -fx-background-radius: 0;
     -fx-padding: 0;
 }
-.progress-bar > .track {
+.progress-bar>.track {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
     -fx-background-radius: 3px;
 }
-.progressError>.bar{
+.progressError>.bar {
     -fx-background-color: -fx-errorGR;
 }
 .progress-lines {
@@ -73,5 +69,4 @@
     -fx-fill: -fx-gray;
     -fx-font-size: 13px;
 }
-
 /*-- DrLeonardo styles refactor --*/

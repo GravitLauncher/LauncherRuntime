@@ -87,7 +87,12 @@ modules.xml
 .idea/misc.xml
 *.ipr
 Launcher.iws
-
+!/.idea/
+/.idea/*
+!/.idea/codeStyles
+/.idea/codeStyles/*
+!/.idea/codeStyles/codeStyleConfig.xml
+!/.idea/codeStyles/Project.xml
 ### Gradle ###
 .gradle
 .gradle/
@@ -111,4 +116,6 @@ project/target
 ## PVS Studio
 .PVS-Studio/
 ## VS Code
-/.vscode
+!/.vscode
+/.vscode/*
+!/.vscode/launch.json

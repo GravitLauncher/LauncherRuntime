@@ -1,38 +1,26 @@
 package pro.gravit.launcher.client.gui.scenes.options;
 
-import com.google.gson.reflect.TypeToken;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButtonComponent;
+import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
-import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.LogHelper;
 
-import java.io.IOException;
-import java.io.Reader;
-import java.io.Writer;
-import java.lang.reflect.Type;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.function.Consumer;
 
 public class OptionsScene extends AbstractScene {
-    private Pane componentList;
+    private TabPane tabPane;
+    private final Map<String, Tab> tabs = new HashMap<>();
     private OptionalView optionalView;
 
     public OptionsScene(JavaFXApplication application) {
@@ -41,30 +29,32 @@ public class OptionsScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#optionslist").getContent();
+        tabPane = LookupHelper.lookup(layout, "#tabPane");
     }
 
     @Override
     public void reset() {
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        ClientProfile profile = application.stateService.getProfile();
-        ServerButtonComponent serverButton = ServerMenuScene.getServerButton(application, profile);
+        ClientProfile profile = application.profilesService.getProfile();
+        ServerButton serverButton = ServerMenuScene.getServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
         serverButton.enableSaveButton(null, (e) -> {
             try {
-                application.stateService.setOptionalView(profile, optionalView);
+                application.profilesService.setOptionalView(profile, optionalView);
                 switchScene(application.gui.serverInfoScene);
             } catch (Exception exception) {
                 errorHandle(exception);
             }
         });
         serverButton.enableResetButton(null, (e) -> {
-            componentList.getChildren().clear();
-            application.stateService.setOptionalView(profile, new OptionalView(profile));
-            addProfileOptionals(application.stateService.getOptionalView());
+            tabPane.getTabs().clear();
+            tabs.clear();
+            application.profilesService.setOptionalView(profile, new OptionalView(profile));
+            addProfileOptionals(application.profilesService.getOptionalView());
         });
-        componentList.getChildren().clear();
+        tabPane.getTabs().clear();
+        tabs.clear();
         LookupHelper.<Button>lookupIfPossible(header, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverInfoScene);
@@ -94,21 +84,35 @@ public class OptionsScene extends AbstractScene {
         this.optionalView = new OptionalView(view);
         watchers.clear();
         for (OptionalFile optionalFile : optionalView.all) {
-            if (!optionalFile.visible)
-                continue;
+            if (!optionalFile.visible) continue;
+            List<String> libraries = optionalFile.dependencies == null ? List.of() : Arrays.stream(
+                    optionalFile.dependencies).map(OptionalFile::getName).toList();
 
-            Consumer<Boolean> setCheckBox = add(optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
-                    optionalFile.subTreeLevel, (isSelected) -> {
-                        if (isSelected)
-                            optionalView.enable(optionalFile, true, this::callWatcher);
-                        else
-                            optionalView.disable(optionalFile, this::callWatcher);
-                    });
+            Consumer<Boolean> setCheckBox =
+                    add(optionalFile.category == null ? "GLOBAL" : optionalFile.category, optionalFile.name, optionalFile.info, optionalView.enabled.contains(optionalFile),
+                        optionalFile.subTreeLevel,
+                        (isSelected) -> {
+                            if (isSelected) optionalView.enable(optionalFile, true, this::callWatcher);
+                            else optionalView.disable(optionalFile, this::callWatcher);
+                        }, libraries);
             watchers.put(optionalFile, setCheckBox);
         }
     }
 
-    public Consumer<Boolean> add(String name, String description, boolean value, int padding, Consumer<Boolean> onChanged) {
+    public VBox addTab(String name, String displayName) {
+        Tab tab = new Tab();
+        tab.setText(displayName);
+        VBox vbox = new VBox();
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(vbox);
+        tab.setContent(scrollPane);
+        tabs.put(name, tab);
+        tabPane.getTabs().add(tab);
+        return vbox;
+    }
+
+    public Consumer<Boolean> add(String tab, String name, String description, boolean value, int padding,
+            Consumer<Boolean> onChanged, List<String> libraries) {
         VBox vBox = new VBox();
         CheckBox checkBox = new CheckBox();
         Label label = new Label();
@@ -123,76 +127,29 @@ public class OptionsScene extends AbstractScene {
         label.setText(description);
         label.setWrapText(true);
         label.getStyleClass().add("optional-label");
-        componentList.getChildren().add(vBox);
-        return checkBox::setSelected;
-    }
-
-    public void saveAll() throws IOException {
-        List<ClientProfile> profiles = application.stateService.getProfiles();
-        Map<ClientProfile, OptionalView> optionalViewMap = application.stateService.getOptionalViewMap();
-        if (profiles == null)
-            return;
-        Path optionsFile = DirBridge.dir.resolve("options.json");
-        List<OptionalListEntry> list = new ArrayList<>(5);
-        for (ClientProfile clientProfile : profiles) {
-            OptionalListEntry entry = new OptionalListEntry();
-            entry.name = clientProfile.getTitle();
-            entry.profileUUID = clientProfile.getUUID();
-            OptionalView view = optionalViewMap.get(clientProfile);
-            view.all.forEach((optionalFile -> {
-                if (optionalFile.visible) {
-                    boolean isEnabled = view.enabled.contains(optionalFile);
-                    OptionalView.OptionalFileInstallInfo installInfo = view.installInfo.get(optionalFile);
-                    entry.enabled.add(new OptionalListEntryPair(optionalFile, isEnabled, installInfo));
-                }
-            }));
-            list.add(entry);
-        }
-        try (Writer writer = IOHelper.newWriter(optionsFile)) {
-            Launcher.gsonManager.gson.toJson(list, writer);
-        }
-    }
-
-    public void loadAll() throws IOException {
-        List<ClientProfile> profiles = application.stateService.getProfiles();
-        Map<ClientProfile, OptionalView> optionalViewMap = application.stateService.getOptionalViewMap();
-        if (profiles == null)
-            return;
-        Path optionsFile = DirBridge.dir.resolve("options.json");
-        if (!Files.exists(optionsFile))
-            return;
-
-        Type collectionType = new TypeToken<List<OptionalListEntry>>() {
-        }.getType();
-
-        try (Reader reader = IOHelper.newReader(optionsFile)) {
-            List<OptionalListEntry> list = Launcher.gsonManager.gson.fromJson(reader, collectionType);
-            for (OptionalListEntry entry : list) {
-                ClientProfile selectedProfile = null;
-                for (ClientProfile clientProfile : profiles) {
-                    if (entry.profileUUID != null ? entry.profileUUID.equals(clientProfile.getUUID()) : clientProfile.getTitle().equals(entry.name))
-                        selectedProfile = clientProfile;
-                }
-                if (selectedProfile == null) {
-                    LogHelper.warning("Optional: profile %s(%s) not found", entry.name, entry.profileUUID);
-                    continue;
-                }
-                OptionalView view = optionalViewMap.get(selectedProfile);
-                for (OptionalListEntryPair entryPair : entry.enabled) {
-                    try {
-                        OptionalFile file = selectedProfile.getOptionalFile(entryPair.name);
-                        if (file.visible) {
-                            if (entryPair.mark)
-                                view.enable(file, entryPair.installInfo != null && entryPair.installInfo.isManual, null);
-                            else
-                                view.disable(file, null);
-                        }
-                    } catch (Exception exc) {
-                        LogHelper.warning("Optional: in profile %s markOptional mod %s failed", selectedProfile.getTitle(), entryPair.name);
-                    }
-                }
+        if(!libraries.isEmpty()) {
+            HBox hBox = new HBox();
+            hBox.getStyleClass().add("optional-library-container");
+            for(var l : libraries) {
+                Label lib = new Label();
+                lib.setText(l);
+                lib.getStyleClass().add("optional-library");
+                hBox.getChildren().add(lib);
             }
+            vBox.getChildren().add(hBox);
         }
+        VBox components;
+        boolean needSelect = tabs.isEmpty();
+        if(tabs.containsKey(tab)) {
+            components = (VBox) ((ScrollPane)tabs.get(tab).getContent()).getContent();
+        } else {
+            components = addTab(tab, application.getTranslation(String.format("runtime.scenes.options.tabs.%s", tab), tab));
+        }
+        components.getChildren().add(vBox);
+        if(needSelect) {
+            tabPane.getSelectionModel().select(0);
+        }
+        return checkBox::setSelected;
     }
 
     public static class OptionalListEntryPair {
@@ -200,7 +157,8 @@ public class OptionsScene extends AbstractScene {
         public boolean mark;
         public OptionalView.OptionalFileInstallInfo installInfo;
 
-        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled, OptionalView.OptionalFileInstallInfo installInfo) {
+        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled,
+                OptionalView.OptionalFileInstallInfo installInfo) {
             name = optionalFile.name;
             mark = enabled;
             this.installInfo = installInfo;
@@ -217,8 +175,7 @@ public class OptionsScene extends AbstractScene {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
             OptionalListEntry that = (OptionalListEntry) o;
-            return Objects.equals(profileUUID, that.profileUUID) &&
-                    Objects.equals(name, that.name);
+            return Objects.equals(profileUUID, that.profileUUID) && Objects.equals(name, that.name);
         }
 
         @Override

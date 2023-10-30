@@ -1,24 +1,17 @@
-/*-- DrLeonardo styles refactor --*/
-
-@import "../../styles/global.css";
-@import "../../styles/variables.css";
-
 /*-- Вертикальная полоса на главной сцене --*/
-.vline{
-    -fx-background-color: -fx-grayTr;
+.vline {
+    -fx-background-color: -fx-glass;
 }
-
 /*-- Ошибки --*/
-.authButtonError{
+.authButtonError {
     -fx-fill: -fx-red;
 }
-
 /*-- Ввод данных --*/
 #login,
 #password {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
-    -fx-font-size: 14px;
+    -fx-background-color: -fx-glass;
+    -fx-background-radius: 10px;
+    -fx-font-size: 12px;
     -fx-text-fill: -fx-header;
     -fx-font-weight: bold;
     -fx-cursor: text;
@@ -33,7 +26,12 @@
     -fx-font-weight: bold;
     -fx-cursor: text;
 }
-#1st,#2st,#3st,#4st,#5st,#6st {
+#1st,
+#2st,
+#3st,
+#4st,
+#5st,
+#6st {
     -fx-background-color: transparent;
     -fx-background-insets: 0.0 5.0 0.0 5.0;
     -fx-padding: 0;
@@ -41,12 +39,10 @@
     -fx-vgap: 0;
     -fx-background-radius: 0;
 }
-
-
 /*-- Чекбоксы --*/
 #savePassword,
 #autoenter {
-    -fx-font-size: 7pt;
+    -fx-font-size: 12px;
     -fx-background-image: url('../../images/icons/checkbox_off.png');
     -fx-text-fill: -fx-black2C;
 }
@@ -54,13 +50,24 @@
 #autoenter:selected {
     -fx-background-image: url('../../images/icons/checkbox_on.png');
 }
-
 /*-- Метод авторизации --*/
 #authList {
-    -fx-background-color: -fx-grayTr;
+    -fx-background-color: -fx-glass;
     -fx-background-radius: 10px;
 }
-
+/*-- Поля --*/
+#login {
+      -fx-background-image:url('../../images/icons/user.png');
+      -fx-background-repeat: no-repeat;
+      -fx-background-position: left center;
+      -fx-padding: 0 0 0 24px;
+}
+#password, #totp {
+      -fx-background-image:url('../../images/icons/lock.png');
+      -fx-background-repeat: no-repeat;
+      -fx-background-position: left center;
+      -fx-padding: 0 0 0 24px;
+}
 /*-- Ссылки --*/
 .createAccount-text {
     -fx-font-weight: bold;
@@ -95,17 +102,6 @@
 .rectangle {
     -fx-stroke: -fx-black2C;
 }
-
-/*-- Приветствие --*/
-#welcome {
-    -fx-font-size: 12px;
-    -fx-align-items: center;
-}
-#otherWelcome {
-    -fx-font-size: 14px;
-    -fx-text-align: center;
-}
-
 /*-- Веб авторизация --*/
 #webAuth {
     -fx-font-weight: bold;
@@ -114,54 +110,35 @@
     -fx-text-fill: -fx-white;
     -fx-background-color: -fx-green;
 }
-
 /*-- Кнопка входа --*/
-.auth {
-     -fx-fill: -fx-green;
-}
-.auth2fa {
-    -fx-fill: -fx-white;
-}
-.logo {
-    -fx-fill: -fx-black2C;
-}
-#authBorder {
-    -fx-fill: -fx-greenTr;
-}
-#logoBorder {
-    -fx-fill: -fx-grayLTr;
-}
 #authButton {
-    -fx-background-color: transparent;
     -fx-font-weight: bold;
     -fx-font-size: 24px;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-black;
 }
-
-/*-- Надпись названия продукта --*/
-#logoVersion,
-#logoProduct,
-#logoName {
-    -fx-font-size: 10px;
-    -fx-font-weight: bold;
-    -fx-fill: -fx-grayDTr;
+.activeButton {
+    -fx-background-color: -fx-green;
 }
-.logoTextGray {
-    -fx-fill: -fx-grayD !important;
+.activeButton:hover {
+    -fx-background-color: -fx-green-hover;
 }
-
-/*-- Приветствие игрока --*/
-#text-2fa,
-#playerName {
+.unactiveButton {
+    -fx-background-color: -fx-blackCE;
+}
+.unactiveButton:hover {
+    -fx-background-color: -fx-blackCE-hover;
+}
+.errorButton {
+    -fx-background-color: -fx-red;
+}
+.errorButton:hover {
+    -fx-background-color: -fx-red-hover;
+}
+#text-2fa {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
     -fx-align-items: center;
 }
-#welcome {
-    -fx-font-size: 14px;
-    -fx-align-items: center;
-}
-
 /*-- Стилизация radiobutton's--*/
 .radio-button {
     -fx-background-radius: 5px;
@@ -171,8 +148,8 @@
     -fx-font-size: 10px;
     -fx-text-align: left;
 }
-.radio-button > .radio,
-.radio-button:focused > .radio  {
+.radio-button>.radio,
+.radio-button:focused>.radio {
     -fx-background-repeat: no-repeat;
     -fx-background-color: transparent;
     -fx-background-image: url('../../images/icons/checkbox_off.png');
@@ -180,7 +157,7 @@
 }
 .radio-button:selected {
     -fx-background-radius: 5px;
-    -fx-background-color: -fx-grayLDTr;
+    -fx-background-color: -fx-glass;
     -fx-text-fill: -fx-black2C-hover;
 }
 .radio-button .radio:selected {
@@ -192,9 +169,7 @@
     -fx-background-radius: 7px;
     -fx-background-color: -fx-white;
 }
-
 #authRadio {
     -fx-max-width: 99999;
 }
-
 /*-- DrLeonardo styles refactor --*/

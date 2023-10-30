@@ -9,6 +9,7 @@ import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.PlayerProfile;
 import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.auth.AuthRequest;
+import pro.gravit.launcher.request.auth.password.AuthOAuthPassword;
 import pro.gravit.launcher.request.update.ProfilesRequest;
 import pro.gravit.launcher.request.websockets.OfflineRequestService;
 import pro.gravit.utils.helper.SecurityHelper;
@@ -28,10 +29,10 @@ public class OfflineService {
     }
 
     public boolean isAvailableOfflineMode() {
-        if(application.guiModuleConfig.disableOfflineMode) {
+        if (application.guiModuleConfig.disableOfflineMode) {
             return false;
         }
-        if(application.runtimeSettings.profiles != null) {
+        if (application.runtimeSettings.profiles != null) {
             return true;
         }
         return false;
@@ -42,16 +43,35 @@ public class OfflineService {
     }
 
     public static void applyRuntimeProcessors(OfflineRequestService service) {
-        service.registerRequestProcessor(AuthRequest.class, (r) -> {
-            return new AuthRequestEvent(new ClientPermissions(), new PlayerProfile(UUID.nameUUIDFromBytes(r.login.getBytes(StandardCharsets.UTF_8)), r.login, new HashMap<>(), new HashMap<>()),
-                    SecurityHelper.randomStringToken(), "", null, new AuthRequestEvent.OAuthRequestEvent(SecurityHelper.randomStringToken(), null, 0));
-        });
-        service.registerRequestProcessor(ProfilesRequest.class, (r) -> {
-            JavaFXApplication application = JavaFXApplication.getInstance();
-            List<ClientProfile> profileList = application.runtimeSettings.profiles.stream()
-                    .filter(profile -> Files.exists(DirBridge.dirUpdates.resolve(profile.getDir())) && Files.exists(DirBridge.dirUpdates.resolve(profile.getAssetDir())))
-                    .collect(Collectors.toList());
-            return new ProfilesRequestEvent(profileList);
-        });
+        service.registerRequestProcessor(
+                AuthRequest.class, (r) -> {
+                    var permissions = new ClientPermissions();
+                    String login = r.login;
+                    if (login == null && r.password instanceof AuthOAuthPassword oAuthPassword) {
+                        login = oAuthPassword.accessToken;
+                    }
+                    if (login == null) {
+                        login = "Player";
+                    }
+                    return new AuthRequestEvent(
+                            permissions,
+                            new PlayerProfile(
+                                    UUID.nameUUIDFromBytes(login.getBytes(StandardCharsets.UTF_8)), login,
+                                    new HashMap<>(), new HashMap<>()), SecurityHelper.randomStringToken(), "", null,
+                            new AuthRequestEvent.OAuthRequestEvent(
+                                    login, null, 0));
+                });
+        service.registerRequestProcessor(
+                ProfilesRequest.class, (r) -> {
+                    JavaFXApplication application = JavaFXApplication.getInstance();
+                    List<ClientProfile> profileList =
+                            application.runtimeSettings.profiles.stream()
+                                                                .filter(profile -> Files.exists(
+                                                                        DirBridge.dirUpdates.resolve(profile.getDir()))
+                                                                        && Files.exists(DirBridge.dirUpdates.resolve(
+                                                                        profile.getAssetDir())))
+                                                                .collect(Collectors.toList());
+                    return new ProfilesRequestEvent(profileList);
+                });
     }
 }

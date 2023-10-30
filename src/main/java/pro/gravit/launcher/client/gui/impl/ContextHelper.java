@@ -87,14 +87,6 @@ public class ContextHelper {
     final void errorHandling(Throwable e) {
         if (pane != null) {
             pane.errorHandle(e);
-            /*
-            AbstractOverlay currentOverlay = scene.getCurrentOverlay();
-            if (currentOverlay != null) {
-                currentOverlay.errorHandle(e);
-                scene.hideOverlay(2000, null);
-            } else {
-                scene.errorHandle(e);
-            }*/
         }
     }
 

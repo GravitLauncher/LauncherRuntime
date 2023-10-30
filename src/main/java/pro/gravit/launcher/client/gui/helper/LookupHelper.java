@@ -9,14 +9,10 @@ public class LookupHelper {
     @SuppressWarnings("unchecked")
     public static <T extends Node> T lookup(Node node, String... names) {
         Node current = node;
-        if (current == null) {
-            throw new NullPointerException();
-        }
+        if (current == null) throw new NullPointerException();
         for (int i = 0; i < names.length; ++i) {
             current = current.lookup(names[i]);
-            if (current == null) {
-                throw new LookupException(names, i);
-            }
+            if (current == null) throw new LookupException(names, i);
         }
         return (T) current;
     }
@@ -70,11 +66,9 @@ public class LookupHelper {
             StringBuilder stringBuilder = new StringBuilder("Lookup failed ");
             boolean first = true;
             for (int i = 0; i < args.length; ++i) {
-                if (!first)
-                    stringBuilder.append("->");
+                if (!first) stringBuilder.append("->");
                 stringBuilder.append(args[i]);
-                if (i == positionFailed)
-                    stringBuilder.append("(E)");
+                if (i == positionFailed) stringBuilder.append("(E)");
                 first = false;
             }
             return stringBuilder.toString();

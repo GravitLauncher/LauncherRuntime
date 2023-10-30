@@ -40,9 +40,15 @@ public class RuntimeCryptedFile extends FileEntry {
         try {
             cipher = Cipher.getInstance(alg);
             cipher.init(Cipher.DECRYPT_MODE, sKeySpec, iKeySpec);
-        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException e) {
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException |
+                 InvalidAlgorithmParameterException e) {
             throw new IOException(e);
         }
         return new BufferedInputStream(new CipherInputStream(inputStream.get(), cipher));
+    }
+
+    @Override
+    public long getContentLength() {
+        return Long.MAX_VALUE;
     }
 }

@@ -1,6 +1,5 @@
 package pro.gravit.launcher.client.gui;
 
-import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
@@ -25,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SkinManager {
     private static class SkinEntry {
         final URL url;
-        final String imageUrl;
+        final URL avatarUrl;
         SoftReference<Optional<BufferedImage>> imageRef = new SoftReference<>(null);
         SoftReference<Optional<BufferedImage>> avatarRef = new SoftReference<>(null);
         SoftReference<Optional<Image>> fxImageRef = new SoftReference<>(null);
@@ -33,7 +32,12 @@ public class SkinManager {
 
         private SkinEntry(URL url) {
             this.url = url;
-            imageUrl = null;
+            this.avatarUrl = null;
+        }
+
+        public SkinEntry(URL url, URL avatarUrl) {
+            this.url = url;
+            this.avatarUrl = avatarUrl;
         }
 
         synchronized BufferedImage getFullImage() {
@@ -49,9 +53,7 @@ public class SkinManager {
             Optional<Image> result = fxImageRef.get();
             if (result == null) { // It is normal
                 BufferedImage image = getFullImage();
-                if(image == null) {
-                    return null;
-                }
+                if (image == null) return null;
                 result = Optional.ofNullable(convertToFxImage(image));
                 fxImageRef = new SoftReference<>(result);
             }
@@ -61,11 +63,13 @@ public class SkinManager {
         synchronized BufferedImage getHeadImage() {
             Optional<BufferedImage> result = avatarRef.get();
             if (result == null) { // It is normal
-                BufferedImage image = getFullImage();
-                if(image == null) {
-                    return null;
+                if(avatarUrl != null) {
+                    result = Optional.ofNullable(downloadSkin(avatarUrl));
+                } else {
+                    BufferedImage image = getFullImage();
+                    if (image == null) return null;
+                    result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
                 }
-                result = Optional.of(sumBufferedImage(getHeadFromSkinImage(image), getHeadLayerFromSkinImage(image)));
                 avatarRef = new SoftReference<>(result);
             }
             return result.orElse(null);
@@ -75,9 +79,7 @@ public class SkinManager {
             Optional<Image> result = fxAvatarRef.get();
             if (result == null) { // It is normal
                 BufferedImage image = getHeadImage();
-                if(image == null) {
-                    return null;
-                }
+                if (image == null) return null;
                 result = Optional.ofNullable(convertToFxImage(image));
                 fxAvatarRef = new SoftReference<>(result);
             }
@@ -94,6 +96,19 @@ public class SkinManager {
 
     public void addSkin(String username, URL url) {
         map.put(username, new SkinEntry(url));
+    }
+
+    public void addOrReplaceSkin(String username, URL url) {
+        SkinEntry entry = map.get(username);
+        if(entry == null) {
+            map.put(username, new SkinEntry(url));
+        } else {
+            map.put(username, new SkinEntry(url, entry.avatarUrl));
+        }
+    }
+
+    public void addSkinWithAvatar(String username, URL url, URL avatarUrl) {
+        map.put(username, new SkinEntry(url, avatarUrl));
     }
 
     public BufferedImage getSkin(String username) {
@@ -152,9 +167,7 @@ public class SkinManager {
 
     public Image getScaledFxSkinHead(String username, int width, int height) {
         BufferedImage image = getSkinHead(username);
-        if(image == null) {
-            return null;
-        }
+        if (image == null) return null;
         return convertToFxImage(scaleImage(image, width, height));
     }
 
@@ -169,11 +182,15 @@ public class SkinManager {
     }
 
     private static BufferedImage downloadSkin(URL url) {
+        if(url == null) {
+            return null;
+        }
         HttpURLConnection connection = null;
         try {
             connection = (HttpURLConnection) url.openConnection();
             connection.setDoInput(true);
-            connection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36");
+            connection.addRequestProperty("User-Agent",
+                                          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36");
             connection.setConnectTimeout(10000);
             connection.connect();
             try (InputStream input = connection.getInputStream()) {
@@ -208,14 +225,7 @@ public class SkinManager {
 
     private static Image convertToFxImage(BufferedImage image) {
         if (image == null) return null;
-        try {
-            return SwingFXUtils.toFXImage(image, null);
-        } catch (Throwable e) {
-            if (LogHelper.isDebugEnabled()) {
-                LogHelper.error(e);
-            }
-            return convertToFxImageJava8(image);
-        }
+        return convertToFxImageJava8(image);
     }
 
     private static Image convertToFxImageJava8(BufferedImage image) {
@@ -235,8 +245,13 @@ public class SkinManager {
         }
         WritableImage writableImage = new WritableImage(bw, bh);
         DataBufferInt raster = (DataBufferInt) image.getRaster().getDataBuffer();
-        int scan = image.getRaster().getSampleModel() instanceof SinglePixelPackedSampleModel ? ((SinglePixelPackedSampleModel) image.getRaster().getSampleModel()).getScanlineStride() : 0;
-        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied() ? PixelFormat.getIntArgbPreInstance() : PixelFormat.getIntArgbInstance();
+        int scan = image.getRaster()
+                        .getSampleModel() instanceof SinglePixelPackedSampleModel singlePixelPackedSampleModel
+                ? singlePixelPackedSampleModel.getScanlineStride()
+                : 0;
+        PixelFormat<IntBuffer> pf = image.isAlphaPremultiplied()
+                ? PixelFormat.getIntArgbPreInstance()
+                : PixelFormat.getIntArgbInstance();
         writableImage.getPixelWriter().setPixels(0, 0, bw, bh, pf, raster.getData(), raster.getOffset(), scan);
         return writableImage;
     }

@@ -6,20 +6,14 @@ import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.helper.PositionHelper;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
 
 public class NotificationDialog extends AbstractDialog {
-    public static class NotificationSlot {
-        public final Consumer<Double> onScroll;
-        public final double size;
-
-        public NotificationSlot(Consumer<Double> onScroll, double size) {
-            this.onScroll = onScroll;
-            this.size = size;
-        }
+    public record NotificationSlot(Consumer<Double> onScroll, double size) {
     }
 
     private static class NotificationSlotsInfo {
@@ -71,7 +65,7 @@ public class NotificationDialog extends AbstractDialog {
     }
 
     @Override
-    protected void doInit() throws Exception {
+    protected void doInit() {
         textHeader = LookupHelper.lookup(layout, "#notificationHeading");
         textDescription = LookupHelper.lookup(layout, "#notificationText");
         layout.setOnMouseClicked((e) -> {
@@ -115,14 +109,12 @@ public class NotificationDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if (isInit())
-            textHeader.setText(header);
+        if (isInit()) textHeader.setText(header);
     }
 
     public void setText(String text) {
         this.text = text;
-        if (isInit())
-            textDescription.setText(text);
+        if (isInit()) textDescription.setText(text);
     }
 
     @Override
@@ -131,13 +123,15 @@ public class NotificationDialog extends AbstractDialog {
             LogHelper.info("Notification position: using central");
             return super.getOutSceneCoords(bounds);
         }
-        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0, 30 + positionOffset, bounds.getMaxX(), bounds.getMaxY());
+        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0,
+                                        30 + positionOffset, bounds.getMaxX(), bounds.getMaxY());
     }
 
     @Override
     public LookupHelper.Point2D getSceneCoords(Pane root) {
         if (positionInfo == null) return super.getSceneCoords(root);
-        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0, 30 + positionOffset, root.getPrefWidth(), root.getPrefHeight());
+        return PositionHelper.calculate(positionInfo, layout.getPrefWidth(), layout.getPrefHeight(), 0,
+                                        30 + positionOffset, root.getPrefWidth(), root.getPrefHeight());
     }
 
     @Override

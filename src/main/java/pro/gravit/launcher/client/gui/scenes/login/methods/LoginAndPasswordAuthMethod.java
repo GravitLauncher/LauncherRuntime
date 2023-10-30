@@ -1,15 +1,15 @@
 package pro.gravit.launcher.client.gui.scenes.login.methods;
 
-import javafx.scene.control.ButtonBase;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
-import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
+import pro.gravit.launcher.client.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.client.gui.impl.ContextHelper;
 import pro.gravit.launcher.client.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.request.auth.AuthRequest;
 import pro.gravit.launcher.request.auth.details.AuthPasswordDetails;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -21,8 +21,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     public LoginAndPasswordAuthMethod(LoginScene.LoginSceneAccessor accessor) {
         this.accessor = accessor;
         this.application = accessor.getApplication();
-        this.overlay = application.gui.registerOverlay(LoginAndPasswordOverlay.class);
-        this.overlay.accessor = accessor;
+        this.overlay = new LoginAndPasswordOverlay(application);
     }
 
     @Override
@@ -38,7 +37,14 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     public CompletableFuture<Void> show(AuthPasswordDetails details) {
         CompletableFuture<Void> future = new CompletableFuture<>();
         try {
-            accessor.showOverlay(overlay, (e) -> future.complete(null));
+            //accessor.showOverlay(overlay, (e) -> future.complete(null));
+            ContextHelper.runInFxThreadStatic(() -> {
+                accessor.showContent(overlay);
+                future.complete(null);
+            }).exceptionally((th) -> {
+                LogHelper.error(th);
+                return null;
+            });
         } catch (Exception e) {
             accessor.errorHandle(e);
         }
@@ -50,8 +56,8 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         overlay.future = new CompletableFuture<>();
         String login = overlay.login.getText();
         AuthRequest.AuthPasswordInterface password;
-        if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(
-                application.getTranslation("runtime.scenes.login.password.saved"))) {
+        if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(application.getTranslation(
+                "runtime.scenes.login.password.saved"))) {
             password = application.runtimeSettings.password;
             return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(login, password));
         }
@@ -59,27 +65,33 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     @Override
-    public CompletableFuture<Void> hide() {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        accessor.hideOverlay(0, (e) -> future.complete(null));
-        return future;
+    public void onAuthClicked() {
+        overlay.future.complete(overlay.getResult());
     }
 
     @Override
-    public boolean isSavable() {
-        return true;
+    public void onUserCancel() {
+        overlay.future.completeExceptionally(LoginAndPasswordOverlay.USER_AUTH_CANCELED_EXCEPTION);
     }
 
-    public static class LoginAndPasswordOverlay extends AbstractOverlay {
+    @Override
+    public CompletableFuture<Void> hide() {
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public boolean isOverlay() {
+        return false;
+    }
+
+    public class LoginAndPasswordOverlay extends AbstractVisualComponent {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
         private TextField password;
-        private LoginAuthButtonComponent authButton;
-        private LoginScene.LoginSceneAccessor accessor;
         private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
 
         public LoginAndPasswordOverlay(JavaFXApplication application) {
-            super("scenes/login/loginpassword.fxml", application);
+            super("scenes/login/methods/loginpassword.fxml", application);
         }
 
         @Override
@@ -87,40 +99,35 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             return "loginandpassword";
         }
 
+        public LoginScene.LoginAndPasswordResult getResult() {
+            String rawLogin = login.getText();
+            String rawPassword = password.getText();
+            return new LoginScene.LoginAndPasswordResult(rawLogin, application.authService.makePassword(rawPassword));
+        }
+
         @Override
         protected void doInit() {
             login = LookupHelper.lookup(layout, "#login");
             password = LookupHelper.lookup(layout, "#password");
-            authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButtonBlock"), application, e -> {
-                String rawLogin = login.getText();
-                String rawPassword = password.getText();
-                future.complete(new LoginScene.LoginAndPasswordResult(rawLogin, accessor.getAuthService().makePassword(rawPassword)));
-            });
-            LookupHelper.<ButtonBase>lookup(layout, "#header", "#controls", "#exit").setOnAction(e -> {
-                accessor.hideOverlay(0, null);
-                future.completeExceptionally(USER_AUTH_CANCELED_EXCEPTION);
-            });
-            login.textProperty().addListener(l -> {
-                authButton.setActive(!login.getText().isEmpty());
-            });
-            
-            if (application.guiModuleConfig.createAccountURL != null)
-            LookupHelper.<Text>lookup(layout, "#createAccount").setOnMouseClicked((e) ->
-                    application.openURL(application.guiModuleConfig.createAccountURL));
-            if (application.guiModuleConfig.forgotPassURL != null)
-                LookupHelper.<Text>lookup(layout, "#forgotPass").setOnMouseClicked((e) ->
-                        application.openURL(application.guiModuleConfig.forgotPassURL));
-            
+
+            login.textProperty().addListener(l -> accessor.getAuthButton().setState(login.getText().isEmpty()
+                                                                                            ? LoginAuthButtonComponent.AuthButtonState.UNACTIVE
+                                                                                            : LoginAuthButtonComponent.AuthButtonState.ACTIVE));
+
             if (application.runtimeSettings.login != null) {
                 login.setText(application.runtimeSettings.login);
-                authButton.setActive(true);
+                accessor.getAuthButton().setState(LoginAuthButtonComponent.AuthButtonState.ACTIVE);
             } else {
-                authButton.setActive(false);
+                accessor.getAuthButton().setState(LoginAuthButtonComponent.AuthButtonState.UNACTIVE);
             }
             if (application.runtimeSettings.password != null) {
                 password.getStyleClass().add("hasSaved");
                 password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
             }
+        }
+
+        @Override
+        protected void doPostInit() {
 
         }
 
@@ -132,6 +139,16 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             password.setPromptText(application.getTranslation("runtime.scenes.login.password"));
             password.setText("");
             login.setText("");
+        }
+
+        @Override
+        public void disable() {
+
+        }
+
+        @Override
+        public void enable() {
+
         }
     }
 }

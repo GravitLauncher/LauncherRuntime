@@ -3,9 +3,12 @@ package pro.gravit.launcher.client.gui.impl;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.client.gui.overlays.ProcessingOverlay;
+import pro.gravit.launcher.client.gui.overlays.UploadAssetOverlay;
+import pro.gravit.launcher.client.gui.overlays.WelcomeOverlay;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
+import pro.gravit.launcher.client.gui.scenes.internal.BrowserScene;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.client.gui.scenes.serverinfo.ServerInfoScene;
@@ -25,6 +28,8 @@ public class GuiObjectsContainer {
     private final Set<AbstractOverlay> overlays = new HashSet<>();
     private final Set<AbstractScene> scenes = new HashSet<>();
     public ProcessingOverlay processingOverlay;
+    public WelcomeOverlay welcomeOverlay;
+    public UploadAssetOverlay uploadAssetOverlay;
     public UpdateScene updateScene;
     public DebugScene debugScene;
 
@@ -36,6 +41,7 @@ public class GuiObjectsContainer {
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
+    public BrowserScene browserScene;
 
     public GuiObjectsContainer(JavaFXApplication application) {
         this.application = application;
@@ -44,6 +50,8 @@ public class GuiObjectsContainer {
     public void init() {
         loginScene = registerScene(LoginScene.class);
         processingOverlay = registerOverlay(ProcessingOverlay.class);
+        welcomeOverlay = registerOverlay(WelcomeOverlay.class);
+        uploadAssetOverlay = registerOverlay(UploadAssetOverlay.class);
 
         serverMenuScene = registerScene(ServerMenuScene.class);
         serverInfoScene = registerScene(ServerInfoScene.class);
@@ -53,12 +61,13 @@ public class GuiObjectsContainer {
 
         updateScene = registerScene(UpdateScene.class);
         debugScene = registerScene(DebugScene.class);
+        browserScene = registerScene(BrowserScene.class);
     }
 
     public void reload() throws Exception {
         Class<? extends AbstractScene> scene = application.getCurrentScene().getClass();
         ContextHelper.runInFxThreadStatic(() -> {
-            application.getMainStage().stage.setScene(null);
+            application.getMainStage().setScene(null);
             application.resetDirectory();
             overlays.clear();
             scenes.clear();
@@ -93,7 +102,9 @@ public class GuiObjectsContainer {
     @SuppressWarnings("unchecked")
     public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(application);
+            T instance = (T) MethodHandles
+                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
             overlays.add(instance);
             return instance;
         } catch (Throwable e) {
@@ -105,7 +116,9 @@ public class GuiObjectsContainer {
     @SuppressWarnings("unchecked")
     public <T extends AbstractScene> T registerScene(Class<T> clazz) {
         try {
-            T instance = (T) MethodHandles.publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class)).invokeWithArguments(application);
+            T instance = (T) MethodHandles
+                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
             scenes.add(instance);
             return instance;
         } catch (Throwable e) {

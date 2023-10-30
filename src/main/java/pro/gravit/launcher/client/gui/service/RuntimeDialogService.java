@@ -24,17 +24,18 @@ public class RuntimeDialogService implements DialogService.DialogServiceNotifica
     }
 
     @Override
-    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback, Runnable onCloseCallback) {
+    public void showApplyDialog(String header, String text, Runnable onApplyCallback, Runnable onDenyCallback,
+            Runnable onCloseCallback) {
         messageManager.showApplyDialog(header, text, onApplyCallback, onDenyCallback, onCloseCallback, false);
     }
 
     @Override
     public void showTextDialog(String header, Consumer<String> onApplyCallback, Runnable onCloseCallback) {
-        messageManager.showTextDialog(header, onApplyCallback, onCloseCallback, false);
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public void createNotification(NotificationEvent.NotificationType type, String head, String message) {
-        messageManager.createNotification(head, message, false);
+        messageManager.createNotification(head, message);
     }
 }

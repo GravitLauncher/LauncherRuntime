@@ -1,6 +1,6 @@
 package pro.gravit.launcher.client;
+
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.request.Request;
 import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
 import pro.gravit.launcher.request.secure.HardwareReportRequest;
 import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
@@ -26,23 +26,19 @@ public class RuntimeSecurityService {
             }
             byte[] signature = sign(event.verifySecureKey);
             try {
-                application.service.request(new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
-                        .thenAccept((event1) -> {
-                            Request.addExtendedToken("publicKey", event1.extendedToken);
-                            if(event1.hardwareExtendedToken != null) {
-                                Request.addExtendedToken("hardware", event1.hardwareExtendedToken);
-                            }
-                            if (!event1.needHardwareInfo) {
-                                LogHelper.info("Advanced security level success completed");
-                                notifyWaitObject(true);
-                            } else {
-                                doCollectHardwareInfo(!event1.onlyStatisticInfo);
-                            }
-                        }).exceptionally((e) -> {
-                            application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
-                            notifyWaitObject(false);
-                            return null;
-                        });
+                application.service.request(
+                                   new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
+                                   .thenAccept((event1) -> {
+                                       if (!event1.needHardwareInfo) {
+                                           simpleGetHardwareToken();
+                                       } else {
+                                           doCollectHardwareInfo(!event1.onlyStatisticInfo);
+                                       }
+                                   }).exceptionally((e) -> {
+                               application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+                               notifyWaitObject(false);
+                               return null;
+                           });
             } catch (IOException e) {
                 LogHelper.error("VerifySecureLevel failed: %s", e.getMessage());
                 notifyWaitObject(false);
@@ -54,6 +50,22 @@ public class RuntimeSecurityService {
         });
     }
 
+    private void simpleGetHardwareToken() {
+        try {
+            application.service.request(new HardwareReportRequest()).thenAccept((response) -> {
+                LogHelper.info("Advanced security level success completed");
+                notifyWaitObject(true);
+            }).exceptionally((e) -> {
+                application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+                notifyWaitObject(false);
+                return null;
+            });
+        } catch (IOException e) {
+            application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+            notifyWaitObject(false);
+        }
+    }
+
     private void doCollectHardwareInfo(boolean needSerial) {
         CommonHelper.newThread("HardwareInfo Collector Thread", true, () -> {
             try {
@@ -62,7 +74,6 @@ public class RuntimeSecurityService {
                 HardwareReportRequest reportRequest = new HardwareReportRequest();
                 reportRequest.hardware = info;
                 application.service.request(reportRequest).thenAccept((event) -> {
-                    Request.addExtendedToken("hardware", event.extendedToken);
                     LogHelper.info("Advanced security level success completed");
                     notifyWaitObject(true);
                 }).exceptionally((exc) -> {
@@ -85,8 +96,7 @@ public class RuntimeSecurityService {
 
     public boolean getSecurityState() throws InterruptedException {
         synchronized (waitObject) {
-            if (waitObject[0] == null)
-                waitObject.wait(3000);
+            if (waitObject[0] == null) waitObject.wait(3000);
             return waitObject[0];
         }
     }
