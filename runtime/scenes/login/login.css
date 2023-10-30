@@ -9,8 +9,8 @@
 /*-- Ввод данных --*/
 #login,
 #password {
-    -fx-background-color: transparent;
-    -fx-background-radius: 0;
+    -fx-background-color: -fx-glass;
+    -fx-background-radius: 10px;
     -fx-font-size: 14px;
     -fx-text-fill: -fx-header;
     -fx-font-weight: bold;
