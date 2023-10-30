@@ -11,7 +11,7 @@
 #password {
     -fx-background-color: -fx-glass;
     -fx-background-radius: 10px;
-    -fx-font-size: 14px;
+    -fx-font-size: 12px;
     -fx-text-fill: -fx-header;
     -fx-font-weight: bold;
     -fx-cursor: text;
@@ -42,7 +42,7 @@
 /*-- Чекбоксы --*/
 #savePassword,
 #autoenter {
-    -fx-font-size: 7pt;
+    -fx-font-size: 12px;
     -fx-background-image: url('../../images/icons/checkbox_off.png');
     -fx-text-fill: -fx-black2C;
 }
