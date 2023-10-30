@@ -87,7 +87,7 @@
     </AnchorPane>
 
     <!-- Блок списка серверов -->
-    <ScrollPane id="servers" fx:id="serverlist" fitToWidth="true" layoutX="33.0" layoutY="119.0" prefHeight="370.0" prefWidth="836.0" vbarPolicy="NEVER" vmax="0.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="156.0">
+    <ScrollPane id="servers" fx:id="serverlist" fitToWidth="true" layoutX="33.0" layoutY="119.0" prefHeight="370.0" prefWidth="836.0" vbarPolicy="NEVER" vmax="0.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="84.0" AnchorPane.rightAnchor="85.0" AnchorPane.topAnchor="156.0">
         <HBox alignment="CENTER" prefHeight="350.0" spacing="20.0" />
     </ScrollPane>
 
