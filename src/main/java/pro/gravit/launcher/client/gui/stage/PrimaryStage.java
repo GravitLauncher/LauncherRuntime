@@ -16,7 +16,7 @@ public class PrimaryStage extends AbstractStage {
         super(primaryStage);
         primaryStage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
-        stage.setResizable(false);
+        stage.setResizable(true);
         scene.setFill(Color.TRANSPARENT);
         // Icons
         try {
