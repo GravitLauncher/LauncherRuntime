@@ -21,6 +21,11 @@ public class WelcomeOverlay extends AbstractOverlay {
 
     @Override
     protected void doInit() {
+        reset();
+    }
+
+    @Override
+    public void reset() {
         LookupHelper.<Label>lookupIfPossible(layout, "#playerName")
                     .ifPresent((e) -> e.setText(application.authService.getUsername()));
         LookupHelper.<ImageView>lookupIfPossible(layout, "#playerHead").ifPresent((h) -> {
@@ -33,10 +38,5 @@ public class WelcomeOverlay extends AbstractOverlay {
                 LogHelper.warning("Skin head error");
             }
         });
-    }
-
-    @Override
-    public void reset() {
-
     }
 }

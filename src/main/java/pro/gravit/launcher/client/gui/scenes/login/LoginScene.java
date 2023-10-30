@@ -328,9 +328,13 @@ public class LoginScene extends AbstractScene {
                 LogHelper.error(e);
             }
         }
-        contextHelper.runInFxThread(() -> showOverlay(application.gui.welcomeOverlay,
+        contextHelper.runInFxThread(() -> {
+            if(application.gui.welcomeOverlay.isInit()) {
+                application.gui.welcomeOverlay.reset();
+            }
+            showOverlay(application.gui.welcomeOverlay,
                                                       (e) -> application.gui.welcomeOverlay.hide(2000,
-                                                                                                 (f) -> onGetProfiles())));
+                                                                                                 (f) -> onGetProfiles()));});
     }
 
     public void onGetProfiles() {
