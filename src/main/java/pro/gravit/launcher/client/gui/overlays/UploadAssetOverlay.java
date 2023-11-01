@@ -156,6 +156,7 @@ public class UploadAssetOverlay extends CenterOverlay {
     }
 
     public static final class AssetOptions {
+        @LauncherNetworkAPI
         private final boolean modelSlim;
 
         public AssetOptions(boolean modelSlim) {
