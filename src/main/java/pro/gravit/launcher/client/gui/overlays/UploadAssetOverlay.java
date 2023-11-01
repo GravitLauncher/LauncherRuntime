@@ -169,7 +169,7 @@ public class UploadAssetOverlay extends CenterOverlay {
 
     }
 
-    public record UploadError(String error) {
+    public record UploadError(@LauncherNetworkAPI String error) {
 
     }
 
