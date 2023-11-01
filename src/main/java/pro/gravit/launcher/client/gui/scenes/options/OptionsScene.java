@@ -1,6 +1,5 @@
 package pro.gravit.launcher.client.gui.scenes.options;
 
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
@@ -152,35 +151,4 @@ public class OptionsScene extends AbstractScene {
         return checkBox::setSelected;
     }
 
-    public static class OptionalListEntryPair {
-        public String name;
-        public boolean mark;
-        public OptionalView.OptionalFileInstallInfo installInfo;
-
-        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled,
-                OptionalView.OptionalFileInstallInfo installInfo) {
-            name = optionalFile.name;
-            mark = enabled;
-            this.installInfo = installInfo;
-        }
-    }
-
-    public static class OptionalListEntry {
-        public List<OptionalListEntryPair> enabled = new LinkedList<>();
-        public String name;
-        public UUID profileUUID;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            OptionalListEntry that = (OptionalListEntry) o;
-            return Objects.equals(profileUUID, that.profileUUID) && Objects.equals(name, that.name);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(name, profileUUID);
-        }
-    }
 }
