@@ -19,8 +19,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class ServerButton extends AbstractVisualComponent {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
-    private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private static final String SERVER_BUTTON_DEFAULT_IMAGE = "images/servers/example.png";
+    private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
     public ClientProfile profile;
     private Button saveButton;
     private Button resetButton;
@@ -41,7 +41,10 @@ public class ServerButton extends AbstractVisualComponent {
         LookupHelper.<Labeled>lookup(layout, "#nameServer").setText(profile.getTitle());
         LookupHelper.<Labeled>lookup(layout, "#genreServer").setText(profile.getVersion().toString());
         this.serverLogo = LookupHelper.lookup(layout, "#serverLogo");
-        URL logo = application.tryResource(SERVER_BUTTON_DEFAULT_IMAGE);
+        URL logo = application.tryResource(String.format(SERVER_BUTTON_CUSTOM_IMAGE, profile.getUUID().toString()));
+        if(logo == null) {
+            logo = application.tryResource(SERVER_BUTTON_DEFAULT_IMAGE);
+        }
         if(logo != null) {
             this.serverLogo.setBackground(new Background(new BackgroundImage(new Image(logo.toString()),
                                                                              BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
