@@ -4,6 +4,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.stage.FileChooser;
 import pro.gravit.launcher.Launcher;
+import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.events.request.AssetUploadInfoRequestEvent;
@@ -171,7 +172,7 @@ public class UploadAssetOverlay extends CenterOverlay {
 
     }
 
-    public record UserTexture(String url, String digest, Map<String, String> metadata) {
+    public record UserTexture(@LauncherNetworkAPI String url,@LauncherNetworkAPI String digest,@LauncherNetworkAPI Map<String, String> metadata) {
 
         Texture toLauncherTexture() {
             return new Texture(url, SecurityHelper.fromHex(digest), metadata);
