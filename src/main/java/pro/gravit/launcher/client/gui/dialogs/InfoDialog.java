@@ -1,6 +1,7 @@
 package pro.gravit.launcher.client.gui.dialogs;
 
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -12,8 +13,8 @@ public class InfoDialog extends AbstractDialog {
     private final Runnable onAccept;
     private final Runnable onClose;
 
-    private Text textHeader;
-    private Text textDescription;
+    private Label textHeader;
+    private Label textDescription;
 
     public InfoDialog(JavaFXApplication application, String header, String text, Runnable onAccept, Runnable onClose) {
         super("dialogs/info/dialog.fxml", application);
