@@ -3,7 +3,7 @@
     -fx-font-style: normal;
     -fx-font-weight: normal;
     -fx-font-size: 14px;
-    -fx-text-color: -fx-black2C;
+    -fx-text-fill: -fx-black2C;
 }
 /*-- Фон сервера --*/
 #serverImage {

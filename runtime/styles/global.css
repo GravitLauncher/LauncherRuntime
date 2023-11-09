@@ -40,7 +40,7 @@ RadioButton {
 .scene-header {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
-    -fx-text-color: -fx-black2C;
+    -fx-text-fill: -fx-black2C;
 }
 /*-- Вид блоков --*/
 .blocks {
@@ -112,7 +112,7 @@ RadioButton {
     -fx-font-size: 14px;
     -fx-text-fill: -fx-black2C;
 }
-#money {
+#role {
     -fx-font-weight: normal;
     -fx-font-size: 12px;
     -fx-text-fill: -fx-black2C;
@@ -142,7 +142,7 @@ RadioButton {
     -fx-background-radius: 0;
     -fx-padding: 10px;
     -fx-font-size: 12px;
-    -fx-text-color: -fx-black2C;
+    -fx-text-fill: -fx-black2C;
 }
 #output-detail>#output .content,
 #output-detail>#output .content {
