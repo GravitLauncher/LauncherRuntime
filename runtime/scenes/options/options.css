@@ -55,4 +55,8 @@
     -fx-font-weight: 800;
     -fx-text-fill: -fx-white;
 }
+
+#tabPane:focused .tab {
+    -fx-focus-color: transparent;
+}
 /*-- DrLeonardo styles refactor --*/
