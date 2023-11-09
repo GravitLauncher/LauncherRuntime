@@ -7,6 +7,7 @@
 .optional-container {
     -fx-background-color: transparent;
     -fx-padding: 15 0 0 15px;
+    -fx-cursor: hand;
 }
 .optional-checkbox {
     -fx-fill: -fx-black2C;

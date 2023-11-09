@@ -2,6 +2,7 @@ package pro.gravit.launcher.client.gui.scenes.options;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -105,6 +106,7 @@ public class OptionsScene extends AbstractScene {
         VBox vbox = new VBox();
         ScrollPane scrollPane = new ScrollPane();
         scrollPane.setContent(vbox);
+        scrollPane.setFitToWidth(true);
         tab.setContent(scrollPane);
         tabs.put(name, tab);
         tabPane.getTabs().add(tab);
@@ -119,10 +121,20 @@ public class OptionsScene extends AbstractScene {
         vBox.getChildren().add(checkBox);
         vBox.getChildren().add(label);
         VBox.setMargin(vBox, new Insets(0, 0, 0, 30 * --padding));
+        vBox.setOnMouseClicked((e) -> {
+            if(e.getButton() == MouseButton.PRIMARY) {
+                checkBox.setSelected(!checkBox.isSelected());
+                onChanged.accept(checkBox.isSelected());
+            }
+        });
+        vBox.setOnTouchPressed((e) -> {
+            checkBox.setSelected(!checkBox.isSelected());
+            onChanged.accept(checkBox.isSelected());
+        });
         vBox.getStyleClass().add("optional-container");
         checkBox.setSelected(value);
         checkBox.setText(name);
-        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
+        checkBox.setOnAction((e) -> {onChanged.accept(checkBox.isSelected());});
         checkBox.getStyleClass().add("optional-checkbox");
         label.setText(description);
         label.setWrapText(true);
