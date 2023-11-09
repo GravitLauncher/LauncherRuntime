@@ -53,7 +53,6 @@ public class ServerInfoScene extends AbstractScene {
                 if (application.profilesService.getProfile() == null) return;
                 switchScene(application.gui.optionsScene);
                 application.gui.optionsScene.reset();
-                application.gui.optionsScene.addProfileOptionals(application.profilesService.getOptionalView());
             } catch (Exception ex) {
                 errorHandle(ex);
             }

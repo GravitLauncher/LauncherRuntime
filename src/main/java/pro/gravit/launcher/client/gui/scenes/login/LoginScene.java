@@ -344,10 +344,6 @@ public class LoginScene extends AbstractScene {
                    (profiles) -> {
                        application.profilesService.setProfilesResult(profiles);
                        application.runtimeSettings.profiles = profiles.profiles;
-                       for (ClientProfile profile : profiles.profiles) {
-                           application.triggerManager
-                                   .process(profile, application.profilesService.getOptionalView(profile));
-                       }
                        contextHelper.runInFxThread(() -> {
                            application.securityService.startRequest();
                            if (application.gui.optionsScene != null) {

@@ -4,6 +4,7 @@ import com.google.gson.reflect.TypeToken;
 import pro.gravit.launcher.Launcher;
 import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
@@ -20,11 +21,13 @@ import java.nio.file.Path;
 import java.util.*;
 
 public class ProfilesService {
+    private final JavaFXApplication application;
     private List<ClientProfile> profiles;
     private ClientProfile profile;
     private Map<ClientProfile, OptionalView> optionalViewMap;
 
-    public ProfilesService() {
+    public ProfilesService(JavaFXApplication application) {
+        this.application = application;
     }
 
     public Map<ClientProfile, OptionalView> getOptionalViewMap() {
@@ -48,9 +51,14 @@ public class ProfilesService {
         this.profiles.sort(ClientProfile::compareTo);
         if (this.optionalViewMap == null) this.optionalViewMap = new HashMap<>();
         for (ClientProfile profile : profiles) {
+            profile.updateOptionalGraph();
             OptionalView oldView = this.optionalViewMap.get(profile);
             OptionalView newView = oldView != null ? new OptionalView(profile, oldView) : new OptionalView(profile);
             this.optionalViewMap.put(profile, newView);
+        }
+        for (ClientProfile profile : profiles) {
+            application.triggerManager
+                    .process(profile, getOptionalView(profile));
         }
     }
 

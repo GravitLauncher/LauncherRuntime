@@ -61,6 +61,7 @@ public class OptionsScene extends AbstractScene {
                 errorHandle(exception);
             }
         }));
+        addProfileOptionals(application.profilesService.getOptionalView());
     }
 
     @Override
