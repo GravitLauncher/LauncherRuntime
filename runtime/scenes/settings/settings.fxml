@@ -106,7 +106,7 @@
                   <Label styleClass="settings-header" text="%runtime.scenes.settings.header.java" />
                   <HBox spacing="10.0">
                      <children>
-                           <ComboBox id="javaCombo" prefWidth="240.0" styleClass="combo-box" />
+                           <ComboBox id="javaCombo" prefWidth="240.0" />
                            <Text styleClass="javaDesc" text="%runtime.scenes.settings.javaDesc" textOrigin="CENTER" wrappingWidth="323.0" />
                      </children>
                   </HBox>

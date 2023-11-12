@@ -6,6 +6,7 @@ import javafx.scene.image.Image;
 import javafx.stage.Screen;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.dialogs.AbstractDialog;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
@@ -27,6 +28,7 @@ public class DialogStage extends AbstractStage {
         } catch (IOException e) {
             LogHelper.error(e);
         }
+        setClipRadius(DesignConstants.SCENE_CLIP_RADIUS, DesignConstants.SCENE_CLIP_RADIUS);
         setScene(dialog);
         enableMouseDrag(dialog.getLayout());
         Screen screen = Screen.getPrimary();

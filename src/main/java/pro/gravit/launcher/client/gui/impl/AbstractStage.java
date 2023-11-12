@@ -9,8 +9,10 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -37,6 +39,17 @@ public abstract class AbstractStage {
         } catch (IOException e) {
             LogHelper.error(e);
         }
+        {
+        }
+    }
+
+    protected void setClipRadius(double width, double height) {
+        Rectangle rect = new Rectangle(stackPane.getPrefWidth(), stackPane.getPrefHeight());
+        rect.heightProperty().bind(stackPane.heightProperty());
+        rect.widthProperty().bind(stackPane.widthProperty());
+        rect.setArcHeight(height);
+        rect.setArcWidth(width);
+        stackPane.setClip(rect);
     }
 
     public void hide() {
@@ -81,8 +94,9 @@ public abstract class AbstractStage {
             stackPane.getChildren().add(visualComponent.getFxmlRoot());
         } else {
             var old = stackPane.getChildren().get(0);
-            if(old.getEffect() instanceof GaussianBlur) { // TODO: MAY BE BLUR NEW SCENE (?)
+            if(old.getEffect() instanceof GaussianBlur blur) {
                 old.setEffect(null);
+                visualComponent.getFxmlRootPrivate().setEffect(blur);
             }
             stackPane.getChildren().set(0, visualComponent.getFxmlRoot());
         }
@@ -151,8 +165,9 @@ public abstract class AbstractStage {
 
     public void disable() {
         if (disableCounter.incrementAndGet() != 1) return;
+        LogHelper.dev("Disable scene: stack_num: %s | blur: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null");
         Pane layout = (Pane) stackPane.getChildren().get(0);
-        layout.setEffect(new GaussianBlur(20));
+        layout.setEffect(new GaussianBlur(150));
         if (disablePane == null) {
             disablePane = new Pane();
             disablePane.setPrefHeight(layout.getPrefHeight());
@@ -164,6 +179,7 @@ public abstract class AbstractStage {
 
     public void enable() {
         if (disableCounter.decrementAndGet() != 0) return;
+        LogHelper.dev("Enable scene: stack_num: %s | blur: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null");
         Pane layout = (Pane) stackPane.getChildren().get(0);
         layout.setEffect(null);
         disablePane.setVisible(false);

@@ -39,7 +39,7 @@ RadioButton {
 }
 .scene-header {
     -fx-font-weight: bold;
-    -fx-font-size: 24px;
+    -fx-font-size: 20px;
     -fx-text-fill: -fx-black2C;
 }
 /*-- Вид блоков --*/
@@ -133,8 +133,8 @@ RadioButton {
 }
 /*-- Блок вывода --*/
 #output-detail {
-    -fx-background-color: -fx-glass;
-    -fx-background-radius: 20px;
+    -fx-background-color: -fx-scene-card;
+    -fx-background-radius: 15px 15px 0px 0px;
 }
 /* Вывод лога */
 #output-detail>#output {

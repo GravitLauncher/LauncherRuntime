@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.utils.helper.LogHelper;
 
@@ -25,6 +26,7 @@ public class PrimaryStage extends AbstractStage {
         } catch (IOException e) {
             LogHelper.error(e);
         }
+        setClipRadius(DesignConstants.SCENE_CLIP_RADIUS, DesignConstants.SCENE_CLIP_RADIUS);
     }
 
     @Override
