@@ -164,8 +164,9 @@ public abstract class AbstractStage {
     }
 
     public void disable() {
-        if (disableCounter.incrementAndGet() != 1) return;
-        LogHelper.dev("Disable scene: stack_num: %s | blur: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null");
+        var value = disableCounter.incrementAndGet();
+        LogHelper.dev("Disable scene: stack_num: %s | blur: %s | counter: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null", disableCounter.get());
+        if (value != 1) return;
         Pane layout = (Pane) stackPane.getChildren().get(0);
         layout.setEffect(new GaussianBlur(150));
         if (disablePane == null) {
@@ -178,7 +179,8 @@ public abstract class AbstractStage {
     }
 
     public void enable() {
-        if (disableCounter.decrementAndGet() != 0) return;
+        var value = disableCounter.decrementAndGet();
+        if (value != 0) return;
         LogHelper.dev("Enable scene: stack_num: %s | blur: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null");
         Pane layout = (Pane) stackPane.getChildren().get(0);
         layout.setEffect(null);
