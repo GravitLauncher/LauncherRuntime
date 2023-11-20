@@ -39,12 +39,6 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public void init() throws Exception {
         layout = (Pane) LookupHelper.lookupIfPossible(getFxmlRoot(), "#layout").orElse(getFxmlRoot());
-        Rectangle rect = new Rectangle(layout.getPrefWidth(), layout.getPrefHeight());
-        rect.heightProperty().bind(layout.heightProperty());
-        rect.widthProperty().bind(layout.widthProperty());
-        rect.setArcHeight(15);
-        rect.setArcWidth(15);
-        layout.setClip(rect);
         header = (Pane) LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
         sceneBaseInit();
         super.init();

@@ -2,8 +2,9 @@ package pro.gravit.launcher.client.gui.service;
 
 import com.google.gson.reflect.TypeToken;
 import pro.gravit.launcher.Launcher;
+import pro.gravit.launcher.LauncherNetworkAPI;
 import pro.gravit.launcher.client.DirBridge;
-import pro.gravit.launcher.client.gui.scenes.options.OptionsScene;
+import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.events.request.ProfilesRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
@@ -17,17 +18,16 @@ import java.io.Writer;
 import java.lang.reflect.Type;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ProfilesService {
+    private final JavaFXApplication application;
     private List<ClientProfile> profiles;
     private ClientProfile profile;
     private Map<ClientProfile, OptionalView> optionalViewMap;
 
-    public ProfilesService() {
+    public ProfilesService(JavaFXApplication application) {
+        this.application = application;
     }
 
     public Map<ClientProfile, OptionalView> getOptionalViewMap() {
@@ -51,9 +51,14 @@ public class ProfilesService {
         this.profiles.sort(ClientProfile::compareTo);
         if (this.optionalViewMap == null) this.optionalViewMap = new HashMap<>();
         for (ClientProfile profile : profiles) {
+            profile.updateOptionalGraph();
             OptionalView oldView = this.optionalViewMap.get(profile);
             OptionalView newView = oldView != null ? new OptionalView(profile, oldView) : new OptionalView(profile);
             this.optionalViewMap.put(profile, newView);
+        }
+        for (ClientProfile profile : profiles) {
+            application.triggerManager
+                    .process(profile, getOptionalView(profile));
         }
     }
 
@@ -73,9 +78,9 @@ public class ProfilesService {
     public void saveAll() throws IOException {
         if (profiles == null) return;
         Path optionsFile = DirBridge.dir.resolve("options.json");
-        List<OptionsScene.OptionalListEntry> list = new ArrayList<>(5);
+        List<OptionalListEntry> list = new ArrayList<>(5);
         for (ClientProfile clientProfile : profiles) {
-            OptionsScene.OptionalListEntry entry = new OptionsScene.OptionalListEntry();
+            OptionalListEntry entry = new OptionalListEntry();
             entry.name = clientProfile.getTitle();
             entry.profileUUID = clientProfile.getUUID();
             OptionalView view = optionalViewMap.get(clientProfile);
@@ -83,7 +88,7 @@ public class ProfilesService {
                 if (optionalFile.visible) {
                     boolean isEnabled = view.enabled.contains(optionalFile);
                     OptionalView.OptionalFileInstallInfo installInfo = view.installInfo.get(optionalFile);
-                    entry.enabled.add(new OptionsScene.OptionalListEntryPair(optionalFile, isEnabled, installInfo));
+                    entry.enabled.add(new OptionalListEntryPair(optionalFile, isEnabled, installInfo));
                 }
             }));
             list.add(entry);
@@ -98,12 +103,12 @@ public class ProfilesService {
         Path optionsFile = DirBridge.dir.resolve("options.json");
         if (!Files.exists(optionsFile)) return;
 
-        Type collectionType = new TypeToken<List<OptionsScene.OptionalListEntry>>() {
+        Type collectionType = new TypeToken<List<OptionalListEntry>>() {
         }.getType();
 
         try (Reader reader = IOHelper.newReader(optionsFile)) {
-            List<OptionsScene.OptionalListEntry> list = Launcher.gsonManager.gson.fromJson(reader, collectionType);
-            for (OptionsScene.OptionalListEntry entry : list) {
+            List<OptionalListEntry> list = Launcher.gsonManager.gson.fromJson(reader, collectionType);
+            for (OptionalListEntry entry : list) {
                 ClientProfile selectedProfile = null;
                 for (ClientProfile clientProfile : profiles) {
                     if (entry.profileUUID != null
@@ -115,7 +120,7 @@ public class ProfilesService {
                     continue;
                 }
                 OptionalView view = optionalViewMap.get(selectedProfile);
-                for (OptionsScene.OptionalListEntryPair entryPair : entry.enabled) {
+                for (OptionalListEntryPair entryPair : entry.enabled) {
                     try {
                         OptionalFile file = selectedProfile.getOptionalFile(entryPair.name);
                         if (file.visible) {
@@ -130,6 +135,44 @@ public class ProfilesService {
                     }
                 }
             }
+        }
+    }
+
+    public static class OptionalListEntryPair {
+        @LauncherNetworkAPI
+        public String name;
+        @LauncherNetworkAPI
+        public boolean mark;
+        @LauncherNetworkAPI
+        public OptionalView.OptionalFileInstallInfo installInfo;
+
+        public OptionalListEntryPair(OptionalFile optionalFile, boolean enabled,
+                OptionalView.OptionalFileInstallInfo installInfo) {
+            name = optionalFile.name;
+            mark = enabled;
+            this.installInfo = installInfo;
+        }
+    }
+
+    public static class OptionalListEntry {
+        @LauncherNetworkAPI
+        public List<OptionalListEntryPair> enabled = new LinkedList<>();
+        @LauncherNetworkAPI
+        public String name;
+        @LauncherNetworkAPI
+        public UUID profileUUID;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            OptionalListEntry that = (OptionalListEntry) o;
+            return Objects.equals(profileUUID, that.profileUUID) && Objects.equals(name, that.name);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(name, profileUUID);
         }
     }
 }

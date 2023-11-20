@@ -7,6 +7,7 @@
 .optional-container {
     -fx-background-color: transparent;
     -fx-padding: 15 0 0 15px;
+    -fx-cursor: hand;
 }
 .optional-checkbox {
     -fx-fill: -fx-black2C;
@@ -54,5 +55,9 @@
     -fx-font-size: 12px;
     -fx-font-weight: 800;
     -fx-text-fill: -fx-white;
+}
+
+#tabPane:focused .tab {
+    -fx-focus-color: transparent;
 }
 /*-- DrLeonardo styles refactor --*/

@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -52,7 +53,6 @@ public class ServerInfoScene extends AbstractScene {
                 if (application.profilesService.getProfile() == null) return;
                 switchScene(application.gui.optionsScene);
                 application.gui.optionsScene.reset();
-                application.gui.optionsScene.addProfileOptionals(application.profilesService.getOptionalView());
             } catch (Exception ex) {
                 errorHandle(ex);
             }
@@ -73,8 +73,10 @@ public class ServerInfoScene extends AbstractScene {
         avatar.setImage(originalAvatarImage);
         ClientProfile profile = application.profilesService.getProfile();
         LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getTitle()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#serverDescription")
-                    .ifPresent((e) -> e.setText(profile.getInfo()));
+        LookupHelper.<ScrollPane>lookupIfPossible(layout, "#serverDescriptionPane").ifPresent((e) -> {
+            var label = (Label) e.getContent();
+            label.setText(profile.getInfo());
+        });
         LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
                     .ifPresent((e) -> e.setText(application.authService.getUsername()));
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");

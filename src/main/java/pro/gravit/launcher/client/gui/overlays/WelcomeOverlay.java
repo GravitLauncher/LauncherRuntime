@@ -10,6 +10,7 @@ import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
 import pro.gravit.utils.helper.LogHelper;
 
 public class WelcomeOverlay extends AbstractOverlay {
+    private Image originalImage;
     public WelcomeOverlay(JavaFXApplication application) {
         super("overlay/welcome/welcome.fxml", application);
     }
@@ -33,7 +34,14 @@ public class WelcomeOverlay extends AbstractOverlay {
                 JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
                 Image image = application.skinManager.getScaledFxSkinHead(
                         application.authService.getUsername(), (int) h.getFitWidth(), (int) h.getFitHeight());
-                if (image != null) h.setImage(image);
+                if (image != null) {
+                    if(originalImage == null) {
+                        originalImage = h.getImage();
+                    }
+                    h.setImage(image);
+                } else if(originalImage != null) {
+                    h.setImage(originalImage);
+                }
             } catch (Throwable e) {
                 LogHelper.warning("Skin head error");
             }

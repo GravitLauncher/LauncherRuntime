@@ -82,7 +82,6 @@ public class ServerMenuScene extends AbstractScene {
             cache.serverButton = getServerButton(application, profile);
             cache.position = position;
             serverButtonCacheMap.put(profile, cache);
-            profile.updateOptionalGraph();
             position++;
         }
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");

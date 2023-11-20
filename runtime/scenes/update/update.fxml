@@ -21,7 +21,7 @@
     <!-- Навбар -->
     <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <!-- Заголовок сцены -->
-        <Text id="headingDialog" layoutX="26.0" layoutY="51.0" text="%runtime.scenes.update.headingDialog" />
+        <Label layoutX="26.0" styleClass="scene-header" layoutY="51.0" text="%runtime.scenes.update.headingDialog" />
         <!-- Кнопки управления -->
         <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="30.0">
 

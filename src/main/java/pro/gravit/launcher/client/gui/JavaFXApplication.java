@@ -113,7 +113,7 @@ public class JavaFXApplication extends Application {
         service.registerEventHandler(new GuiEventHandler(this));
         authService = new AuthService(this);
         launchService = new LaunchService(this);
-        profilesService = new ProfilesService();
+        profilesService = new ProfilesService(this);
         messageManager = new MessageManager(this);
         securityService = new RuntimeSecurityService(this);
         skinManager = new SkinManager(this);
