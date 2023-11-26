@@ -57,6 +57,7 @@ public class FXMLFactory {
             return null;
         }
         loader.setCharset(IOHelper.UNICODE_CHARSET);
+        loader.setClassLoader(FXMLFactory.class.getClassLoader());
         return loader;
     }
 
