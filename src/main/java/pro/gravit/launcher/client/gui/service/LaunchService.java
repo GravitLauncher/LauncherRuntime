@@ -92,6 +92,9 @@ public class LaunchService {
         }
         clientLauncherProcess.params.fullScreen = profileSettings.fullScreen;
         clientLauncherProcess.params.autoEnter = profileSettings.autoEnter;
+        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
+            clientLauncherProcess.params.lwjglGlfwWayland = profileSettings.waylandSupport;
+        }
         return new ClientInstance(clientLauncherProcess, profile, profileSettings);
     }
 

@@ -178,6 +178,9 @@ public class SettingsScene extends AbstractScene {
         add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
         add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
         add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value);
+        if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
+            add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value);
+        }
     }
 
     @Override

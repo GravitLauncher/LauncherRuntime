@@ -42,7 +42,7 @@ public class InfoDialog extends AbstractDialog {
     @Override
     protected void doInit() {
         textHeader = LookupHelper.lookup(layout, "#headingDialog");
-        textDescription = LookupHelper.lookup(layout, "#dialogDescription");
+        textDescription = LookupHelper.lookup(layout, "#textDialog");
         textHeader.setText(header);
         textDescription.setText(text);
         LookupHelper.<Button>lookup(layout, "#close").setOnAction((e) -> {

@@ -85,6 +85,8 @@ public class RuntimeSettings extends UserSettings {
         public boolean autoEnter;
         @LauncherNetworkAPI
         public String javaPath;
+        @LauncherNetworkAPI
+        public boolean waylandSupport;
 
         public static ProfileSettings getDefault(JavaService javaService, ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
@@ -111,6 +113,7 @@ public class RuntimeSettings extends UserSettings {
         public boolean fullScreen;
         public boolean autoEnter;
         public String javaPath;
+        public boolean waylandSupport;
 
         public ProfileSettingsView(ProfileSettings settings) {
             ram = settings.ram;
@@ -118,6 +121,7 @@ public class RuntimeSettings extends UserSettings {
             fullScreen = settings.fullScreen;
             autoEnter = settings.autoEnter;
             javaPath = settings.javaPath;
+            waylandSupport = settings.waylandSupport;
             this.settings = settings;
         }
 
@@ -127,6 +131,7 @@ public class RuntimeSettings extends UserSettings {
             settings.autoEnter = autoEnter;
             settings.fullScreen = fullScreen;
             settings.javaPath = javaPath;
+            settings.waylandSupport = waylandSupport;
         }
     }
 }
