@@ -1,10 +1,10 @@
 package pro.gravit.launcher.client;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.request.secure.GetSecureLevelInfoRequest;
-import pro.gravit.launcher.request.secure.HardwareReportRequest;
-import pro.gravit.launcher.request.secure.VerifySecureLevelKeyRequest;
-import pro.gravit.launcher.utils.HWIDProvider;
+import pro.gravit.launcher.runtime.utils.HWIDProvider;
+import pro.gravit.launcher.base.request.secure.GetSecureLevelInfoRequest;
+import pro.gravit.launcher.base.request.secure.HardwareReportRequest;
+import pro.gravit.launcher.base.request.secure.VerifySecureLevelKeyRequest;
 import pro.gravit.utils.helper.*;
 
 import java.io.IOException;

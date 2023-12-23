@@ -11,9 +11,9 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
-import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.profiles.optional.OptionalFile;
-import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.base.profiles.ClientProfile;
+import pro.gravit.launcher.base.profiles.optional.OptionalFile;
+import pro.gravit.launcher.base.profiles.optional.OptionalView;
 
 import java.util.*;
 import java.util.function.Consumer;

@@ -5,14 +5,13 @@ import javafx.scene.layout.Pane;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.hasher.FileNameMatcher;
-import pro.gravit.launcher.hasher.HashedDir;
-import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.core.hasher.FileNameMatcher;
+import pro.gravit.launcher.core.hasher.HashedDir;
+import pro.gravit.launcher.base.profiles.optional.OptionalView;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.nio.file.Path;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class UpdateScene extends AbstractScene {

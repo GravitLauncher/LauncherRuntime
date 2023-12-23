@@ -1,14 +1,14 @@
 package pro.gravit.launcher.client.gui.service;
 
 import com.google.gson.reflect.TypeToken;
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherNetworkAPI;
-import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.events.request.ProfilesRequestEvent;
-import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.profiles.optional.OptionalFile;
-import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.runtime.client.DirBridge;
+import pro.gravit.launcher.core.LauncherNetworkAPI;
+import pro.gravit.launcher.base.events.request.ProfilesRequestEvent;
+import pro.gravit.launcher.base.profiles.ClientProfile;
+import pro.gravit.launcher.base.profiles.optional.OptionalFile;
+import pro.gravit.launcher.base.profiles.optional.OptionalView;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
