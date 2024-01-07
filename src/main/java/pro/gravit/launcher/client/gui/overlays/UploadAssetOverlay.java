@@ -128,9 +128,11 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                     try(Reader reader = new InputStreamReader(new ByteArrayInputStream(response.body()))) {
                                                         Texture texture = Launcher.gsonManager.gson.fromJson(reader, UserTexture.class).toLauncherTexture();
                                                         URL skinUrl = new URL(texture.url);
-                                                        application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
-                                                        application.gui.serverMenuScene.resetAvatar();
-                                                        application.gui.serverInfoScene.resetAvatar();
+                                                        if("SKIN".equals(name)) {
+                                                            application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
+                                                            application.gui.serverMenuScene.resetAvatar();
+                                                            application.gui.serverInfoScene.resetAvatar();
+                                                        }
                                                         contextHelper.runInFxThread(() -> {
                                                             application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
                                                         });
