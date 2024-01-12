@@ -14,6 +14,7 @@ import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.stage.ConsoleStage;
+import pro.gravit.launcher.client.gui.utils.SystemMemory;
 import pro.gravit.launcher.runtime.client.DirBridge;
 import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.utils.helper.IOHelper;
@@ -62,9 +63,12 @@ public class SettingsScene extends AbstractScene {
         try {
             SystemInfo systemInfo = new SystemInfo();
             maxSystemMemory = (systemInfo.getHardware().getMemory().getTotal() >> 20);
-        } catch (Throwable e) {
-            LogHelper.error(e);
-            maxSystemMemory = 2048;
+        } catch (Throwable ignored) {
+            try {
+                maxSystemMemory = SystemMemory.getPhysicalMemorySize();
+            } catch (Throwable ignored1) {
+                maxSystemMemory = 2048;
+            }
         }
         ramSlider.setMax(Math.min(maxSystemMemory, getJavaMaxMemory()));
 
