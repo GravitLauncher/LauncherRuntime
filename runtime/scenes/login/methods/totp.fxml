@@ -4,12 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!-- DrLeonardo refactor -->
-
 <VBox fx:id="totpMethod" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
     <PasswordField id="totp" prefHeight="60.0" prefWidth="300.0" promptText="%runtime.scenes.login.password" />
-
-    <!-- Подключение стилей-->
-    <stylesheets>
-    </stylesheets>
 </VBox>
