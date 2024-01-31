@@ -1,8 +1,8 @@
 package pro.gravit.launcher.client.gui.service;
 
-import pro.gravit.launcher.client.DirBridge;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.runtime.client.DirBridge;
+import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.JavaHelper;
 import pro.gravit.utils.helper.LogHelper;

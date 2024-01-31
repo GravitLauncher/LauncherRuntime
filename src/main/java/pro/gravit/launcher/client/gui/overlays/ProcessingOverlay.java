@@ -8,8 +8,8 @@ import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.request.Request;
-import pro.gravit.launcher.request.WebSocketEvent;
+import pro.gravit.launcher.base.request.Request;
+import pro.gravit.launcher.base.request.WebSocketEvent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;

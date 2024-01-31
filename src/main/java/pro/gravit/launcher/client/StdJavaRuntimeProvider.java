@@ -1,10 +1,10 @@
 package pro.gravit.launcher.client;
 
 import javafx.application.Application;
-import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
-import pro.gravit.launcher.gui.RuntimeProvider;
-import pro.gravit.launcher.utils.LauncherUpdater;
+import pro.gravit.launcher.runtime.LauncherEngine;
+import pro.gravit.launcher.runtime.gui.RuntimeProvider;
+import pro.gravit.launcher.runtime.utils.LauncherUpdater;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 

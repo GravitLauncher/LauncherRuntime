@@ -1,7 +1,7 @@
 package pro.gravit.launcher.client.gui.helper;
 
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherConfig;
+import pro.gravit.launcher.base.Launcher;
+import pro.gravit.launcher.base.LauncherConfig;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.utils.RuntimeCryptedFile;
 import pro.gravit.utils.enfs.EnFS;

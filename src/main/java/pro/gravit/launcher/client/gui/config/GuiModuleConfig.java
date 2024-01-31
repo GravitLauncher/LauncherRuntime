@@ -1,6 +1,6 @@
 package pro.gravit.launcher.client.gui.config;
 
-import pro.gravit.launcher.LauncherInject;
+import pro.gravit.launcher.core.LauncherInject;
 
 import java.util.HashMap;
 import java.util.Map;

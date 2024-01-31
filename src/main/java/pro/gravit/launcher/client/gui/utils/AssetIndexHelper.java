@@ -1,9 +1,9 @@
 package pro.gravit.launcher.client.gui.utils;
 
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherNetworkAPI;
-import pro.gravit.launcher.hasher.HashedDir;
-import pro.gravit.launcher.hasher.HashedEntry;
+import pro.gravit.launcher.base.Launcher;
+import pro.gravit.launcher.core.LauncherNetworkAPI;
+import pro.gravit.launcher.core.hasher.HashedDir;
+import pro.gravit.launcher.core.hasher.HashedEntry;
 import pro.gravit.utils.helper.IOHelper;
 
 import java.io.IOException;

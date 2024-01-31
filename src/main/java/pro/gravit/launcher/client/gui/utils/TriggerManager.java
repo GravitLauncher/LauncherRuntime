@@ -2,11 +2,11 @@ package pro.gravit.launcher.client.gui.utils;
 
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
-import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.profiles.optional.OptionalFile;
-import pro.gravit.launcher.profiles.optional.OptionalView;
-import pro.gravit.launcher.profiles.optional.triggers.OptionalTrigger;
-import pro.gravit.launcher.profiles.optional.triggers.OptionalTriggerContext;
+import pro.gravit.launcher.base.profiles.ClientProfile;
+import pro.gravit.launcher.base.profiles.optional.OptionalFile;
+import pro.gravit.launcher.base.profiles.optional.OptionalView;
+import pro.gravit.launcher.base.profiles.optional.triggers.OptionalTrigger;
+import pro.gravit.launcher.base.profiles.optional.triggers.OptionalTriggerContext;
 import pro.gravit.utils.helper.JavaHelper;
 
 import java.util.Locale;

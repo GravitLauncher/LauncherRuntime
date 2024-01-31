@@ -1,35 +1,28 @@
 package pro.gravit.launcher.client.gui.service;
 
-import pro.gravit.launcher.Launcher;
-import pro.gravit.launcher.LauncherEngine;
-import pro.gravit.launcher.client.ClientLauncherProcess;
-import pro.gravit.launcher.client.DirBridge;
+import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.impl.AbstractStage;
 import pro.gravit.launcher.client.gui.impl.ContextHelper;
-import pro.gravit.launcher.client.gui.scenes.debug.DebugScene;
-import pro.gravit.launcher.hasher.HashedDir;
-import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.profiles.ClientProfileVersions;
-import pro.gravit.launcher.profiles.optional.OptionalView;
-import pro.gravit.launcher.request.auth.SetProfileRequest;
+import pro.gravit.launcher.runtime.client.ClientLauncherProcess;
+import pro.gravit.launcher.runtime.client.DirBridge;
+import pro.gravit.launcher.core.hasher.HashedDir;
+import pro.gravit.launcher.base.profiles.ClientProfile;
+import pro.gravit.launcher.base.profiles.ClientProfileVersions;
+import pro.gravit.launcher.base.profiles.optional.OptionalView;
+import pro.gravit.launcher.base.request.auth.SetProfileRequest;
 import pro.gravit.utils.helper.*;
 
 import java.io.EOFException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
-import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.function.Consumer;
 
 public class LaunchService {

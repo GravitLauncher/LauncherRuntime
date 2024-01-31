@@ -1,12 +1,11 @@
 package pro.gravit.launcher.client.gui.config;
-
-import pro.gravit.launcher.LauncherNetworkAPI;
-import pro.gravit.launcher.client.DirBridge;
-import pro.gravit.launcher.client.UserSettings;
 import pro.gravit.launcher.client.gui.service.JavaService;
-import pro.gravit.launcher.events.request.GetAvailabilityAuthRequestEvent;
-import pro.gravit.launcher.profiles.ClientProfile;
-import pro.gravit.launcher.request.auth.AuthRequest;
+import pro.gravit.launcher.runtime.client.DirBridge;
+import pro.gravit.launcher.runtime.client.UserSettings;
+import pro.gravit.launcher.core.LauncherNetworkAPI;
+import pro.gravit.launcher.base.events.request.GetAvailabilityAuthRequestEvent;
+import pro.gravit.launcher.base.profiles.ClientProfile;
+import pro.gravit.launcher.base.request.auth.AuthRequest;
 import pro.gravit.utils.helper.JavaHelper;
 
 import java.nio.file.Path;

@@ -7,7 +7,7 @@ import javafx.scene.control.TextField;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
-import pro.gravit.launcher.managers.ConsoleManager;
+import pro.gravit.launcher.runtime.managers.ConsoleManager;
 import pro.gravit.utils.helper.LogHelper;
 
 public class ConsoleScene extends AbstractScene {

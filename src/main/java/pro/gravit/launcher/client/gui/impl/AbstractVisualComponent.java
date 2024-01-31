@@ -14,8 +14,8 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.utils.FXMLFactory;
-import pro.gravit.launcher.request.RequestException;
-import pro.gravit.launcher.request.auth.ExitRequest;
+import pro.gravit.launcher.base.request.RequestException;
+import pro.gravit.launcher.base.request.auth.ExitRequest;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.concurrent.CompletableFuture;
