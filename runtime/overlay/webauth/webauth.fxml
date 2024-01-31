@@ -10,9 +10,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import javafx.scene.text.Text?>
 
-<!-- DrLeonardo refactor -->
-
-<AnchorPane id="layout" prefHeight="500.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane prefHeight="500.0" prefWidth="900.0" stylesheets="@webauth.css" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Описание браузера -->
     <Label id="headerDescription" alignment="CENTER" contentDisplay="CENTER" layoutY="1.0" prefHeight="62.0" prefWidth="600.0" text="%runtime.overlay.webauth.webauth.web-description" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
@@ -30,16 +28,10 @@
             </Pane>
         </graphic>
         <tooltip>
-            <Tooltip id="cancelTooltip" text="%runtime.scenes.loginpassword.cancelTooltip" />
+            <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="%runtime.scenes.loginpassword.cancelTooltip" />
         </tooltip>
     </Button>
 
     <!-- Браузер -->
     <ScrollPane id="webview" layoutX="7.0" layoutY="63.0" prefHeight="332.0" prefWidth="586.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="63.0" />
-
-    <!-- Подключение стилей-->
-    <stylesheets>
-        <URL value="@webauth.css" />
-    </stylesheets>
-
 </AnchorPane>

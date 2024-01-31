@@ -24,7 +24,7 @@ public class ServerButton extends AbstractVisualComponent {
     public ClientProfile profile;
     private Button saveButton;
     private Button resetButton;
-    private Labeled serverLogo;
+    private Region serverLogo;
 
     protected ServerButton(JavaFXApplication application, ClientProfile profile) {
         super(SERVER_BUTTON_FXML, application);

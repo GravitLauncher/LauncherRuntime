@@ -1,5 +1,5 @@
 /*-- Ввод данных --*/
-#commandInput {
+TextField {
     -fx-background-color: -fx-whiteG;
     -fx-background-radius: 0 0 10 10;
     -fx-font-size: 14px;
@@ -8,7 +8,6 @@
     -fx-cursor: text;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.1, 0.0, 0.0);
 }
-#commandInput:focused {
+TextField:focused {
     -fx-text-fill: -fx-black2C;
 }
-/*-- DrLeonardo styles refactor --*/

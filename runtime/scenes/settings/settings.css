@@ -1,22 +1,17 @@
-/*-- Вывод данных --*/
-#settings-detail {
-    -fx-background-color: -fx-glass;
-    -fx-background-radius: 20px;
-}
 /* RAM настройки */
+Slider>.track {
+    -fx-background-color: linear-gradient(to right, #8d4ce0, #8543e4, #7b39e9, #702eed, #6223f2);
+    -fx-pref-height: 5px;
+}
+Slider>.thumb {
+    -fx-background-color: -fx-violet;
+    -fx-pref-width: 18px;
+    -fx-pref-height: 18px;
+}
 #ramLabel {
     -fx-font-weight: bold;
     -fx-font-size: 12px;
     -fx-text-fill: -fx-black2C;
-}
-#ramSlider>.track {
-    -fx-background-color: -fx-ramGR;
-    -fx-pref-height: 4px;
-}
-#ramSlider>.thumb {
-    -fx-background-image: url("../../images/icons/thumb.png");
-    -fx-pref-width: 14px;
-    -fx-pref-height: 14px;
 }
 .settings-header {
     -fx-font-size: 14px;
@@ -32,35 +27,19 @@
     -fx-font-size: 14px;
     -fx-font-weight: 800;
 }
-/* Описание Java */
-#javaError {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-fill: -fx-red;
-    -fx-text-fill: -fx-red;
-}
-#javaSelect {
-    -fx-background-color: -fx-glass;
-}
-#javaSelect>#javaHeader {
-    -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-fill: -fx-black2C;
-}
-#javaSelect>.javaDesc {
-    -fx-fill: -fx-black2C;
-    -fx-font-size: 12px;
-}
-#javaSelect>#javaPath {
-    -fx-font-size: 10px;
-    -fx-fill: -fx-grayD;
-}
 #folder {
     -fx-background-color: -fx-glass;
-    -fx-background-radius: 5px;
+    -fx-background-radius: 10px;
+}
+#path {
+    -fx-padding: 10px;
+}
+#settingslist {
+    -fx-padding: 15px;
+    -fx-background-color: -fx-whiteGA;
+    -fx-background-radius: 15px;
 }
 #changeDir {
     -fx-background-color: -fx-white;
-    -fx-background-radius: 0 5px 5px 0;
+    -fx-background-radius: 0 10px 10px 0;
 }
-/*-- DrLeonardo styles refactor --*/

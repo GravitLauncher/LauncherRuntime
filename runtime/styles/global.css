@@ -1,4 +1,3 @@
-/*-- DrLeonardo styles refactor --*/
 @import "./variables.css";
 /*-- Подключение шрифтов --*/
 @font-face {
@@ -23,30 +22,40 @@
 }
 Button,
 CheckBox,
-ComboBox,
-RadioButton {
+ComboBox {
     -fx-cursor: hand;
 }
 .root {
     -fx-background-color: transparent;
-}
-/*-- Шрифты --*/
-#layout {
+    /* Подключение Font Family Шрифтов */
     -fx-font-family: 'Comfortaa';
 }
-#leftpanel {
-    -fx-background-color: -fx-glass;
+TextArea,
+.icon-button,
+CheckBox,
+CheckBox .mark,
+CheckBox .box,
+CheckBox:selected,
+CheckBox:selected .mark,
+CheckBox:selected .box,
+ScrollPane,
+ScrollPane .viewport,
+ScrollPane .content,
+ScrollBar:horizontal,
+ScrollBar:vertical,
+.increment-button,
+.decrement-button,
+.increment-arrow,
+.decrement-arrow,
+ScrollPane>.corner,
+ComboBox .arrow,
+ComboBox .arrow-button {
+    -fx-background-color: transparent;
 }
 .scene-header {
     -fx-font-weight: bold;
     -fx-font-size: 20px;
     -fx-text-fill: -fx-black2C;
-}
-/*-- Вид блоков --*/
-.blocks {
-    -fx-padding: 10px;
-    -fx-background-color: -fx-white;
-    -fx-background-radius: 0;
 }
 /*-- Скругление блоков и кнопок --*/
 .b-5 {
@@ -98,7 +107,18 @@ RadioButton {
 .icon-button {
     -fx-background-position: center;
     -fx-background-radius: 0;
-    -fx-background-color: transparent;
+    -fx-padding: 4px;
+}
+.tooltip {
+    -fx-show-delay: 100ms;
+    -fx-font-size: 12px;
+}
+.tooltip>.tooltip {
+    -fx-background-color: -fx-black2C;
+    /* -fx-shape: "M24 1h-24v16.981h4v5.019l7-5.019h13z"; */
+}
+.tooltip>.tooltip>.text {
+    /* -fx-translate-y: -5px; */
 }
 .icon-button-color {
     -fx-fill: -fx-header;
@@ -106,28 +126,10 @@ RadioButton {
 .icon-button-error {
     -fx-fill: -fx-red;
 }
-/*-- Информация игрока --*/
-#nickname {
-    -fx-font-weight: bold;
-    -fx-font-size: 14px;
-    -fx-text-fill: -fx-black2C;
-}
-#role {
-    -fx-font-weight: normal;
-    -fx-font-size: 12px;
-    -fx-text-fill: -fx-black2C;
-}
-#avatar {
-    -fx-background-position: center;
-    -fx-background-color: transparent;
-    -fx-font-smoothing-type: lcd;
-}
 /*-- Заголовки --*/
-#dialogHeader,
 #headingDialog,
 #headerDescription {
-    -fx-fill: -fx-black2C;
-    -fx-background-color: transparent;
+    -fx-text-fill: -fx-black2C;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
@@ -138,7 +140,6 @@ RadioButton {
 }
 /* Вывод лога */
 #output-detail>#output {
-    -fx-background-color: transparent;
     -fx-background-radius: 0;
     -fx-padding: 10px;
     -fx-font-size: 12px;
@@ -146,7 +147,6 @@ RadioButton {
 }
 #output-detail>#output .content,
 #output-detail>#output .content {
-    -fx-background-color: transparent;
     -fx-background-radius: 0;
 }
 /*-- Кнопка отправить --*/
@@ -160,16 +160,19 @@ RadioButton {
 .send-button-text:pressed {
     -fx-fill: -fx-header-hover;
 }
-/*-- Контекстное меню --*/
+/*-- Контекстное меню, применяется для кнопки смены языка --*/
 .context-menu {
     -fx-background-color: -fx-whiteG;
-    -fx-background-insets: 0;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
     -fx-padding: 5px;
     -fx-text-fill: -fx-black2C;
     -fx-background-radius: 5px;
+    -fx-translate-x: -30;
+    -fx-translate-y: 25;
 }
 .menu-item {
-    -fx-background-radius: 0px;
+    -fx-background-insets: 0 0 -1 0, 0, 1, 2;
+    -fx-background-radius: 5px;
 }
 .menu-item:hover,
 .menu-item:focused {
@@ -186,8 +189,7 @@ RadioButton {
     -fx-font-weight: bold;
 }
 /* check-box элементы */
-.check-box {
-    -fx-background-color: transparent;
+CheckBox {
     -fx-text-fill: -fx-black2C;
     -fx-background-image: url('../images/icons/checkbox1_off.png');
     -fx-background-repeat: no-repeat;
@@ -195,101 +197,73 @@ RadioButton {
     -fx-font-size: 14px;
     -fx-text-align: left;
 }
-.check-box .mark {
-    -fx-background-color: transparent;
-}
-.check-box .box {
-    -fx-background-color: transparent;
-}
-.check-box:selected {
-    -fx-background-color: transparent;
+CheckBox:selected {
     -fx-background-image: url('../images/icons/checkbox1_on.png');
     -fx-background-repeat: no-repeat;
 }
-.check-box:selected .mark {
-    -fx-background-color: transparent;
-}
-.check-box:selected .box {
-    -fx-background-color: transparent;
-}
 /* Скролл панели */
-#scroll-pane {
-    -fx-background-color: transparent;
+ScrollPane,
+ScrollPane .viewport {
+    -fx-padding: 0px;
 }
-.scroll-pane {
-    -fx-background-color: transparent;
+ScrollBar {
+    -fx-font-size: 6px;
 }
-.scroll-pane .viewport {
-    -fx-background-color: transparent;
+ScrollBar:horizontal {
+    /* -fx-translate-y: -10px; */
+    -fx-pref-height: 12;
+    -fx-padding: 0 250 0 250;
 }
-.scroll-pane .content {
-    -fx-background-color: transparent;
-}
-.scroll-bar:horizontal,
-.scroll-bar:vertical {
-    -fx-background-color: transparent;
+ScrollBar:vertical {
+    -fx-translate-x: 17px;
+    -fx-pref-width: 12;
+    -fx-padding: 100 0 100 0;
 }
 .increment-button,
 .decrement-button,
 .increment-arrow,
 .decrement-arrow {
-    -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
-.scroll-bar:horizontal .track,
-.scroll-bar:vertical .track {
-    -fx-background-color: transparent;
+ScrollBar:horizontal .track,
+ScrollBar:vertical .track {
+    -fx-background-color: -fx-glass;
+    -fx-effect: -fx-effect-dropshadow;
+    /* -fx-background-color: transparent; */
     -fx-border-color: transparent;
-}
-.scroll-bar:horizontal .thumb,
-.scroll-bar:vertical .thumb {
-    -fx-background-color: -fx-black2C-hover;
     -fx-background-radius: 10;
-    -fx-padding: 10 0 0 0px;
-    -fx-background-insets: 0, 0, 0, 10;
 }
-.scroll-bar {
-    -fx-font-size: 6px;
-}
-.scroll-pane>.corner {
-    -fx-background-color: transparent;
-}
-/* choice-box элементы */
-.choice-box .context-menu {
+ScrollBar:horizontal .thumb,
+ScrollBar:vertical .thumb {
     -fx-background-color: -fx-whiteG;
-    -fx-pref-width: 130px;
-}
-.choice-box .menu-item:focused {
-    -fx-background-color: -fx-violet;
-}
-.choice-box .menu-item>.label {
-    -fx-text-fill: -fx-black2C;
-}
-.choice-box .menu-item:focused>.label {
-    -fx-text-fill: -fx-white;
-}
-.choice-box {
-    -fx-background-color: -fx-whiteG;
-    -fx-mark-color: -fx-whiteG;
-}
-.choice-box>.label {
-    -fx-text-fill: -fx-whiteG;
+    /* -fx-background-color: -fx-black2C-hover; */
+    -fx-background-radius: 10px;
+    -fx-background-insets: 1 1, 0, 0, 10;
 }
 /* combo-box элементы */
-.combo-box {
+ComboBox {
     -fx-background-color: -fx-glass;
     -fx-background-insets: 0 0 -1 0, 0, 1, 2;
-    -fx-background-radius: 5px;
+    -fx-background-radius: 10px;
     -fx-padding: 5;
     -fx-text-fill: -fx-black2C;
     -fx-alignment: CENTER;
     -fx-content-display: LEFT;
 }
-.combo-box .list-cell {
+ComboBox .arrow-button {
+    -fx-background-image: url('../images/icons/checkbox_arrow_button.png');
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: center center;
+    -fx-background-size: 20px 11px;
+}
+ComboBox .list-cell {
     -fx-text-fill: -fx-black2C;
+    -fx-background-radius: 10px;
 }
 .combo-box-popup .list-view {
     -fx-background-color: -fx-gray;
+    -fx-background-radius: 10px;
+    -fx-translate-y: 12;
 }
 .combo-box-popup .list-view .list-cell {
     -fx-text-fill: -fx-black2C;
@@ -310,14 +284,17 @@ RadioButton {
     -fx-background-color: -fx-whiteG;
     -fx-text-fill: -fx-black2C;
 }
-.combo-box .arrow {
+ComboBox .arrow {
     -fx-background-color: transparent;
 }
-.combo-box .arrow-button {
-    -fx-background-image: url('../images/icons/checkbox_arrow_button.png');
-    -fx-background-repeat: no-repeat;
-    -fx-background-color: transparent;
-    -fx-background-position: center center;
-    -fx-background-size: 20px 11px;
+.anchor-block-information {
+    -fx-padding: 15px;
+    -fx-background-color: -fx-whiteGA;
+    -fx-background-radius: 15px;
 }
-/*-- DrLeonardo styles refactor --*/
+Separator:horizontal .line,
+Separator:vertical .line {
+    -fx-background-color: -fx-grayD;
+    -fx-border-color: transparent;
+    -fx-background-insets: 2;
+}

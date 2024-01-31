@@ -2,18 +2,25 @@ package pro.gravit.launcher.client.gui.scenes.options;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
+import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
+import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
+import pro.gravit.launcher.events.request.GetAssetUploadUrlRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
 import pro.gravit.launcher.profiles.optional.OptionalFile;
 import pro.gravit.launcher.profiles.optional.OptionalView;
+import pro.gravit.launcher.request.cabinet.AssetUploadInfoRequest;
+import pro.gravit.utils.helper.LogHelper;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -22,6 +29,8 @@ public class OptionsScene extends AbstractScene {
     private TabPane tabPane;
     private final Map<String, Tab> tabs = new HashMap<>();
     private OptionalView optionalView;
+    private ImageView avatar;
+    private Image originalAvatarImage;
 
     public OptionsScene(JavaFXApplication application) {
         super("scenes/options/options.fxml", application);
@@ -30,6 +39,18 @@ public class OptionsScene extends AbstractScene {
     @Override
     protected void doInit() {
         tabPane = LookupHelper.lookup(layout, "#tabPane");
+        /** -- UserBlock START -- */
+        avatar = LookupHelper.lookup(layout, "#avatar");
+        originalAvatarImage = avatar.getImage();
+        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
+            try {
+                JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
+                h.setImage(originalAvatarImage);
+            } catch (Throwable e) {
+                LogHelper.warning("Skin head error");
+            }
+        });
+        /** -- UserBlock END -- */
     }
 
     @Override
@@ -55,7 +76,7 @@ public class OptionsScene extends AbstractScene {
         });
         tabPane.getTabs().clear();
         tabs.clear();
-        LookupHelper.<Button>lookupIfPossible(header, "#back").ifPresent(x -> x.setOnAction((e) -> {
+        LookupHelper.<Button>lookupIfPossible(layout, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverInfoScene);
             } catch (Exception exception) {
@@ -63,6 +84,35 @@ public class OptionsScene extends AbstractScene {
             }
         }));
         addProfileOptionals(application.profilesService.getOptionalView());
+        /** -- UserBlock START -- */
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
+                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#role")
+                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
+        avatar.setImage(originalAvatarImage);
+        resetAvatar();
+        if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
+            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
+                h.setVisible(true);
+                h.setOnAction((a) -> {
+                    processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
+                        contextHelper.runInFxThread(() -> {
+                            showOverlay(application.gui.uploadAssetOverlay, (f) -> {
+                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
+                            });
+                        });
+                    }, this::errorHandle, (e) -> {});
+                });
+            });
+        }
+        /** -- UserBlock END -- */
+    }
+
+    public void resetAvatar() {
+        if (avatar == null) {
+            return;
+        }
+        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
     }
 
     @Override

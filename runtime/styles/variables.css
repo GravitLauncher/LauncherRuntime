@@ -1,4 +1,4 @@
-/*-- DrLeonardo styles refactor --*/
+
 /*-- Var library colors --*/
 * {
     -fx-green: #48D792;
@@ -11,14 +11,15 @@
     -fx-blackCE-hover: #CECECE;
     -fx-white: #FFFFFF;
     -fx-whiteG: #FAFAFF;
+    -fx-whiteGA: rgba(250, 250, 255, 0.5);
     -fx-glass: rgba(205, 205, 205, 0.22);
     -fx-glass-hover: rgba(178, 178, 178, 0.28);
     -fx-grayD: #94A1A8;
     -fx-grayA: #A4B3BA;
     -fx-grayATr: rgba(164, 179, 186, 0.24);
     -fx-bg2: #FAFAFF;
-    -fx-red: #FF6F80;
-    -fx-red-hover: #FF6F80;
+    -fx-red: #DB4D4D;
+    -fx-red-hover: #BA2E35;
     -fx-redTr: rgba(255, 111, 128, 0.22);
     -fx-gray: #F2F2F2;
     -fx-violet: #6B36FF;
@@ -32,5 +33,5 @@
     -fx-ramGR: linear-gradient(from 50% 50% to 100% 100%, -fx-green, -fx-violet);
     -fx-updateGR: linear-gradient(from 20% 20% to 100% 100%, -fx-violet, #5D35B9);
     -fx-errorGR: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #B93639);
+    -fx-effect-dropshadow: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 30, 0, 0, 0);
 }
-/*-- DrLeonardo styles refactor --*/

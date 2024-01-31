@@ -1,8 +1,9 @@
 package pro.gravit.launcher.client.gui.scenes.settings;
 
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
+
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import pro.gravit.launcher.client.gui.config.RuntimeSettings;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -13,7 +14,6 @@ import pro.gravit.utils.helper.LogHelper;
 
 public class JavaSelectorComponent {
     private final ComboBox<JavaHelper.JavaVersion> comboBox;
-    private final Label javaPath;
     private final RuntimeSettings.ProfileSettingsView profileSettings;
     private final ClientProfile profile;
     private final JavaService javaService;
@@ -23,10 +23,10 @@ public class JavaSelectorComponent {
         comboBox = LookupHelper.lookup(layout, "#javaCombo");
         this.profile = profile;
         comboBox.getItems().clear();
-        javaPath = LookupHelper.lookup(layout, "#javaPath");
         this.profileSettings = profileSettings;
         this.javaService = javaService;
         comboBox.setConverter(new JavaVersionConverter(profile));
+        comboBox.setCellFactory(new JavaVersionCellFactory(comboBox.getConverter()));
         reset();
     }
 
@@ -42,6 +42,9 @@ public class JavaSelectorComponent {
                 reset = false;
             }
         }
+        if (comboBox.getTooltip() != null) {
+            comboBox.getTooltip().setText(profileSettings.javaPath);
+        }
         if (reset) {
             JavaHelper.JavaVersion recommend = javaService.getRecommendJavaVersion(profile);
             if (recommend != null) {
@@ -54,9 +57,12 @@ public class JavaSelectorComponent {
         comboBox.setOnAction(e -> {
             JavaHelper.JavaVersion version = comboBox.getValue();
             if (version == null) return;
-            javaPath.setText(version.jvmDir.toAbsolutePath().toString());
-            LogHelper.info("Select Java %s", version.jvmDir.toAbsolutePath().toString());
-            profileSettings.javaPath = javaPath.getText();
+            var path = version.jvmDir.toAbsolutePath().toString();
+            if (comboBox.getTooltip() != null) {
+                comboBox.getTooltip().setText(path);
+            }
+            LogHelper.info("Select Java %s", path);
+            profileSettings.javaPath = path;
         });
     }
 
@@ -84,6 +90,43 @@ public class JavaSelectorComponent {
         @Override
         public JavaHelper.JavaVersion fromString(String string) {
             return null;
+        }
+    }
+
+    private static class JavaVersionCellFactory implements Callback<ListView<JavaHelper.JavaVersion>, ListCell<JavaHelper.JavaVersion>> {
+
+        private StringConverter<JavaHelper.JavaVersion> converter;
+
+        public JavaVersionCellFactory(StringConverter<JavaHelper.JavaVersion> converter) {
+            this.converter = converter;
+        }
+
+        @Override
+        public ListCell<JavaHelper.JavaVersion> call(ListView<JavaHelper.JavaVersion> param) {
+            return new JavaVersionListCell(converter);
+        }
+    }
+
+    private static class JavaVersionListCell extends ListCell<JavaHelper.JavaVersion> {
+        private StringConverter<JavaHelper.JavaVersion> converter;
+
+        public JavaVersionListCell(StringConverter<JavaHelper.JavaVersion> converter) {
+            this.converter = converter;
+        }
+
+        @Override
+        protected void updateItem(JavaHelper.JavaVersion item, boolean empty) {
+            super.updateItem(item, empty);
+
+            if (empty || item == null) {
+                setText(null);
+                setTooltip(null);
+            } else {
+                setText(converter.toString(item));
+                Tooltip tooltip = new Tooltip(item.jvmDir.toString());
+                tooltip.setAnchorLocation(Tooltip.AnchorLocation.WINDOW_BOTTOM_LEFT);
+                setTooltip(tooltip);
+            }
         }
     }
 }

@@ -1,0 +1,18 @@
+{
+    "recommendations": [
+        "redhat.java",
+        "vscode.github",
+        "vscode.git",
+        "redhat.vscode-xml",
+        "GitHub.vscode-pull-request-github",
+        "vscjava.vscode-java-dependency",
+        "vscjava.vscode-gradle",
+        "vscjava.vscode-java-debug",
+        "vscode.css-language-features",
+        "cwan.native-ascii-converter",
+        "SirTori.indenticator",
+        "oderwat.indent-rainbow",
+        "liamhammett.inline-parameters",
+        "mhutchie.git-graph"
+    ]
+}

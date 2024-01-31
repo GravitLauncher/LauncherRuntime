@@ -22,9 +22,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Objects;
 
 public class UploadAssetOverlay extends CenterOverlay {
     private static final HttpClient client = HttpClient.newBuilder()
@@ -132,6 +130,8 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                             application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
                                                             application.gui.serverMenuScene.resetAvatar();
                                                             application.gui.serverInfoScene.resetAvatar();
+                                                            application.gui.settingsScene.resetAvatar();
+                                                            application.gui.optionsScene.resetAvatar();
                                                         }
                                                         contextHelper.runInFxThread(() -> {
                                                             application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
