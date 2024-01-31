@@ -1,9 +1,4 @@
-.kill:hover,
-.kill:pressed {
-    -fx-fill: -fx-red !important;
-}
 #version {
     -fx-text-fill: -fx-grayD;
     -fx-font-size: 8pt;
 }
-/*-- DrLeonardo styles refactor --*/

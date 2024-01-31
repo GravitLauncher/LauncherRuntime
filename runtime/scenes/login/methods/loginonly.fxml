@@ -4,12 +4,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<!-- DrLeonardo refactor -->
-
 <VBox fx:id="loginMethod" styleClass="transparent" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
     <TextField id="login" prefHeight="60.0" prefWidth="300.0" promptText="%runtime.scenes.login.login" />
-
-    <!-- Подключение стилей-->
-    <stylesheets>
-    </stylesheets>
 </VBox>

@@ -1,50 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.shape.SVGPath?>
+<?import javafx.scene.layout.VBox?>
 
-<!-- DrLeonardo refactor -->
-
-<AnchorPane prefHeight="222.0" prefWidth="603.0" styleClass="dialog" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-    <padding>
-        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-    </padding>
-
-    <!-- Заголовок диалога-->
-    <Label id="headingDialog" alignment="CENTER" contentDisplay="CENTER" layoutX="22.0" prefWidth="588.0" text="%runtime.dialogs.apply.applyDialog" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="10.0" />
-    <Label id="textDialog" alignment="TOP_LEFT" layoutX="51.0" layoutY="63.0" prefHeight="101.0" prefWidth="487.0" textAlignment="JUSTIFY" wrapText="true" AnchorPane.bottomAnchor="67.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0" AnchorPane.topAnchor="35.0" />
-
-    <!-- Кнопки управления -->
-    <Button id="close" layoutX="538.0" layoutY="10.0" mnemonicParsing="false" prefHeight="32.0" prefWidth="32.0" styleClass="icon-button" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-        <graphic>
-            <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" styleClass="icon-button-color" />
-        </graphic>
-        <tooltip>
-            <Tooltip id="close-dialogTooltip" text="%runtime.dialogs.apply.close-dialogTooltip" />
-        </tooltip>
-    </Button>
-   <HBox id="actions" alignment="CENTER" layoutX="196.0" layoutY="168.0" spacing="10.0" AnchorPane.bottomAnchor="22.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0">
-      <children>
-         <CheckBox id="useslim" mnemonicParsing="false" text="%runtime.overlay.uploadasset.useslim" />
-      
-          <!-- Кнопка применить -->
-          <Button id="uploadskin" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" styleClass="dialog-button,dialog-apply-button" text="%runtime.overlay.uploadasset.uploadskin" />
-         <Separator orientation="VERTICAL" />
-         <Button id="uploadcape" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" styleClass="dialog-button,dialog-apply-button" text="%runtime.overlay.uploadasset.uploadcape" />
-      </children>
-   </HBox>
-
-    <!-- Подключение стилей-->
-    <stylesheets>
-        <URL value="@../../dialogs/dialogs.css" />
-    </stylesheets>
-
+<AnchorPane maxHeight="-Infinity" maxWidth="600.0" prefWidth="600.0" styleClass="dialog" stylesheets="@../../dialogs/dialogs.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <VBox spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <children>
+            <AnchorPane>
+                <children>
+                    <fx:include source="../../components/buttons/close.fxml" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                    <!-- Заголовок диалога-->
+                    <Label id="headingDialog" alignment="CENTER" contentDisplay="CENTER" prefHeight="32.0" text="%runtime.overlay.uploadasset.header" textAlignment="CENTER" AnchorPane.leftAnchor="42.0" AnchorPane.rightAnchor="42.0" AnchorPane.topAnchor="0.0" />
+                </children>
+            </AnchorPane>
+            <AnchorPane>
+                <children>
+                    <VBox spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <children>
+                            <Label id="textDialog" alignment="CENTER" maxWidth="600.0" text="%runtime.overlay.uploadasset.textDialog" textAlignment="CENTER" wrapText="true">
+                                <VBox.margin>
+                                    <Insets />
+                                </VBox.margin>
+                            </Label>
+                            <HBox id="actions" alignment="CENTER" spacing="20.0">
+                                <children>
+                                    <Button id="uploadskin" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" styleClass="dialog-button,dialog-apply-button" text="%runtime.overlay.uploadasset.uploadskin" />
+                                    <Separator orientation="VERTICAL" />
+                                    <Button id="uploadcape" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" styleClass="dialog-button,dialog-apply-button" text="%runtime.overlay.uploadasset.uploadcape" />
+                                </children>
+                                <VBox.margin>
+                                    <Insets />
+                                </VBox.margin>
+                            </HBox>
+                            <HBox alignment="TOP_RIGHT" spacing="10.0">
+                                <children>
+                                    <CheckBox id="useslim" text="%runtime.overlay.uploadasset.useslim" visible="false" />
+                                </children>
+                        <VBox.margin>
+                           <Insets right="289.0" />
+                        </VBox.margin>
+                        <opaqueInsets>
+                           <Insets />
+                        </opaqueInsets>
+                            </HBox>
+                        </children>
+                    </VBox>
+                </children>
+            </AnchorPane>
+        </children>
+    </VBox>
 </AnchorPane>

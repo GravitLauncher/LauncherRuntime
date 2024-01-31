@@ -42,7 +42,6 @@ public class UpdateScene extends AbstractScene {
         cancel = LookupHelper.lookup(layout, "#cancel");
         volume = LookupHelper.lookup(layout, "#volume");
         logOutput = LookupHelper.lookup(layout, "#outputUpdate");
-        logOutput.setText("");
         downloader = new VisualDownloader(application, progressBar, speed, volume, this::errorHandle,
                                           (log) -> contextHelper.runInFxThread(() -> addLog(log)), this::onUpdateStatus);
         LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction((e) -> {
@@ -81,11 +80,10 @@ public class UpdateScene extends AbstractScene {
     @Override
     public void reset() {
         progressBar.progressProperty().setValue(0);
-        logOutput.clear();
+        logOutput.setText("");
         volume.setText("");
         speed.setText("0");
         progressBar.getStyleClass().removeAll("progress");
-        speed.getStyleClass().removeAll("speedError");
         speederr.setVisible(false);
         speedon.setVisible(true);
     }

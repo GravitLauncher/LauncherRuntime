@@ -25,9 +25,8 @@ import java.io.IOException;
 import java.util.*;
 
 public class ServerMenuScene extends AbstractScene {
-    private ImageView avatar;
-
     private List<ClientProfile> lastProfiles;
+    private ImageView avatar;
     private Image originalAvatarImage;
 
     public ServerMenuScene(JavaFXApplication application) {
@@ -36,6 +35,7 @@ public class ServerMenuScene extends AbstractScene {
 
     @Override
     public void doInit() {
+        /** -- UserBlock START -- */
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
@@ -46,9 +46,11 @@ public class ServerMenuScene extends AbstractScene {
                 LogHelper.warning("Skin head error");
             }
         });
+        /** -- UserBlock END -- */
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         scrollPane.setOnScroll(e -> {
-            double offset = e.getDeltaY() / scrollPane.getWidth();
+            double widthContent = scrollPane.getWidth();
+            double offset = (widthContent * 0.15) / (scrollPane.getContent().getBoundsInLocal().getWidth() - widthContent) * Math.signum(e.getDeltaY());
             scrollPane.setHvalue(scrollPane.getHvalue() - offset);
         });
         reset();
@@ -69,11 +71,7 @@ public class ServerMenuScene extends AbstractScene {
         if (lastProfiles == application.profilesService.getProfiles()) return;
         lastProfiles = application.profilesService.getProfiles();
         Map<ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#role")
-                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
-        avatar.setImage(originalAvatarImage);
+        
         List<ClientProfile> profiles = new ArrayList<>(lastProfiles);
         profiles.sort(Comparator.comparingInt(ClientProfile::getSortIndex).thenComparing(ClientProfile::getTitle));
         int position = 0;
@@ -117,6 +115,12 @@ public class ServerMenuScene extends AbstractScene {
                 }
             }
         }).start();
+        /** -- UserBlock START -- */
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
+                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#role")
+                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
+        avatar.setImage(originalAvatarImage);
         resetAvatar();
         if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
             LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
@@ -132,10 +136,11 @@ public class ServerMenuScene extends AbstractScene {
                 });
             });
         }
+        /** -- UserBlock END -- */
     }
 
     public void resetAvatar() {
-        if(avatar == null) {
+        if (avatar == null) {
             return;
         }
         JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);

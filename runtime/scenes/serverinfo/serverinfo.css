@@ -1,14 +1,11 @@
-/*-- Информация сервера --*/
-#serverDescription {
+ScrollPane {
+    -fx-padding: 15px;
+    -fx-background-color: -fx-whiteGA;
+    -fx-background-radius: 15px;
+}
+ScrollPane Label {
     -fx-font-style: normal;
     -fx-font-weight: normal;
     -fx-font-size: 14px;
     -fx-text-fill: -fx-black2C;
 }
-/*-- Фон сервера --*/
-#serverImage {
-    -fx-background-color: transparent;
-    -fx-background-size: cover;
-    -fx-background-image: url('../../images/servers/imageExample.png');
-}
-/*-- DrLeonardo styles refactor --*/

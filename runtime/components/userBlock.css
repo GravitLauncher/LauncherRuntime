@@ -1,0 +1,15 @@
+#avatar {
+    -fx-background-position: center;
+    -fx-background-color: transparent;
+    -fx-font-smoothing-type: lcd;
+}
+#nickname {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: -fx-black2C;
+}
+#role {
+    -fx-font-weight: normal;
+    -fx-font-size: 12px;
+    -fx-text-fill: -fx-black2C;
+}

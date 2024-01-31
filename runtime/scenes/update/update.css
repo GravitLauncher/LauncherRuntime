@@ -1,32 +1,24 @@
 /*-- Информация о загрузке --*/
 #outputUpdate {
-    -fx-background-color:  transparent;
-    -fx-background-radius: 20px;
-    -fx-fill: transparent;
-    -fx-padding: 7 0 0 10px;
+    -fx-text-fill: -fx-black2C;
     -fx-font-size: 12px;
 }
-#description {
-    -fx-alignment: top-left;
-    -fx-wrap-text: true;
-    -fx-font-size: 10px;
-}
-#description.error {
-    -fx-text-fill: -fx-red;
+.anchor-block-information {
+    -fx-padding: 15px 20px 40px 15px;
 }
 /*-- Вывод данных --*/
 #update-detail {
     -fx-background-color: -fx-white;
     -fx-background-radius: 20px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 30, 0, 0, 0);
+    -fx-effect: -fx-effect-dropshadow;
 }
-.speed {
+#speed {
     -fx-text-fill: linear-gradient(to right, #7248A7 0%, #2C03A8 100%);
     -fx-text-align: center;
     -fx-font-size: 48px;
     -fx-font-weight: bold;
 }
-.speed-text {
+#speed-text {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
@@ -35,38 +27,23 @@
     -fx-font-size: 48px;
 }
 /* Прогресс бар */
-.progress-bar {
+ProgressBar {
     -fx-indeterminate-bar-flip: false;
     -fx-background-color: -fx-whiteG;
     -fx-background-radius: 0px 10px 10px 0px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 30, 0, 0, 0);
+    -fx-effect: -fx-effect-dropshadow;
 }
-.progress-indicator {
-    -fx-background-color: transparent;
-}
-.progress-indicator .indicator {
-    -fx-background-color: transparent;
-}
-.progress-bar>.bar {
+ProgressBar>.bar {
     -fx-background-color: -fx-updateGR;
-    -fx-background-insets: 0;
-    -fx-background-radius: 0;
-    -fx-padding: 0;
+    -fx-background-insets: 0px;
+    -fx-background-radius: 0px 10px 10px 0px;
 }
-.progress-bar>.track {
+ProgressBar>.track {
     -fx-background-color: transparent;
     -fx-background-insets: 0;
-    -fx-background-radius: 3px;
+    -fx-background-radius: 0px 10px 10px 0px;
 }
+/* Добавляется при ошибке загрузки */
 .progressError>.bar {
     -fx-background-color: -fx-errorGR;
 }
-.progress-lines {
-    -fx-stroke: -fx-gray;
-}
-.progress-text {
-    -fx-text-fill: -fx-gray;
-    -fx-fill: -fx-gray;
-    -fx-font-size: 13px;
-}
-/*-- DrLeonardo styles refactor --*/
