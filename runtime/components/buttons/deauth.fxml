@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.shape.SVGPath?>
+
+<!-- Кнопка выхода -->
+
+<Button id="deauth" styleClass="icon-button" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <graphic>
+        <SVGPath content="M324.811 27.9868L343.176 27.9868C344.726 27.9868 345.987 26.7258 345.987 25.1759L345.987 21.4279L344.999 21.4279L344.999 25.1759C344.999 25.9929 343.999 26.9929 343.176 26.9929L324.811 26.9929C323.999 26.9929 322.999 25.9929 322.999 25.1759L322.999 6.81104C322.999 5.99292 323.999 4.99292 324.811 4.99292L343.176 4.99292C343.999 4.99292 344.999 5.99292 344.999 6.81104L344.999 10.559L345.987 10.559L345.987 6.81104C345.987 5.26107 344.726 4.00009 343.176 4.00009L324.811 4.00008C323.261 4.00008 322 5.26107 322 6.81104L322 25.1759C322 26.7258 323.261 27.9868 324.811 27.9868Z M332 16.8046L343.057 16.8046L340.137 19.8621L341.224 21L346 16L341.224 11L340.137 12.1379L343.057 15.1954L332 15.1954L332 16.8046Z" styleClass="icon-button-color" />
+    </graphic>
+    <tooltip>
+        <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="%runtime.scenes.servermenu.deauthTooltip" />
+    </tooltip>
+</Button>

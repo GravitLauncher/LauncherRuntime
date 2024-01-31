@@ -1,0 +1,4 @@
+.kill:hover,
+.kill:pressed {
+    -fx-fill: -fx-red !important;
+}

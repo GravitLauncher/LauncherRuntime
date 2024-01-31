@@ -1,8 +1,8 @@
 package pro.gravit.launcher.client.gui.dialogs;
 
 import javafx.geometry.Rectangle2D;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
 import pro.gravit.launcher.client.gui.helper.PositionHelper;
@@ -47,8 +47,8 @@ public class NotificationDialog extends AbstractDialog {
     private String header;
     private String text;
 
-    private Text textHeader;
-    private Text textDescription;
+    private Label textHeader;
+    private Label textDescription;
     private PositionHelper.PositionInfo positionInfo;
     private NotificationSlot positionSlot;
     private double positionOffset;

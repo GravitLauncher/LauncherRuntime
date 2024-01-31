@@ -1,32 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Region?>
 
-<!-- DrLeonardo refactor -->
+<AnchorPane id="serverButton" fx:id="serverButton" minWidth="-Infinity" prefHeight="350.0" prefWidth="175.0" styleClass="b-20" stylesheets="@components.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <Region id="serverLogo" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
 
-<AnchorPane id="serverButton" fx:id="serverButton" minWidth="-Infinity" prefHeight="350.0" prefWidth="175.0" styleClass="b-20" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
-   <Label id="serverLogo" layoutX="33.0" layoutY="123.0" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0" />
-      <Label id="online" alignment="CENTER" minWidth="35.0" prefHeight="35.0" styleClass="online-green" text="?" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="6.0" />
-
-     <!-- Информация сервера -->
-     <Label id="nameServer" alignment="CENTER" layoutY="277.0" prefHeight="29.0" text="SERVERNAME" textAlignment="CENTER" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-     <Label id="genreServer" alignment="CENTER" layoutY="302.0" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
-
-     <!-- Кнопка сохранить (для других сцен) -->
-     <Button id="save" layoutX="18.0" layoutY="205.0" mnemonicParsing="false" prefHeight="55.0" text="%runtime.components.serverButton.save" visible="false" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="213.0" />
-     <Button id="reset" layoutX="25.0" layoutY="8.0" minWidth="75.0" mnemonicParsing="false" prefHeight="35.0" text="%runtime.components.serverButton.reset" visible="false" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="6.0">
-         <tooltip>
-             <Tooltip id="resetTooltip" text="%runtime.components.serverButton.resetTooltip" />
-         </tooltip>
-     </Button>
-
-    <!-- Подключение стилей-->
-    <stylesheets>
-        <URL value="@components.css" />
-    </stylesheets>
-
+    <!-- Информация сервера -->
+    <Label id="nameServer" alignment="CENTER" prefHeight="29.0" text="SERVERNAME" textAlignment="CENTER" AnchorPane.bottomAnchor="37.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+    <Label id="genreServer" alignment="CENTER" prefHeight="17.0" prefWidth="189.0" text="HITECH" textAlignment="CENTER" AnchorPane.bottomAnchor="23.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" />
+    <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="95.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="15.0">
+        <children>
+            <Label id="online" alignment="CENTER" maxWidth="40.0" prefWidth="40.0" styleClass="online-green" text="?" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="-6.0" />
+            <Label id="speedLoad" alignment="CENTER" maxWidth="75.0" prefWidth="75.0" styleClass="online-violet" text="0 m/s" visible="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="-6.0" />
+            <Button id="reset" maxWidth="75.0" prefWidth="75.0" text="%runtime.components.serverButton.reset" visible="false" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="-6.0">
+                <tooltip>
+                    <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="%runtime.components.serverButton.resetTooltip" />
+                </tooltip>
+            </Button>
+            <Button id="save" prefHeight="55.0" text="%runtime.components.serverButton.save" visible="false" AnchorPane.bottomAnchor="-15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+        </children>
+    </AnchorPane>
 </AnchorPane>
