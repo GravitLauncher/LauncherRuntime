@@ -181,7 +181,9 @@ public class LoginScene extends AbstractScene {
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess,
             Consumer<String> onError) {
-        processRequest(text, request, onSuccess, (thr) -> onError.accept(thr.getCause().getMessage()), null);
+        contextHelper.runInFxThread(() -> {
+            processRequest(text, request, onSuccess, (thr) -> onError.accept(thr.getCause().getMessage()), null);
+        });
     }
 
 
@@ -296,7 +298,7 @@ public class LoginScene extends AbstractScene {
                 && authAvailability.details.get(0) instanceof AuthPasswordDetails;
     }
 
-    private void onSuccessLogin(SuccessAuth successAuth) {
+    public void onSuccessLogin(SuccessAuth successAuth) {
         AuthRequestEvent result = successAuth.requestEvent;
         application.authService.setAuthResult(authAvailability.name, result);
         boolean savePassword = savePasswordCheckBox.isSelected();

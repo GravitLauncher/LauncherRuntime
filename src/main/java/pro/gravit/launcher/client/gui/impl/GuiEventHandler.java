@@ -1,5 +1,6 @@
 package pro.gravit.launcher.client.gui.impl;
 
+import javafx.application.Platform;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.login.LoginScene;
@@ -37,7 +38,10 @@ public class GuiEventHandler implements RequestService.EventHandler {
                 LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
                 application.authService.setAuthResult(null, authRequestEvent);
                 if (isNextScene && ((LoginScene) application.getCurrentScene()).isLoginStarted)
-                    ((LoginScene) application.getCurrentScene()).onGetProfiles();
+                    ((LoginScene) application.getCurrentScene()).onSuccessLogin(
+                            new LoginScene.SuccessAuth(authRequestEvent,
+                                                       authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
+                                                       null));
             }
             if (event instanceof ProfilesRequestEvent profilesRequestEvent) {
                 application.profilesService.setProfilesResult(profilesRequestEvent);
