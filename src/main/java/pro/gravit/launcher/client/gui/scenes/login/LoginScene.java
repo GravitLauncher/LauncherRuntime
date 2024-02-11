@@ -181,9 +181,7 @@ public class LoginScene extends AbstractScene {
 
     public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess,
             Consumer<String> onError) {
-        contextHelper.runInFxThread(() -> {
-            processRequest(text, request, onSuccess, (thr) -> onError.accept(thr.getCause().getMessage()), null);
-        });
+        processRequest(text, request, onSuccess, (thr) -> onError.accept(thr.getCause().getMessage()), null);
     }
 
 

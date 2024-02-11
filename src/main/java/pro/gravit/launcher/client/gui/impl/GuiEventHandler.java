@@ -37,11 +37,18 @@ public class GuiEventHandler implements RequestService.EventHandler {
                 ((LoginScene) application.getCurrentScene()).isLoginStarted = true;
                 LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
                 application.authService.setAuthResult(null, authRequestEvent);
-                if (isNextScene && ((LoginScene) application.getCurrentScene()).isLoginStarted)
-                    ((LoginScene) application.getCurrentScene()).onSuccessLogin(
-                            new LoginScene.SuccessAuth(authRequestEvent,
-                                                       authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
-                                                       null));
+                if (isNextScene && ((LoginScene) application.getCurrentScene()).isLoginStarted) {
+                    Platform.runLater(() -> {
+                        try {
+                            ((LoginScene) application.getCurrentScene()).onSuccessLogin(
+                                    new LoginScene.SuccessAuth(authRequestEvent,
+                                                               authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
+                                                               null));
+                        } catch (Throwable e) {
+                            LogHelper.error(e);
+                        }
+                    });
+                }
             }
             if (event instanceof ProfilesRequestEvent profilesRequestEvent) {
                 application.profilesService.setProfilesResult(profilesRequestEvent);
