@@ -24,7 +24,7 @@
             <Label id="description" alignment="CENTER" contentDisplay="CENTER" textAlignment="CENTER" wrapText="true" />
         </children>
     </VBox>
-    <HBox alignment="CENTER" maxHeight="256.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
+    <HBox alignment="CENTER" minHeight="-Infinity" prefHeight="256.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
         <children>
             <ImageView id="logo" pickOnBounds="true" preserveRatio="true">
                 <image>
