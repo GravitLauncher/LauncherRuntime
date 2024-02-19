@@ -8,7 +8,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import pro.gravit.launcher.LauncherEngine;
 import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.launcher.client.gui.helper.LookupHelper;
@@ -16,13 +15,15 @@ import pro.gravit.launcher.client.gui.scenes.AbstractScene;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerButton;
 import pro.gravit.launcher.client.gui.scenes.servermenu.ServerMenuScene;
 import pro.gravit.launcher.client.gui.utils.JavaFxUtils;
+import pro.gravit.launcher.events.request.GetAssetUploadUrlRequestEvent;
 import pro.gravit.launcher.profiles.ClientProfile;
+import pro.gravit.launcher.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.utils.helper.*;
 
 public class ServerInfoScene extends AbstractScene {
+    private ServerButton serverButton;
     private ImageView avatar;
     private Image originalAvatarImage;
-    private ServerButton serverButton;
 
     public ServerInfoScene(JavaFXApplication application) {
         super("scenes/serverinfo/serverinfo.fxml", application);
@@ -30,6 +31,7 @@ public class ServerInfoScene extends AbstractScene {
 
     @Override
     protected void doInit() {
+        /** -- UserBlock START -- */
         avatar = LookupHelper.lookup(layout, "#avatar");
         originalAvatarImage = avatar.getImage();
         LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
@@ -40,7 +42,8 @@ public class ServerInfoScene extends AbstractScene {
                 LogHelper.warning("Skin head error");
             }
         });
-        LookupHelper.<Button>lookup(header, "#back").setOnAction((e) -> {
+        /** -- UserBlock END -- */
+        LookupHelper.<Button>lookup(layout, "#back").setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverMenuScene);
             } catch (Exception exception) {
@@ -70,20 +73,38 @@ public class ServerInfoScene extends AbstractScene {
 
     @Override
     public void reset() {
-        avatar.setImage(originalAvatarImage);
         ClientProfile profile = application.profilesService.getProfile();
         LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getTitle()));
         LookupHelper.<ScrollPane>lookupIfPossible(layout, "#serverDescriptionPane").ifPresent((e) -> {
             var label = (Label) e.getContent();
             label.setText(profile.getInfo());
         });
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         serverButton = ServerMenuScene.getServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
+        /** -- UserBlock START -- */
+        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
+                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
+        LookupHelper.<Label>lookupIfPossible(layout, "#role")
+                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
+        avatar.setImage(originalAvatarImage);
         resetAvatar();
+        if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
+            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
+                h.setVisible(true);
+                h.setOnAction((a) -> {
+                    processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
+                        contextHelper.runInFxThread(() -> {
+                            showOverlay(application.gui.uploadAssetOverlay, (f) -> {
+                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
+                            });
+                        });
+                    }, this::errorHandle, (e) -> {});
+                });
+            });
+        }
+        /** -- UserBlock END -- */
         serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"),
                                       (e) -> {
                                         runClient();
@@ -91,7 +112,7 @@ public class ServerInfoScene extends AbstractScene {
     }
 
     public void resetAvatar() {
-        if(avatar == null) {
+        if (avatar == null) {
             return;
         }
         JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
@@ -130,6 +151,6 @@ public class ServerInfoScene extends AbstractScene {
 
     @Override
     public String getName() {
-        return null;
+        return "serverinfo";
     }
 }

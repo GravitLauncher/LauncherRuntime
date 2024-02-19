@@ -1,32 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.*?>
-<?import javafx.geometry.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 
-<!-- DrLeonardo refactor -->
 
-<Pane fx:id="notificationPane" prefHeight="85.0" prefWidth="320.0" styleClass="blocks" xmlns="http://javafx.com/javafx/8.0.201" xmlns:fx="http://javafx.com/fxml/1">
-
-   <!-- Отступы-->
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
-
-   <!-- Картинка уведомления-->
-   <ImageView fitHeight="63.0" fitWidth="66.0" layoutX="11.0" layoutY="11.0" pickOnBounds="true" preserveRatio="true">
-      <Image url="@../images/preloader/logo.png" />
-   </ImageView>
-
-   <!-- Текст уведомления-->
-   <Text id="notificationHeading" fontSmoothingType="LCD" layoutX="78.0" layoutY="40.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-head" text="%runtime.scenes.components.notification.notificationHeading" wrappingWidth="219.7" />
-   <Text id="notificationText" fontSmoothingType="LCD" layoutX="78.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" styleClass="text-font-desc" text="%runtime.scenes.components.notification.notificationText" textAlignment="JUSTIFY" wrappingWidth="219.7" />
-
-   <!-- Подключение стилей-->
-   <stylesheets>
-      <URL value="@components.css" />
-   </stylesheets>
-
-</Pane>
+<AnchorPane maxHeight="-Infinity" maxWidth="360.0" minHeight="-Infinity" prefWidth="360.0" styleClass="notification" stylesheets="@components.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <StackPane prefHeight="48.0" prefWidth="48.0">
+               <children>
+                  <SVGPath content="M16.466 30a4 4 0 0 0 3.992-4.251.46.46 0 0 0-.465-.42l-7.037-.08a.46.46 0 0 0-.476.41A4 4 0 0 0 16.466 30ZM7.133 12c0-5.155 4.178-10 9.333-10s9.333 4.845 9.333 10v3.28c0 1.73.74 3.377 2.033 4.527 1.387 1.233.515 3.526-1.341 3.526H6.44c-1.856 0-2.728-2.293-1.34-3.526a6.055 6.055 0 0 0 2.032-4.526V12Z" styleClass="icon-button-color" />
+               </children>
+            </StackPane>
+            <AnchorPane>
+               <children>
+                  <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <Label id="notificationHeading" maxWidth="256.0" text="%runtime.scenes.components.notification.notificationHeading" />
+                        <Label id="notificationText" maxWidth="256.0" text="%runtime.scenes.components.notification.notificationText" wrapText="true" />
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

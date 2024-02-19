@@ -1,85 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.TextArea?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.shape.SVGPath?>
-<?import javafx.scene.text.Text?>
 
-<!-- DrLeonardo refactor -->
-
-<AnchorPane id="layout" fx:id="layout" prefHeight="500.0" prefWidth="900.0" styleClass="background" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="layout" prefHeight="560.0" prefWidth="930.0" styleClass="background" stylesheets="@update.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
 
     <!-- Навбар -->
-    <AnchorPane id="header" layoutX="523.2000122070312" layoutY="30.0" prefHeight="100.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <!-- Заголовок сцены -->
-        <Label layoutX="26.0" styleClass="scene-header" layoutY="51.0" text="%runtime.scenes.update.headingDialog" />
+    <AnchorPane id="header" prefHeight="80.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <Label styleClass="scene-header" text="%runtime.scenes.update.headingDialog" AnchorPane.leftAnchor="74.0" AnchorPane.topAnchor="34.0" />
         <!-- Кнопки управления -->
-        <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="30.0">
-
-            <!-- Кнопка отменить загрузку (java 11+) -->
-            <Button id="cancel" alignment="CENTER" contentDisplay="CENTER" layoutX="676.0" layoutY="-4.0" styleClass="icon-button" textAlignment="CENTER">
-                <graphic>
-                    <SVGPath content="M492.857 4C491.286 4 490 5.28599 490 6.85714V25.1429C490 26.714 491.286 28 492.857 28H511.143C512.714 28 514 26.714 514 25.1429V6.85714C514 5.28599 512.714 4 511.143 4H492.857ZM492.857 5.14286H511.143C512.096 5.14286 512.857 5.90372 512.857 6.85714V25.1429C512.857 26.0963 512.096 26.8571 511.143 26.8571H492.857C491.904 26.8571 491.143 26.0963 491.143 25.1429V6.85714C491.143 5.90372 491.904 5.14286 492.857 5.14286Z M495 16C495 12.134 498.134 9 502 9C505.866 9 509 12.134 509 16C509 19.866 505.866 23 502 23C498.134 23 495 19.866 495 16Z M500.707 13.293C500.512 13.0975 500.256 13 500 13C499.744 13 499.489 13.0975 499.293 13.293C498.902 13.684 498.902 14.3161 499.293 14.7071L500.586 16L499.293 17.293C498.902 17.684 498.902 18.3161 499.293 18.7071C499.488 18.9021 499.744 19 500 19C500.256 19 500.512 18.9021 500.707 18.7071L502 17.4141L503.293 18.7071C503.488 18.9021 503.744 19 504 19C504.256 19 504.512 18.9021 504.707 18.7071C505.098 18.3161 505.098 17.684 504.707 17.293L503.414 16L504.707 14.7071C505.098 14.3161 505.098 13.684 504.707 13.293C504.316 12.902 503.684 12.902 503.293 13.293L502 14.586L500.707 13.293Z" styleClass="icon-button-error" />
-                </graphic>
-                <tooltip>
-                    <Tooltip id="cancelTooltip" text="%runtime.scenes.update.cancelTooltip" />
-                </tooltip>
-            </Button>
-
-            <!-- Кнопка свернуть -->
-            <Button id="minimize" layoutX="760.0" mnemonicParsing="false" styleClass="icon-button">
-                <graphic>
-                    <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM10.2143 20C9.58968 20 9.07143 20.5183 9.07143 21.1429V22.2857C9.07143 22.9103 9.58968 23.4286 10.2143 23.4286H22.7857C23.4103 23.4286 23.9286 22.9103 23.9286 22.2857V21.1429C23.9286 20.5183 23.4103 20 22.7857 20H10.2143ZM10.2143 21.1429H22.7857V22.2857H10.2143V21.1429Z" styleClass="icon-button-color" />
-                </graphic>
-                <tooltip>
-                    <Tooltip id="minimizeTooltip" text="%runtime.scenes.login.minimizeTooltip" />
-                </tooltip>
-            </Button>
-
-            <Button id="exit" graphicTextGap="0.0" layoutX="802.0" mnemonicParsing="false" styleClass="icon-button">
-                <graphic>
-                    <SVGPath content="M7.35714 4C5.78599 4 4.5 5.28599 4.5 6.85714V25.1429C4.5 26.714 5.78599 28 7.35714 28H25.6429C27.214 28 28.5 26.714 28.5 25.1429V6.85714C28.5 5.28599 27.214 4 25.6429 4H7.35714ZM7.35714 5.14286H25.6429C26.5963 5.14286 27.3571 5.90372 27.3571 6.85714V25.1429C27.3571 26.0963 26.5963 26.8571 25.6429 26.8571H7.35714C6.40372 26.8571 5.64286 26.0963 5.64286 25.1429V6.85714C5.64286 5.90372 6.40372 5.14286 7.35714 5.14286ZM11.7612 10.4531L10.9531 11.2612L15.692 16L10.9531 20.7388L11.7612 21.5469L16.5 16.808L21.2388 21.5469L22.0469 20.7388L17.308 16L22.0469 11.2612L21.2388 10.4531L16.5 15.192L11.7612 10.4531Z" styleClass="icon-button-color" />
-                </graphic>
-                <tooltip>
-                    <Tooltip id="exitTooltip" text="%runtime.scenes.login.exitTooltip" />
-                </tooltip>
-            </Button>
+        <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="34.0">
+            <fx:include source="../../components/buttons/cancel.fxml" />
+            <fx:include source="../../components/buttons/minimize.fxml" />
+            <fx:include source="../../components/buttons/exit.fxml" />
         </HBox>
     </AnchorPane>
+    <AnchorPane prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="52.0" AnchorPane.leftAnchor="51.0" AnchorPane.rightAnchor="51.0" AnchorPane.topAnchor="80.0">
+        <children>
+            <AnchorPane styleClass="anchor-block-information" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="130.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <children>
 
-    <TextArea id="outputUpdate" editable="false" layoutX="181.0" layoutY="97.0" prefHeight="227.0" prefWidth="719.0" wrapText="true" AnchorPane.leftAnchor="181.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
-        <padding>
-            <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
-        </padding>
-    </TextArea>
-   <StackPane id="update-detail" layoutX="23.0" layoutY="247.0" prefHeight="130.0" prefWidth="130.0" AnchorPane.leftAnchor="51.0" AnchorPane.topAnchor="324.0">
-      <children>
-      
-          <!-- Информация-->
-          <VBox id="speedOn" alignment="CENTER">
-              <Label id="speed" alignment="CENTER" layoutY="28.0" maxWidth="1.7976931348623157E308" styleClass="speed" text="214" textAlignment="CENTER" />
-              <Label id="speed-text" alignment="CENTER" layoutY="92.0" maxWidth="1.7976931348623157E308" styleClass="speed-text" text="MB/S" textAlignment="CENTER" />
-              <Label id="volume" alignment="CENTER" contentDisplay="RIGHT" layoutX="1.0" layoutY="114.0" opacity="0.28" prefHeight="19.0" prefWidth="96.0" text="[240 MB]" />
-          </VBox>
-         <Label id="speedErr" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="speedError" text="ERR" visible="false" />
-      </children>
-   </StackPane>
+                    <TextArea id="outputUpdate" editable="false" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                </children>
+            </AnchorPane>
+            <StackPane id="update-detail" prefHeight="130.0" prefWidth="130.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+                <children>
 
-    <!-- Прогрессбар-->
-    <ProgressBar id="progress" layoutX="181.0" layoutY="363.0" prefHeight="52.0" progress="0.15" AnchorPane.leftAnchor="181.0" AnchorPane.rightAnchor="52.0" />
+                    <!-- Информация-->
+                    <VBox id="speedOn" alignment="CENTER">
+                        <Label id="speed" alignment="CENTER" maxWidth="1.7976931348623157E308" text="214" textAlignment="CENTER">
+                            <VBox.margin>
+                                <Insets bottom="10.0" />
+                            </VBox.margin>
+                        </Label>
+                        <Label id="speed-text" alignment="CENTER" maxWidth="1.7976931348623157E308" text="MB/S" textAlignment="CENTER" />
+                        <Label id="volume" alignment="CENTER" contentDisplay="RIGHT" opacity="0.28" text="[240 MB]" />
+                    </VBox>
+                    <Label id="speedErr" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="speedError" text="ERR" visible="false" />
+                </children>
+            </StackPane>
 
-    <!-- Подключение стилей-->
-    <stylesheets>
-        <URL value="@update.css" />
-    </stylesheets>
-
+            <!-- Прогрессбар-->
+            <ProgressBar id="progress" prefHeight="50.0" progress="0.31" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="130.0" AnchorPane.rightAnchor="0.0" />
+        </children>
+    </AnchorPane>
 </AnchorPane>

@@ -13,7 +13,7 @@ javafx {
 sourceCompatibility = '17'
 targetCompatibility = '17'
 group 'pro.gravit.launcher'
-version '3.0.4'
+version '3.0.5'
 def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
 
 task sourcesJar(type: Jar) {
@@ -67,7 +67,7 @@ dependencies {
     implementation "pro.gravit.utils.enfs:enfs:2.0.1-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'
-    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 wrapper {
