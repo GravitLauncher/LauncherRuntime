@@ -150,7 +150,9 @@ public class LoginScene extends AbstractScene {
                                }
                            } else if (authAvailability.name.equals(application.runtimeSettings.lastAuth.name))
                                changeAuthAvailability(authAvailability);
-                           addAuthAvailability(authAvailability);
+                           if(authAvailability.visible) {
+                               addAuthAvailability(authAvailability);
+                           }
                        }
                        if (this.authAvailability == null && auth.list.size() > 0) {
                            changeAuthAvailability(auth.list.get(0));
