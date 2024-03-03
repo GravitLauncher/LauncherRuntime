@@ -15,7 +15,9 @@ import pro.gravit.launcher.client.gui.JavaFXApplication;
 import pro.gravit.launcher.client.gui.config.DesignConstants;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URL;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,7 +37,13 @@ public abstract class AbstractStage {
         this.scene = new Scene(stackPane);
         this.stage.setScene(scene);
         try {
-            this.scene.getStylesheets().add(JavaFXApplication.getResourceURL("styles/global.css").toString());
+            URL globalCss;
+            try {
+                globalCss = JavaFXApplication.getResourceURL("styles/global.bss");
+            } catch (FileNotFoundException e) {
+                globalCss = JavaFXApplication.getResourceURL("styles/global.css");
+            }
+            this.scene.getStylesheets().add(globalCss.toString());
         } catch (IOException e) {
             LogHelper.error(e);
         }
