@@ -20,8 +20,10 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Stream;
 
 public class GuiObjectsContainer {
     private final JavaFXApplication application;
@@ -62,6 +64,22 @@ public class GuiObjectsContainer {
         updateScene = registerScene(UpdateScene.class);
         debugScene = registerScene(DebugScene.class);
         browserScene = registerScene(BrowserScene.class);
+    }
+
+    public Stream<AbstractScene> scenes() {
+        return scenes.stream();
+    }
+
+    public Stream<AbstractOverlay> overlays() {
+        return overlays.stream();
+    }
+
+    public Set<AbstractOverlay> getOverlays() {
+        return Collections.unmodifiableSet(overlays);
+    }
+
+    public Set<AbstractScene> getScenes() {
+        return Collections.unmodifiableSet(scenes);
     }
 
     public void reload() throws Exception {

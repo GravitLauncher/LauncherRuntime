@@ -15,6 +15,7 @@ import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
+import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
 import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.runtime.client.ServerPinger;
 import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
@@ -26,7 +27,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.IOException;
 import java.util.*;
 
-public class ServerMenuScene extends AbstractScene {
+public class ServerMenuScene extends AbstractScene implements SceneSupportUserBlock {
     private List<ClientProfile> lastProfiles;
     private UserBlock userBlock;
 
@@ -104,6 +105,7 @@ public class ServerMenuScene extends AbstractScene {
         userBlock.reset();
     }
 
+    @Override
     public UserBlock getUserBlock() {
         return userBlock;
     }

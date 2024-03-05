@@ -12,12 +12,13 @@ import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.components.ServerButton;
+import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
 import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.launcher.base.profiles.optional.OptionalView;
 
-public class OptionsScene extends AbstractScene {
+public class OptionsScene extends AbstractScene implements SceneSupportUserBlock {
     private OptionsTab optionsTab;
     private UserBlock userBlock;
 
@@ -68,6 +69,7 @@ public class OptionsScene extends AbstractScene {
         return "options";
     }
 
+    @Override
     public UserBlock getUserBlock() {
         return userBlock;
     }

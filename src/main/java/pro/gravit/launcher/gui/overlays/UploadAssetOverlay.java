@@ -12,6 +12,8 @@ import pro.gravit.launcher.base.profiles.Texture;
 import pro.gravit.launcher.base.request.Request;
 import pro.gravit.launcher.base.request.RequestException;
 import pro.gravit.launcher.base.request.cabinet.GetAssetUploadUrl;
+import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
@@ -128,10 +130,11 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                         URL skinUrl = new URL(texture.url);
                                                         if("SKIN".equals(name)) {
                                                             application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
-                                                            application.gui.serverMenuScene.getUserBlock().resetAvatar();
-                                                            application.gui.serverInfoScene.getUserBlock().resetAvatar();
-                                                            application.gui.settingsScene.getUserBlock().resetAvatar();
-                                                            application.gui.optionsScene.getUserBlock().resetAvatar();
+                                                            for(var scene : application.gui.getScenes()) {
+                                                                if(scene.isInit() && scene instanceof SceneSupportUserBlock supportUserBlock) {
+                                                                    supportUserBlock.getUserBlock().resetAvatar();
+                                                                }
+                                                            }
                                                         }
                                                         contextHelper.runInFxThread(() -> {
                                                             application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));

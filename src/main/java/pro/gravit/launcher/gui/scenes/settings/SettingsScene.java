@@ -18,6 +18,7 @@ import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.components.ServerButton;
+import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
 import pro.gravit.launcher.gui.stage.ConsoleStage;
 import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.gui.utils.SystemMemory;
@@ -33,7 +34,7 @@ import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.function.Consumer;
 
-public class SettingsScene extends AbstractScene {
+public class SettingsScene extends AbstractScene implements SceneSupportUserBlock {
 
     private final static long MAX_JAVA_MEMORY_X64 = 32 * 1024;
     private final static long MAX_JAVA_MEMORY_X32 = 1536;
@@ -203,6 +204,7 @@ public class SettingsScene extends AbstractScene {
         userBlock.reset();
     }
 
+    @Override
     public UserBlock getUserBlock() {
         return userBlock;
     }
