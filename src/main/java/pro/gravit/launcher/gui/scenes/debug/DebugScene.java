@@ -2,30 +2,20 @@ package pro.gravit.launcher.gui.scenes.debug;
 
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.gui.JavaRuntimeModule;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
-import pro.gravit.launcher.gui.impl.ContextHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.service.LaunchService;
-import pro.gravit.utils.helper.CommonHelper;
-import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 
-public class DebugScene extends AbstractScene implements LaunchService.ClientInstance.ProcessListener {
-    private static final long MAX_LENGTH = 1024 * 32;
-    private static final int REMOVE_LENGTH = 1024 * 4;
+public class DebugScene extends AbstractScene {
+    private ProcessLogOutput processLogOutput;
     private LaunchService.ClientInstance clientInstance;
-    private TextArea output;
 
     public DebugScene(JavaFXApplication application) {
         super("scenes/debug/debug.fxml", application);
@@ -34,7 +24,7 @@ public class DebugScene extends AbstractScene implements LaunchService.ClientIns
 
     @Override
     protected void doInit() {
-        output = LookupHelper.lookup(layout, "#output");
+        processLogOutput = new ProcessLogOutput(LookupHelper.lookup(layout, "#output"));
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
             if(clientInstance != null) clientInstance.kill();
         }));
@@ -42,14 +32,11 @@ public class DebugScene extends AbstractScene implements LaunchService.ClientIns
         LookupHelper.<Label>lookupIfPossible(layout, "#version")
                     .ifPresent((v) -> v.setText(JavaRuntimeModule.getMiniLauncherInfo()));
         LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
-            ClipboardContent clipboardContent = new ClipboardContent();
-            clipboardContent.putString(output.getText());
-            Clipboard clipboard = Clipboard.getSystemClipboard();
-            clipboard.setContent(clipboardContent);
+            processLogOutput.copyToClipboard();
         }));
         LookupHelper.<ButtonBase>lookup(header, "#back").setOnAction((e) -> {
             if(clientInstance != null) {
-                clientInstance.unregisterListener(this);
+                clientInstance.unregisterListener(processLogOutput);
             }
             try {
                 switchScene(application.gui.serverInfoScene);
@@ -62,71 +49,39 @@ public class DebugScene extends AbstractScene implements LaunchService.ClientIns
 
     @Override
     public void reset() {
-        output.clear();
+        processLogOutput.clear();
     }
 
     public void onClientInstance(LaunchService.ClientInstance clientInstance) {
         this.clientInstance = clientInstance;
-        this.clientInstance.registerListener(this);
+        this.clientInstance.registerListener(processLogOutput);
         this.clientInstance.getOnWriteParamsFuture().thenAccept((ok) -> {
-            append("[START] Write param successful\n");
+            processLogOutput.append("[START] Write param successful\n");
         }).exceptionally((e) -> {
             errorHandle(e);
             return null;
         });
         this.clientInstance.start().thenAccept((code) -> {
-            append(String.format("[START] Process exit with code %d", code));
+            processLogOutput.append(String.format("[START] Process exit with code %d", code));
         }).exceptionally((e) -> {
             errorHandle(e);
             return null;
         });
     }
 
-    private final Object syncObject = new Object();
-    private String appendString = "";
-    private boolean isOutputRunned;
-
     public void append(String text) {
-        boolean needRun = false;
-        synchronized (syncObject) {
-            if (appendString.length() > MAX_LENGTH) {
-                appendString = "<logs buffer overflow>\n".concat(text);
-            } else {
-                appendString = appendString.concat(text);
-            }
-            if (!isOutputRunned) {
-                needRun = true;
-                isOutputRunned = true;
-            }
-        }
-        if (needRun) {
-            ContextHelper.runInFxThreadStatic(() -> {
-                synchronized (syncObject) {
-                    if (output.lengthProperty().get() > MAX_LENGTH) {
-                        output.deleteText(0, REMOVE_LENGTH);
-                    }
-                    output.appendText(appendString);
-                    appendString = "";
-                    isOutputRunned = false;
-                }
-            });
-        }
+        processLogOutput.append(text);
     }
 
     @Override
     public void errorHandle(Throwable e) {
         if (!(e instanceof EOFException)) {
-            if (LogHelper.isDebugEnabled()) append(e.toString());
+            if (LogHelper.isDebugEnabled()) processLogOutput.append(e.toString());
         }
     }
 
     @Override
     public String getName() {
         return "debug";
-    }
-
-    @Override
-    public void onNext(byte[] buf, int offset, int length) {
-        append(new String(buf, offset, length));
     }
 }

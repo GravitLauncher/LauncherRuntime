@@ -1,11 +1,11 @@
 package pro.gravit.launcher.gui.scenes.login.methods;
 
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.gui.impl.ContextHelper;
+import pro.gravit.launcher.gui.scenes.login.AuthFlow;
 import pro.gravit.launcher.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.base.request.auth.details.AuthLoginOnlyDetails;
@@ -51,11 +51,11 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
     }
 
     @Override
-    public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthLoginOnlyDetails details) {
+    public CompletableFuture<AuthFlow.LoginAndPasswordResult> auth(AuthLoginOnlyDetails details) {
         overlay.future = new CompletableFuture<>();
         String login = overlay.login.getText();
         if (login != null && !login.isEmpty()) {
-            return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(login, null));
+            return CompletableFuture.completedFuture(new AuthFlow.LoginAndPasswordResult(login, null));
         }
         return overlay.future;
     }
@@ -83,7 +83,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
     public class LoginOnlyOverlay extends AbstractVisualComponent {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
-        private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+        private CompletableFuture<AuthFlow.LoginAndPasswordResult> future;
 
         public LoginOnlyOverlay(JavaFXApplication application) {
             super("scenes/login/methods/loginonly.fxml", application);
@@ -94,9 +94,9 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
             return "loginonly";
         }
 
-        public LoginScene.LoginAndPasswordResult getResult() {
+        public AuthFlow.LoginAndPasswordResult getResult() {
             String rawLogin = login.getText();
-            return new LoginScene.LoginAndPasswordResult(rawLogin, null);
+            return new AuthFlow.LoginAndPasswordResult(rawLogin, null);
         }
 
         @Override

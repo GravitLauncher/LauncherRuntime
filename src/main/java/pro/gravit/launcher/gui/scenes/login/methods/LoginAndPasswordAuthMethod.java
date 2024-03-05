@@ -5,6 +5,7 @@ import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.gui.impl.ContextHelper;
+import pro.gravit.launcher.gui.scenes.login.AuthFlow;
 import pro.gravit.launcher.gui.scenes.login.LoginAuthButtonComponent;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.base.request.auth.AuthRequest;
@@ -52,14 +53,14 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
     }
 
     @Override
-    public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthPasswordDetails details) {
+    public CompletableFuture<AuthFlow.LoginAndPasswordResult> auth(AuthPasswordDetails details) {
         overlay.future = new CompletableFuture<>();
         String login = overlay.login.getText();
         AuthRequest.AuthPasswordInterface password;
         if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(application.getTranslation(
                 "runtime.scenes.login.password.saved"))) {
             password = application.runtimeSettings.password;
-            return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(login, password));
+            return CompletableFuture.completedFuture(new AuthFlow.LoginAndPasswordResult(login, password));
         }
         return overlay.future;
     }
@@ -88,7 +89,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField login;
         private TextField password;
-        private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+        private CompletableFuture<AuthFlow.LoginAndPasswordResult> future;
 
         public LoginAndPasswordOverlay(JavaFXApplication application) {
             super("scenes/login/methods/loginpassword.fxml", application);
@@ -99,10 +100,10 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             return "loginandpassword";
         }
 
-        public LoginScene.LoginAndPasswordResult getResult() {
+        public AuthFlow.LoginAndPasswordResult getResult() {
             String rawLogin = login.getText();
             String rawPassword = password.getText();
-            return new LoginScene.LoginAndPasswordResult(rawLogin, application.authService.makePassword(rawPassword));
+            return new AuthFlow.LoginAndPasswordResult(rawLogin, application.authService.makePassword(rawPassword));
         }
 
         @Override

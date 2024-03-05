@@ -1,4 +1,4 @@
-package pro.gravit.launcher.gui.utils;
+package pro.gravit.launcher.gui.impl;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;

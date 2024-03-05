@@ -5,6 +5,7 @@ import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.gui.impl.ContextHelper;
+import pro.gravit.launcher.gui.scenes.login.AuthFlow;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.base.request.auth.details.AuthTotpDetails;
 import pro.gravit.launcher.base.request.auth.password.AuthTOTPPassword;
@@ -49,13 +50,13 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
     }
 
     @Override
-    public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthTotpDetails details) {
+    public CompletableFuture<AuthFlow.LoginAndPasswordResult> auth(AuthTotpDetails details) {
         overlay.future = new CompletableFuture<>();
         String totp = overlay.getCode();
         if (totp != null && !totp.isEmpty()) {
             AuthTOTPPassword totpPassword = new AuthTOTPPassword();
             totpPassword.totp = totp;
-            return CompletableFuture.completedFuture(new LoginScene.LoginAndPasswordResult(null, totpPassword));
+            return CompletableFuture.completedFuture(new AuthFlow.LoginAndPasswordResult(null, totpPassword));
         }
         return overlay.future;
     }
@@ -83,7 +84,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
     public static class TotpOverlay extends AbstractVisualComponent {
         private static final UserAuthCanceledException USER_AUTH_CANCELED_EXCEPTION = new UserAuthCanceledException();
         private TextField totpField;
-        private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+        private CompletableFuture<AuthFlow.LoginAndPasswordResult> future;
         private LoginScene.LoginSceneAccessor accessor;
         private int maxLength;
 
@@ -119,7 +120,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         public void complete() {
             AuthTOTPPassword totpPassword = new AuthTOTPPassword();
             totpPassword.totp = getCode();
-            future.complete(new LoginScene.LoginAndPasswordResult(null, totpPassword));
+            future.complete(new AuthFlow.LoginAndPasswordResult(null, totpPassword));
         }
 
         public void requestFocus() {

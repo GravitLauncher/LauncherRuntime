@@ -12,24 +12,19 @@ import pro.gravit.launcher.gui.StdJavaRuntimeProvider;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
+import pro.gravit.launcher.gui.impl.ContextHelper;
 import pro.gravit.launcher.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
-import pro.gravit.launcher.gui.scenes.login.methods.*;
 import pro.gravit.launcher.runtime.LauncherEngine;
 import pro.gravit.launcher.runtime.utils.LauncherUpdater;
 import pro.gravit.launcher.base.events.request.AuthRequestEvent;
 import pro.gravit.launcher.base.events.request.GetAvailabilityAuthRequestEvent;
 import pro.gravit.launcher.base.profiles.Texture;
 import pro.gravit.launcher.base.request.Request;
-import pro.gravit.launcher.base.request.RequestException;
 import pro.gravit.launcher.base.request.WebSocketEvent;
 import pro.gravit.launcher.base.request.auth.AuthRequest;
 import pro.gravit.launcher.base.request.auth.GetAvailabilityAuthRequest;
-import pro.gravit.launcher.base.request.auth.RefreshTokenRequest;
-import pro.gravit.launcher.base.request.auth.details.AuthLoginOnlyDetails;
 import pro.gravit.launcher.base.request.auth.details.AuthPasswordDetails;
-import pro.gravit.launcher.base.request.auth.details.AuthTotpDetails;
-import pro.gravit.launcher.base.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.base.request.auth.password.*;
 import pro.gravit.launcher.base.request.update.LauncherRequest;
 import pro.gravit.launcher.base.request.update.ProfilesRequest;
@@ -37,13 +32,9 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class LoginScene extends AbstractScene {
-    public Map<Class<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>, AbstractAuthMethod<? extends GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>> authMethods = new HashMap<>(
-            8);
-    public boolean isLoginStarted;
     private List<GetAvailabilityAuthRequestEvent.AuthAvailability> auth; //TODO: FIX? Field is assigned but never accessed.
     private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
@@ -52,21 +43,18 @@ public class LoginScene extends AbstractScene {
     private LoginAuthButtonComponent authButton;
     private ComboBox<GetAvailabilityAuthRequestEvent.AuthAvailability> authList;
     private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
-    private final AuthFlow authFlow = new AuthFlow();
+    private final AuthFlow authFlow;
 
     public LoginScene(JavaFXApplication application) {
         super("scenes/login/login.fxml", application);
         LoginSceneAccessor accessor = new LoginSceneAccessor();
-        authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod(accessor));
-        authMethods.put(AuthWebViewDetails.class, new WebAuthMethod(accessor));
-        authMethods.put(AuthTotpDetails.class, new TotpAuthMethod(accessor));
-        authMethods.put(AuthLoginOnlyDetails.class, new LoginOnlyAuthMethod(accessor));
+        this.authFlow = new AuthFlow(accessor, this::onSuccessLogin);
     }
 
     @Override
     public void doInit() {
         authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButton"), application,
-                                                  (e) -> contextHelper.runCallback(this::loginWithGui));
+                                                  (e) -> contextHelper.runCallback(authFlow::loginWithGui));
         savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
         if (application.runtimeSettings.password != null || application.runtimeSettings.oauthAccessToken != null) {
             LookupHelper.<CheckBox>lookup(layout, "#savePassword").setSelected(true);
@@ -87,7 +75,7 @@ public class LoginScene extends AbstractScene {
         authList = LookupHelper.lookup(layout, "#authList");
         authList.setConverter(new AuthAvailabilityStringConverter());
         authList.setOnAction((e) -> changeAuthAvailability(authList.getSelectionModel().getSelectedItem()));
-        authMethods.forEach((k, v) -> v.prepare());
+        authFlow.prepare();
         // Verify Launcher
     }
 
@@ -163,7 +151,7 @@ public class LoginScene extends AbstractScene {
 
     private void runAutoAuth() {
         if (application.guiModuleConfig.autoAuth || application.runtimeSettings.autoAuth) {
-            contextHelper.runInFxThread(this::loginWithGui);
+            contextHelper.runInFxThread(authFlow::loginWithGui);
         }
     }
 
@@ -198,95 +186,11 @@ public class LoginScene extends AbstractScene {
     @Override
     public void reset() {
         authFlow.reset();
-        for(var e : authMethods.values()) {
-            e.reset();
-        }
     }
 
     @Override
     public String getName() {
         return "login";
-    }
-
-    private boolean tryOAuthLogin() {
-        if (application.runtimeSettings.lastAuth != null && authAvailability.name.equals(
-                application.runtimeSettings.lastAuth.name) && application.runtimeSettings.oauthAccessToken != null) {
-            if (application.runtimeSettings.oauthExpire != 0
-                    && application.runtimeSettings.oauthExpire < System.currentTimeMillis()) {
-                refreshToken();
-                return true;
-            }
-            Request.setOAuth(authAvailability.name,
-                             new AuthRequestEvent.OAuthRequestEvent(application.runtimeSettings.oauthAccessToken,
-                                                                    application.runtimeSettings.oauthRefreshToken,
-                                                                    application.runtimeSettings.oauthExpire),
-                             application.runtimeSettings.oauthExpire);
-            AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
-            LogHelper.info("Login with OAuth AccessToken");
-            loginWithOAuth(password, authAvailability, true);
-            return true;
-        }
-        return false;
-    }
-
-    private void refreshToken() {
-        RefreshTokenRequest request = new RefreshTokenRequest(authAvailability.name,
-                                                              application.runtimeSettings.oauthRefreshToken);
-        processing(request, application.getTranslation("runtime.overlay.processing.text.auth"), (result) -> {
-            application.runtimeSettings.oauthAccessToken = result.oauth.accessToken;
-            application.runtimeSettings.oauthRefreshToken = result.oauth.refreshToken;
-            application.runtimeSettings.oauthExpire = result.oauth.expire == 0
-                    ? 0
-                    : System.currentTimeMillis() + result.oauth.expire;
-            Request.setOAuth(authAvailability.name, result.oauth);
-            AuthOAuthPassword password = new AuthOAuthPassword(application.runtimeSettings.oauthAccessToken);
-            LogHelper.info("Login with OAuth AccessToken");
-            loginWithOAuth(password, authAvailability, false);
-        }, (error) -> {
-            application.runtimeSettings.oauthAccessToken = null;
-            application.runtimeSettings.oauthRefreshToken = null;
-            contextHelper.runInFxThread(this::loginWithGui);
-        });
-    }
-
-    private void loginWithOAuth(AuthOAuthPassword password,
-            GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability, boolean refreshIfError) {
-        AuthRequest authRequest = application.authService.makeAuthRequest(null, password, authAvailability.name);
-        processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"),
-                   (result) -> contextHelper.runInFxThread(() -> onSuccessLogin(new SuccessAuth(result, null, null))),
-                   (error) -> {
-                        if(refreshIfError && error.equals(AuthRequestEvent.OAUTH_TOKEN_EXPIRE)) {
-                            refreshToken();
-                            return;
-                        }
-                       if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
-                           application.runtimeSettings.oauthAccessToken = null;
-                           application.runtimeSettings.oauthRefreshToken = null;
-                           contextHelper.runInFxThread(this::loginWithGui);
-                       } else {
-                           errorHandle(new RequestException(error));
-                       }
-                   });
-    }
-
-    @SuppressWarnings("unchecked")
-    private AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> detailsToMethod(
-            GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details) {
-        return (AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails>) authMethods.get(
-                details.getClass());
-    }
-
-    private void loginWithGui() {
-        authButton.setState(LoginAuthButtonComponent.AuthButtonState.UNACTIVE);
-        {
-            var method = authFlow.getAuthMethodOnShow();
-            if (method != null) {
-                method.onAuthClicked();
-                return;
-            }
-        }
-        if (tryOAuthLogin()) return;
-        authFlow.start().thenAccept((result) -> contextHelper.runInFxThread(() -> onSuccessLogin(result)));
     }
 
     private boolean checkSavePasswordAvailable(AuthRequest.AuthPasswordInterface password) {
@@ -299,11 +203,11 @@ public class LoginScene extends AbstractScene {
     }
 
     public void onSuccessLogin(SuccessAuth successAuth) {
-        AuthRequestEvent result = successAuth.requestEvent;
+        AuthRequestEvent result = successAuth.requestEvent();
         application.authService.setAuthResult(authAvailability.name, result);
         boolean savePassword = savePasswordCheckBox.isSelected();
         if (savePassword) {
-            application.runtimeSettings.login = successAuth.recentLogin;
+            application.runtimeSettings.login = successAuth.recentLogin();
             if (result.oauth == null) {
                 LogHelper.warning("Password not saved");
             } else {
@@ -353,7 +257,7 @@ public class LoginScene extends AbstractScene {
                                }
                            }
                            if (application.getCurrentScene() instanceof LoginScene loginScene) {
-                               loginScene.isLoginStarted = false;
+                               loginScene.authFlow.isLoginStarted = false;
                            }
                            application.setMainScene(application.gui.serverMenuScene);
                        });
@@ -369,7 +273,8 @@ public class LoginScene extends AbstractScene {
         application.runtimeSettings.oauthRefreshToken = null;
     }
 
-    public record LoginAndPasswordResult(String login, AuthRequest.AuthPasswordInterface password) {
+    public AuthFlow getAuthFlow() {
+        return authFlow;
     }
 
     private static class AuthAvailabilityStringConverter extends StringConverter<GetAvailabilityAuthRequestEvent.AuthAvailability> {
@@ -410,165 +315,28 @@ public class LoginScene extends AbstractScene {
         public void errorHandle(Throwable e) {
             LoginScene.this.errorHandle(e);
         }
-    }
 
-
-    public class AuthFlow {
-        private final List<Integer> authFlow = new ArrayList<>();
-        private GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability;
-        private volatile AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> authMethodOnShow;
-
-        public void init(GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability) {
-            this.authAvailability = authAvailability;
-            reset();
+        public void setState(LoginAuthButtonComponent.AuthButtonState state) {
+            authButton.setState(state);
         }
 
-        public void reset() {
-            authFlow.clear();
-            authFlow.add(0);
-            if (authMethodOnShow != null) {
-                authMethodOnShow.onUserCancel();
-            }
-            if (content.getChildren().size() != 0) {
-                content.getChildren().clear();
-                authButton.setState(LoginAuthButtonComponent.AuthButtonState.ACTIVE);
-            }
-            if(authMethodOnShow != null && !authMethodOnShow.isOverlay()) {
-                loginWithGui();
-            }
-            authMethodOnShow = null;
+        public boolean isEmptyContent() {
+            return content.getChildren().isEmpty();
         }
 
-        private CompletableFuture<LoginAndPasswordResult> tryLogin(String resentLogin,
-                AuthRequest.AuthPasswordInterface resentPassword) {
-            CompletableFuture<LoginScene.LoginAndPasswordResult> authFuture = null;
-            if (resentPassword != null) {
-                authFuture = new CompletableFuture<>();
-                authFuture.complete(new LoginAndPasswordResult(resentLogin, resentPassword));
-            }
-            for (int i : authFlow) {
-                GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails details = authAvailability.details.get(i);
-                final AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> authMethod = detailsToMethod(
-                        details);
-                if (authFuture == null) authFuture = authMethod.show(details).thenCompose((x) -> {
-                    authMethodOnShow = authMethod;
-                    return CompletableFuture.completedFuture(x);
-                }).thenCompose((e) -> authMethod.auth(details)).thenCompose((x) -> {
-                    authMethodOnShow = null;
-                    return CompletableFuture.completedFuture(x);
-                });
-                else {
-                    authFuture = authFuture.thenCompose(e -> authMethod.show(details).thenApply(x -> e));
-                    authFuture = authFuture.thenCompose((x) -> {
-                        authMethodOnShow = authMethod;
-                        return CompletableFuture.completedFuture(x);
-                    });
-                    authFuture = authFuture.thenCompose(first -> authMethod.auth(details).thenApply(second -> {
-                        AuthRequest.AuthPasswordInterface password;
-                        String login = null;
-                        if (first.login != null) {
-                            login = first.login;
-                        }
-                        if (second.login != null) {
-                            login = second.login;
-                        }
-                        if (first.password instanceof AuthMultiPassword authMultiPassword) {
-                            password = first.password;
-                            authMultiPassword.list.add(second.password);
-                        } else if (first.password instanceof Auth2FAPassword auth2FAPassword) {
-                            password = new AuthMultiPassword();
-                            ((AuthMultiPassword) password).list = new ArrayList<>();
-                            ((AuthMultiPassword) password).list.add(auth2FAPassword.firstPassword);
-                            ((AuthMultiPassword) password).list.add(auth2FAPassword.secondPassword);
-                            ((AuthMultiPassword) password).list.add(second.password);
-                        } else {
-                            password = new Auth2FAPassword();
-                            ((Auth2FAPassword) password).firstPassword = first.password;
-                            ((Auth2FAPassword) password).secondPassword = second.password;
-                        }
-                        return new LoginAndPasswordResult(login, password);
-                    }));
-                    authFuture = authFuture.thenCompose((x) -> {
-                        authMethodOnShow = null;
-                        return CompletableFuture.completedFuture(x);
-                    });
-                }
-                authFuture = authFuture.thenCompose(e -> authMethod.hide().thenApply(x -> e));
-            }
-            return authFuture;
+        public void clearContent() {
+            content.getChildren().clear();
         }
 
-        public AbstractAuthMethod<GetAvailabilityAuthRequestEvent.AuthAvailabilityDetails> getAuthMethodOnShow() {
-            return authMethodOnShow;
+        public void runInFxThread(ContextHelper.GuiExceptionRunnable runnable) {
+            contextHelper.runInFxThread(runnable);
         }
 
-        private void start(CompletableFuture<SuccessAuth> result, String resentLogin,
-                AuthRequest.AuthPasswordInterface resentPassword) {
-            CompletableFuture<LoginAndPasswordResult> authFuture = tryLogin(resentLogin, resentPassword);
-            authFuture.thenAccept(e -> login(e.login, e.password, authAvailability, result)).exceptionally((e) -> {
-                e = e.getCause();
-                reset();
-                isLoginStarted = false;
-                if (e instanceof AbstractAuthMethod.UserAuthCanceledException) {
-                    return null;
-                }
-                errorHandle(e);
-                return null;
-            });
-        }
-
-        private CompletableFuture<SuccessAuth> start() {
-            CompletableFuture<SuccessAuth> result = new CompletableFuture<>();
-            start(result, null, null);
-            return result;
-        }
-
-
-        private void login(String login, AuthRequest.AuthPasswordInterface password,
-                GetAvailabilityAuthRequestEvent.AuthAvailability authId, CompletableFuture<SuccessAuth> result) {
-            isLoginStarted = true;
-            LogHelper.dev("Auth with %s password ***** authId %s", login, authId);
-            AuthRequest authRequest = application.authService.makeAuthRequest(login, password, authId.name);
-            processing(authRequest, application.getTranslation("runtime.overlay.processing.text.auth"),
-                       (event) -> result.complete(new SuccessAuth(event, login, password)), (error) -> {
-                        if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
-                            application.runtimeSettings.oauthAccessToken = null;
-                            application.runtimeSettings.oauthRefreshToken = null;
-                            result.completeExceptionally(new RequestException(error));
-                        } else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
-                            authFlow.clear();
-                            authFlow.add(1);
-                            contextHelper.runInFxThread(() -> start(result, login, password));
-                        } else if (error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
-                            List<Integer> newAuthFlow = new ArrayList<>();
-                            for (String s : error.substring(
-                                    AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length() + 1).split("\\.")) {
-                                newAuthFlow.add(Integer.parseInt(s));
-                            }
-                            //AuthRequest.AuthPasswordInterface recentPassword = makeResentPassword(newAuthFlow, password);
-                            authFlow.clear();
-                            authFlow.addAll(newAuthFlow);
-                            contextHelper.runInFxThread(() -> start(result, login, password));
-                        } else {
-                            authFlow.clear();
-                            authFlow.add(0);
-                            errorHandle(new RequestException(error));
-                        }
-                    });
-        }
-
-    }
-
-    public static class SuccessAuth {
-        public AuthRequestEvent requestEvent;
-        public String recentLogin;
-        public AuthRequest.AuthPasswordInterface recentPassword;
-
-        public SuccessAuth(AuthRequestEvent requestEvent, String recentLogin,
-                AuthRequest.AuthPasswordInterface recentPassword) {
-            this.requestEvent = requestEvent;
-            this.recentLogin = recentLogin;
-            this.recentPassword = recentPassword;
+        public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess,
+                Consumer<String> onError) {
+            LoginScene.this.processing(request, text, onSuccess, onError);
         }
     }
+
+
 }

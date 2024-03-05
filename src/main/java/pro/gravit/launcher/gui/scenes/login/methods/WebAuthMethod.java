@@ -9,6 +9,7 @@ import javafx.scene.web.WebView;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.overlays.AbstractOverlay;
+import pro.gravit.launcher.gui.scenes.login.AuthFlow;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.base.request.auth.details.AuthWebViewDetails;
 import pro.gravit.launcher.base.request.auth.password.AuthCodePassword;
@@ -51,7 +52,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     }
 
     @Override
-    public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthWebViewDetails details) {
+    public CompletableFuture<AuthFlow.LoginAndPasswordResult> auth(AuthWebViewDetails details) {
         overlay.future = new CompletableFuture<>();
         overlay.follow(details.url, details.redirectUrl, (r) -> {
             String code = r;
@@ -60,7 +61,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
                 code = r.substring("?code=".length(), r.indexOf("&"));
             }
             LogHelper.debug("Code: %s", code);
-            overlay.future.complete(new LoginScene.LoginAndPasswordResult(null, new AuthCodePassword(code)));
+            overlay.future.complete(new AuthFlow.LoginAndPasswordResult(null, new AuthCodePassword(code)));
         });
         return overlay.future;
     }
@@ -89,7 +90,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     public static class WebAuthOverlay extends AbstractOverlay {
         private WebView webView;
         private LoginScene.LoginSceneAccessor accessor;
-        private CompletableFuture<LoginScene.LoginAndPasswordResult> future;
+        private CompletableFuture<AuthFlow.LoginAndPasswordResult> future;
 
         public WebAuthOverlay(JavaFXApplication application) {
             super("overlay/webauth/webauth.fxml", application);

@@ -1,4 +1,4 @@
-package pro.gravit.launcher.gui.utils;
+package pro.gravit.launcher.gui.impl;
 
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.config.RuntimeSettings;

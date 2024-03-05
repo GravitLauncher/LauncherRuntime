@@ -4,6 +4,7 @@ import javafx.application.Platform;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
+import pro.gravit.launcher.gui.scenes.login.SuccessAuth;
 import pro.gravit.launcher.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.gui.scenes.serverinfo.ServerInfoScene;
 import pro.gravit.launcher.gui.scenes.servermenu.ServerMenuScene;
@@ -34,16 +35,15 @@ public class GuiEventHandler implements RequestService.EventHandler {
         try {
             if (event instanceof AuthRequestEvent authRequestEvent) {
                 boolean isNextScene = application.getCurrentScene() instanceof LoginScene; //TODO: FIX
-                ((LoginScene) application.getCurrentScene()).isLoginStarted = true;
                 LogHelper.dev("Receive auth event. Send next scene %s", isNextScene ? "true" : "false");
                 application.authService.setAuthResult(null, authRequestEvent);
-                if (isNextScene && ((LoginScene) application.getCurrentScene()).isLoginStarted) {
+                if (isNextScene) {
                     Platform.runLater(() -> {
                         try {
                             ((LoginScene) application.getCurrentScene()).onSuccessLogin(
-                                    new LoginScene.SuccessAuth(authRequestEvent,
-                                                               authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
-                                                               null));
+                                    new SuccessAuth(authRequestEvent,
+                                                    authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
+                                                    null));
                         } catch (Throwable e) {
                             LogHelper.error(e);
                         }
