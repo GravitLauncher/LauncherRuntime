@@ -202,7 +202,7 @@ public class LoginScene extends AbstractScene {
                 && authAvailability.details.get(0) instanceof AuthPasswordDetails;
     }
 
-    public void onSuccessLogin(SuccessAuth successAuth) {
+    public void onSuccessLogin(AuthFlow.SuccessAuth successAuth) {
         AuthRequestEvent result = successAuth.requestEvent();
         application.authService.setAuthResult(authAvailability.name, result);
         boolean savePassword = savePasswordCheckBox.isSelected();
@@ -289,10 +289,7 @@ public class LoginScene extends AbstractScene {
         }
     }
 
-    public class LoginSceneAccessor {
-        public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
-            LoginScene.this.showOverlay(overlay, onFinished);
-        }
+    public class LoginSceneAccessor extends SceneAccessor {
 
         public void showContent(AbstractVisualComponent component) throws Exception {
             component.init();
@@ -304,16 +301,8 @@ public class LoginScene extends AbstractScene {
             content.getChildren().add(component.getLayout());
         }
 
-        public JavaFXApplication getApplication() {
-            return application;
-        }
-
         public LoginAuthButtonComponent getAuthButton() {
             return authButton;
-        }
-
-        public void errorHandle(Throwable e) {
-            LoginScene.this.errorHandle(e);
         }
 
         public void setState(LoginAuthButtonComponent.AuthButtonState state) {
@@ -326,10 +315,6 @@ public class LoginScene extends AbstractScene {
 
         public void clearContent() {
             content.getChildren().clear();
-        }
-
-        public void runInFxThread(ContextHelper.GuiExceptionRunnable runnable) {
-            contextHelper.runInFxThread(runnable);
         }
 
         public <T extends WebSocketEvent> void processing(Request<T> request, String text, Consumer<T> onSuccess,

@@ -11,19 +11,18 @@ import javafx.scene.layout.Pane;
 import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
 import pro.gravit.launcher.base.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.launcher.gui.JavaFXApplication;
+import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
-import pro.gravit.launcher.gui.scenes.servermenu.ServerButton;
-import pro.gravit.launcher.gui.scenes.servermenu.ServerMenuScene;
+import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.utils.helper.*;
 
 public class ServerInfoScene extends AbstractScene {
     private ServerButton serverButton;
-    private ImageView avatar;
-    private Image originalAvatarImage;
+    private UserBlock userBlock;
 
     public ServerInfoScene(JavaFXApplication application) {
         super("scenes/serverinfo/serverinfo.fxml", application);
@@ -31,18 +30,7 @@ public class ServerInfoScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        /** -- UserBlock START -- */
-        avatar = LookupHelper.lookup(layout, "#avatar");
-        originalAvatarImage = avatar.getImage();
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
-            try {
-                JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
-                h.setImage(originalAvatarImage);
-            } catch (Throwable e) {
-                LogHelper.warning("Skin head error");
-            }
-        });
-        /** -- UserBlock END -- */
+        this.userBlock = new UserBlock(layout, new SceneAccessor());
         LookupHelper.<Button>lookup(layout, "#back").setOnAction((e) -> {
             try {
                 switchScene(application.gui.serverMenuScene);
@@ -81,41 +69,13 @@ public class ServerInfoScene extends AbstractScene {
         });
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        serverButton = ServerMenuScene.getServerButton(application, profile);
+        serverButton = ServerButton.createServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
-        /** -- UserBlock START -- */
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#role")
-                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
-        avatar.setImage(originalAvatarImage);
-        resetAvatar();
-        if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
-            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
-                h.setVisible(true);
-                h.setOnAction((a) -> {
-                    processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
-                        contextHelper.runInFxThread(() -> {
-                            showOverlay(application.gui.uploadAssetOverlay, (f) -> {
-                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
-                            });
-                        });
-                    }, this::errorHandle, (e) -> {});
-                });
-            });
-        }
-        /** -- UserBlock END -- */
         serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"),
                                       (e) -> {
                                         runClient();
                                       });
-    }
-
-    public void resetAvatar() {
-        if (avatar == null) {
-            return;
-        }
-        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
+        this.userBlock.reset();
     }
 
     private void runClient() {
@@ -152,5 +112,9 @@ public class ServerInfoScene extends AbstractScene {
     @Override
     public String getName() {
         return "serverinfo";
+    }
+
+    public UserBlock getUserBlock() {
+        return userBlock;
     }
 }

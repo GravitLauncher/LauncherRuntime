@@ -3,8 +3,8 @@ package pro.gravit.launcher.gui.impl;
 import javafx.application.Platform;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
+import pro.gravit.launcher.gui.scenes.login.AuthFlow;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
-import pro.gravit.launcher.gui.scenes.login.SuccessAuth;
 import pro.gravit.launcher.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.gui.scenes.serverinfo.ServerInfoScene;
 import pro.gravit.launcher.gui.scenes.servermenu.ServerMenuScene;
@@ -41,9 +41,9 @@ public class GuiEventHandler implements RequestService.EventHandler {
                     Platform.runLater(() -> {
                         try {
                             ((LoginScene) application.getCurrentScene()).onSuccessLogin(
-                                    new SuccessAuth(authRequestEvent,
-                                                    authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
-                                                    null));
+                                    new AuthFlow.SuccessAuth(authRequestEvent,
+                                                             authRequestEvent.playerProfile != null ? authRequestEvent.playerProfile.username : null,
+                                                             null));
                         } catch (Throwable e) {
                             LogHelper.error(e);
                         }

@@ -1,4 +1,4 @@
-package pro.gravit.launcher.gui.scenes.servermenu;
+package pro.gravit.launcher.gui.components;
 
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -29,6 +29,10 @@ public class ServerButton extends AbstractVisualComponent {
     protected ServerButton(JavaFXApplication application, ClientProfile profile) {
         super(SERVER_BUTTON_FXML, application);
         this.profile = profile;
+    }
+
+    public static ServerButton createServerButton(JavaFXApplication application, ClientProfile profile) {
+        return new ServerButton(application, profile);
     }
 
     @Override

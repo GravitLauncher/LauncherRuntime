@@ -10,6 +10,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import pro.gravit.launcher.gui.JavaFXApplication;
+import pro.gravit.launcher.gui.components.ServerButton;
+import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
@@ -26,8 +28,7 @@ import java.util.*;
 
 public class ServerMenuScene extends AbstractScene {
     private List<ClientProfile> lastProfiles;
-    private ImageView avatar;
-    private Image originalAvatarImage;
+    private UserBlock userBlock;
 
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
@@ -35,18 +36,7 @@ public class ServerMenuScene extends AbstractScene {
 
     @Override
     public void doInit() {
-        /** -- UserBlock START -- */
-        avatar = LookupHelper.lookup(layout, "#avatar");
-        originalAvatarImage = avatar.getImage();
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
-            try {
-                JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
-                h.setImage(originalAvatarImage);
-            } catch (Throwable e) {
-                LogHelper.warning("Skin head error");
-            }
-        });
-        /** -- UserBlock END -- */
+        this.userBlock = new UserBlock(layout, new SceneAccessor());
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         scrollPane.setOnScroll(e -> {
             double widthContent = scrollPane.getWidth();
@@ -62,10 +52,6 @@ public class ServerMenuScene extends AbstractScene {
         public int position;
     }
 
-    public static ServerButton getServerButton(JavaFXApplication application, ClientProfile profile) {
-        return new ServerButton(application, profile);
-    }
-
     @Override
     public void reset() {
         if (lastProfiles == application.profilesService.getProfiles()) return;
@@ -77,7 +63,7 @@ public class ServerMenuScene extends AbstractScene {
         int position = 0;
         for (ClientProfile profile : profiles) {
             ServerButtonCache cache = new ServerButtonCache();
-            cache.serverButton = getServerButton(application, profile);
+            cache.serverButton = ServerButton.createServerButton(application, profile);
             cache.position = position;
             serverButtonCacheMap.put(profile, cache);
             position++;
@@ -115,35 +101,11 @@ public class ServerMenuScene extends AbstractScene {
                 }
             }
         }).start();
-        /** -- UserBlock START -- */
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#role")
-                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
-        avatar.setImage(originalAvatarImage);
-        resetAvatar();
-        if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
-            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
-                h.setVisible(true);
-                h.setOnAction((a) -> {
-                    processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
-                        contextHelper.runInFxThread(() -> {
-                            showOverlay(application.gui.uploadAssetOverlay, (f) -> {
-                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
-                            });
-                        });
-                    }, this::errorHandle, (e) -> {});
-                });
-            });
-        }
-        /** -- UserBlock END -- */
+        userBlock.reset();
     }
 
-    public void resetAvatar() {
-        if (avatar == null) {
-            return;
-        }
-        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
+    public UserBlock getUserBlock() {
+        return userBlock;
     }
 
     @Override

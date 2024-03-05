@@ -12,12 +12,12 @@ import oshi.SystemInfo;
 import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
 import pro.gravit.launcher.base.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.launcher.gui.JavaFXApplication;
+import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
-import pro.gravit.launcher.gui.scenes.servermenu.ServerButton;
-import pro.gravit.launcher.gui.scenes.servermenu.ServerMenuScene;
+import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.stage.ConsoleStage;
 import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.gui.utils.SystemMemory;
@@ -43,8 +43,7 @@ public class SettingsScene extends AbstractScene {
     private Slider ramSlider;
     private RuntimeSettings.ProfileSettingsView profileSettings;
     private JavaSelectorComponent javaSelector;
-    private ImageView avatar;
-    private Image originalAvatarImage;
+    private UserBlock userBlock;
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -52,18 +51,7 @@ public class SettingsScene extends AbstractScene {
 
     @Override
     protected void doInit() {
-        /** -- UserBlock START -- */
-        avatar = LookupHelper.lookup(layout, "#avatar");
-        originalAvatarImage = avatar.getImage();
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
-            try {
-                JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
-                h.setImage(originalAvatarImage);
-            } catch (Throwable e) {
-                LogHelper.warning("Skin head error");
-            }
-        });
-        /** -- UserBlock END -- */
+        this.userBlock = new UserBlock(layout, new SceneAccessor());
         componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
         settingsList = LookupHelper.lookup(componentList, "#settings-list");
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
@@ -190,7 +178,7 @@ public class SettingsScene extends AbstractScene {
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ClientProfile profile = application.profilesService.getProfile();
-        ServerButton serverButton = ServerMenuScene.getServerButton(application, profile);
+        ServerButton serverButton = ServerButton.createServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
         serverButton.enableSaveButton(null, (e) -> {
             try {
@@ -212,35 +200,11 @@ public class SettingsScene extends AbstractScene {
         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
             add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value);
         }
-        /** -- UserBlock START -- */
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.setText(application.authService.getUsername()));
-        LookupHelper.<Label>lookupIfPossible(layout, "#role")
-                    .ifPresent((e) -> e.setText(application.authService.getMainRole()));
-        avatar.setImage(originalAvatarImage);
-        resetAvatar();
-        if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
-            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
-                h.setVisible(true);
-                h.setOnAction((a) -> {
-                    processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
-                        contextHelper.runInFxThread(() -> {
-                            showOverlay(application.gui.uploadAssetOverlay, (f) -> {
-                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
-                            });
-                        });
-                    }, this::errorHandle, (e) -> {});
-                });
-            });
-        }
-        /** -- UserBlock END -- */
+        userBlock.reset();
     }
 
-    public void resetAvatar() {
-        if (avatar == null) {
-            return;
-        }
-        JavaFxUtils.putAvatarToImageView(application, application.authService.getUsername(), avatar);
+    public UserBlock getUserBlock() {
+        return userBlock;
     }
 
     @Override

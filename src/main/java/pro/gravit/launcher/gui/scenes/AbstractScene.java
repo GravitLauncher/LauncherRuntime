@@ -20,6 +20,7 @@ import pro.gravit.launcher.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.base.request.Request;
 import pro.gravit.launcher.base.request.WebSocketEvent;
 import pro.gravit.launcher.base.request.auth.ExitRequest;
+import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.function.Consumer;
@@ -113,5 +114,37 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     public static void runLater(double delay, EventHandler<ActionEvent> callback) {
         fade(null, delay, 0.0, 1.0, callback);
+    }
+
+    public class SceneAccessor {
+        public SceneAccessor() {
+        }
+
+
+        public void showOverlay(AbstractOverlay overlay, EventHandler<ActionEvent> onFinished) throws Exception {
+            AbstractScene.this.showOverlay(overlay, onFinished);
+        }
+
+        public JavaFXApplication getApplication() {
+            return application;
+        }
+
+        public void errorHandle(Throwable e) {
+            AbstractScene.this.errorHandle(e);
+        }
+
+        public void runInFxThread(ContextHelper.GuiExceptionRunnable runnable) {
+            contextHelper.runInFxThread(runnable);
+        }
+
+        public <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
+                Consumer<T> onSuccess, EventHandler<ActionEvent> onError) {
+            AbstractScene.this.processRequest(message, request, onSuccess, onError);
+        }
+
+        public final <T extends WebSocketEvent> void processRequest(String message, Request<T> request,
+                Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
+            AbstractScene.this.processRequest(message, request, onSuccess, onException, onError);
+        }
     }
 }

@@ -282,4 +282,8 @@ public class AuthFlow {
 
     public record LoginAndPasswordResult(String login, AuthRequest.AuthPasswordInterface password) {
     }
+
+    public record SuccessAuth(AuthRequestEvent requestEvent, String recentLogin,
+                                     AuthRequest.AuthPasswordInterface recentPassword) {
+    }
 }
