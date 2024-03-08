@@ -153,10 +153,8 @@ public class JavaFXApplication extends Application {
         }
         try {
             Class.forName("pro.gravit.utils.enfs.EnFS", false, JavaFXApplication.class.getClassLoader());
-            if (runtimeDirectory == null) {
-                EnFSHelper.initEnFS();
-                enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
-            }
+            EnFSHelper.initEnFS();
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme, runtimeDirectory);
         } catch (Throwable e) {
             if (!(e instanceof ClassNotFoundException)) {
                 LogHelper.error(e);
@@ -220,7 +218,7 @@ public class JavaFXApplication extends Application {
 
     public void resetDirectory() throws IOException {
         if (enfsDirectory != null) {
-            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme);
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme, runtimeDirectory);
         }
     }
 
@@ -256,13 +254,13 @@ public class JavaFXApplication extends Application {
     }
 
     public static URL getResourceURL(String name) throws IOException {
-        if (runtimeDirectory != null) {
+        if (enfsDirectory != null) {
+            return getResourceEnFs(name);
+        } else if (runtimeDirectory != null) {
             Path target = runtimeDirectory.resolve(name);
             if (!Files.exists(target)) throw new FileNotFoundException("File runtime/%s not found".formatted(name));
             return target.toUri().toURL();
-        } else if (enfsDirectory != null) {
-            return getResourceEnFs(name);
-        } else {
+        } else  {
             return Launcher.getResourceURL(name);
         }
     }

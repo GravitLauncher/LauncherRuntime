@@ -7,6 +7,7 @@ import pro.gravit.launcher.gui.utils.RuntimeCryptedFile;
 import pro.gravit.utils.enfs.EnFS;
 import pro.gravit.utils.enfs.dir.CachedFile;
 import pro.gravit.utils.enfs.dir.FileEntry;
+import pro.gravit.utils.enfs.dir.RealFile;
 import pro.gravit.utils.enfs.dir.URLFile;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
@@ -50,7 +52,7 @@ public class EnFSHelper {
         }
     }
 
-    public static Path initEnFSDirectory(LauncherConfig config, String theme) throws IOException {
+    public static Path initEnFSDirectory(LauncherConfig config, String theme, Path realDirectory) throws IOException {
         Path enfsDirectory = Paths.get(BASE_DIRECTORY, theme != null ? theme : "common");
         Set<String> themePaths;
         String startThemePrefix;
@@ -62,36 +64,66 @@ public class EnFSHelper {
             EnFS.main.newDirectory(enfsDirectory);
             themePaths = new HashSet<>();
             // First stage - collect themes path
-            config.runtime.forEach((name, digest) -> {
-                if (name.startsWith(startThemePrefix)) {
-                    themePaths.add(name.substring(startThemePrefix.length()));
+            if(realDirectory == null) {
+                config.runtime.forEach((name, digest) -> {
+                    if (name.startsWith(startThemePrefix)) {
+                        themePaths.add(name.substring(startThemePrefix.length()));
+                    }
+                });
+            } else {
+                try(var stream = Files.walk(realDirectory.resolve(startThemePrefix))) {
+                    stream.map(realDirectory::relativize)
+                          .map(Path::toString).forEach(themePaths::add);
                 }
-            });
+            }
             themesCached.add(theme);
         } else {
             startThemePrefix = "themes/common/";
             themePaths = Collections.emptySet();
         }
         // Second stage - put files
-        config.runtime.forEach((name, digest) -> {
-            String realPath;
-            if (name.startsWith(startThemePrefix)) {
-                realPath = name.substring(startThemePrefix.length());
-            } else {
-                if (themePaths.contains(name)) {
-                    return;
+        if(realDirectory == null) {
+            config.runtime.forEach((name, digest) -> {
+                String realPath;
+                if (name.startsWith(startThemePrefix)) {
+                    realPath = name.substring(startThemePrefix.length());
+                } else {
+                    if (themePaths.contains(name)) {
+                        return;
+                    }
+                    realPath = name;
                 }
-                realPath = name;
+                try {
+                    Path path = enfsDirectory.resolve(realPath);
+                    EnFS.main.newDirectories(path.getParent());
+                    FileEntry entry = makeFile(config, name, digest);
+                    EnFS.main.addFile(path, entry);
+                } catch (IOException e) {
+                    LogHelper.error(e);
+                }
+            });
+        } else {
+            Path pathStartThemePrefix = Path.of(startThemePrefix);
+            try(var stream = Files.walk(realDirectory)) {
+                stream.forEach((file) -> {
+                    if(Files.isDirectory(file)) {
+                        return;
+                    }
+                    Path realPath = realDirectory.relativize(file);
+                    if(realPath.startsWith(pathStartThemePrefix)) {
+                        realPath = pathStartThemePrefix.relativize(realPath);
+                    }
+                    try {
+                        Path path = enfsDirectory.resolve(realPath);
+                        EnFS.main.newDirectories(path.getParent());
+                        FileEntry entry = new RealFile(file);
+                        EnFS.main.addFile(path, entry);
+                    } catch (IOException e) {
+                        LogHelper.error(e);
+                    }
+                });
             }
-            try {
-                Path path = enfsDirectory.resolve(realPath);
-                EnFS.main.newDirectories(path.getParent());
-                FileEntry entry = makeFile(config, name, digest);
-                EnFS.main.addFile(path, entry);
-            } catch (IOException e) {
-                LogHelper.error(e);
-            }
-        });
+        }
         return enfsDirectory;
     }
 
@@ -114,7 +146,7 @@ public class EnFSHelper {
 
     public static URL getURL(String name) throws IOException {
         try (InputStream stream = EnFS.main.getInputStream(Paths.get(name))) {
-            return new URI("enfs", null, name, null).toURL();
+            return new URI("enfs", null, "/"+name, null).toURL();
         } catch (UnsupportedOperationException ex) {
             throw new FileNotFoundException(name);
         } catch (URISyntaxException e) {
