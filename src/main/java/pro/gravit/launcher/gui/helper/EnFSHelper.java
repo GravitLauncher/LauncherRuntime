@@ -16,6 +16,8 @@ import pro.gravit.utils.helper.SecurityHelper;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -27,15 +29,6 @@ public class EnFSHelper {
 
     private static final Set<String> themesCached = new HashSet<>(1);
     private static final String BASE_DIRECTORY = "tgui";
-
-    public static boolean checkEnFSUrl() {
-        try {
-            URL url = new URL(new URL("enfs", null, -1, "aone").toString()); // check URL Handler
-            return true;
-        } catch (IOException e) {
-            return false; // Failed on Java 8
-        }
-    }
 
     public static void initEnFS() throws IOException {
         EnFS.main.newDirectory(Paths.get(BASE_DIRECTORY));
@@ -121,9 +114,11 @@ public class EnFSHelper {
 
     public static URL getURL(String name) throws IOException {
         try (InputStream stream = EnFS.main.getInputStream(Paths.get(name))) {
-            return new URL("enfs", null, -1, name);
+            return new URI("enfs", null, name, null).toURL();
         } catch (UnsupportedOperationException ex) {
             throw new FileNotFoundException(name);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 }

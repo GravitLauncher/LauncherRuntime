@@ -19,6 +19,7 @@ import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -127,7 +128,7 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                 if(response.statusCode() >= 200 && response.statusCode() < 300) {
                                                     try(Reader reader = new InputStreamReader(new ByteArrayInputStream(response.body()))) {
                                                         Texture texture = Launcher.gsonManager.gson.fromJson(reader, UserTexture.class).toLauncherTexture();
-                                                        URL skinUrl = new URL(texture.url);
+                                                        URI skinUrl = new URI(texture.url);
                                                         if("SKIN".equals(name)) {
                                                             application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
                                                             for(var scene : application.gui.getScenes()) {
@@ -139,7 +140,7 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                         contextHelper.runInFxThread(() -> {
                                                             application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
                                                         });
-                                                    } catch (IOException ex) {
+                                                    } catch (IOException | URISyntaxException ex) {
                                                         errorHandle(ex);
                                                     }
                                                 } else {

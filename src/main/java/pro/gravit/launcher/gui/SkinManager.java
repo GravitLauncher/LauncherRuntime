@@ -3,6 +3,8 @@ package pro.gravit.launcher.gui;
 import javafx.scene.image.Image;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.WritableImage;
+import pro.gravit.launcher.base.Downloader;
+import pro.gravit.launcher.core.CertificatePinningTrustManager;
 import pro.gravit.utils.helper.LogHelper;
 
 import javax.imageio.ImageIO;
@@ -15,27 +17,34 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.nio.IntBuffer;
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SkinManager {
+    private static final HttpClient client = Downloader.newHttpClientBuilder().build();
     private static class SkinEntry {
-        final URL url;
-        final URL avatarUrl;
+        final URI url;
+        final URI avatarUrl;
         SoftReference<Optional<BufferedImage>> imageRef = new SoftReference<>(null);
         SoftReference<Optional<BufferedImage>> avatarRef = new SoftReference<>(null);
         SoftReference<Optional<Image>> fxImageRef = new SoftReference<>(null);
         SoftReference<Optional<Image>> fxAvatarRef = new SoftReference<>(null);
 
-        private SkinEntry(URL url) {
+        private SkinEntry(URI url) {
             this.url = url;
             this.avatarUrl = null;
         }
 
-        public SkinEntry(URL url, URL avatarUrl) {
+        public SkinEntry(URI url, URI avatarUrl) {
             this.url = url;
             this.avatarUrl = avatarUrl;
         }
@@ -94,11 +103,11 @@ public class SkinManager {
         this.application = application;
     }
 
-    public void addSkin(String username, URL url) {
+    public void addSkin(String username, URI url) {
         map.put(username, new SkinEntry(url));
     }
 
-    public void addOrReplaceSkin(String username, URL url) {
+    public void addOrReplaceSkin(String username, URI url) {
         SkinEntry entry = map.get(username);
         if(entry == null) {
             map.put(username, new SkinEntry(url));
@@ -107,7 +116,7 @@ public class SkinManager {
         }
     }
 
-    public void addSkinWithAvatar(String username, URL url, URL avatarUrl) {
+    public void addSkinWithAvatar(String username, URI url, URI avatarUrl) {
         map.put(username, new SkinEntry(url, avatarUrl));
     }
 
@@ -181,25 +190,24 @@ public class SkinManager {
         return image;
     }
 
-    private static BufferedImage downloadSkin(URL url) {
+    private static BufferedImage downloadSkin(URI url) {
         if(url == null) {
             return null;
         }
-        HttpURLConnection connection = null;
         try {
-            connection = (HttpURLConnection) url.openConnection();
-            connection.setDoInput(true);
-            connection.addRequestProperty("User-Agent",
-                                          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36");
-            connection.setConnectTimeout(10000);
-            connection.connect();
-            try (InputStream input = connection.getInputStream()) {
-                return ImageIO.read(input);
-            } catch (FileNotFoundException fnfe) {
-                LogHelper.dev("User texture not found" + fnfe.getMessage());
+            var response = client.send(HttpRequest.newBuilder()
+                                   .uri(url)
+                                   .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.85 Safari/537.36")
+                                   .timeout(Duration.of(10, ChronoUnit.SECONDS))
+                                   .build(), HttpResponse.BodyHandlers.ofInputStream());
+            if(response.statusCode() >= 300 || response.statusCode() < 200) {
+                LogHelper.error("Skin %s not found (error %d)", url.toString(), response.statusCode());
                 return null;
             }
-        } catch (IOException e) {
+            try (InputStream input = response.body()) {
+                return ImageIO.read(input);
+            }
+        } catch (IOException | InterruptedException e) {
             LogHelper.error(e);
             return null;
         }

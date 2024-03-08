@@ -23,9 +23,6 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public AuthRequest.AuthPasswordInterface password;
     @LauncherNetworkAPI
-    @Deprecated
-    public byte[] encryptedPassword;
-    @LauncherNetworkAPI
     public boolean autoAuth;
     @LauncherNetworkAPI
     public GetAvailabilityAuthRequestEvent.AuthAvailability lastAuth;

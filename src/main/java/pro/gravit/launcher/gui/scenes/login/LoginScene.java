@@ -30,6 +30,7 @@ import pro.gravit.launcher.base.request.update.LauncherRequest;
 import pro.gravit.launcher.base.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
 
+import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
@@ -101,7 +102,7 @@ public class LoginScene extends AbstractScene {
                                    LogHelper.debug("Start update processing");
                                    disable();
                                    StdJavaRuntimeProvider.updatePath = LauncherUpdater.prepareUpdate(
-                                           new URL(result.url));
+                                           new URI(result.url).toURL());
                                    LogHelper.debug("Exit with Platform.exit");
                                    Platform.exit();
                                    return;
@@ -225,8 +226,8 @@ public class LoginScene extends AbstractScene {
                 Texture avatar = result.playerProfile.assets.get("AVATAR");
                 if(skin != null || avatar != null) {
                     application.skinManager.addSkinWithAvatar(result.playerProfile.username,
-                                                              skin != null ? new URL(skin.url) : null,
-                                                              avatar != null ? new URL(avatar.url) : null);
+                                                              skin != null ? new URI(skin.url) : null,
+                                                              avatar != null ? new URI(avatar.url) : null);
                     application.skinManager.getSkin(result.playerProfile.username); //Cache skin
                 }
             } catch (Exception e) {
@@ -264,9 +265,7 @@ public class LoginScene extends AbstractScene {
                    }, null);
     }
 
-    @SuppressWarnings("deprecation")
     public void clearPassword() {
-        application.runtimeSettings.encryptedPassword = null;
         application.runtimeSettings.password = null;
         application.runtimeSettings.login = null;
         application.runtimeSettings.oauthAccessToken = null;
