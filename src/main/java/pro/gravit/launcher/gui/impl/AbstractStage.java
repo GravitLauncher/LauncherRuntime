@@ -18,6 +18,7 @@ import pro.gravit.utils.helper.LogHelper;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.NoSuchFileException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -40,7 +41,7 @@ public abstract class AbstractStage {
             URL globalCss;
             try {
                 globalCss = JavaFXApplication.getResourceURL("styles/global.bss");
-            } catch (FileNotFoundException e) {
+            } catch (FileNotFoundException | NoSuchFileException e) {
                 globalCss = JavaFXApplication.getResourceURL("styles/global.css");
             }
             this.scene.getStylesheets().add(globalCss.toString());
