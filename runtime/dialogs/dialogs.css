@@ -1,7 +1,7 @@
 /*-- Блок диалога --*/
 .dialog {
-    -fx-background-color: -fx-white;
-    -fx-border-color: -fx-white;
+    -fx-background-color: -fx-colors-base;
+    -fx-border-color: -fx-colors-base;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 30, 0.1, 0.0, 0.0);
     -fx-border-radius: 20px;
     -fx-background-radius: 20px;
@@ -25,12 +25,12 @@
     -fx-border-radius: 3px;
 }
 .dialog-apply-button {
-    -fx-border-color: -fx-grayA;
-    -fx-text-fill: -fx-grayA;
+    -fx-border-color: -fx-green;
+    -fx-text-fill: -fx-green;
 }
 .dialog-apply-button:hover {
-    -fx-background-color: -fx-grayA;
-    -fx-text-fill: -fx-white;
+    -fx-background-color: -fx-green;
+    -fx-text-fill: -fx-colors-base;
 }
 .dialog-deny-button {
     -fx-border-color: -fx-red;
@@ -38,6 +38,6 @@
 }
 .dialog-deny-button:hover {
     -fx-background-color: -fx-red;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-colors-base;
 }
 

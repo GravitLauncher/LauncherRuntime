@@ -1,7 +1,7 @@
 /*-- Уведомления --*/
 .notification {
     -fx-padding: 10px;
-    -fx-background-color: -fx-white;
+    -fx-background-color: -fx-colors-base;
     -fx-background-radius: 10px 0px 0px 10px;
     -fx-effect: -fx-effect-dropshadow;
 }
@@ -10,12 +10,12 @@
     -fx-spacing: 5;
 }
 #notificationHeading {
-    -fx-fill: -fx-black2C;
+    -fx-fill: -fx-colors-text;
     -fx-font-weight: bold;
     -fx-font-size: 14px;
 }
 #notificationText {
-    -fx-fill: -fx-black2C;
+    -fx-fill: -fx-colors-text;
     -fx-font-size: 10px;
 }
 /*-- Блок сервера --*/
@@ -37,16 +37,16 @@
 }
 /*-- Информация о сервере --*/
 #nameServer {
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
     -fx-font-size: 20px;
     -fx-wrap-text: false;
     -fx-font-weight: bold;
 }
 #nameServer:hover {
-    -fx-text-fill: -fx-black2C-hover;
+    -fx-text-fill: -fx-colors-text-hover;
 }
 #genreServer {
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
     -fx-font-size: 12px;
 }
 /*-- Индикатор онлайна --*/
@@ -59,7 +59,7 @@
 #online,
 #speedLoad {
     -fx-background-radius: 5px;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-colors-base;
     -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-padding: 8px;
@@ -69,7 +69,7 @@
     -fx-font-weight: bold;
     -fx-font-size: 18px;
     -fx-text-align: center;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-colors-base;
     -fx-background-color: -fx-violet;
     -fx-background-radius: 10px;
     -fx-padding: 8px;
@@ -81,7 +81,7 @@
     -fx-font-weight: bold;
     -fx-font-size: 14px;
     -fx-text-align: center;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-colors-base;
     -fx-background-color: -fx-red;
     -fx-background-radius: 5px;
     -fx-padding: 8px;

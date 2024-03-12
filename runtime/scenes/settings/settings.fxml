@@ -74,7 +74,7 @@
                                                 <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="Empty Tooltip" />
                                             </tooltip>
                                         </ComboBox>
-                                        <Label maxHeight="1.7976931348623157E308" text="%runtime.scenes.settings.javaDesc" wrapText="true" />
+                                        <Label maxHeight="1.7976931348623157E308" styleClass="settings-label" text="%runtime.scenes.settings.javaDesc" wrapText="true" />
                                     </children>
                                     <opaqueInsets>
                                         <Insets />

@@ -72,7 +72,8 @@ public class EnFSHelper {
                 });
             } else {
                 try(var stream = Files.walk(realDirectory.resolve(startThemePrefix))) {
-                    stream.map(realDirectory::relativize)
+                    Path themeDir = realDirectory.resolve(startThemePrefix);
+                    stream.filter(e -> !Files.isDirectory(e)).map(themeDir::relativize)
                           .map(Path::toString).forEach(themePaths::add);
                 }
             }
@@ -110,7 +111,9 @@ public class EnFSHelper {
                         return;
                     }
                     Path realPath = realDirectory.relativize(file);
-                    if(realPath.startsWith(pathStartThemePrefix)) {
+                    if (themePaths.contains(realPath.toString())) {
+                        file = realDirectory.resolve(pathStartThemePrefix).resolve(realPath);
+                    } else if(realPath.startsWith(pathStartThemePrefix)) {
                         realPath = pathStartThemePrefix.relativize(realPath);
                     }
                     try {
