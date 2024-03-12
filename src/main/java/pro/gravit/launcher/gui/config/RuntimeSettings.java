@@ -61,6 +61,7 @@ public class RuntimeSettings extends UserSettings {
 
     public enum LAUNCHER_LOCALE {
         @LauncherNetworkAPI RUSSIAN("ru", "Русский"),
+        @LauncherNetworkAPI BELARUSIAN("be", "Беларуская"),
         @LauncherNetworkAPI UKRAINIAN("ua", "Українська"),
         @LauncherNetworkAPI ENGLISH("en", "English");
         public final String name;
