@@ -63,6 +63,7 @@ public class RuntimeSettings extends UserSettings {
         @LauncherNetworkAPI RUSSIAN("ru", "Русский"),
         @LauncherNetworkAPI BELARUSIAN("be", "Беларуская"),
         @LauncherNetworkAPI UKRAINIAN("ua", "Українська"),
+        @LauncherNetworkAPI POLISH("pl", "Polska"),
         @LauncherNetworkAPI ENGLISH("en", "English");
         public final String name;
         public final String displayName;
