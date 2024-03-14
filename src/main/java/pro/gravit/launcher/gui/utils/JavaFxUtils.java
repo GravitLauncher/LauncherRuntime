@@ -7,6 +7,11 @@ import javafx.scene.layout.Region;
 import javafx.scene.shape.Rectangle;
 import pro.gravit.launcher.gui.JavaFXApplication;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.NoSuchFileException;
+
 public class JavaFxUtils {
     private JavaFxUtils() {
 
@@ -43,5 +48,15 @@ public class JavaFxUtils {
         r.setArcWidth(width);
         r.setArcHeight(height);
         node.setClip(r);
+    }
+
+    public static URL getStyleUrl(String url) throws IOException {
+        URL globalCss;
+        try {
+            globalCss = JavaFXApplication.getResourceURL(url+".bss");
+        } catch (FileNotFoundException | NoSuchFileException e) {
+            globalCss = JavaFXApplication.getResourceURL(url+".css");
+        }
+        return globalCss;
     }
 }
