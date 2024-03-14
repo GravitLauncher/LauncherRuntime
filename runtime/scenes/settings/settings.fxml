@@ -85,6 +85,27 @@
                                 </HBox>
                             </children>
                         </VBox>
+                  <VBox>
+                     <children>
+                        <Label styleClass="settings-header" text="%runtime.scenes.settings.header.theme" />
+                        <HBox prefHeight="40.0" spacing="10.0">
+                           <children>
+                              <ComboBox id="themeCombo" maxHeight="1.7976931348623157E308" minWidth="296.0">
+                                 <tooltip>
+                                    <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="Empty Tooltip" />
+                                 </tooltip>
+                              </ComboBox>
+                              <Label maxHeight="1.7976931348623157E308" styleClass="settings-label" text="%runtime.scenes.settings.themeDesc" wrapText="true" />
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                  </VBox>
                         <VBox styleClass="settings-card">
                             <children>
                                 <Label styleClass="settings-header" text="%runtime.scenes.settings.header.changeDirectory" />
