@@ -31,7 +31,7 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public UUID lastProfile;
     @LauncherNetworkAPI
-    public LAUNCHER_LOCALE locale;
+    public volatile LAUNCHER_LOCALE locale;
     @LauncherNetworkAPI
     public String oauthAccessToken;
     @LauncherNetworkAPI
@@ -39,7 +39,7 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public long oauthExpire;
     @LauncherNetworkAPI
-    public String theme;
+    public volatile LAUNCHER_THEME theme = LAUNCHER_THEME.COMMON;
     @LauncherNetworkAPI
     public Map<UUID, ProfileSettings> profileSettings = new HashMap<>();
     @LauncherNetworkAPI
@@ -52,6 +52,7 @@ public class RuntimeSettings extends UserSettings {
         runtimeSettings.locale = config.locale == null
                 ? LAUNCHER_LOCALE.RUSSIAN
                 : LAUNCHER_LOCALE.valueOf(config.locale);
+        runtimeSettings.theme = LAUNCHER_THEME.DARK;
         return runtimeSettings;
     }
 
@@ -69,6 +70,18 @@ public class RuntimeSettings extends UserSettings {
         public final String displayName;
 
         LAUNCHER_LOCALE(String name, String displayName) {
+            this.name = name;
+            this.displayName = displayName;
+        }
+    }
+
+    public enum LAUNCHER_THEME {
+        @LauncherNetworkAPI COMMON(null, "default"),
+        @LauncherNetworkAPI DARK("dark", "dark");
+        public final String name;
+        public final String displayName;
+
+        LAUNCHER_THEME(String name, String displayName) {
             this.name = name;
             this.displayName = displayName;
         }

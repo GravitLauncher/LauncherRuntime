@@ -44,6 +44,7 @@ public class SettingsScene extends AbstractScene implements SceneSupportUserBloc
     private Slider ramSlider;
     private RuntimeSettings.ProfileSettingsView profileSettings;
     private JavaSelectorComponent javaSelector;
+    private ThemeSelectorComponent themeSelector;
     private UserBlock userBlock;
 
     public SettingsScene(JavaFXApplication application) {
@@ -170,6 +171,7 @@ public class SettingsScene extends AbstractScene implements SceneSupportUserBloc
         profileSettings = new RuntimeSettings.ProfileSettingsView(application.getProfileSettings());
         javaSelector = new JavaSelectorComponent(application.javaService, componentList, profileSettings,
                                                  application.profilesService.getProfile());
+        themeSelector = new ThemeSelectorComponent(application, componentList);
         ramSlider.setValue(profileSettings.ram);
         ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             profileSettings.ram = newValue.intValue();

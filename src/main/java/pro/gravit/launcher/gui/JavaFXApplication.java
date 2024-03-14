@@ -154,7 +154,9 @@ public class JavaFXApplication extends Application {
         try {
             Class.forName("pro.gravit.utils.enfs.EnFS", false, JavaFXApplication.class.getClassLoader());
             EnFSHelper.initEnFS();
-            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme, runtimeDirectory);
+            String themeDir = runtimeSettings.theme == null ? RuntimeSettings.LAUNCHER_THEME.COMMON.name :
+                    runtimeSettings.theme.name;
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, themeDir, runtimeDirectory);
         } catch (Throwable e) {
             if (!(e instanceof ClassNotFoundException)) {
                 LogHelper.error(e);
@@ -218,7 +220,9 @@ public class JavaFXApplication extends Application {
 
     public void resetDirectory() throws IOException {
         if (enfsDirectory != null) {
-            enfsDirectory = EnFSHelper.initEnFSDirectory(config, runtimeSettings.theme, runtimeDirectory);
+            String themeDir = runtimeSettings.theme == null ? RuntimeSettings.LAUNCHER_THEME.COMMON.name :
+                    runtimeSettings.theme.name;
+            enfsDirectory = EnFSHelper.initEnFSDirectory(config, themeDir, runtimeDirectory);
         }
     }
 

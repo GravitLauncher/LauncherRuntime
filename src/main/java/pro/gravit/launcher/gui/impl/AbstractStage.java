@@ -37,19 +37,7 @@ public abstract class AbstractStage {
         this.stackPane = new StackPane();
         this.scene = new Scene(stackPane);
         this.stage.setScene(scene);
-        try {
-            URL globalCss;
-            try {
-                globalCss = JavaFXApplication.getResourceURL("styles/global.bss");
-            } catch (FileNotFoundException | NoSuchFileException e) {
-                globalCss = JavaFXApplication.getResourceURL("styles/global.css");
-            }
-            this.scene.getStylesheets().add(globalCss.toString());
-        } catch (IOException e) {
-            LogHelper.error(e);
-        }
-        {
-        }
+        resetStyles();
     }
 
     protected void setClipRadius(double width, double height) {
@@ -67,6 +55,23 @@ public abstract class AbstractStage {
 
     public void close() {
         stage.hide();
+    }
+
+    public void resetStyles() {
+        try {
+            this.scene.getStylesheets().clear();
+            URL globalCss;
+            try {
+                globalCss = JavaFXApplication.getResourceURL("styles/global.bss");
+            } catch (FileNotFoundException | NoSuchFileException e) {
+                globalCss = JavaFXApplication.getResourceURL("styles/global.css");
+            }
+            this.scene.getStylesheets().add(globalCss.toString());
+        } catch (IOException e) {
+            LogHelper.error(e);
+        }
+        {
+        }
     }
 
     public void enableMouseDrag(Node node) {

@@ -1,6 +1,7 @@
 package pro.gravit.launcher.gui.commands.runtime;
 
 import pro.gravit.launcher.gui.JavaFXApplication;
+import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.utils.command.Command;
 
 public class ThemeCommand extends Command {
@@ -23,7 +24,7 @@ public class ThemeCommand extends Command {
     @Override
     public void invoke(String... args) throws Exception {
         verifyArgs(args, 1);
-        application.runtimeSettings.theme = args[0];
+        application.runtimeSettings.theme = RuntimeSettings.LAUNCHER_THEME.valueOf(args[0]);
         application.gui.reload();
     }
 }

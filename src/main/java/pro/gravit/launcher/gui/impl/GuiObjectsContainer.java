@@ -89,6 +89,7 @@ public class GuiObjectsContainer {
             application.resetDirectory();
             overlays.clear();
             scenes.clear();
+            application.getMainStage().resetStyles();
             init();
             for (AbstractScene s : scenes) {
                 if (s.getClass() == scene) {
