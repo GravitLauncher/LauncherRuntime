@@ -53,79 +53,74 @@ public class EnFSHelper {
     }
 
     public static Path initEnFSDirectory(LauncherConfig config, String theme, Path realDirectory) throws IOException {
-        Path enfsDirectory = Paths.get(BASE_DIRECTORY, theme != null ? theme : "common");
-        Set<String> themePaths;
-        String startThemePrefix;
-        if (theme != null) {
-            if (themesCached.contains(theme)) {
-                return enfsDirectory;
-            }
-            startThemePrefix = "themes/%s/".formatted(theme);
-            EnFS.main.newDirectory(enfsDirectory);
-            themePaths = new HashSet<>();
-            // First stage - collect themes path
-            if(realDirectory == null) {
-                config.runtime.forEach((name, digest) -> {
-                    if (name.startsWith(startThemePrefix)) {
-                        themePaths.add(name.substring(startThemePrefix.length()));
+        String themeName = theme != null ? theme : "common";
+        Path enfsDirectory = Paths.get(BASE_DIRECTORY, themeName);
+        if (themesCached.contains(themeName)) {
+            return enfsDirectory;
+        }
+        Path basePath = realDirectory == null ? Path.of("") : realDirectory;
+        Path themePath = basePath.resolve("themes").resolve(themeName);
+        // Add theme files to themePaths
+        if(realDirectory != null) {
+            Set<Path> themePaths = new HashSet<>();
+            Path relThemePath = realDirectory.relativize(themePath);
+            try(var stream = Files.walk(realDirectory)) {
+                stream.forEach(f -> {
+                    if(Files.isDirectory(f)) {
+                        return;
+                    }
+                    Path real = realDirectory.relativize(f);
+                    if(f.startsWith(themePath)) {
+                        themePaths.add(relThemePath.relativize(real));
                     }
                 });
-            } else {
-                try(var stream = Files.walk(realDirectory.resolve(startThemePrefix))) {
-                    Path themeDir = realDirectory.resolve(startThemePrefix);
-                    stream.filter(e -> !Files.isDirectory(e)).map(themeDir::relativize)
-                          .map(Path::toString).forEach(themePaths::add);
-                }
             }
-            themesCached.add(theme);
-        } else {
-            startThemePrefix = "themes/common/";
-            themePaths = Collections.emptySet();
-        }
-        // Second stage - put files
-        if(realDirectory == null) {
-            config.runtime.forEach((name, digest) -> {
-                String realPath;
-                if (name.startsWith(startThemePrefix)) {
-                    realPath = name.substring(startThemePrefix.length());
-                } else {
-                    if (themePaths.contains(name)) {
-                        return;
-                    }
-                    realPath = name;
-                }
-                try {
-                    Path path = enfsDirectory.resolve(realPath);
-                    EnFS.main.newDirectories(path.getParent());
-                    FileEntry entry = makeFile(config, name, digest);
-                    EnFS.main.addFile(path, entry);
-                } catch (IOException e) {
-                    LogHelper.error(e);
-                }
-            });
-        } else {
-            Path pathStartThemePrefix = Path.of(startThemePrefix);
             try(var stream = Files.walk(realDirectory)) {
-                stream.forEach((file) -> {
-                    if(Files.isDirectory(file)) {
+                stream.forEach(f -> {
+                    if(Files.isDirectory(f)) {
                         return;
                     }
-                    Path realPath = realDirectory.relativize(file);
-                    if (themePaths.contains(realPath.toString())) {
-                        file = realDirectory.resolve(pathStartThemePrefix).resolve(realPath);
-                    } else if(realPath.startsWith(pathStartThemePrefix)) {
-                        realPath = pathStartThemePrefix.relativize(realPath);
+                    Path real = realDirectory.relativize(f);
+                    if(themePaths.contains(real)) {
+                        f = themePath.resolve(real);
+                        themePaths.remove(real);
                     }
                     try {
-                        Path path = enfsDirectory.resolve(realPath);
+                        Path path = enfsDirectory.resolve(real);
                         EnFS.main.newDirectories(path.getParent());
-                        FileEntry entry = new RealFile(file);
+                        FileEntry entry = new RealFile(f);
                         EnFS.main.addFile(path, entry);
                     } catch (IOException e) {
                         LogHelper.error(e);
                     }
                 });
             }
+        } else {
+            Set<String> themePaths = new HashSet<>();
+            String themePathString = String.format("themes/%s/", themeName);
+            config.runtime.forEach((f, digest) -> {
+                if(f.startsWith(themePathString)) {
+                    themePaths.add(f.substring(themePathString.length()));
+                }
+            });
+            config.runtime.forEach((f, digest) -> {
+                String real = f;
+                if(themePaths.contains(real)) {
+                    f = themePathString.concat(real);
+                    digest = config.runtime.get(f);
+                    themePaths.remove(real);
+                    LogHelper.dev("Replace %s to %s", real, f);
+                }
+                try {
+                    Path path = enfsDirectory.resolve(real);
+                    EnFS.main.newDirectories(path.getParent());
+                    FileEntry entry = makeFile(config, f, digest);
+                    LogHelper.dev("makeFile %s (%s) to %s", f, SecurityHelper.toHex(digest), path.toString());
+                    EnFS.main.addFile(path, entry);
+                } catch (IOException e) {
+                    LogHelper.error(e);
+                }
+            });
         }
         return enfsDirectory;
     }

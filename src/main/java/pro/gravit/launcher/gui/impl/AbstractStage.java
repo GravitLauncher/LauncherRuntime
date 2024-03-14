@@ -60,18 +60,21 @@ public abstract class AbstractStage {
     public void resetStyles() {
         try {
             this.scene.getStylesheets().clear();
-            URL globalCss;
-            try {
-                globalCss = JavaFXApplication.getResourceURL("styles/global.bss");
-            } catch (FileNotFoundException | NoSuchFileException e) {
-                globalCss = JavaFXApplication.getResourceURL("styles/global.css");
-            }
-            this.scene.getStylesheets().add(globalCss.toString());
+            this.scene.getStylesheets().add(getStyleUrl("styles/variables").toString());
+            this.scene.getStylesheets().add(getStyleUrl("styles/global").toString());
         } catch (IOException e) {
             LogHelper.error(e);
         }
-        {
+    }
+
+    private static URL getStyleUrl(String url) throws IOException {
+        URL globalCss;
+        try {
+            globalCss = JavaFXApplication.getResourceURL(url+".bss");
+        } catch (FileNotFoundException | NoSuchFileException e) {
+            globalCss = JavaFXApplication.getResourceURL(url+".css");
         }
+        return globalCss;
     }
 
     public void enableMouseDrag(Node node) {
