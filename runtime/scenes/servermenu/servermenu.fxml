@@ -14,6 +14,7 @@
         <!-- Кнопки управления -->
         <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="34.0">
             <fx:include source="../../components/buttons/deauth.fxml" />
+            <fx:include source="../../components/buttons/settings.fxml" />
             <fx:include source="../../components/buttons/minimize.fxml" />
             <fx:include source="../../components/buttons/exit.fxml" />
         </HBox>

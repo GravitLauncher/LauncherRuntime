@@ -13,6 +13,7 @@ import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.gui.scenes.serverinfo.ServerInfoScene;
 import pro.gravit.launcher.gui.scenes.servermenu.ServerMenuScene;
+import pro.gravit.launcher.gui.scenes.settings.GlobalSettingsScene;
 import pro.gravit.launcher.gui.scenes.settings.SettingsScene;
 import pro.gravit.launcher.gui.scenes.update.UpdateScene;
 import pro.gravit.launcher.gui.stage.ConsoleStage;
@@ -40,6 +41,7 @@ public class GuiObjectsContainer {
     public LoginScene loginScene;
     public OptionsScene optionsScene;
     public SettingsScene settingsScene;
+    public GlobalSettingsScene globalSettingsScene;
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
@@ -59,6 +61,7 @@ public class GuiObjectsContainer {
         serverInfoScene = registerScene(ServerInfoScene.class);
         optionsScene = registerScene(OptionsScene.class);
         settingsScene = registerScene(SettingsScene.class);
+        globalSettingsScene = registerScene(GlobalSettingsScene.class);
         consoleScene = registerScene(ConsoleScene.class);
 
         updateScene = registerScene(UpdateScene.class);

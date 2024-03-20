@@ -2,6 +2,7 @@ package pro.gravit.launcher.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -38,6 +39,13 @@ public class ServerMenuScene extends AbstractScene implements SceneSupportUserBl
     @Override
     public void doInit() {
         this.userBlock = new UserBlock(layout, new SceneAccessor());
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+            try {
+                switchScene(application.gui.globalSettingsScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        });
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         scrollPane.setOnScroll(e -> {
             double widthContent = scrollPane.getWidth();

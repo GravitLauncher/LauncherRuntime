@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+
+<AnchorPane fx:id="layout" prefHeight="560.0" prefWidth="930.0" styleClass="background" stylesheets="@settings.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
+    <AnchorPane id="header" prefHeight="80.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <fx:include source="../../components/buttons/back.fxml" AnchorPane.leftAnchor="28.0" AnchorPane.topAnchor="34.0" />
+        <Label maxWidth="400.0" prefHeight="32.0" styleClass="scene-header" text="%runtime.scenes.settings.header" AnchorPane.leftAnchor="80.0" AnchorPane.topAnchor="34.0" />
+        <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="34.0">
+            <fx:include source="../../components/buttons/console.fxml" />
+            <fx:include source="../../components/buttons/lang.fxml" />
+            <fx:include source="../../components/buttons/minimize.fxml" />
+            <fx:include source="../../components/buttons/exit.fxml" />
+        </HBox>
+    </AnchorPane>
+    <AnchorPane prefHeight="480.0" prefWidth="630.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+        <children>
+            <ScrollPane id="settingslist" fitToWidth="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
+                <VBox spacing="15.0">
+                    <children>
+                        <VBox id="settings-list" styleClass="settings-card">
+                            <children>
+                                <Label styleClass="settings-header" text="%runtime.scenes.settings.header.options" />
+                                <HBox layoutX="10.0" layoutY="10.0" styleClass="settings-container">
+                                    <children>
+                                        <CheckBox styleClass="settings-checkbox" />
+                                        <VBox>
+                                            <children>
+                                                <Label styleClass="settings-label-header" text="Имя" wrapText="true" />
+                                                <Label styleClass="settings-label" text="Описание" wrapText="true" />
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </HBox>
+                            </children>
+                            <VBox.margin>
+                                <Insets top="10.0" />
+                            </VBox.margin>
+                        </VBox>
+                  <VBox>
+                     <children>
+                        <Label styleClass="settings-header" text="%runtime.scenes.settings.header.theme" />
+                        <HBox prefHeight="40.0" spacing="10.0">
+                           <children>
+                              <ComboBox id="themeCombo" maxHeight="1.7976931348623157E308" minWidth="296.0">
+                                 <tooltip>
+                                    <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="Empty Tooltip" />
+                                 </tooltip>
+                              </ComboBox>
+                              <Label maxHeight="1.7976931348623157E308" styleClass="settings-label" text="%runtime.scenes.settings.themeDesc" wrapText="true" />
+                           </children>
+                           <opaqueInsets>
+                              <Insets />
+                           </opaqueInsets>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                  </VBox>
+                        <VBox styleClass="settings-card">
+                            <children>
+                                <Label styleClass="settings-header" text="%runtime.scenes.settings.header.changeDirectory" />
+                                <!-- Папка проекта-->
+                                <HBox id="folder" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="624.0">
+                                    <!-- Путь к папкам-->
+                                    <Hyperlink id="path" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="C:\Users" HBox.hgrow="ALWAYS">
+                                        <tooltip>
+                                            <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="Empty Tooltip" />
+                                        </tooltip>
+                                    </Hyperlink>
+                                    <!-- Смена пути-->
+                                    <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" maxHeight="1.7976931348623157E308" minWidth="215.0" styleClass="icon-button" text="%runtime.scenes.settings.dirText">
+                                        <graphic>
+                                            <SVGPath content="M12 6.3999H6.4H5V7.7999V16.1999V17.5999H19V16.1999L19 9.1999V7.7999H17.6H12V6.3999ZM10.6 9.1999H17.6V16.1999H6.4V7.7999H10.6V9.1999ZM14.7998 11.9999H13.4V10.5999H12V11.9999H13.3998V13.3999H14.7998V11.9999ZM14.7998 11.9999H16.1998V10.5999H14.7998L14.7998 11.9999ZM16.1998 13.3999H14.7998V14.7999H16.1998V13.3999ZM13.4 13.3999H12V14.7999H13.4V13.3999Z" styleClass="icon-button-color" />
+                                        </graphic>
+                                        <tooltip>
+                                            <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="%runtime.scenes.settings.changedirTooltip" />
+                                        </tooltip>
+                                    </Button>
+                                </HBox>
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+                <opaqueInsets>
+                    <Insets />
+                </opaqueInsets>
+            </ScrollPane>
+        </children>
+    </AnchorPane>
+</AnchorPane>
