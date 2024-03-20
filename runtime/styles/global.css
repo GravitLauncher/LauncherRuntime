@@ -113,7 +113,8 @@ ComboBox .arrow-button {
     -fx-font-size: 12px;
 }
 .tooltip>.tooltip {
-    -fx-background-color: -fx-colors-text;
+    -fx-background-color: -fx-colors-base;
+    -fx-text-fill: -fx-colors-text;
     /* -fx-shape: "M24 1h-24v16.981h4v5.019l7-5.019h13z"; */
 }
 .tooltip>.tooltip>.text {
