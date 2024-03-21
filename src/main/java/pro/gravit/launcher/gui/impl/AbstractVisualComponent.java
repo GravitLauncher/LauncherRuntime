@@ -26,7 +26,7 @@ public abstract class AbstractVisualComponent {
     protected final FXExecutorService fxExecutor;
     protected AbstractStage currentStage;
     protected Pane layout;
-    private String sysFxmlPath;
+    private final String sysFxmlPath;
     private Parent sysFxmlRoot;
     private CompletableFuture<Node> sysFxmlFuture;
     boolean isInit;

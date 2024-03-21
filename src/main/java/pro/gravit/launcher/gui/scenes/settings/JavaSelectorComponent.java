@@ -95,7 +95,7 @@ public class JavaSelectorComponent {
 
     private static class JavaVersionCellFactory implements Callback<ListView<JavaHelper.JavaVersion>, ListCell<JavaHelper.JavaVersion>> {
 
-        private StringConverter<JavaHelper.JavaVersion> converter;
+        private final StringConverter<JavaHelper.JavaVersion> converter;
 
         public JavaVersionCellFactory(StringConverter<JavaHelper.JavaVersion> converter) {
             this.converter = converter;
@@ -108,7 +108,7 @@ public class JavaSelectorComponent {
     }
 
     private static class JavaVersionListCell extends ListCell<JavaHelper.JavaVersion> {
-        private StringConverter<JavaHelper.JavaVersion> converter;
+        private final StringConverter<JavaHelper.JavaVersion> converter;
 
         public JavaVersionListCell(StringConverter<JavaHelper.JavaVersion> converter) {
             this.converter = converter;

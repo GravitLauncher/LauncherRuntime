@@ -18,8 +18,8 @@ public class UserBlock {
     private final JavaFXApplication application;
     private final Pane layout;
     private final AbstractScene.SceneAccessor sceneAccessor;
-    private ImageView avatar;
-    private Image originalAvatarImage;
+    private final ImageView avatar;
+    private final Image originalAvatarImage;
 
     public UserBlock(Pane layout, AbstractScene.SceneAccessor sceneAccessor) {
         this.application = sceneAccessor.getApplication();
@@ -48,15 +48,7 @@ public class UserBlock {
         if(application.authService.isFeatureAvailable(GetAssetUploadUrlRequestEvent.FEATURE_NAME)) {
             LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
                 h.setVisible(true);
-                h.setOnAction((a) -> {
-                    sceneAccessor.processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> {
-                        sceneAccessor.runInFxThread(() -> {
-                            sceneAccessor.showOverlay(application.gui.uploadAssetOverlay, (f) -> {
-                                application.gui.uploadAssetOverlay.onAssetUploadInfo(info);
-                            });
-                        });
-                    }, sceneAccessor::errorHandle, (e) -> {});
-                });
+                h.setOnAction((a) -> sceneAccessor.processRequest(application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"), new AssetUploadInfoRequest(), (info) -> sceneAccessor.runInFxThread(() -> sceneAccessor.showOverlay(application.gui.uploadAssetOverlay, (f) -> application.gui.uploadAssetOverlay.onAssetUploadInfo(info))), sceneAccessor::errorHandle, (e) -> {}));
             });
         }
     }

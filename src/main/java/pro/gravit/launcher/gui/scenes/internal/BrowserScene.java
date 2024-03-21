@@ -1,7 +1,6 @@
 package pro.gravit.launcher.gui.scenes.internal;
 
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.StackPane;
 import javafx.scene.web.WebView;
@@ -30,9 +29,7 @@ public class BrowserScene extends AbstractScene {
         stackPane.getChildren().add(webView);
         browseButton = LookupHelper.lookup(layout, "#browse");
         address = LookupHelper.lookup(layout, "#address");
-        browseButton.setOnAction((e) -> {
-            webView.getEngine().load(address.getText());
-        });
+        browseButton.setOnAction((e) -> webView.getEngine().load(address.getText()));
     }
 
     @Override

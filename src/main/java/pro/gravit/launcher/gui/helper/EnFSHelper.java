@@ -10,7 +10,6 @@ import pro.gravit.utils.enfs.dir.FileEntry;
 import pro.gravit.utils.enfs.dir.RealFile;
 import pro.gravit.utils.enfs.dir.URLFile;
 import pro.gravit.utils.helper.IOHelper;
-import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
@@ -23,7 +22,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 

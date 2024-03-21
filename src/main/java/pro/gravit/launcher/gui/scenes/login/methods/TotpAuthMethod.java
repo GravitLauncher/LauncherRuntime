@@ -106,7 +106,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
                 }
             });
             totpField.setOnAction((e) -> {
-                if(totpField.getText() != null && totpField.getText().length() > 0) {
+                if(totpField.getText() != null && !totpField.getText().isEmpty()) {
                     complete();
                 }
             });

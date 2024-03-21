@@ -5,19 +5,13 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
-import pro.gravit.launcher.base.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.components.UserBlock;
-import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
-import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.utils.helper.*;
 
@@ -73,9 +67,7 @@ public class ServerInfoScene extends AbstractScene implements SceneSupportUserBl
         serverButton = ServerButton.createServerButton(application, profile);
         serverButton.addTo(serverButtonContainer);
         serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"),
-                                      (e) -> {
-                                        runClient();
-                                      });
+                                      (e) -> runClient());
         this.userBlock.reset();
     }
 
@@ -96,16 +88,12 @@ public class ServerInfoScene extends AbstractScene implements SceneSupportUserBl
                     LogHelper.info("Params write successful. Exit...");
                     Platform.exit();
                 }).exceptionally((ex) -> {
-                    contextHelper.runInFxThread(() -> {
-                        errorHandle(ex);
-                    });
+                    contextHelper.runInFxThread(() -> errorHandle(ex));
                     return null;
                 });
             }
         })).exceptionally((ex) -> {
-            contextHelper.runInFxThread(() -> {
-                errorHandle(ex);
-            });
+            contextHelper.runInFxThread(() -> errorHandle(ex));
             return null;
         });
     }

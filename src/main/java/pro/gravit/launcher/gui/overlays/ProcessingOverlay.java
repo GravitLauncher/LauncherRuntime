@@ -6,7 +6,6 @@ import javafx.scene.control.Labeled;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractStage;
-import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.impl.ContextHelper;
 import pro.gravit.launcher.base.request.Request;
 import pro.gravit.launcher.base.request.WebSocketEvent;

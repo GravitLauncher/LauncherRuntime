@@ -6,13 +6,12 @@ import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.gui.impl.ContextHelper;
-import pro.gravit.launcher.gui.overlays.CenterOverlay;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class AbstractDialog extends AbstractVisualComponent {
-    private List<ContextHelper.GuiExceptionRunnable> onClose = new ArrayList<>(1);
+    private final List<ContextHelper.GuiExceptionRunnable> onClose = new ArrayList<>(1);
 
     protected AbstractDialog(String fxmlPath, JavaFXApplication application) {
         super(fxmlPath, application);

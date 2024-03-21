@@ -1,38 +1,20 @@
 package pro.gravit.launcher.gui.scenes.settings;
 
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.util.StringConverter;
 import oshi.SystemInfo;
-import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
-import pro.gravit.launcher.base.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.components.UserBlock;
-import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
-import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
-import pro.gravit.launcher.gui.stage.ConsoleStage;
-import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.gui.utils.SystemMemory;
-import pro.gravit.launcher.runtime.client.DirBridge;
 import pro.gravit.launcher.base.profiles.ClientProfile;
-import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.JVMHelper;
-import pro.gravit.utils.helper.LogHelper;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
 import java.text.MessageFormat;
-import java.util.function.Consumer;
 
 public class SettingsScene extends BaseSettingsScene implements SceneSupportUserBlock {
 

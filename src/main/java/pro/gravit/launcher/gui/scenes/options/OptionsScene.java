@@ -1,20 +1,13 @@
 package pro.gravit.launcher.gui.scenes.options;
 
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
-import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
-import pro.gravit.launcher.base.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.components.UserBlock;
-import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
-import pro.gravit.launcher.gui.utils.JavaFxUtils;
-import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.launcher.base.profiles.optional.OptionalView;
 

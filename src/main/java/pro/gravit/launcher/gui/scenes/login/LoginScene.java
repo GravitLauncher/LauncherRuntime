@@ -1,8 +1,6 @@
 package pro.gravit.launcher.gui.scenes.login;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -12,8 +10,6 @@ import pro.gravit.launcher.gui.StdJavaRuntimeProvider;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
-import pro.gravit.launcher.gui.impl.ContextHelper;
-import pro.gravit.launcher.gui.overlays.AbstractOverlay;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.runtime.LauncherEngine;
 import pro.gravit.launcher.runtime.utils.LauncherUpdater;
@@ -31,7 +27,6 @@ import pro.gravit.launcher.base.request.update.ProfilesRequest;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.net.URI;
-import java.net.URL;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -143,7 +138,7 @@ public class LoginScene extends AbstractScene {
                                addAuthAvailability(authAvailability);
                            }
                        }
-                       if (this.authAvailability == null && auth.list.size() > 0) {
+                       if (this.authAvailability == null && !auth.list.isEmpty()) {
                            changeAuthAvailability(auth.list.get(0));
                        }
                        runAutoAuth();
@@ -179,9 +174,7 @@ public class LoginScene extends AbstractScene {
     @Override
     public void errorHandle(Throwable e) {
         super.errorHandle(e);
-        contextHelper.runInFxThread(() -> {
-            authButton.setState(LoginAuthButtonComponent.AuthButtonState.ERROR);
-        });
+        contextHelper.runInFxThread(() -> authButton.setState(LoginAuthButtonComponent.AuthButtonState.ERROR));
     }
 
     @Override
@@ -199,7 +192,7 @@ public class LoginScene extends AbstractScene {
         if (password instanceof AuthMultiPassword) return false;
         return authAvailability != null
                 && authAvailability.details != null
-                && authAvailability.details.size() != 0
+                && !authAvailability.details.isEmpty()
                 && authAvailability.details.get(0) instanceof AuthPasswordDetails;
     }
 

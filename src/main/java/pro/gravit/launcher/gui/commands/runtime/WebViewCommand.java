@@ -1,7 +1,6 @@
 package pro.gravit.launcher.gui.commands.runtime;
 
 import pro.gravit.launcher.gui.JavaFXApplication;
-import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.utils.command.Command;
 
 public class WebViewCommand extends Command {

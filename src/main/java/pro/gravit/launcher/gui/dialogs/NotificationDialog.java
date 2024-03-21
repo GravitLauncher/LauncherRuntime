@@ -6,7 +6,6 @@ import javafx.scene.layout.Pane;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.helper.PositionHelper;
-import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.*;

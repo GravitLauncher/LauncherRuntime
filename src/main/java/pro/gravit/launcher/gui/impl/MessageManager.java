@@ -1,9 +1,6 @@
 package pro.gravit.launcher.gui.impl;
 
-import javafx.geometry.Pos;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.VBox;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.dialogs.*;
 import pro.gravit.launcher.gui.helper.PositionHelper;
@@ -11,7 +8,6 @@ import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.stage.DialogStage;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
 
 public class MessageManager {
     public final JavaFXApplication application;

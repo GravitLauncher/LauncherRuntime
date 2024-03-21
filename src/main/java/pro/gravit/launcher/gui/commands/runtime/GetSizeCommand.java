@@ -1,7 +1,6 @@
 package pro.gravit.launcher.gui.commands.runtime;
 
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.impl.AbstractStage;
 import pro.gravit.utils.command.Command;

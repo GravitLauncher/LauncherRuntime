@@ -12,7 +12,6 @@ import pro.gravit.launcher.base.profiles.Texture;
 import pro.gravit.launcher.base.request.Request;
 import pro.gravit.launcher.base.request.RequestException;
 import pro.gravit.launcher.base.request.cabinet.GetAssetUploadUrl;
-import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
 import pro.gravit.utils.helper.LogHelper;
 import pro.gravit.utils.helper.SecurityHelper;
@@ -20,7 +19,6 @@ import pro.gravit.utils.helper.SecurityHelper;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -48,20 +46,12 @@ public class UploadAssetOverlay extends CenterOverlay {
         uploadSkin = LookupHelper.lookup(layout, "#uploadskin");
         uploadCape = LookupHelper.lookup(layout, "#uploadcape");
         useSlim = LookupHelper.lookup(layout, "#useslim");
-        uploadSkin.setOnAction((a) -> {
-            uploadAsset("SKIN", switch (slimSupportConf) {
-                case USER -> new AssetOptions(useSlim.isSelected());
-                case UNSUPPORTED, SERVER -> null;
-            });
-        });
-        uploadCape.setOnAction((a) -> {
-            uploadAsset("CAPE", null);
-        });
-        LookupHelper.<Button>lookupIfPossible(layout, "#close").ifPresent((b) -> {
-            b.setOnAction((e) -> {
-                hide(0, null);
-            });
-        });
+        uploadSkin.setOnAction((a) -> uploadAsset("SKIN", switch (slimSupportConf) {
+            case USER -> new AssetOptions(useSlim.isSelected());
+            case UNSUPPORTED, SERVER -> null;
+        }));
+        uploadCape.setOnAction((a) -> uploadAsset("CAPE", null));
+        LookupHelper.<Button>lookupIfPossible(layout, "#close").ifPresent((b) -> b.setOnAction((e) -> hide(0, null)));
     }
 
     public void onAssetUploadInfo(AssetUploadInfoRequestEvent event) {
@@ -137,9 +127,7 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                                 }
                                                             }
                                                         }
-                                                        contextHelper.runInFxThread(() -> {
-                                                            application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
-                                                        });
+                                                        contextHelper.runInFxThread(() -> application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description")));
                                                     } catch (IOException | URISyntaxException ex) {
                                                         errorHandle(ex);
                                                     }

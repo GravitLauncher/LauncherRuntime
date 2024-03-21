@@ -2,14 +2,11 @@ package pro.gravit.launcher.gui.scenes.settings;
 
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Hyperlink;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Pane;
 import javafx.stage.DirectoryChooser;
 import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
-import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.scenes.settings.BaseSettingsScene;
 import pro.gravit.launcher.gui.scenes.settings.ThemeSelectorComponent;
 import pro.gravit.launcher.gui.stage.ConsoleStage;

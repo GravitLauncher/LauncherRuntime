@@ -10,11 +10,8 @@ public class PingService {
     private final Map<String, CompletableFuture<PingServerReport>> reports = new ConcurrentHashMap<>();
 
     public CompletableFuture<PingServerReport> getPingReport(String serverName) {
-        CompletableFuture<PingServerReport> report = reports.get(serverName);
-        if (report == null) {
-            report = new CompletableFuture<>();
-            reports.put(serverName, report);
-        }
+        CompletableFuture<PingServerReport> report = reports.computeIfAbsent(serverName,
+                                                                             k -> new CompletableFuture<>());
         return report;
     }
 

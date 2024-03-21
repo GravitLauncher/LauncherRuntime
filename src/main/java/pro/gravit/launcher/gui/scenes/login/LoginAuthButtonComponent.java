@@ -3,9 +3,7 @@ package pro.gravit.launcher.gui.scenes.login;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Pane;
 import pro.gravit.launcher.gui.JavaFXApplication;
-import pro.gravit.launcher.gui.helper.LookupHelper;
 
 public class LoginAuthButtonComponent {
     private final JavaFXApplication application;
@@ -13,7 +11,7 @@ public class LoginAuthButtonComponent {
     private AuthButtonState state = AuthButtonState.UNACTIVE;
     private String originalText;
 
-    public static enum AuthButtonState {
+    public enum AuthButtonState {
         ACTIVE("activeButton"), UNACTIVE("unactiveButton"), ERROR("errorButton");
         private final String styleClass;
 

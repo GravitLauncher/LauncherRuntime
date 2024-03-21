@@ -3,11 +3,12 @@ package pro.gravit.launcher.gui.scenes.settings;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.utils.helper.LogHelper;
+
+import java.util.Objects;
 
 public class ThemeSelectorComponent {
     private final JavaFXApplication application;
@@ -21,11 +22,8 @@ public class ThemeSelectorComponent {
         for(var e : RuntimeSettings.LAUNCHER_THEME.values()) {
             comboBox.getItems().add(e);
         }
-        if(application.runtimeSettings.theme != null) {
-            comboBox.getSelectionModel().select(application.runtimeSettings.theme);
-        } else {
-            comboBox.getSelectionModel().select(RuntimeSettings.LAUNCHER_THEME.COMMON);
-        }
+        comboBox.getSelectionModel().select(Objects.requireNonNullElse(application.runtimeSettings.theme,
+                                                                       RuntimeSettings.LAUNCHER_THEME.COMMON));
         comboBox.setOnAction(e -> {
             RuntimeSettings.LAUNCHER_THEME theme = comboBox.getValue();
             if (theme == null || (theme == RuntimeSettings.LAUNCHER_THEME.COMMON && application.runtimeSettings.theme == null)) return;

@@ -1,29 +1,20 @@
 package pro.gravit.launcher.gui.scenes.servermenu;
 
 import javafx.event.EventHandler;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBase;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.components.UserBlock;
-import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.AbstractScene;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
-import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.launcher.runtime.client.ServerPinger;
-import pro.gravit.launcher.base.events.request.GetAssetUploadUrlRequestEvent;
 import pro.gravit.launcher.base.profiles.ClientProfile;
-import pro.gravit.launcher.base.request.cabinet.AssetUploadInfoRequest;
 import pro.gravit.utils.helper.CommonHelper;
-import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
 import java.util.*;

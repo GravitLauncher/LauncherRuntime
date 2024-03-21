@@ -18,9 +18,9 @@ import java.util.function.Consumer;
 public class OptionsTab {
     private final TabPane tabPane;
     private final JavaFXApplication application;
-    private final Map<String, Tab> tabs = new HashMap<String, Tab>();
+    private final Map<String, Tab> tabs = new HashMap<>();
     private OptionalView optionalView;
-    private final Map<OptionalFile, Consumer<Boolean>> watchers = new HashMap<OptionalFile, Consumer<Boolean>>();
+    private final Map<OptionalFile, Consumer<Boolean>> watchers = new HashMap<>();
 
     public OptionsTab(JavaFXApplication application, TabPane tabPane) {
         this.tabPane = tabPane;
@@ -90,7 +90,7 @@ public class OptionsTab {
         vBox.getStyleClass().add("optional-container");
         checkBox.setSelected(value);
         checkBox.setText(name);
-        checkBox.setOnAction((e) -> {onChanged.accept(checkBox.isSelected());});
+        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         checkBox.getStyleClass().add("optional-checkbox");
         label.setText(description);
         label.setWrapText(true);

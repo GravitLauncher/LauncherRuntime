@@ -199,7 +199,7 @@ public class LaunchService {
         private Thread runThread;
         private final CompletableFuture<Void> onWriteParams = new CompletableFuture<>();
         private final CompletableFuture<Integer> runFuture = new CompletableFuture<>();
-        private Set<ProcessListener> listeners = ConcurrentHashMap.newKeySet();
+        private final Set<ProcessListener> listeners = ConcurrentHashMap.newKeySet();
 
         public ClientInstance(ClientLauncherProcess process, ClientProfile clientProfile,
                 RuntimeSettings.ProfileSettings settings) {
