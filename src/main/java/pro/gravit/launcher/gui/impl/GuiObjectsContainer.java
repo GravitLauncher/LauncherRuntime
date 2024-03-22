@@ -21,16 +21,12 @@ import pro.gravit.utils.helper.LogHelper;
 
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.MethodType;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class GuiObjectsContainer {
     private final JavaFXApplication application;
-    private final Set<AbstractOverlay> overlays = new HashSet<>();
-    private final Set<AbstractScene> scenes = new HashSet<>();
-    private final Set<AbstractVisualComponent> components = new HashSet<>();
+    private final Map<String, AbstractVisualComponent> components = new HashMap<>();
     public ProcessingOverlay processingOverlay;
     public WelcomeOverlay welcomeOverlay;
     public UploadAssetOverlay uploadAssetOverlay;
@@ -55,102 +51,47 @@ public class GuiObjectsContainer {
 
     public void init() {
         background = registerComponent(BackgroundComponent.class);
-        loginScene = registerScene(LoginScene.class);
-        processingOverlay = registerOverlay(ProcessingOverlay.class);
-        welcomeOverlay = registerOverlay(WelcomeOverlay.class);
-        uploadAssetOverlay = registerOverlay(UploadAssetOverlay.class);
+        loginScene = registerComponent(LoginScene.class);
+        processingOverlay = registerComponent(ProcessingOverlay.class);
+        welcomeOverlay = registerComponent(WelcomeOverlay.class);
+        uploadAssetOverlay = registerComponent(UploadAssetOverlay.class);
 
-        serverMenuScene = registerScene(ServerMenuScene.class);
-        serverInfoScene = registerScene(ServerInfoScene.class);
-        optionsScene = registerScene(OptionsScene.class);
-        settingsScene = registerScene(SettingsScene.class);
-        globalSettingsScene = registerScene(GlobalSettingsScene.class);
-        consoleScene = registerScene(ConsoleScene.class);
+        serverMenuScene = registerComponent(ServerMenuScene.class);
+        serverInfoScene = registerComponent(ServerInfoScene.class);
+        optionsScene = registerComponent(OptionsScene.class);
+        settingsScene = registerComponent(SettingsScene.class);
+        globalSettingsScene = registerComponent(GlobalSettingsScene.class);
+        consoleScene = registerComponent(ConsoleScene.class);
 
-        updateScene = registerScene(UpdateScene.class);
-        debugScene = registerScene(DebugScene.class);
-        browserScene = registerScene(BrowserScene.class);
+        updateScene = registerComponent(UpdateScene.class);
+        debugScene = registerComponent(DebugScene.class);
+        browserScene = registerComponent(BrowserScene.class);
     }
 
-    public Stream<AbstractScene> scenes() {
-        return scenes.stream();
-    }
-
-    public Stream<AbstractOverlay> overlays() {
-        return overlays.stream();
-    }
-
-    public Set<AbstractOverlay> getOverlays() {
-        return Collections.unmodifiableSet(overlays);
-    }
-
-    public Set<AbstractScene> getScenes() {
-        return Collections.unmodifiableSet(scenes);
+    public Collection<AbstractVisualComponent> getComponents() {
+        return components.values();
     }
 
     public void reload() throws Exception {
-        Class<? extends AbstractScene> scene = application.getCurrentScene().getClass();
+        String sceneName = application.getCurrentScene().getName();
         ContextHelper.runInFxThreadStatic(() -> {
-            application.getMainStage().setScene(null);
+            application.getMainStage().setScene(null, false);
+            application.getMainStage().pullBackground(background);
             application.resetDirectory();
-            overlays.clear();
-            scenes.clear();
             components.clear();
             application.getMainStage().resetStyles();
             init();
-            for (AbstractScene s : scenes) {
-                if (s.getClass() == scene) {
-                    application.getMainStage().setScene(s);
+            application.getMainStage().pushBackground(background);
+            for (AbstractVisualComponent s : components.values()) {
+                if (sceneName.equals(s.getName())) {
+                    application.getMainStage().setScene(s, false);
                 }
             }
         }).get();
     }
 
-    public AbstractScene getSceneByName(String name) {
-        for (AbstractScene scene : scenes) {
-            if (name.equals(scene.getName())) {
-                return scene;
-            }
-        }
-        return null;
-    }
-
-    public AbstractOverlay getOverlayByName(String name) {
-        for (AbstractOverlay overlay : overlays) {
-            if (name.equals(overlay.getName())) {
-                return overlay;
-            }
-        }
-        return null;
-    }
-
-
-    @SuppressWarnings("unchecked")
-    public <T extends AbstractOverlay> T registerOverlay(Class<T> clazz) {
-        try {
-            T instance = (T) MethodHandles
-                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
-                    .invokeWithArguments(application);
-            overlays.add(instance);
-            return instance;
-        } catch (Throwable e) {
-            LogHelper.error(e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T extends AbstractScene> T registerScene(Class<T> clazz) {
-        try {
-            T instance = (T) MethodHandles
-                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
-                    .invokeWithArguments(application);
-            scenes.add(instance);
-            return instance;
-        } catch (Throwable e) {
-            LogHelper.error(e);
-            throw new RuntimeException(e);
-        }
+    public AbstractVisualComponent getByName(String name) {
+        return components.get(name);
     }
 
     @SuppressWarnings("unchecked")
@@ -159,7 +100,7 @@ public class GuiObjectsContainer {
             T instance = (T) MethodHandles
                     .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
                     .invokeWithArguments(application);
-            components.add(instance);
+            components.put(instance.getName(), instance);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);

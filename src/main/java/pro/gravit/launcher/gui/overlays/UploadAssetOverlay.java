@@ -121,7 +121,7 @@ public class UploadAssetOverlay extends CenterOverlay {
                                                         URI skinUrl = new URI(texture.url);
                                                         if("SKIN".equals(name)) {
                                                             application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
-                                                            for(var scene : application.gui.getScenes()) {
+                                                            for(var scene : application.gui.getComponents()) {
                                                                 if(scene.isInit() && scene instanceof SceneSupportUserBlock supportUserBlock) {
                                                                     supportUserBlock.getUserBlock().resetAvatar();
                                                                 }

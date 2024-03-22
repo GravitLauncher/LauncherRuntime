@@ -155,7 +155,7 @@ public class LaunchService {
                     if (jvmDirName != null) {
                         final JavaHelper.JavaVersion finalJavaVersion = javaVersion;
                         try {
-                            stage.setScene(application.gui.updateScene);
+                            stage.setScene(application.gui.updateScene, false);
                             application.gui.updateScene.reset();
                         } catch (Exception e) {
                             future.completeExceptionally(e);
@@ -180,7 +180,7 @@ public class LaunchService {
                                                   });
                     } else {
                         try {
-                            stage.setScene(application.gui.updateScene);
+                            stage.setScene(application.gui.updateScene, false);
                             application.gui.updateScene.reset();
                         } catch (Exception e) {
                             future.completeExceptionally(e);

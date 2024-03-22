@@ -26,7 +26,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     public WebAuthMethod(LoginScene.LoginSceneAccessor accessor) {
         this.application = accessor.getApplication();
         this.accessor = accessor;
-        this.overlay = application.gui.registerOverlay(WebAuthOverlay.class);
+        this.overlay = application.gui.registerComponent(WebAuthOverlay.class);
         this.overlay.accessor = accessor;
     }
 

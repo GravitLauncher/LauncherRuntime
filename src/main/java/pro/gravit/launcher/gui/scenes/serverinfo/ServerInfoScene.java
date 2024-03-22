@@ -28,7 +28,7 @@ public class ServerInfoScene extends AbstractScene implements SceneSupportUserBl
         this.userBlock = new UserBlock(layout, new SceneAccessor());
         LookupHelper.<Button>lookup(layout, "#back").setOnAction((e) -> {
             try {
-                switchScene(application.gui.serverMenuScene);
+                switchToBackScene();
             } catch (Exception exception) {
                 errorHandle(exception);
             }

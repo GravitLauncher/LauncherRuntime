@@ -70,7 +70,7 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
         LookupHelper.<ButtonBase>lookupIfPossible(layout, "#back").ifPresent(a -> a.setOnAction((e) -> {
             try {
                 profileSettings = null;
-                switchScene(application.gui.serverInfoScene);
+                switchToBackScene();
             } catch (Exception exception) {
                 errorHandle(exception);
             }

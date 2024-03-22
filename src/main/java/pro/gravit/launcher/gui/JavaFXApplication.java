@@ -188,12 +188,12 @@ public class JavaFXApplication extends Application {
             }
         }
         try {
-            mainStage = new PrimaryStage(stage, "%s Launcher".formatted(config.projectName));
+            mainStage = new PrimaryStage(this, stage, "%s Launcher".formatted(config.projectName));
             // Overlay loading
             gui = new GuiObjectsContainer(this);
             gui.init();
             //
-            mainStage.setScene(gui.loginScene);
+            mainStage.setScene(gui.loginScene, true);
             gui.background.init();
             mainStage.pushBackground(gui.background);
             mainStage.show();
@@ -299,7 +299,7 @@ public class JavaFXApplication extends Application {
     }
 
     public void setMainScene(AbstractScene scene) throws Exception {
-        mainStage.setScene(scene);
+        mainStage.setScene(scene, true);
     }
 
     public Stage newStage() {

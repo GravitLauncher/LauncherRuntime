@@ -22,11 +22,6 @@ import java.util.function.Consumer;
 public abstract class AbstractScene extends AbstractVisualComponent {
     protected final LauncherConfig launcherConfig;
     protected Pane header;
-    private AbstractScene prevScene;
-
-    protected AbstractScene getPreviousScene() {
-        return prevScene;
-    }
 
     protected AbstractScene(String fxmlPath, JavaFXApplication application) {
         super(fxmlPath, application);
@@ -51,8 +46,8 @@ public abstract class AbstractScene extends AbstractVisualComponent {
 
     }
 
-    protected void onShow(AbstractScene prevScene) {
-        this.prevScene = prevScene;
+    protected void onShow() {
+
     }
 
     protected void onHide() {
@@ -102,9 +97,7 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     }
 
     protected void switchToBackScene() throws Exception {
-        if(getPreviousScene() != null) {
-            switchScene(getPreviousScene());
-        }
+        currentStage.back();
     }
 
     public void disable() {
@@ -118,9 +111,9 @@ public abstract class AbstractScene extends AbstractVisualComponent {
     public abstract void reset();
 
     protected void switchScene(AbstractScene scene) throws Exception {
-        currentStage.setScene(scene);
+        currentStage.setScene(scene, true);
         onHide();
-        scene.onShow(this);
+        scene.onShow();
     }
 
     public Node getHeader() {

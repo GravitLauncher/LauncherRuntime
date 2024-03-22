@@ -11,14 +11,19 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.utils.JavaFxUtils;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 public abstract class AbstractStage {
+    protected final JavaFXApplication application;
     protected final Stage stage;
     protected final Scene scene;
     protected final StackPane stackPane;
@@ -29,8 +34,10 @@ public abstract class AbstractStage {
     protected AnchorPane notifications;
     private final AtomicInteger disableCounter = new AtomicInteger(0);
     protected final AtomicInteger scenePosition = new AtomicInteger(0);
+    protected List<String> sceneFlow = new LinkedList<>();
 
-    protected AbstractStage(Stage stage) {
+    protected AbstractStage(JavaFXApplication application, Stage stage) {
+        this.application = application;
         this.stage = stage;
         this.stackPane = new StackPane();
         this.scene = new Scene(stackPane);
@@ -81,12 +88,14 @@ public abstract class AbstractStage {
         return visualComponent;
     }
 
-    public void setScene(AbstractVisualComponent visualComponent) throws Exception {
+    public void setScene(AbstractVisualComponent visualComponent, boolean addToFlow) throws Exception {
         if (visualComponent == null) {
             if(!stackPane.getChildren().isEmpty()) {
                 stackPane.getChildren().set(scenePosition.get(), new Pane());
             }
             return;
+        } else if(addToFlow) {
+            sceneFlow.add(visualComponent.getName());
         }
         visualComponent.currentStage = this;
         if (!visualComponent.isInit()) {
@@ -108,6 +117,23 @@ public abstract class AbstractStage {
         stage.sizeToScene();
         visualComponent.postInit();
         this.visualComponent = visualComponent;
+    }
+
+    public AbstractVisualComponent back() throws Exception {
+        if(sceneFlow.size() <= 1) {
+            return null;
+        }
+        AbstractVisualComponent component;
+        do {
+            String name = sceneFlow.get(sceneFlow.size() - 2);
+            component = application.gui.getByName(name);
+            if(component == null) {
+                return null;
+            }
+            sceneFlow.remove(sceneFlow.get(sceneFlow.size() - 1));
+        } while(component.isDisableReturnBack());
+        setScene(component, false);
+        return component;
     }
 
     public void push(Node node) {

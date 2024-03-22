@@ -48,7 +48,7 @@ public class UpdateScene extends AbstractScene {
                 downloader.cancel();
             } else if(downloadStatus == DownloadStatus.ERROR || downloadStatus == DownloadStatus.COMPLETE) {
                 try {
-                    switchScene(application.gui.serverInfoScene);
+                    switchToBackScene();
                 } catch (Exception exception) {
                     errorHandle(exception);
                 }
@@ -97,6 +97,11 @@ public class UpdateScene extends AbstractScene {
         speederr.setVisible(true);
         speedon.setVisible(false);
         LogHelper.error(e);
+    }
+
+    @Override
+    public boolean isDisableReturnBack() {
+        return true;
     }
 
     @Override

@@ -48,7 +48,7 @@ public class OptionsScene extends AbstractScene implements SceneSupportUserBlock
         optionsTab.clear();
         LookupHelper.<Button>lookupIfPossible(layout, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
-                switchScene(application.gui.serverInfoScene);
+                switchToBackScene();
             } catch (Exception exception) {
                 errorHandle(exception);
             }

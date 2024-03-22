@@ -35,7 +35,7 @@ public class DebugScene extends AbstractScene {
                 clientInstance.unregisterListener(processLogOutput);
             }
             try {
-                switchScene(application.gui.serverInfoScene);
+                switchToBackScene();
             } catch (Exception ex) {
                 errorHandle(ex);
             }

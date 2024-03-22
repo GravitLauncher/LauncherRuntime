@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class DialogStage extends AbstractStage {
     public DialogStage(JavaFXApplication application, String title, AbstractDialog dialog) throws Exception {
-        super(application.newStage());
+        super(application, application.newStage());
         stage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
@@ -31,7 +31,7 @@ public class DialogStage extends AbstractStage {
             LogHelper.error(e);
         }
         setClipRadius(DesignConstants.SCENE_CLIP_RADIUS, DesignConstants.SCENE_CLIP_RADIUS);
-        setScene(dialog);
+        setScene(dialog, true);
         enableMouseDrag(dialog.getLayout());
         Screen screen = Screen.getPrimary();
         Rectangle2D bounds = screen.getVisualBounds();

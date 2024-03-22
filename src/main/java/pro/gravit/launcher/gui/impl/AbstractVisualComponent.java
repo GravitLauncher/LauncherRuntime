@@ -178,4 +178,8 @@ public abstract class AbstractVisualComponent {
     protected Parent getFxmlRootPrivate() {
         return getFxmlRoot();
     }
+
+    public boolean isDisableReturnBack() {
+        return false;
+    }
 }
