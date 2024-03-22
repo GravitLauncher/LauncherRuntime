@@ -1,4 +1,9 @@
 #header-text {
     -fx-font-weight: 800;
     -fx-font-size: 18px;
+    -fx-text-fill: -fx-colors-text;
+}
+
+#description {
+    -fx-text-fill: -fx-colors-text;
 }
