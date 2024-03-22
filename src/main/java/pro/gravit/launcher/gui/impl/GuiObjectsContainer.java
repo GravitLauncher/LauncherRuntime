@@ -30,6 +30,7 @@ public class GuiObjectsContainer {
     private final JavaFXApplication application;
     private final Set<AbstractOverlay> overlays = new HashSet<>();
     private final Set<AbstractScene> scenes = new HashSet<>();
+    private final Set<AbstractVisualComponent> components = new HashSet<>();
     public ProcessingOverlay processingOverlay;
     public WelcomeOverlay welcomeOverlay;
     public UploadAssetOverlay uploadAssetOverlay;
@@ -46,12 +47,14 @@ public class GuiObjectsContainer {
 
     public ConsoleStage consoleStage;
     public BrowserScene browserScene;
+    public BackgroundComponent background;
 
     public GuiObjectsContainer(JavaFXApplication application) {
         this.application = application;
     }
 
     public void init() {
+        background = registerComponent(BackgroundComponent.class);
         loginScene = registerScene(LoginScene.class);
         processingOverlay = registerOverlay(ProcessingOverlay.class);
         welcomeOverlay = registerOverlay(WelcomeOverlay.class);
@@ -92,6 +95,7 @@ public class GuiObjectsContainer {
             application.resetDirectory();
             overlays.clear();
             scenes.clear();
+            components.clear();
             application.getMainStage().resetStyles();
             init();
             for (AbstractScene s : scenes) {
@@ -142,6 +146,20 @@ public class GuiObjectsContainer {
                     .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
                     .invokeWithArguments(application);
             scenes.add(instance);
+            return instance;
+        } catch (Throwable e) {
+            LogHelper.error(e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends AbstractVisualComponent> T registerComponent(Class<T> clazz) {
+        try {
+            T instance = (T) MethodHandles
+                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
+                    .invokeWithArguments(application);
+            components.add(instance);
             return instance;
         } catch (Throwable e) {
             LogHelper.error(e);

@@ -76,6 +76,9 @@ ComboBox .arrow-button {
     -fx-background-image: url('../images/background.png');
     -fx-background-size: cover;
 }
+.scene-background {
+    -fx-background-color: -fx-colors-base;
+}
 .blur {
     -fx-background-image: url('../images/background-blur.png') !important;
     -fx-background-size: cover;

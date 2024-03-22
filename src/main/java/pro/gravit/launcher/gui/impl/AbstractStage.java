@@ -23,10 +23,12 @@ public abstract class AbstractStage {
     protected final Scene scene;
     protected final StackPane stackPane;
     protected AbstractVisualComponent visualComponent;
+    protected AbstractVisualComponent background;
     protected Pane disablePane;
     protected VBox notificationsVBox;
     protected AnchorPane notifications;
     private final AtomicInteger disableCounter = new AtomicInteger(0);
+    protected final AtomicInteger scenePosition = new AtomicInteger(0);
 
     protected AbstractStage(Stage stage) {
         this.stage = stage;
@@ -82,7 +84,7 @@ public abstract class AbstractStage {
     public void setScene(AbstractVisualComponent visualComponent) throws Exception {
         if (visualComponent == null) {
             if(!stackPane.getChildren().isEmpty()) {
-                stackPane.getChildren().set(0, new Pane());
+                stackPane.getChildren().set(scenePosition.get(), new Pane());
             }
             return;
         }
@@ -96,12 +98,12 @@ public abstract class AbstractStage {
         if (stackPane.getChildren().isEmpty()) {
             stackPane.getChildren().add(visualComponent.getFxmlRoot());
         } else {
-            var old = stackPane.getChildren().get(0);
+            var old = stackPane.getChildren().get(scenePosition.get());
             if(old.getEffect() instanceof GaussianBlur blur) {
                 old.setEffect(null);
                 visualComponent.getFxmlRootPrivate().setEffect(blur);
             }
-            stackPane.getChildren().set(0, visualComponent.getFxmlRoot());
+            stackPane.getChildren().set(scenePosition.get(), visualComponent.getFxmlRoot());
         }
         stage.sizeToScene();
         visualComponent.postInit();
@@ -125,6 +127,17 @@ public abstract class AbstractStage {
         if (index >= 0) {
             stackPane.getChildren().add(index + 1, value);
         }
+    }
+
+    public void addBefore(Node node, Node value) {
+        int index = stackPane.getChildren().indexOf(node);
+        if (index >= 0) {
+            stackPane.getChildren().add(index, value);
+        }
+    }
+
+    public int getScenePosition() {
+        return scenePosition.get();
     }
 
     protected void pushNotification(Node node) {
@@ -170,7 +183,7 @@ public abstract class AbstractStage {
         var value = disableCounter.incrementAndGet();
         LogHelper.dev("Disable scene: stack_num: %s | blur: %s | counter: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null", value);
         if (value != 1) return;
-        Pane layout = (Pane) stackPane.getChildren().get(0);
+        Pane layout = (Pane) stackPane.getChildren().get(scenePosition.get());
         layout.setEffect(new GaussianBlur(150));
         if (disablePane == null) {
             disablePane = new Pane();
@@ -185,7 +198,7 @@ public abstract class AbstractStage {
         var value = disableCounter.decrementAndGet();
         LogHelper.dev("Enable scene: stack_num: %s | blur: %s | counter: %s",stackPane.getChildren().size(), disablePane == null ? "null" : "not null", value);
         if (value != 0) return;
-        Pane layout = (Pane) stackPane.getChildren().get(0);
+        Pane layout = (Pane) stackPane.getChildren().get(scenePosition.get());
         layout.setEffect(null);
         disablePane.setVisible(false);
     }

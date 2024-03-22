@@ -8,6 +8,7 @@ import javafx.stage.StageStyle;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.config.DesignConstants;
 import pro.gravit.launcher.gui.impl.AbstractStage;
+import pro.gravit.launcher.gui.impl.AbstractVisualComponent;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
@@ -27,6 +28,11 @@ public class PrimaryStage extends AbstractStage {
             LogHelper.error(e);
         }
         setClipRadius(DesignConstants.SCENE_CLIP_RADIUS, DesignConstants.SCENE_CLIP_RADIUS);
+    }
+
+    public void pushBackground(AbstractVisualComponent component) {
+        scenePosition.incrementAndGet();
+        addBefore(visualComponent.getLayout(), component.getLayout());
     }
 
     @Override

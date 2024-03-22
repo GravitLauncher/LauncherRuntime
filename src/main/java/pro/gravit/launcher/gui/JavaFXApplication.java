@@ -194,6 +194,8 @@ public class JavaFXApplication extends Application {
             gui.init();
             //
             mainStage.setScene(gui.loginScene);
+            gui.background.init();
+            mainStage.pushBackground(gui.background);
             mainStage.show();
             if (offlineService.isOfflineMode()) {
                 messageManager.createNotification(getTranslation("runtime.offline.notification.header"),
