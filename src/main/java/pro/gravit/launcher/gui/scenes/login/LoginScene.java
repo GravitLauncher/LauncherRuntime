@@ -49,6 +49,13 @@ public class LoginScene extends AbstractScene {
 
     @Override
     public void doInit() {
+        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+            try {
+                switchScene(application.gui.globalSettingsScene);
+            } catch (Exception exception) {
+                errorHandle(exception);
+            }
+        });
         authButton = new LoginAuthButtonComponent(LookupHelper.lookup(layout, "#authButton"), application,
                                                   (e) -> contextHelper.runCallback(authFlow::loginWithGui));
         savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
