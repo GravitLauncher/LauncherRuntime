@@ -107,6 +107,7 @@ public class JavaFXApplication extends Application {
             settings.userSettings.put(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.getDefault(guiModuleConfig));
         runtimeSettings = (RuntimeSettings) settings.userSettings.get(JavaRuntimeModule.RUNTIME_NAME);
         runtimeSettings.apply();
+        System.setProperty("prism.vsync", String.valueOf(runtimeSettings.globalSettings.prismVSync));
         DirBridge.dirUpdates = runtimeSettings.updatesDir == null
                 ? DirBridge.defaultUpdatesDir
                 : runtimeSettings.updatesDir;

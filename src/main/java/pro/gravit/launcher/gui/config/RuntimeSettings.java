@@ -44,6 +44,8 @@ public class RuntimeSettings extends UserSettings {
     public Map<UUID, ProfileSettings> profileSettings = new HashMap<>();
     @LauncherNetworkAPI
     public List<ClientProfile> profiles;
+    @LauncherNetworkAPI
+    public GlobalSettings globalSettings = new GlobalSettings();
 
     public static RuntimeSettings getDefault(GuiModuleConfig config) {
         RuntimeSettings runtimeSettings = new RuntimeSettings();
@@ -146,5 +148,10 @@ public class RuntimeSettings extends UserSettings {
             settings.javaPath = javaPath;
             settings.waylandSupport = waylandSupport;
         }
+    }
+
+    public static class GlobalSettings {
+        @LauncherNetworkAPI
+        public boolean prismVSync = true;
     }
 }

@@ -103,5 +103,7 @@ public class GlobalSettingsScene extends BaseSettingsScene {
     @Override
     public void reset() {
         super.reset();
+        RuntimeSettings.GlobalSettings settings = application.runtimeSettings.globalSettings;
+        add("PrismVSync", settings.prismVSync, (value) -> settings.prismVSync = value);
     }
 }
