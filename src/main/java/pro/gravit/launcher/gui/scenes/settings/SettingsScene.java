@@ -43,7 +43,7 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
             maxSystemMemory = (systemInfo.getHardware().getMemory().getTotal() >> 20);
         } catch (Throwable ignored) {
             try {
-                maxSystemMemory = SystemMemory.getPhysicalMemorySize();
+                maxSystemMemory = (SystemMemory.getPhysicalMemorySize() >> 20);
             } catch (Throwable ignored1) {
                 maxSystemMemory = 2048;
             }
