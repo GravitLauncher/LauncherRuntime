@@ -19,8 +19,12 @@ public class ThemeSelectorComponent {
         comboBox = LookupHelper.lookup(layout, "#themeCombo");
         comboBox.getItems().clear();
         comboBox.setConverter(new ThemeConverter());
-        for(var e : RuntimeSettings.LAUNCHER_THEME.values()) {
-            comboBox.getItems().add(e);
+        if(application.isThemeSupport()) {
+            for(var e : RuntimeSettings.LAUNCHER_THEME.values()) {
+                comboBox.getItems().add(e);
+            }
+        } else {
+            comboBox.getItems().add(RuntimeSettings.LAUNCHER_THEME.COMMON);
         }
         comboBox.getSelectionModel().select(Objects.requireNonNullElse(application.runtimeSettings.theme,
                                                                        RuntimeSettings.LAUNCHER_THEME.COMMON));

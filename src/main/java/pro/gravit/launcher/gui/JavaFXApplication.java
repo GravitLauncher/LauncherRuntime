@@ -243,6 +243,10 @@ public class JavaFXApplication extends Application {
         runtimeCategory.registerCommand("runtime", new RuntimeCommand(this));
     }
 
+    public boolean isThemeSupport() {
+        return enfsDirectory != null;
+    }
+
 
     @Override
     public void stop() {
