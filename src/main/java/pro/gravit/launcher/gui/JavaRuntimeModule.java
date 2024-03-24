@@ -35,14 +35,10 @@ public class JavaRuntimeModule extends LauncherModule {
 
     private static void noJavaFxAlert() {
         String message = """
-                Библиотеки JavaFX не найдены. У вас %s(x%d) ОС %s(x%d). Java %s. Установите Java с поддержкой JavaFX, например OracleJRE 8 x%d с официального сайта.
-                %s
+                Библиотеки JavaFX не найдены. У вас %s(x%d) ОС %s(x%d). Java %s. Установите Java с поддержкой JavaFX
                 Если вы не можете решить проблему самостоятельно обратитесь к администрации своего проекта
                 """.formatted(JVMHelper.RUNTIME_MXBEAN.getVmName(), JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name,
-                              JVMHelper.OS_BITS, JVMHelper.RUNTIME_MXBEAN.getSpecVersion(), JVMHelper.OS_BITS,
-                              JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE
-                                      ? "Убедитесь что вы запускаете с правильной Java(ПКМ->Открыть с помощью->Java 8)"
-                                      : "Убедитесь, что по умолчанию стоит запуск с подходяшей Java и установлен openjfx той же версии");
+                              JVMHelper.OS_BITS, JVMHelper.RUNTIME_MXBEAN.getSpecVersion());
         JOptionPane.showMessageDialog(null, message, "GravitLauncher", JOptionPane.ERROR_MESSAGE);
     }
 
