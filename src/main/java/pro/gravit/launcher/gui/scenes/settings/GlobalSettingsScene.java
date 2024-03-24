@@ -39,7 +39,7 @@ public class GlobalSettingsScene extends BaseSettingsScene {
             try {
                 if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
                 if (application.gui.consoleStage.isNullScene())
-                    switchScene(application.gui.consoleScene);
+                    application.gui.consoleStage.setScene(application.gui.consoleScene, true);
                 application.gui.consoleStage.show();
             } catch (Exception ex) {
                 errorHandle(ex);

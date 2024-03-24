@@ -18,8 +18,6 @@
     <AnchorPane id="header" prefHeight="80.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Label maxWidth="400.0" prefHeight="32.0" styleClass="scene-header" text="%runtime.scenes.settings.header" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="34.0" />
         <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="34.0">
-            <fx:include source="../../components/buttons/console.fxml" />
-            <fx:include source="../../components/buttons/lang.fxml" />
             <fx:include source="../../components/buttons/minimize.fxml" />
             <fx:include source="../../components/buttons/exit.fxml" />
         </HBox>
