@@ -7,8 +7,8 @@ import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
-import pro.gravit.launcher.gui.scenes.settings.BaseSettingsScene;
-import pro.gravit.launcher.gui.scenes.settings.ThemeSelectorComponent;
+import pro.gravit.launcher.gui.scenes.settings.components.LanguageSelectorComponent;
+import pro.gravit.launcher.gui.scenes.settings.components.ThemeSelectorComponent;
 import pro.gravit.launcher.gui.stage.ConsoleStage;
 import pro.gravit.launcher.runtime.client.DirBridge;
 import pro.gravit.utils.helper.IOHelper;
@@ -20,6 +20,7 @@ import java.nio.file.Path;
 
 public class GlobalSettingsScene extends BaseSettingsScene {
     private ThemeSelectorComponent themeSelector;
+    private LanguageSelectorComponent languageSelectorComponent;
     public GlobalSettingsScene(JavaFXApplication application) {
         super("scenes/settings/globalsettings.fxml", application);
     }
@@ -33,6 +34,7 @@ public class GlobalSettingsScene extends BaseSettingsScene {
     protected void doInit() {
         super.doInit();
         themeSelector = new ThemeSelectorComponent(application, componentList);
+        languageSelectorComponent = new LanguageSelectorComponent(application, componentList);
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
             try {
                 if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);

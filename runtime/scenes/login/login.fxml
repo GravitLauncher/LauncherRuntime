@@ -68,7 +68,6 @@
                 <Text id="createAccount" text="%runtime.scenes.login.createAccount" />
             </FlowPane>
 
-            <fx:include source="../../components/buttons/lang.fxml" />
             <fx:include source="../../components/buttons/settings.fxml" />
             <fx:include source="../../components/buttons/minimize.fxml" />
             <fx:include source="../../components/buttons/exit.fxml" />

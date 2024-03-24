@@ -1,4 +1,4 @@
-package pro.gravit.launcher.gui.scenes.settings;
+package pro.gravit.launcher.gui.scenes.settings.components;
 
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;

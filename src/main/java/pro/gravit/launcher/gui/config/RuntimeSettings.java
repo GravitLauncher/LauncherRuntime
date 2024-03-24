@@ -1,5 +1,7 @@
 package pro.gravit.launcher.gui.config;
+import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.service.JavaService;
+import pro.gravit.launcher.gui.utils.SystemTheme;
 import pro.gravit.launcher.runtime.client.DirBridge;
 import pro.gravit.launcher.runtime.client.UserSettings;
 import pro.gravit.launcher.core.LauncherNetworkAPI;
@@ -54,7 +56,11 @@ public class RuntimeSettings extends UserSettings {
         runtimeSettings.locale = config.locale == null
                 ? LAUNCHER_LOCALE.RUSSIAN
                 : LAUNCHER_LOCALE.valueOf(config.locale);
-        runtimeSettings.theme = LAUNCHER_THEME.DARK;
+        try {
+            runtimeSettings.theme = SystemTheme.getSystemTheme();
+        } catch (Throwable e) {
+            runtimeSettings.theme = LAUNCHER_THEME.COMMON;
+        }
         return runtimeSettings;
     }
 

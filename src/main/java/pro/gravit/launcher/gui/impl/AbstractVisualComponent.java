@@ -66,35 +66,8 @@ public abstract class AbstractVisualComponent {
                         .ifPresent((b) -> b.setOnAction((e) -> currentStage.close()));
             LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#minimize")
                         .ifPresent((b) -> b.setOnAction((e) -> currentStage.hide()));
-            LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#lang").ifPresent((b) -> {
-
-                b.setContextMenu(makeLangContextMenu());
-                b.setOnMousePressed((e) -> {
-                    if (!e.isPrimaryButtonDown()) return;
-                    b.getContextMenu().show(b, e.getScreenX(), e.getScreenY());
-                });
-            });
         }
         currentStage.enableMouseDrag(layout);
-    }
-
-    private ContextMenu makeLangContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getStyleClass().add("langChoice");
-        for (RuntimeSettings.LAUNCHER_LOCALE locale : RuntimeSettings.LAUNCHER_LOCALE.values()) {
-            MenuItem item = new MenuItem(locale.displayName);
-            item.setOnAction(e -> {
-                try {
-                    application.updateLocaleResources(locale.name);
-                    application.runtimeSettings.locale = locale;
-                    application.gui.reload();
-                } catch (Exception exception) {
-                    errorHandle(exception);
-                }
-            });
-            contextMenu.getItems().add(item);
-        }
-        return contextMenu;
     }
 
     public Pane getLayout() {
