@@ -18,8 +18,6 @@
     <AnchorPane id="header" prefHeight="80.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <Label maxWidth="400.0" prefHeight="32.0" styleClass="scene-header" text="%runtime.scenes.settings.header" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="34.0" />
         <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="34.0">
-            <fx:include source="../../components/buttons/console.fxml" />
-            <fx:include source="../../components/buttons/lang.fxml" />
             <fx:include source="../../components/buttons/minimize.fxml" />
             <fx:include source="../../components/buttons/exit.fxml" />
         </HBox>
@@ -74,7 +72,7 @@
                                                 <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="Empty Tooltip" />
                                             </tooltip>
                                         </ComboBox>
-                                        <Label maxHeight="1.7976931348623157E308" text="%runtime.scenes.settings.javaDesc" wrapText="true" />
+                                        <Label maxHeight="1.7976931348623157E308" styleClass="settings-label" text="%runtime.scenes.settings.javaDesc" wrapText="true" />
                                     </children>
                                     <opaqueInsets>
                                         <Insets />
@@ -82,29 +80,6 @@
                                     <VBox.margin>
                                         <Insets top="10.0" />
                                     </VBox.margin>
-                                </HBox>
-                            </children>
-                        </VBox>
-                        <VBox styleClass="settings-card">
-                            <children>
-                                <Label styleClass="settings-header" text="%runtime.scenes.settings.header.changeDirectory" />
-                                <!-- Папка проекта-->
-                                <HBox id="folder" alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="624.0">
-                                    <!-- Путь к папкам-->
-                                    <Hyperlink id="path" focusTraversable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="C:\Users" HBox.hgrow="ALWAYS">
-                                        <tooltip>
-                                            <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="Empty Tooltip" />
-                                        </tooltip>
-                                    </Hyperlink>
-                                    <!-- Смена пути-->
-                                    <Button id="changeDir" alignment="BASELINE_CENTER" contentDisplay="RIGHT" maxHeight="1.7976931348623157E308" minWidth="215.0" styleClass="icon-button" text="%runtime.scenes.settings.dirText">
-                                        <graphic>
-                                            <SVGPath content="M12 6.3999H6.4H5V7.7999V16.1999V17.5999H19V16.1999L19 9.1999V7.7999H17.6H12V6.3999ZM10.6 9.1999H17.6V16.1999H6.4V7.7999H10.6V9.1999ZM14.7998 11.9999H13.4V10.5999H12V11.9999H13.3998V13.3999H14.7998V11.9999ZM14.7998 11.9999H16.1998V10.5999H14.7998L14.7998 11.9999ZM16.1998 13.3999H14.7998V14.7999H16.1998V13.3999ZM13.4 13.3999H12V14.7999H13.4V13.3999Z" styleClass="icon-button-color" />
-                                        </graphic>
-                                        <tooltip>
-                                            <Tooltip anchorLocation="WINDOW_BOTTOM_LEFT" text="%runtime.scenes.settings.changedirTooltip" />
-                                        </tooltip>
-                                    </Button>
                                 </HBox>
                             </children>
                         </VBox>

@@ -8,14 +8,19 @@ Slider>.thumb {
     -fx-pref-width: 18px;
     -fx-pref-height: 18px;
 }
+Slider .axis {
+    -fx-tick-label-fill: -fx-colors-text;
+}
+
 #ramLabel {
     -fx-font-weight: bold;
     -fx-font-size: 12px;
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
 }
 .settings-header {
     -fx-font-size: 14px;
     -fx-font-weight: 800;
+    -fx-text-fill: -fx-colors-text;
 }
 .settings-card {
     -fx-spacing: 10;
@@ -26,6 +31,10 @@ Slider>.thumb {
 .settings-label-header {
     -fx-font-size: 14px;
     -fx-font-weight: 800;
+    -fx-text-fill: -fx-colors-text;
+}
+.settings-label {
+    -fx-text-fill: -fx-colors-text;
 }
 #folder {
     -fx-background-color: -fx-glass;
@@ -36,10 +45,11 @@ Slider>.thumb {
 }
 #settingslist {
     -fx-padding: 15px;
-    -fx-background-color: -fx-whiteGA;
+    -fx-background-color: -fx-colors-baseGA;
     -fx-background-radius: 15px;
 }
 #changeDir {
-    -fx-background-color: -fx-white;
+    -fx-background-color: -fx-colors-base;
     -fx-background-radius: 0 10px 10px 0;
+    -fx-text-fill: -fx-colors-text;
 }

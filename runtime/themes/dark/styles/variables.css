@@ -1,0 +1,33 @@
+
+/*-- Var library colors --*/
+* {
+    -fx-green: #48D792;
+    -fx-green-hover: #48D792;
+    -fx-greenTr: rgba(34, 234, 181, 0.12);
+    -fx-colors-text: #dddddd;
+    -fx-colors-text-hover: #d6d6d6;
+    -fx-colors-unactive: #545454;
+    -fx-colors-unactive-hover: #5e5e5e;
+    -fx-colors-base: #000000;
+    -fx-colors-baseG: #272729;
+    -fx-colors-baseGA: rgba(50, 50, 53, 0.5);
+    -fx-glass: rgba(108, 108, 108, 0.22);
+    -fx-glass-hover: rgba(101, 101, 101, 0.28);
+    -fx-colors-text-secondary: #c3d2da;
+    -fx-bg2: #5b5b5e;
+    -fx-red: #DB4D4D;
+    -fx-red-hover: #BA2E35;
+    -fx-gray: #323232;
+    -fx-violet: #6B36FF;
+    -fx-violet-hover: linear-gradient(to bottom right, #8D4CE0 0%, #5711FA 100%);
+    -fx-violet-hover2: rgba(65, 61, 100, 0.66);
+    -fx-violetTr: rgba(107, 54, 255, 0.18);
+    -fx-header: #A4B3BA;
+    -fx-header-hover: #D0D6D9;
+    -fx-scene-card: rgba(100, 100, 100, 0.50);
+    -fx-violetGR: linear-gradient(#8D4CE0 10.39%, #5D35B9 68.07%, #FAFAFF 68.07%);
+    -fx-ramGR: linear-gradient(from 50% 50% to 100% 100%, -fx-green, -fx-violet);
+    -fx-updateGR: linear-gradient(from 20% 20% to 100% 100%, -fx-violet, #5D35B9);
+    -fx-errorGR: linear-gradient(from 20% 20% to 100% 100%, #8D4CE0, #B93639);
+    -fx-effect-dropshadow: dropshadow(gaussian, rgba(0, 0, 0, 0.25), 30, 0, 0, 0);
+}

@@ -17,7 +17,7 @@ PasswordField {
 }
 PasswordField:focused,
 #login:focused {
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
 }
 #1st,
 #2st,
@@ -37,7 +37,7 @@ PasswordField:focused,
 #autoenter {
     -fx-font-size: 12px;
     -fx-background-image: url('../../images/icons/checkbox_off.png');
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
 }
 #savePassword:selected,
 #autoenter:selected {
@@ -77,35 +77,35 @@ PasswordField, #totp {
     -fx-font-weight: bold;
     -fx-font-size: 9px;
     -fx-text-align: right;
-    -fx-fill: -fx-grayD;
+    -fx-fill: -fx-colors-text-secondary;
 }
 #forgotPass:hover,
 #forgotPass:pressed {
-    -fx-fill: -fx-black2C-hover;
+    -fx-fill: -fx-colors-text-hover;
     -fx-cursor: hand;
 }
 .textLogin {
-    -fx-fill: -fx-grayD;
+    -fx-fill: -fx-colors-text-secondary;
     -fx-font-size: 9px;
     -fx-text-align: left;
 }
 Rectangle {
-    -fx-fill: -fx-grayD;
-    -fx-stroke: -fx-grayD;
+    -fx-fill: -fx-colors-text-secondary;
+    -fx-stroke: -fx-colors-text-secondary;
 }
 /*-- Веб авторизация (НЕ найдено в FXML) --*/
 /* #webAuth {
     -fx-font-weight: bold;
     -fx-font-size: 12px;
     -fx-text-align: center;
-    -fx-text-fill: -fx-white;
+    -fx-text-fill: -fx-colors-base;
     -fx-background-color: -fx-green;
 } */
 /*-- Кнопка входа --*/
 #authButton {
     -fx-font-weight: bold;
     -fx-font-size: 24px;
-    -fx-text-fill: -fx-black;
+    -fx-text-fill: -fx-colors-text;
 }
 /* --START-- Enum AuthButtonState Button */
 .activeButton {
@@ -115,10 +115,10 @@ Rectangle {
     -fx-background-color: -fx-green-hover;
 }
 .unactiveButton {
-    -fx-background-color: -fx-blackCE;
+    -fx-background-color: -fx-colors-unactive;
 }
 .unactiveButton:hover {
-    -fx-background-color: -fx-blackCE-hover;
+    -fx-background-color: -fx-colors-unactive-hover;
 }
 .errorButton {
     -fx-background-color: -fx-red;

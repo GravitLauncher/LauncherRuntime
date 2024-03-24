@@ -1,11 +1,11 @@
 ScrollPane {
     -fx-padding: 15px;
-    -fx-background-color: -fx-whiteGA;
+    -fx-background-color: -fx-colors-baseGA;
     -fx-background-radius: 15px;
 }
 ScrollPane Label {
     -fx-font-style: normal;
     -fx-font-weight: normal;
     -fx-font-size: 14px;
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
 }

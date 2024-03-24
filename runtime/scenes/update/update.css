@@ -1,6 +1,6 @@
 /*-- Информация о загрузке --*/
 #outputUpdate {
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
     -fx-font-size: 12px;
 }
 .anchor-block-information {
@@ -8,7 +8,7 @@
 }
 /*-- Вывод данных --*/
 #update-detail {
-    -fx-background-color: -fx-white;
+    -fx-background-color: -fx-colors-base;
     -fx-background-radius: 20px;
     -fx-effect: -fx-effect-dropshadow;
 }
@@ -29,7 +29,7 @@
 /* Прогресс бар */
 ProgressBar {
     -fx-indeterminate-bar-flip: false;
-    -fx-background-color: -fx-whiteG;
+    -fx-background-color: -fx-colors-baseG;
     -fx-background-radius: 0px 10px 10px 0px;
     -fx-effect: -fx-effect-dropshadow;
 }

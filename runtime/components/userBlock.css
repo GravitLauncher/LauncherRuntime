@@ -6,10 +6,10 @@
 #nickname {
     -fx-font-weight: bold;
     -fx-font-size: 14px;
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
 }
 #role {
     -fx-font-weight: normal;
     -fx-font-size: 12px;
-    -fx-text-fill: -fx-black2C;
+    -fx-text-fill: -fx-colors-text;
 }

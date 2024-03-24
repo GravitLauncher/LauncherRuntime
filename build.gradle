@@ -7,14 +7,14 @@ plugins {
     id 'eclipse'
 }
 javafx {
-    version = "21.0.1"
+    version = "22"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web']
 }
 sourceCompatibility = '17'
 targetCompatibility = '17'
 group 'pro.gravit.launcher'
-version '3.0.5'
-def mainClassName = "pro.gravit.launcher.client.JavaRuntimeModule"
+version '4.0.0'
+def mainClassName = "pro.gravit.launcher.gui.JavaRuntimeModule"
 
 task sourcesJar(type: Jar) {
     from sourceSets.main.allJava
@@ -34,7 +34,7 @@ tasks.withType(JavaCompile) {
 
 jar {
     manifest.attributes("Module-Main-Class": mainClassName,
-            "Module-Config-Class": "pro.gravit.launcher.client.gui.config.GuiModuleConfig",
+            "Module-Config-Class": "pro.gravit.launcher.gui.config.GuiModuleConfig",
             "Module-Config-Name": "JavaRuntime",
             "Required-Modern-Java": "true")
     jar.archiveFileName = "JavaRuntime_lmodule.jar"
@@ -58,12 +58,11 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.5.4"
-    implementation "pro.gravit.launcher:launcher-modern-core:5.5.4"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.5.4"
-    implementation "pro.gravit.launcher:launcher-client-api:5.5.4"
-    implementation "pro.gravit.launcher:launcher-client-start-api:5.5.4"
-    implementation "pro.gravit.launcher:launcher-client-starter-api:5.5.4"
+    implementation "pro.gravit.launcher:launcher-core:5.6.0"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.6.0"
+    implementation "pro.gravit.launcher:launcher-client-api:5.6.0"
+    implementation "pro.gravit.launcher:launcher-client-start-api:5.6.0"
+    implementation "pro.gravit.launcher:launcher-client-starter-api:5.6.0"
     implementation "pro.gravit.utils.enfs:enfs:2.0.1-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'
