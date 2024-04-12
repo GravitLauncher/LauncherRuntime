@@ -10,6 +10,7 @@
 #textDialog {
     -fx-background-color: -fx-bg2;
     -fx-background-radius: 10px;
+    -fx-text-fill: -fx-colors-text;
     -fx-font-size: 12px;
     -fx-padding: 10px 15px 10px 15px;
 }
