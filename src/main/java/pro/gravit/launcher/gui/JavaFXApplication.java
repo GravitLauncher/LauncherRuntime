@@ -95,9 +95,6 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        if(JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE) {
-            System.setProperty("prism.lcdtext", "false");
-        }
         guiModuleConfig = new GuiModuleConfig();
         settingsManager = new StdSettingsManager();
         UserSettings.providers.register(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.class);
