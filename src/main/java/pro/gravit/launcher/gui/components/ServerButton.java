@@ -19,6 +19,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class ServerButton extends AbstractVisualComponent {
     private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
+    private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
     private static final String SERVER_BUTTON_DEFAULT_IMAGE = "images/servers/example.png";
     private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
     public ClientProfile profile;
@@ -27,12 +28,21 @@ public class ServerButton extends AbstractVisualComponent {
     private Region serverLogo;
 
     protected ServerButton(JavaFXApplication application, ClientProfile profile) {
-        super(SERVER_BUTTON_FXML, application);
+        super(getServerButtonFxml(application, profile), application);
         this.profile = profile;
     }
 
     public static ServerButton createServerButton(JavaFXApplication application, ClientProfile profile) {
         return new ServerButton(application, profile);
+    }
+
+    private static String getServerButtonFxml(JavaFXApplication application, ClientProfile profile) {
+        String customFxml = String.format(SERVER_BUTTON_CUSTOM_FXML, profile.getUUID().toString());
+        URL fxml = application.tryResource(customFxml);
+        if(fxml != null) {
+            return customFxml;
+        }
+        return SERVER_BUTTON_FXML;
     }
 
     @Override

@@ -1,5 +1,5 @@
 #customization {
-    -fx-background-color: rgba(0,0,0,0.7);
+    -fx-background-color: -fx-colors-text;
     -fx-background-radius: 4px;
     -fx-opacity: 0;
     -fx-effect: none;

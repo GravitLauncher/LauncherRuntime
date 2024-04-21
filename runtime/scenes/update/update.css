@@ -21,6 +21,10 @@
 #speed-text {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
+    -fx-text-fill: -fx-colors-text;
+}
+#volume {
+    -fx-text-fill: -fx-colors-text;
 }
 .speedError {
     -fx-text-fill: -fx-red;
