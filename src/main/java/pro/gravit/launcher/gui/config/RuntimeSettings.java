@@ -1,5 +1,4 @@
 package pro.gravit.launcher.gui.config;
-import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.service.JavaService;
 import pro.gravit.launcher.gui.utils.SystemTheme;
 import pro.gravit.launcher.runtime.client.DirBridge;
@@ -108,6 +107,10 @@ public class RuntimeSettings extends UserSettings {
         public String javaPath;
         @LauncherNetworkAPI
         public boolean waylandSupport;
+        @LauncherNetworkAPI
+        public boolean debugSkipUpdate;
+        @LauncherNetworkAPI
+        public boolean debugSkipFileMonitor;
 
         public static ProfileSettings getDefault(JavaService javaService, ClientProfile profile) {
             ProfileSettings settings = new ProfileSettings();
@@ -119,6 +122,8 @@ public class RuntimeSettings extends UserSettings {
             if (version != null) {
                 settings.javaPath = version.jvmDir.toString();
             }
+            settings.debugSkipUpdate = false;
+            settings.debugSkipFileMonitor = false;
             return settings;
         }
 
@@ -135,6 +140,8 @@ public class RuntimeSettings extends UserSettings {
         public boolean autoEnter;
         public String javaPath;
         public boolean waylandSupport;
+        public boolean debugSkipUpdate;
+        public boolean debugSkipFileMonitor;
 
         public ProfileSettingsView(ProfileSettings settings) {
             ram = settings.ram;
@@ -143,6 +150,8 @@ public class RuntimeSettings extends UserSettings {
             autoEnter = settings.autoEnter;
             javaPath = settings.javaPath;
             waylandSupport = settings.waylandSupport;
+            debugSkipUpdate = settings.debugSkipUpdate;
+            debugSkipFileMonitor = settings.debugSkipFileMonitor;
             this.settings = settings;
         }
 
@@ -153,6 +162,8 @@ public class RuntimeSettings extends UserSettings {
             settings.fullScreen = fullScreen;
             settings.javaPath = javaPath;
             settings.waylandSupport = waylandSupport;
+            settings.debugSkipUpdate = debugSkipUpdate;
+            settings.debugSkipFileMonitor = debugSkipFileMonitor;
         }
     }
 
