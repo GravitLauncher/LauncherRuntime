@@ -120,6 +120,12 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
             add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value);
         }
+        if(application.authService.checkDebugPermission("skipupdate")) {
+            add("DebugSkipUpdate", profileSettings.debugSkipUpdate, (value) -> profileSettings.debugSkipUpdate = value);
+        }
+        if(application.authService.checkDebugPermission("skipfilemonitor")) {
+            add("DebugSkipFileMonitor", profileSettings.debugSkipFileMonitor, (value) -> profileSettings.debugSkipFileMonitor = value);
+        }
         userBlock.reset();
     }
 

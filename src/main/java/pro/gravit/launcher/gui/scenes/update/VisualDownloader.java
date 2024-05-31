@@ -62,8 +62,8 @@ public class VisualDownloader {
     }
 
     public void sendUpdateAssetRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest,
-            String assetIndex, Consumer<HashedDir> onSuccess) {
-        if (application.offlineService.isOfflineMode()) {
+            String assetIndex, boolean test, Consumer<HashedDir> onSuccess) {
+        if (test) {
             addLog.accept("Hashing %s".formatted(dirName));
             updateStatus.accept(UpdateScene.DownloadStatus.HASHING);
             application.workers.submit(() -> {
@@ -102,8 +102,8 @@ public class VisualDownloader {
     }
 
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
-            boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
-        if (application.offlineService.isOfflineMode()) {
+            boolean optionalsEnabled, boolean test, Consumer<HashedDir> onSuccess) {
+        if (test) {
             addLog.accept("Hashing %s".formatted(dirName));
             updateStatus.accept(UpdateScene.DownloadStatus.HASHING);
             application.workers.submit(() -> {

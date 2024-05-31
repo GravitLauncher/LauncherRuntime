@@ -62,13 +62,13 @@ public class UpdateScene extends AbstractScene {
     }
 
     public void sendUpdateAssetRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest,
-            String assetIndex, Consumer<HashedDir> onSuccess) {
-        downloader.sendUpdateAssetRequest(dirName, dir, matcher, digest, assetIndex, onSuccess);
+            String assetIndex, boolean test, Consumer<HashedDir> onSuccess) {
+        downloader.sendUpdateAssetRequest(dirName, dir, matcher, digest, assetIndex, test, onSuccess);
     }
 
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
-            boolean optionalsEnabled, Consumer<HashedDir> onSuccess) {
-        downloader.sendUpdateRequest(dirName, dir, matcher, digest, view, optionalsEnabled, onSuccess);
+            boolean optionalsEnabled, boolean test, Consumer<HashedDir> onSuccess) {
+        downloader.sendUpdateRequest(dirName, dir, matcher, digest, view, optionalsEnabled, test, onSuccess);
     }
 
     public void addLog(String string) {

@@ -1,6 +1,7 @@
 package pro.gravit.launcher.gui.service;
 
 import pro.gravit.launcher.base.Launcher;
+import pro.gravit.launcher.base.profiles.ClientProfileBuilder;
 import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.config.RuntimeSettings;
 import pro.gravit.launcher.gui.impl.AbstractStage;
@@ -20,6 +21,7 @@ import java.net.InetSocketAddress;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,15 +34,20 @@ public class LaunchService {
         this.application = application;
     }
 
-    private void downloadClients(CompletableFuture<ClientInstance> future, ClientProfile profile, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
+    public boolean isTestUpdate(ClientProfile profile, RuntimeSettings.ProfileSettings settings) {
+        return application.offlineService.isOfflineMode() || (application.authService.checkDebugPermission("skipupdate") && settings.debugSkipUpdate);
+    }
+
+    private void downloadClients(CompletableFuture<ClientInstance> future, ClientProfile profile, RuntimeSettings.ProfileSettings settings, JavaHelper.JavaVersion javaVersion, HashedDir jvmHDir) {
         Path target = DirBridge.dirUpdates.resolve(profile.getAssetDir());
         LogHelper.info("Start update to %s", target.toString());
+        boolean testUpdate = isTestUpdate(profile, settings);
         Consumer<HashedDir> next = (assetHDir) -> {
             Path targetClient = DirBridge.dirUpdates.resolve(profile.getDir());
             LogHelper.info("Start update to %s", targetClient.toString());
             application.gui.updateScene.sendUpdateRequest(profile.getDir(), targetClient,
                                                           profile.getClientUpdateMatcher(), true,
-                                                          application.profilesService.getOptionalView(), true,
+                                                          application.profilesService.getOptionalView(), true, testUpdate,
                                                           (clientHDir) -> {
                                                               LogHelper.info("Success update");
                                                               try {
@@ -56,11 +63,11 @@ public class LaunchService {
         };
         if (profile.getVersion().compareTo(ClientProfileVersions.MINECRAFT_1_6_4) <= 0) {
             application.gui.updateScene.sendUpdateRequest(profile.getAssetDir(), target,
-                                                          profile.getAssetUpdateMatcher(), true, null, false, next);
+                                                          profile.getAssetUpdateMatcher(), true, null, false, testUpdate, next);
         } else {
             application.gui.updateScene.sendUpdateAssetRequest(profile.getAssetDir(), target,
                                                                profile.getAssetUpdateMatcher(), true,
-                                                               profile.getAssetIndex(), next);
+                                                               profile.getAssetIndex(), testUpdate, next);
         }
     }
 
@@ -72,6 +79,13 @@ public class LaunchService {
         }
         if (javaVersion == null) {
             javaVersion = JavaHelper.JavaVersion.getCurrentJavaVersion();
+        }
+        if(application.authService.checkDebugPermission("skipfilemonitor") && profileSettings.debugSkipFileMonitor) {
+            var builder = new ClientProfileBuilder(profile);
+            builder.setUpdate(new ArrayList<>());
+            builder.setUpdateVerify(new ArrayList<>());
+            builder.setUpdateExclusions(new ArrayList<>());
+            profile = builder.createClientProfile();
         }
         ClientLauncherProcess clientLauncherProcess =
                 new ClientLauncherProcess(clientDir, assetDir, javaVersion, clientDir.resolve("resourcepacks"), profile,
@@ -162,7 +176,7 @@ public class LaunchService {
                         }
                         application.gui.updateScene.
                                 sendUpdateRequest(jvmDirName, javaVersion.jvmDir, null, true,
-                                                  application.profilesService.getOptionalView(), false,
+                                                  application.profilesService.getOptionalView(), false, isTestUpdate(profile, profileSettings),
                                                   (jvmHDir) -> {
                                                       if (JVMHelper.OS_TYPE == JVMHelper.OS.LINUX
                                                               || JVMHelper.OS_TYPE == JVMHelper.OS.MACOSX) {
@@ -176,7 +190,7 @@ public class LaunchService {
                                                               }
                                                           }
                                                       }
-                                                      downloadClients(future, profile, finalJavaVersion, jvmHDir);
+                                                      downloadClients(future, profile, profileSettings, finalJavaVersion, jvmHDir);
                                                   });
                     } else {
                         try {
@@ -185,7 +199,7 @@ public class LaunchService {
                         } catch (Exception e) {
                             future.completeExceptionally(e);
                         }
-                        downloadClients(future, profile, javaVersion, null);
+                        downloadClients(future, profile, profileSettings, javaVersion, null);
                     }
                 }), future::completeExceptionally, null);
         return future;
