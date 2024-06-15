@@ -25,24 +25,19 @@ public class RuntimeSecurityService {
                 return;
             }
             byte[] signature = sign(event.verifySecureKey);
-            try {
-                application.service.request(
-                                   new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
-                                   .thenAccept((event1) -> {
-                                       if (!event1.needHardwareInfo) {
-                                           simpleGetHardwareToken();
-                                       } else {
-                                           doCollectHardwareInfo(!event1.onlyStatisticInfo);
-                                       }
-                                   }).exceptionally((e) -> {
-                               application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
-                               notifyWaitObject(false);
-                               return null;
-                           });
-            } catch (IOException e) {
-                LogHelper.error("VerifySecureLevel failed: %s", e.getMessage());
-                notifyWaitObject(false);
-            }
+            application.service.request(
+                               new VerifySecureLevelKeyRequest(JavaRuntimeModule.engine.publicKey.getEncoded(), signature))
+                               .thenAccept((event1) -> {
+                                   if (!event1.needHardwareInfo) {
+                                       simpleGetHardwareToken();
+                                   } else {
+                                       doCollectHardwareInfo(!event1.onlyStatisticInfo);
+                                   }
+                               }).exceptionally((e) -> {
+                           application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
+                           notifyWaitObject(false);
+                           return null;
+                       });
         }).exceptionally((e) -> {
             LogHelper.info("Advanced security level disabled(exception)");
             notifyWaitObject(false);
@@ -51,19 +46,14 @@ public class RuntimeSecurityService {
     }
 
     private void simpleGetHardwareToken() {
-        try {
-            application.service.request(new HardwareReportRequest()).thenAccept((response) -> {
-                LogHelper.info("Advanced security level success completed");
-                notifyWaitObject(true);
-            }).exceptionally((e) -> {
-                application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
-                notifyWaitObject(false);
-                return null;
-            });
-        } catch (IOException e) {
+        application.service.request(new HardwareReportRequest()).thenAccept((response) -> {
+            LogHelper.info("Advanced security level success completed");
+            notifyWaitObject(true);
+        }).exceptionally((e) -> {
             application.messageManager.createNotification("Hardware Checker", e.getCause().getMessage());
             notifyWaitObject(false);
-        }
+            return null;
+        });
     }
 
     private void doCollectHardwareInfo(boolean needSerial) {

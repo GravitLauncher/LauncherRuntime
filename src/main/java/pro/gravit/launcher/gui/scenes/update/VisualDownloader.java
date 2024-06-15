@@ -79,26 +79,21 @@ public class VisualDownloader {
             return;
         }
         UpdateRequest request = new UpdateRequest(dirName);
-        try {
-            updateStatus.accept(UpdateScene.DownloadStatus.REQUEST);
-            application.service.request(request).thenAccept(event -> {
-                LogHelper.dev("Start updating %s", dirName);
-                try {
-                    downloadAsset(dirName, dir, matcher, digest, assetIndex, onSuccess, event.hdir, event.url);
-                } catch (Exception e) {
-                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
-                    ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
-                }
-            }).exceptionally((error) -> {
+        updateStatus.accept(UpdateScene.DownloadStatus.REQUEST);
+        application.service.request(request).thenAccept(event -> {
+            LogHelper.dev("Start updating %s", dirName);
+            try {
+                downloadAsset(dirName, dir, matcher, digest, assetIndex, onSuccess, event.hdir, event.url);
+            } catch (Exception e) {
                 updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
-                ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(error.getCause()));
-                // hide(2500, scene, onError);
-                return null;
-            });
-        } catch (IOException e) {
+                ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
+            }
+        }).exceptionally((error) -> {
             updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
-            errorHandle.accept(e);
-        }
+            ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(error.getCause()));
+            // hide(2500, scene, onError);
+            return null;
+        });
     }
 
     public void sendUpdateRequest(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
@@ -119,26 +114,21 @@ public class VisualDownloader {
             return;
         }
         UpdateRequest request = new UpdateRequest(dirName);
-        try {
-            updateStatus.accept(UpdateScene.DownloadStatus.REQUEST);
-            application.service.request(request).thenAccept(event -> {
-                LogHelper.dev("Start updating %s", dirName);
-                try {
-                    download(dirName, dir, matcher, digest, view, optionalsEnabled, onSuccess, event.hdir, event.url);
-                } catch (Exception e) {
-                    updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
-                    ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
-                }
-            }).exceptionally((error) -> {
+        updateStatus.accept(UpdateScene.DownloadStatus.REQUEST);
+        application.service.request(request).thenAccept(event -> {
+            LogHelper.dev("Start updating %s", dirName);
+            try {
+                download(dirName, dir, matcher, digest, view, optionalsEnabled, onSuccess, event.hdir, event.url);
+            } catch (Exception e) {
                 updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
-                ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(error.getCause()));
-                // hide(2500, scene, onError);
-                return null;
-            });
-        } catch (IOException e) {
+                ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(e));
+            }
+        }).exceptionally((error) -> {
             updateStatus.accept(UpdateScene.DownloadStatus.ERROR);
-            errorHandle.accept(e);
-        }
+            ContextHelper.runInFxThreadStatic(() -> errorHandle.accept(error.getCause()));
+            // hide(2500, scene, onError);
+            return null;
+        });
     }
 
     private void download(String dirName, Path dir, FileNameMatcher matcher, boolean digest, OptionalView view,
