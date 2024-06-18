@@ -1,7 +1,7 @@
 package pro.gravit.launcher.gui;
 
 import javafx.application.Application;
-import pro.gravit.launcher.gui.JavaFXApplication;
+import pro.gravit.launcher.gui.basic.FXApplication;
 import pro.gravit.launcher.runtime.LauncherEngine;
 import pro.gravit.launcher.runtime.gui.RuntimeProvider;
 import pro.gravit.launcher.runtime.utils.LauncherUpdater;
@@ -27,14 +27,14 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
         return INSTANCE.get();
     }
 
-    public JavaFXApplication getApplication() {
-        return JavaFXApplication.getInstance();
+    public FXApplication getApplication() {
+        return FXApplication.getInstance();
     }
 
     @Override
     public void run(String[] args) {
         LogHelper.debug("Start JavaFX Application");
-        Application.launch(JavaFXApplication.class, args);
+        Application.launch(FXApplication.class, args);
         LogHelper.debug("Post Application.launch method invoked");
         if (updatePath != null) {
             LauncherUpdater.nothing();
@@ -60,10 +60,6 @@ public class StdJavaRuntimeProvider implements RuntimeProvider {
     }
 
     protected void registerPrivateCommands() {
-        JavaFXApplication application = JavaFXApplication.getInstance();
-        if (application != null) {
-            application.registerPrivateCommands();
-        }
     }
 
     @Override

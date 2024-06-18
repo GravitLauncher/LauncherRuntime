@@ -67,10 +67,15 @@ dependencies {
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'
     implementation 'com.google.code.gson:gson:2.10.1'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.7.1'
 }
 
 wrapper {
     distributionType = Wrapper.DistributionType.ALL
+}
+
+tasks.named('test', Test) {
+    useJUnitPlatform()
 }
 
 defaultTasks 'build'

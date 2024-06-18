@@ -3,7 +3,7 @@ package pro.gravit.launcher.gui;
 import javafx.stage.Stage;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.client.events.ClientUnlockConsoleEvent;
-import pro.gravit.launcher.gui.service.OfflineService;
+import pro.gravit.launcher.gui.basic.FXApplication;
 import pro.gravit.launcher.runtime.LauncherEngine;
 import pro.gravit.launcher.runtime.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.runtime.client.events.ClientPreGuiPhase;
@@ -12,7 +12,6 @@ import pro.gravit.launcher.base.modules.LauncherInitContext;
 import pro.gravit.launcher.base.modules.LauncherModule;
 import pro.gravit.launcher.base.modules.LauncherModuleInfo;
 import pro.gravit.launcher.base.modules.events.OfflineModeEvent;
-import pro.gravit.launcher.base.request.websockets.OfflineRequestService;
 import pro.gravit.utils.Version;
 import pro.gravit.utils.helper.JVMHelper;
 import pro.gravit.utils.helper.LogHelper;
@@ -110,9 +109,9 @@ public class JavaRuntimeModule extends LauncherModule {
             LauncherEngine.exitLauncher(0);
         }
         try {
-            Method m = JavaFXApplication.class.getMethod(new String(Base64.getDecoder().decode("c3RhcnQ=")),
-                                                         Stage.class); // Fix proguard remapping
-            if (m.getDeclaringClass() != JavaFXApplication.class)
+            Method m = FXApplication.class.getMethod(new String(Base64.getDecoder().decode("c3RhcnQ=")),
+                                                     Stage.class); // Fix proguard remapping
+            if (m.getDeclaringClass() != FXApplication.class)
                 throw new RuntimeException("Method start not override");
         } catch (Throwable exception) {
             LogHelper.error(exception);
@@ -130,7 +129,7 @@ public class JavaRuntimeModule extends LauncherModule {
     }
 
     private void offlineMode(OfflineModeEvent event) {
-        OfflineService.applyRuntimeProcessors((OfflineRequestService) event.service);
+        //OfflineService.applyRuntimeProcessors((OfflineRequestService) event.service);
     }
 
     private void engineInitPhase(ClientEngineInitPhase initPhase) {
@@ -140,7 +139,7 @@ public class JavaRuntimeModule extends LauncherModule {
     private void exitPhase(ClientExitPhase exitPhase) {
         if (provider != null && provider instanceof StdJavaRuntimeProvider stdJavaRuntimeProvider) {
             try {
-                stdJavaRuntimeProvider.getApplication().saveSettings();
+                //stdJavaRuntimeProvider.getApplication().saveSettings();
             } catch (Throwable e) {
                 LogHelper.error(e);
             }

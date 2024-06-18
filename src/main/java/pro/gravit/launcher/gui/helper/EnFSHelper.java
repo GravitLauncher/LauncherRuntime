@@ -2,7 +2,6 @@ package pro.gravit.launcher.gui.helper;
 
 import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.base.LauncherConfig;
-import pro.gravit.launcher.gui.JavaFXApplication;
 import pro.gravit.launcher.gui.utils.RuntimeCryptedFile;
 import pro.gravit.utils.enfs.EnFS;
 import pro.gravit.utils.enfs.dir.CachedFile;
@@ -32,7 +31,7 @@ public class EnFSHelper {
 
     public static void initEnFS() throws IOException {
         EnFS.main.newDirectory(Paths.get(BASE_DIRECTORY));
-        if(LogHelper.isDevEnabled() || JavaFXApplication.getInstance().isDebugMode()) {
+        if(LogHelper.isDevEnabled()) {
             EnFS.DEBUG_OUTPUT = new LauncherEnFsDebugOutput();
         }
     }
