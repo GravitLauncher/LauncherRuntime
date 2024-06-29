@@ -14,6 +14,7 @@ public class StackLayers extends StackPane {
 
     public void pushLayer(LayerPosition pos, Layer layer) {
         Layer before = getLayer(pos);
+        layer.init();
         if(before != null) {
             before.onDetach();
             before.stage = null;

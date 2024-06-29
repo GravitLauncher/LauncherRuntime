@@ -68,11 +68,12 @@ public abstract class Layer {
         return layer;
     }
 
-    protected void inject(Pane content, Layer layer) {
+    protected<T extends Layer> T inject(Pane content, T layer) {
         content.getChildren().add(layer.getRoot());
         layer.stage = stage;
         layer.onParent(this);
         layer.init();
+        return layer;
     }
 
     protected<T extends Node> T lookup(String name) {

@@ -1,13 +1,16 @@
 package pro.gravit.launcher.gui.basic;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.stage.Stage;
 import pro.gravit.launcher.base.Launcher;
+import pro.gravit.launcher.core.api.model.SelfUser;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.gui.helper.EnFSHelper;
 import pro.gravit.launcher.gui.scenes.LoginScene;
+import pro.gravit.launcher.gui.scenes.ServerMenuScene;
 import pro.gravit.launcher.runtime.debug.DebugMain;
 
 import java.io.IOException;
@@ -44,8 +47,8 @@ public class FXApplication extends Application {
         primaryStage = new FxStage(stage);
         LauncherBackendAPIHolder.getApi().setCallback(new MainCallbackImpl());
         {
-            var main = register(new LoginScene());
-            primaryStage.pushLayer(LayerPositions.SCENE, main);
+            Scenes.init();
+            primaryStage.pushLayer(LayerPositions.SCENE, Scenes.LOGIN);
         }
         primaryStage.show();
     }
@@ -96,6 +99,14 @@ public class FXApplication extends Application {
     }
 
     public class MainCallbackImpl extends LauncherBackendAPI.MainCallback {
-
+        @Override
+        public void onAuthorize(SelfUser selfUser) {
+            Platform.runLater(() -> {
+                var mainLayer = primaryStage.getLayer(LayerPositions.SCENE);
+                if("login".equals(mainLayer.getName())) {
+                    primaryStage.pushLayer(LayerPositions.SCENE, Scenes.SERVER_MENU);
+                }
+            });
+        }
     }
 }

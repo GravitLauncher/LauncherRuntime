@@ -132,6 +132,11 @@ public class LoginScene extends FxScene {
         this.authMethod = authMethod;
     }
 
+    @Override
+    public String getName() {
+        return "login";
+    }
+
     private static class AuthMethodConverter extends StringConverter<AuthMethod> {
 
         @Override
