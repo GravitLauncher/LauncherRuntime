@@ -4,7 +4,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.base.request.auth.password.AuthMultiPassword;
 import pro.gravit.launcher.core.api.method.AuthMethod;
 import pro.gravit.launcher.core.api.method.AuthMethodDetails;
 import pro.gravit.launcher.core.api.method.AuthMethodPassword;
@@ -57,7 +56,12 @@ public class LoginScene extends FxScene {
 
     protected void onAuthButtonClick() {
         if(authMethodUI == null) {
-            updateAuthMethodUI();
+            LauncherBackendAPIHolder.getApi().tryAuthorize().thenAcceptAsync((user) -> {
+
+            }, FxThreadExecutor.getInstance()).exceptionallyAsync(e -> {
+                updateAuthMethodUI();
+                return null;
+            }, FxThreadExecutor.getInstance());
             return;
         }
         authMethodUI.onAuthButtonClicked();

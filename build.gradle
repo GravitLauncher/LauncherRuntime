@@ -7,7 +7,7 @@ plugins {
     id 'eclipse'
 }
 javafx {
-    version = "22"
+    version = "22.0.1"
     modules = ['javafx.controls', 'javafx.fxml', 'javafx.swing', 'javafx.web']
 }
 sourceCompatibility = '17'

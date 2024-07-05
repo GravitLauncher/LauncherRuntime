@@ -9,6 +9,7 @@ import pro.gravit.launcher.gui.basic.LayerPositions;
 import pro.gravit.launcher.gui.basic.ResourcePath;
 import pro.gravit.launcher.gui.basic.Scenes;
 import pro.gravit.launcher.gui.components.ServerButton;
+import pro.gravit.launcher.gui.components.UserBlock;
 
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class ServerMenuScene extends FxScene {
     @Override
     protected void doInit() {
         super.doInit();
+        use(lookup("#userBlock"),UserBlock::new);
         content = (Pane) this.<ScrollPane>lookup("#servers").getContent();
         LauncherBackendAPIHolder.getApi().fetchProfiles().thenAcceptAsync(this::onProfiles, FxThreadExecutor.getInstance());
     }
