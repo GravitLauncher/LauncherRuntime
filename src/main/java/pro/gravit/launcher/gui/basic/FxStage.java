@@ -5,12 +5,16 @@ import javafx.stage.Stage;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.List;
+import java.util.Stack;
 
 public class FxStage {
     private final Stage stage;
     private final Scene scene;
     private final StackLayers root;
+    private final Deque<Layer> backStack = new ArrayDeque<>();
 
     public FxStage(Stage stage) {
         this.stage = stage;
@@ -49,6 +53,26 @@ public class FxStage {
 
     public void pushLayer(StackLayers.LayerPosition pos, Layer layer) {
         root.pushLayer(pos, layer);
+        if(pos == LayerPositions.SCENE) {
+            backStack.addFirst(layer);
+        }
+    }
+
+    public void back() {
+        if (backStack.isEmpty()) {
+            return;
+        }
+        backStack.pop();
+        if (backStack.isEmpty()) {
+            return;
+        }
+        var layer = backStack.getFirst();
+        while(layer.getClass().getAnnotation(LayerNotSupportedReturn.class) != null) {
+            backStack.pop();
+            layer = backStack.getFirst();
+        }
+
+        root.pushLayer(LayerPositions.SCENE, backStack.getFirst());
     }
 
     public Layer getLayer(StackLayers.LayerPosition position) {

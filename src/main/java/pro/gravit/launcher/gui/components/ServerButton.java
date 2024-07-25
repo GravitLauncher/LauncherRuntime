@@ -40,16 +40,21 @@ public class ServerButton extends Layer {
         online = lookup("#online");
         reset = lookup("#reset");
         save = lookup("#save");
-        onProfile(profile);
+        if(profile != null) {
+            onProfile(profile);
+        }
     }
 
     public void onProfile(ProfileFeatureAPI.ClientProfile profile) {
+        this.profile = profile;
         name.setText(profile.getName());
         description.setText(profile.getDescription());
         updateLogo(profile);
         LauncherBackendAPIHolder.getApi().pingServer(profile).thenAcceptAsync((info) -> {
             online.setText(String.format("%d", info.getOnline()));
         }, FxThreadExecutor.getInstance());
+        reset.setVisible(false);
+        save.setVisible(false);
     }
 
     private void updateLogo(ProfileFeatureAPI.ClientProfile profile) {
@@ -71,10 +76,12 @@ public class ServerButton extends Layer {
 
     public void setOnSave(Runnable runnable) {
         save.setOnAction((e) -> runnable.run());
+        reset.setVisible(true);
     }
 
     public void setOnReset(Runnable runnable) {
         reset.setOnAction((e) -> runnable.run());
+        reset.setVisible(true);
     }
 
     public void setOnAction(Runnable runnable) {
