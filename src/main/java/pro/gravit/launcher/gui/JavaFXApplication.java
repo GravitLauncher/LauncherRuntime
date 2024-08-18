@@ -143,7 +143,7 @@ public class JavaFXApplication extends Application {
                 debugMode = true;
             }
         } catch (Throwable e) {
-            if (!(e instanceof ClassNotFoundException)) {
+            if (!(e instanceof ClassNotFoundException) && !(e instanceof NoClassDefFoundError)) {
                 LogHelper.error(e);
             }
         }
