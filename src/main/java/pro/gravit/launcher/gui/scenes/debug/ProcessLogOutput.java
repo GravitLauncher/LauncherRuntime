@@ -7,8 +7,8 @@ import pro.gravit.launcher.gui.impl.ContextHelper;
 import pro.gravit.launcher.gui.service.LaunchService;
 
 public class ProcessLogOutput implements LaunchService.ClientInstance.ProcessListener {
-    static final long MAX_LENGTH = 1024 * 32;
-    static final int REMOVE_LENGTH = 1024 * 4;
+    static final long MAX_LENGTH = 1024 * 256;
+    static final int REMOVE_LENGTH = 1024 * 16;
     private final TextArea output;
     private final Object syncObject = new Object();
     private String appendString = "";
