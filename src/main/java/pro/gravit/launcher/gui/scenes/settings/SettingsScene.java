@@ -114,21 +114,17 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
             }
         });
         serverButton.enableResetButton(null, (e) -> reset());
-        if (!application.runtimeSettings.globalSettings.debugAllClients) {
-            add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
-        } else {
-            addDisabled("Debug", application.gui.globalSettingsScene.getName(), profileSettings.debug);
-        }
-        add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
-        add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value);
+        add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value, application.runtimeSettings.globalSettings.debugAllClients);
+        add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value, false);
+        add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value, false);
         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
-            add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value);
+            add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value, false);
         }
         if(application.authService.checkDebugPermission("skipupdate")) {
-            add("DebugSkipUpdate", profileSettings.debugSkipUpdate, (value) -> profileSettings.debugSkipUpdate = value);
+            add("DebugSkipUpdate", profileSettings.debugSkipUpdate, (value) -> profileSettings.debugSkipUpdate = value, false);
         }
         if(application.authService.checkDebugPermission("skipfilemonitor")) {
-            add("DebugSkipFileMonitor", profileSettings.debugSkipFileMonitor, (value) -> profileSettings.debugSkipFileMonitor = value);
+            add("DebugSkipFileMonitor", profileSettings.debugSkipFileMonitor, (value) -> profileSettings.debugSkipFileMonitor = value, false);
         }
         userBlock.reset();
     }
