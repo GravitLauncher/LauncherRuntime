@@ -170,5 +170,7 @@ public class RuntimeSettings extends UserSettings {
     public static class GlobalSettings {
         @LauncherNetworkAPI
         public boolean prismVSync = true;
+        @LauncherNetworkAPI
+        public boolean debugAllClients = false;
     }
 }

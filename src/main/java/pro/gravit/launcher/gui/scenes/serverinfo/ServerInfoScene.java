@@ -73,7 +73,7 @@ public class ServerInfoScene extends AbstractScene implements SceneSupportUserBl
 
     private void runClient() {
         application.launchService.launchClient().thenAccept((clientInstance -> {
-            if(clientInstance.getSettings().debug) {
+            if (application.runtimeSettings.globalSettings.debugAllClients || clientInstance.getSettings().debug) {
                 contextHelper.runInFxThread(() -> {
                     try {
                         switchScene(application.gui.debugScene);
