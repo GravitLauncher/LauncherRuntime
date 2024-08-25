@@ -60,11 +60,7 @@ public abstract class BaseSettingsScene extends AbstractScene {
         label.getStyleClass().add("settings-label");
         checkBox.setSelected(value);
         if (!disabled) {
-//            checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
-            hBox.setOnMouseClicked(e -> {
-                checkBox.setSelected(!checkBox.isSelected());
-                onChanged.accept(checkBox.isSelected());
-            });
+            checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
         } else {
             checkBox.setDisable(true);
         }
