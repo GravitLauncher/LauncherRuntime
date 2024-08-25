@@ -108,7 +108,7 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
             try {
                 profileSettings.apply();
                 application.triggerManager.process(profile, application.profilesService.getOptionalView());
-                switchScene(application.gui.serverInfoScene);
+                switchToBackScene();
             } catch (Exception exception) {
                 errorHandle(exception);
             }
