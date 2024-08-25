@@ -114,7 +114,7 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
             }
         });
         serverButton.enableResetButton(null, (e) -> reset());
-        add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value, application.runtimeSettings.globalSettings.debugAllClients);
+        add("Debug", application.runtimeSettings.globalSettings.debugAllClients || profileSettings.debug, (value) -> profileSettings.debug = value, application.runtimeSettings.globalSettings.debugAllClients);
         add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value, false);
         add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value, false);
         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
