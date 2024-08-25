@@ -8,7 +8,7 @@
 <AnchorPane prefHeight="560.0" prefWidth="930.0" styleClass="background" stylesheets="@serverinfo.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1">
     <!-- Навбар -->
     <AnchorPane id="header" prefHeight="80.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <AnchorPane prefHeight="80.0" prefWidth="630.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <AnchorPane prefHeight="80.0" prefWidth="630.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
                 <Label id="serverName" maxWidth="400.0" prefHeight="32.0" styleClass="scene-header" text="ServerName" AnchorPane.leftAnchor="35.0" AnchorPane.topAnchor="34.0" />
                 <!-- Кнопки управления -->
@@ -22,7 +22,7 @@
         </AnchorPane>
     </AnchorPane>
     <fx:include source="../../components/panels/leftpanel.fxml" />
-    <AnchorPane prefHeight="480.0" prefWidth="630.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+    <AnchorPane prefHeight="480.0" prefWidth="630.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
         <children>
             <ScrollPane id="serverDescriptionPane" fitToWidth="true" hbarPolicy="NEVER" pannable="true" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
                 <content>
