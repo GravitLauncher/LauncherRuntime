@@ -29,9 +29,12 @@
                     <TextArea id="outputUpdate" editable="false" wrapText="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                 </children>
             </AnchorPane>
+
+            <!-- Прогрессбар-->
+            <ProgressBar id="progress" prefHeight="50.0" progress="0.3" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="130.0" AnchorPane.rightAnchor="0.0" />
             <StackPane id="update-detail" prefHeight="130.0" prefWidth="130.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
                 <children>
-
+      
                     <!-- Информация-->
                     <VBox id="speedOn" alignment="CENTER">
                         <Label id="speed" alignment="CENTER" maxWidth="1.7976931348623157E308" text="214" textAlignment="CENTER">
@@ -45,9 +48,6 @@
                     <Label id="speedErr" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="speedError" text="ERR" visible="false" />
                 </children>
             </StackPane>
-
-            <!-- Прогрессбар-->
-            <ProgressBar id="progress" prefHeight="50.0" progress="0.31" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="130.0" AnchorPane.rightAnchor="0.0" />
         </children>
     </AnchorPane>
 </AnchorPane>

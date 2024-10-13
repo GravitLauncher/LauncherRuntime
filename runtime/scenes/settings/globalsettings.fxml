@@ -23,7 +23,7 @@
             <fx:include source="../../components/buttons/exit.fxml" />
         </HBox>
     </AnchorPane>
-    <AnchorPane prefHeight="480.0" prefWidth="630.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
+    <AnchorPane prefHeight="480.0" prefWidth="630.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0">
         <children>
             <ScrollPane id="settingslist" fitToWidth="true" hbarPolicy="NEVER" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="0.0">
                 <VBox spacing="15.0">

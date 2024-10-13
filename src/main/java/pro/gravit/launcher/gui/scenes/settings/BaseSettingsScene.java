@@ -34,15 +34,21 @@ public abstract class BaseSettingsScene extends AbstractScene {
         settingsList.getChildren().add(settingsListHeader);
     }
 
-    public void add(String languageName, boolean value, Consumer<Boolean> onChanged) {
+    public void add(String languageName, boolean value, Consumer<Boolean> onChanged, boolean disabled) {
         String nameKey = "runtime.scenes.settings.properties.%s.name".formatted(languageName.toLowerCase());
-        String descriptionKey = "runtime.scenes.settings.properties.%s.description".formatted(
-                languageName.toLowerCase());
+        String descriptionKey;
+        if(disabled) {
+            descriptionKey = "runtime.scenes.settings.properties.%s.disabled".formatted(
+                    languageName.toLowerCase());
+        } else {
+            descriptionKey = "runtime.scenes.settings.properties.%s.description".formatted(
+                    languageName.toLowerCase());
+        }
         add(application.getTranslation(nameKey, languageName), application.getTranslation(descriptionKey, languageName),
-            value, onChanged);
+            value, onChanged, disabled);
     }
 
-    public void add(String name, String description, boolean value, Consumer<Boolean> onChanged) {
+    public void add(String name, String description, boolean value, Consumer<Boolean> onChanged, boolean disabled) {
         HBox hBox = new HBox();
         CheckBox checkBox = new CheckBox();
         Label header = new Label();
@@ -53,7 +59,11 @@ public abstract class BaseSettingsScene extends AbstractScene {
         header.getStyleClass().add("settings-label-header");
         label.getStyleClass().add("settings-label");
         checkBox.setSelected(value);
-        checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
+        if (!disabled) {
+            checkBox.setOnAction((e) -> onChanged.accept(checkBox.isSelected()));
+        } else {
+            checkBox.setDisable(true);
+        }
         header.setText(name);
         label.setText(description);
         label.setWrapText(true);

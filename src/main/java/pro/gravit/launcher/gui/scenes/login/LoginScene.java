@@ -131,6 +131,7 @@ public class LoginScene extends AbstractScene {
                    (auth) -> contextHelper.runInFxThread(() -> {
                        this.auth = auth.list;
                        authList.setVisible(auth.list.size() != 1);
+                       authList.setManaged(auth.list.size() != 1);
                        for (GetAvailabilityAuthRequestEvent.AuthAvailability authAvailability : auth.list) {
                            if (!authAvailability.visible) {
                                continue;

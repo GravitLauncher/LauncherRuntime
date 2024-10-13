@@ -72,6 +72,7 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
             return;
         }
         if (fadeTransition.get() != null) {
+            currentStage.disable();
             fadeTransition.get().jumpTo(Duration.ZERO);
             fadeTransition.get().stop();
             contextHelper.runInFxThread(() -> {

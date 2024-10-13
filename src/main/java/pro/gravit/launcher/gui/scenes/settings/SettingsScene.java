@@ -108,23 +108,23 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
             try {
                 profileSettings.apply();
                 application.triggerManager.process(profile, application.profilesService.getOptionalView());
-                switchScene(application.gui.serverInfoScene);
+                switchToBackScene();
             } catch (Exception exception) {
                 errorHandle(exception);
             }
         });
         serverButton.enableResetButton(null, (e) -> reset());
-        add("Debug", profileSettings.debug, (value) -> profileSettings.debug = value);
-        add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value);
-        add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value);
+        add("Debug", application.runtimeSettings.globalSettings.debugAllClients || profileSettings.debug, (value) -> profileSettings.debug = value, application.runtimeSettings.globalSettings.debugAllClients);
+        add("AutoEnter", profileSettings.autoEnter, (value) -> profileSettings.autoEnter = value, false);
+        add("Fullscreen", profileSettings.fullScreen, (value) -> profileSettings.fullScreen = value, false);
         if(JVMHelper.OS_TYPE == JVMHelper.OS.LINUX) {
-            add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value);
+            add("WaylandSupport", profileSettings.waylandSupport, (value) -> profileSettings.waylandSupport = value, false);
         }
         if(application.authService.checkDebugPermission("skipupdate")) {
-            add("DebugSkipUpdate", profileSettings.debugSkipUpdate, (value) -> profileSettings.debugSkipUpdate = value);
+            add("DebugSkipUpdate", profileSettings.debugSkipUpdate, (value) -> profileSettings.debugSkipUpdate = value, false);
         }
         if(application.authService.checkDebugPermission("skipfilemonitor")) {
-            add("DebugSkipFileMonitor", profileSettings.debugSkipFileMonitor, (value) -> profileSettings.debugSkipFileMonitor = value);
+            add("DebugSkipFileMonitor", profileSettings.debugSkipFileMonitor, (value) -> profileSettings.debugSkipFileMonitor = value, false);
         }
         userBlock.reset();
     }
