@@ -54,26 +54,26 @@ public class ProcessingOverlay extends AbstractOverlay {
     public final <T extends WebSocketEvent> void processRequest(AbstractStage stage, String message, Request<T> request,
             Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
         try {
-            show(stage, (e) -> {
+            ContextHelper.runInFxThreadStatic(() -> show(stage, (e) -> {
                 try {
                     description.setText(message);
                     application.service.request(request).thenAccept((result) -> {
                         LogHelper.dev("RequestFuture complete normally");
                         onSuccess.accept(result);
-                        hide(0, null);
+                        ContextHelper.runInFxThreadStatic(() -> hide(0, null));
                     }).exceptionally((error) -> {
                         if (onException != null) onException.accept(error);
                         else ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
-                        hide(2500, onError);
+                        ContextHelper.runInFxThreadStatic(() -> hide(2500, onError));
                         return null;
                     });
                 } catch (IOException ex) {
                     errorHandle(ex);
                     hide(2500, onError);
                 }
-            });
+            }));
         } catch (Exception e) {
-            errorHandle(e);
+            ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
         }
     }
 }

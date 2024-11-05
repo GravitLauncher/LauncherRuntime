@@ -31,6 +31,7 @@ public class InfoCommand extends Command {
     public void invoke(String... args) {
         Platform.runLater(() -> {
             LogHelper.info("OS %s ARCH %s Java %d", JVMHelper.OS_TYPE.name(), JVMHelper.ARCH_TYPE.name(), JVMHelper.JVM_VERSION);
+            LogHelper.info("JavaFX version: %s", System.getProperty( "javafx.runtime.version"));
             {
                 List<String> supportedFeatures = new ArrayList<>();
                 List<String> unsupportedFeatures = new ArrayList<>();
