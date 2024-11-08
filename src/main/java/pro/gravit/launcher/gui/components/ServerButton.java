@@ -76,7 +76,7 @@ public class ServerButton extends Layer {
 
     public void setOnSave(Runnable runnable) {
         save.setOnAction((e) -> runnable.run());
-        reset.setVisible(true);
+        save.setVisible(true);
     }
 
     public void setOnReset(Runnable runnable) {

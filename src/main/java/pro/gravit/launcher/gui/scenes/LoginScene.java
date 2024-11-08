@@ -9,6 +9,7 @@ import pro.gravit.launcher.core.api.method.AuthMethodDetails;
 import pro.gravit.launcher.core.api.method.AuthMethodPassword;
 import pro.gravit.launcher.core.api.method.details.AuthLoginOnlyDetails;
 import pro.gravit.launcher.core.api.method.details.AuthPasswordDetails;
+import pro.gravit.launcher.core.api.method.details.AuthTotpDetails;
 import pro.gravit.launcher.core.api.method.password.AuthChainPassword;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
@@ -18,6 +19,7 @@ import pro.gravit.launcher.gui.basic.ResourcePath;
 import pro.gravit.launcher.gui.scenes.authmethods.AuthMethodUI;
 import pro.gravit.launcher.gui.scenes.authmethods.LoginOnlyAuthMethodUI;
 import pro.gravit.launcher.gui.scenes.authmethods.PasswordAuthMethodUI;
+import pro.gravit.launcher.gui.scenes.authmethods.TotpAuthMethodUI;
 import pro.gravit.utils.helper.LogHelper;
 
 import java.util.*;
@@ -41,6 +43,7 @@ public class LoginScene extends FxScene {
         authMethodUiMap = new HashMap<>();
         authMethodUiMap.put(AuthLoginOnlyDetails.class, FXApplication.getInstance().register(new LoginOnlyAuthMethodUI()));
         authMethodUiMap.put(AuthPasswordDetails.class, FXApplication.getInstance().register(new PasswordAuthMethodUI()));
+        authMethodUiMap.put(AuthTotpDetails.class, FXApplication.getInstance().register(new TotpAuthMethodUI()));
         authButton = lookup("#authButton");
         authButton.setOnAction((e) -> onAuthButtonClick());
         content = lookup("#content");
@@ -68,7 +71,7 @@ public class LoginScene extends FxScene {
     }
 
     protected void updateAuthMethodUI() {
-        detailsQueue = new ArrayDeque<>(authMethod.getDetails());
+        detailsQueue = new ArrayDeque<>(List.of(authMethod.getDetails().get(0)));
         selectedLogin = null;
         selectedPassword = new ArrayList<>();
         nextAuth();
@@ -106,7 +109,11 @@ public class LoginScene extends FxScene {
         } else {
             password = new AuthChainPassword(selectedPassword);
         }
-        LauncherBackendAPIHolder.getApi().authorize(selectedLogin, password).exceptionally(this::errorHandleFuture);
+        LauncherBackendAPIHolder.getApi().authorize(selectedLogin, password).exceptionally(this::onFailedAuthorize);
+    }
+
+    protected<T> T onFailedAuthorize(Throwable e) {
+        return errorHandleFuture(e);
     }
 
     protected void onInitialized(LauncherBackendAPI.LauncherInitData data) {
