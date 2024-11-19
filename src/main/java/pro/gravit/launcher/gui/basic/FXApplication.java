@@ -98,6 +98,18 @@ public class FXApplication extends Application {
         return primaryStage;
     }
 
+    public static final String getTranslation(String name) {
+        return getTranslation(name, "'%s'".formatted(name));
+    }
+
+    public static final String getTranslation(String key, String defaultValue) {
+        try {
+            return APPLICATION.resources.getString(key);
+        } catch (Throwable e) {
+            return defaultValue;
+        }
+    }
+
     public class MainCallbackImpl extends LauncherBackendAPI.MainCallback {
         @Override
         public void onAuthorize(SelfUser selfUser) {

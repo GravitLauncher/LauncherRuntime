@@ -8,6 +8,7 @@ public class Scenes {
     public static volatile ServerInfoScene SERVER_INFO;
     public static volatile UpdateScene UPDATE;
     public static volatile ClientScene CLIENT;
+    public static volatile SettingsScene SETTINGS;
 
     public static void init() {
         LOGIN = new LoginScene();
@@ -15,5 +16,6 @@ public class Scenes {
         SERVER_INFO = new ServerInfoScene();
         UPDATE = new UpdateScene();
         CLIENT = new ClientScene();
+        SETTINGS = new SettingsScene();
     }
 }

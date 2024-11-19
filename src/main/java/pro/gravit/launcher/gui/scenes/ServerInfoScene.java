@@ -16,6 +16,8 @@ import pro.gravit.launcher.gui.components.UserBlock;
 public class ServerInfoScene extends FxScene {
     private Pane serverButton;
     private ServerButton serverButtonObj;
+    private volatile ProfileFeatureAPI.ClientProfile profile;
+    private volatile LauncherBackendAPI.ClientProfileSettings settings;
     @Override
     protected void doInit() {
         super.doInit();
@@ -26,14 +28,19 @@ public class ServerInfoScene extends FxScene {
         this.<Button>lookupIfPossible("#back").ifPresent(btn -> btn.setOnAction(e -> {
             this.stage.back();
         }));
-
+        this.<Button>lookupIfPossible("#settings").ifPresent(btn -> btn.setOnAction(e -> {
+            this.stage.pushLayer(LayerPositions.SCENE, Scenes.SETTINGS);
+            Scenes.SETTINGS.onProfile(profile, settings);
+        }));
     }
 
     public void onProfile(ProfileFeatureAPI.ClientProfile profile, LauncherBackendAPI.ClientProfileSettings settings) {
         serverButtonObj.onProfile(profile);
         serverButtonObj.setOnSave(() -> {
-            launch(profile, settings);
+            launch(profile, LauncherBackendAPIHolder.getApi().makeClientProfileSettings(profile));
         });
+        this.profile = profile;
+        this.settings = settings;
     }
 
     public void launch(ProfileFeatureAPI.ClientProfile profile, LauncherBackendAPI.ClientProfileSettings settings) {
