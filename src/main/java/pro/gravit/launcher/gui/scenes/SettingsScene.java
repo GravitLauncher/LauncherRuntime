@@ -13,6 +13,7 @@ import pro.gravit.launcher.gui.basic.FXApplication;
 import pro.gravit.launcher.gui.basic.FxThreadExecutor;
 import pro.gravit.launcher.gui.basic.ResourcePath;
 import pro.gravit.launcher.gui.components.ServerButton;
+import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.runtime.utils.SystemMemory;
 
 import java.text.MessageFormat;
@@ -35,6 +36,7 @@ public class SettingsScene extends FxScene {
         javaComboBox = lookup(settingsContent, "#javaCombo");
         serverButtonObj = new ServerButton();
         inject(lookup("#serverButton"), serverButtonObj);
+        use(lookup("#userBlock"), UserBlock::new);
         ramSlider = lookup(settingsContent, "#ramSlider");
         ramLabel = lookup(settingsContent, "#ramLabel");
         ramSlider.valueProperty().addListener((obj, oldValue, value) -> {

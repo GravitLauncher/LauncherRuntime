@@ -32,6 +32,10 @@ public class ServerInfoScene extends FxScene {
             this.stage.pushLayer(LayerPositions.SCENE, Scenes.SETTINGS);
             Scenes.SETTINGS.onProfile(profile, settings);
         }));
+        this.<Button>lookupIfPossible("#clientSettings").ifPresent(btn -> btn.setOnAction(e -> {
+            this.stage.pushLayer(LayerPositions.SCENE, Scenes.OPTIONALS);
+            Scenes.OPTIONALS.onProfile(profile, settings);
+        }));
     }
 
     public void onProfile(ProfileFeatureAPI.ClientProfile profile, LauncherBackendAPI.ClientProfileSettings settings) {

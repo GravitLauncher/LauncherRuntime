@@ -9,6 +9,7 @@ public class Scenes {
     public static volatile UpdateScene UPDATE;
     public static volatile ClientScene CLIENT;
     public static volatile SettingsScene SETTINGS;
+    public static volatile OptionalsScene OPTIONALS;
 
     public static void init() {
         LOGIN = new LoginScene();
@@ -17,5 +18,6 @@ public class Scenes {
         UPDATE = new UpdateScene();
         CLIENT = new ClientScene();
         SETTINGS = new SettingsScene();
+        OPTIONALS = new OptionalsScene();
     }
 }
