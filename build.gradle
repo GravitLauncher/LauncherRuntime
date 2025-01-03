@@ -13,7 +13,7 @@ javafx {
 sourceCompatibility = '17'
 targetCompatibility = '17'
 group 'pro.gravit.launcher'
-version '4.0.5'
+version '4.0.6'
 def mainClassName = "pro.gravit.launcher.gui.JavaRuntimeModule"
 
 task sourcesJar(type: Jar) {
@@ -61,11 +61,11 @@ repositories {
 }
 
 dependencies {
-    implementation "pro.gravit.launcher:launcher-core:5.6.8"
-    implementation "pro.gravit.launcher:launcher-ws-api:5.6.8"
-    implementation "pro.gravit.launcher:launcher-client-api:5.6.8"
-    implementation "pro.gravit.launcher:launcher-client-start-api:5.6.8"
-    implementation "pro.gravit.launcher:launcher-client-starter-api:5.6.8"
+    implementation "pro.gravit.launcher:launcher-core:5.6.9"
+    implementation "pro.gravit.launcher:launcher-ws-api:5.6.9"
+    implementation "pro.gravit.launcher:launcher-client-api:5.6.9"
+    implementation "pro.gravit.launcher:launcher-client-start-api:5.6.9"
+    implementation "pro.gravit.launcher:launcher-client-starter-api:5.6.9"
     implementation "pro.gravit.utils.enfs:enfs:2.0.1-SNAPSHOT"
     implementation 'io.netty:netty-codec-http:4.1.67.Final'
     implementation 'com.github.oshi:oshi-core:5.8.1'
