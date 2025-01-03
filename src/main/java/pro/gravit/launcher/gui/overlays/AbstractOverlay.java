@@ -1,6 +1,7 @@
 package pro.gravit.launcher.gui.overlays;
 
 import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Node;
@@ -25,6 +26,9 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     public final void hide(double delay, EventHandler<ActionEvent> onFinished) {
+        if(!Platform.isFxApplicationThread()) {
+            throw new RuntimeException("hide() called from non FX application thread");
+        }
         if (useCounter.decrementAndGet() != 0) {
             contextHelper.runInFxThread(() -> {
                 if (onFinished != null) {
@@ -60,6 +64,9 @@ public abstract class AbstractOverlay extends AbstractVisualComponent {
     }
 
     public void show(AbstractStage stage, EventHandler<ActionEvent> onFinished) throws Exception {
+        if(!Platform.isFxApplicationThread()) {
+            throw new RuntimeException("show() called from non FX application thread");
+        }
         if (!isInit()) {
             init();
         }
