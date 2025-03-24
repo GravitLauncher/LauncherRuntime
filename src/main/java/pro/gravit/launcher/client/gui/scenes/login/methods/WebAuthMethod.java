@@ -54,13 +54,8 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
     public CompletableFuture<LoginScene.LoginAndPasswordResult> auth(AuthWebViewDetails details) {
         overlay.future = new CompletableFuture<>();
         overlay.follow(details.url, details.redirectUrl, (r) -> {
-            String code = r;
-            LogHelper.debug("Code: %s", code);
-            if (code.startsWith("?code=")) {
-                code = r.substring("?code=".length(), r.indexOf("&"));
-            }
-            LogHelper.debug("Code: %s", code);
-            overlay.future.complete(new LoginScene.LoginAndPasswordResult(null, new AuthCodePassword(code)));
+            LogHelper.dev("Redirect uri: %s", r);
+            overlay.future.complete(new LoginScene.LoginAndPasswordResult(null, new AuthCodePassword(r)));
         });
         return overlay.future;
     }
@@ -118,16 +113,16 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebViewDetails> {
         }
 
         public void follow(String url, String redirectUrl, Consumer<String> redirectCallback) {
-            LogHelper.debug("Load url %s", url);
+            LogHelper.dev("Load url %s", url);
             webView.getEngine().setJavaScriptEnabled(true);
             webView.getEngine().load(url);
             if (redirectCallback != null) {
                 webView.getEngine().locationProperty().addListener((obs, oldLocation, newLocation) -> {
                     if (newLocation != null) {
-                        LogHelper.debug("Location: %s", newLocation);
+                        LogHelper.dev("Location: %s", newLocation);
                         if (redirectUrl != null) {
                             if (newLocation.startsWith(redirectUrl)) {
-                                redirectCallback.accept(newLocation.substring(redirectUrl.length()));
+                                redirectCallback.accept(newLocation);
                             }
                         } else {
                             redirectCallback.accept(newLocation);
