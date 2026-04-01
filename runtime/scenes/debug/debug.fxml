@@ -18,7 +18,7 @@
       <fx:include source="../../components/buttons/back.fxml" AnchorPane.leftAnchor="28.0" AnchorPane.topAnchor="34.0" />
       <Label maxWidth="400.0" prefHeight="32.0" styleClass="scene-header" text="%runtime.scenes.debug.headingDebug" AnchorPane.leftAnchor="73.0" AnchorPane.topAnchor="34.0" />
       <!-- Версия Java -->
-      <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" disable="true" maxWidth="600.0" opacity="0.0" prefHeight="20.0" text="Launcher 5.1.0.0 Java: 1.8 u231 x64" textFill="#b3b8d5" AnchorPane.leftAnchor="73.0" AnchorPane.topAnchor="66.0" />
+      <Label id="version" alignment="CENTER_RIGHT" contentDisplay="RIGHT" disable="true" maxWidth="600.0" prefHeight="20.0" text="Launcher 5.1.0.0 Java: 1.8 u231 x64" textFill="#b3b8d5" AnchorPane.leftAnchor="73.0" AnchorPane.topAnchor="66.0" />
       <!-- Кнопки управления -->
       <HBox id="controls" spacing="10.0" AnchorPane.rightAnchor="29.0" AnchorPane.topAnchor="34.0">
          <fx:include source="../../components/buttons/copy.fxml" />
