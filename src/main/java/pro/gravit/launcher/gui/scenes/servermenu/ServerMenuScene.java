@@ -84,7 +84,7 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
             serverButtonCache.serverButton.setOnMouseClicked(handle);
         });
         for (ProfileFeatureAPI.ClientProfile profile : profiles) {
-            LauncherBackendAPIHolder.getApi().pingServer(profile).thenAccept((result) -> {
+            LauncherBackendAPIHolder.getApi().pingProfileServers(profile).thenAccept((result) -> {
                 contextHelper.runInFxThread(
                         () -> application.pingService.addReport(profile.getUUID(), result));
             });
