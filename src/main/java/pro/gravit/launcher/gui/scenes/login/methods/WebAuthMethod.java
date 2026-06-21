@@ -21,6 +21,7 @@ import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxOverlay;
 import pro.gravit.launcher.gui.scenes.login.AuthFlow;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
+import pro.gravit.utils.helper.JVMHelper;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -157,7 +158,7 @@ public class WebAuthMethod extends AbstractAuthMethod<AuthWebDetails> {
             }
             // try to open immediately
             try {
-                if (Desktop.isDesktopSupported()) Desktop.getDesktop().browse(new URI(url));
+                if (JVMHelper.OS_TYPE == JVMHelper.OS.MUSTDIE && Desktop.isDesktopSupported()) Desktop.getDesktop().browse(new URI(url));
             } catch (Exception ex) {
                 accessor.errorHandle(ex);
             }
