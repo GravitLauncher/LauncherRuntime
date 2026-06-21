@@ -7,10 +7,7 @@ import pro.gravit.launcher.base.request.RequestException;
 import pro.gravit.launcher.core.api.method.AuthMethod;
 import pro.gravit.launcher.core.api.method.AuthMethodDetails;
 import pro.gravit.launcher.core.api.method.AuthMethodPassword;
-import pro.gravit.launcher.core.api.method.details.AuthLoginOnlyDetails;
-import pro.gravit.launcher.core.api.method.details.AuthPasswordDetails;
-import pro.gravit.launcher.core.api.method.details.AuthTotpDetails;
-import pro.gravit.launcher.core.api.method.details.AuthWebDetails;
+import pro.gravit.launcher.core.api.method.details.*;
 import pro.gravit.launcher.core.api.method.password.AuthChainPassword;
 import pro.gravit.launcher.core.api.model.SelfUser;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
@@ -45,6 +42,7 @@ public class AuthFlow {
         this.onSuccessAuth = onSuccessAuth;
         authMethods.put(AuthPasswordDetails.class, new LoginAndPasswordAuthMethod(accessor));
         authMethods.put(AuthWebDetails.class, new WebAuthMethod(accessor));
+        authMethods.put(AuthDeviceFlowDetails.class, new DeviceFlowAuthMethod(accessor));
         authMethods.put(AuthTotpDetails.class, new TotpAuthMethod(accessor));
         authMethods.put(AuthLoginOnlyDetails.class, new LoginOnlyAuthMethod(accessor));
     }
