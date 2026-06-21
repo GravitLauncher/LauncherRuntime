@@ -38,7 +38,7 @@
                                 <Insets left="5.0" />
                             </padding>
                         </CheckBox>
-                        <CheckBox id="savePassword" prefHeight="18.0" prefWidth="276.0" text="%runtime.scenes.login.savePassword" wrapText="true">
+                        <CheckBox id="savePassword" prefHeight="18.0" prefWidth="276.0" text="%runtime.scenes.login.savePassword" visible="false" wrapText="true">
                             <padding>
                                 <Insets left="5.0" />
                             </padding>

@@ -32,7 +32,7 @@ public class LoginScene extends FxScene {
             LoggerFactory.getLogger(LoginScene.class);
 
     private List<AuthMethod> auth; //TODO: FIX? Field is assigned but never accessed.
-    private CheckBox savePasswordCheckBox;
+    //private CheckBox savePasswordCheckBox;
     private CheckBox autoenter;
     private Pane content;
     private UIComponent contentComponent;
@@ -58,13 +58,13 @@ public class LoginScene extends FxScene {
         });
         authButton = use(layout, AuthButton::new);
         authButton.setOnAction((e) -> contextHelper.runCallback(authFlow::loginWithGui));
-        savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
+        //savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
         autoenter = LookupHelper.lookup(layout, "#autoenter");
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
 
         // Показываем галочку сохранения если есть логин или OAuth токен
-        savePasswordCheckBox.setSelected(application.runtimeSettings.login != null || hasOAuthToken());
+        /*savePasswordCheckBox.setSelected(application.runtimeSettings.login != null || hasOAuthToken());
         savePasswordCheckBox.setOnAction((event) -> {
             if (!savePasswordCheckBox.isSelected()) {
                 application.runtimeSettings.login = null;
@@ -81,7 +81,7 @@ public class LoginScene extends FxScene {
                     }
                 }
             }
-        });
+        });*/
 
         content = LookupHelper.lookup(layout, "#content");
         if (application.guiModuleConfig.createAccountURL != null) {
@@ -109,12 +109,6 @@ public class LoginScene extends FxScene {
         // Конкретный способ очистки зависит от реализации LauncherBackendAPI
     }
     private void getAvailabilityAuth() {
-        if (application.runtimeSettings.lastAuth == null) {
-            UserSettings settings = LauncherBackendAPIHolder.getApi().getUserSettings("backend", (a) -> null);
-            if (settings instanceof BackendSettings backendSettings) {
-                backendSettings.auth = null;
-            }
-        }
         processing(application.backendCallbackService.initDataCallback,
                    application.getTranslation("runtime.overlay.processing.text.launcher"),
                    (initData) -> contextHelper.runInFxThread(() -> {
@@ -125,15 +119,13 @@ public class LoginScene extends FxScene {
                            if (!authAvailability.isVisible()) {
                                continue;
                            }
-                           if (application.runtimeSettings.lastAuth == null) {
-                               if (authAvailability.getName().equals("std") || this.authAvailability == null) {
-                                   changeAuthAvailability(authAvailability);
-                               }
-                           } else if (authAvailability.getName().equals(application.runtimeSettings.lastAuth))
-                               changeAuthAvailability(authAvailability);
                            if(authAvailability.isVisible()) {
                                addAuthAvailability(authAvailability);
                            }
+                       }
+                       this.authAvailability = LauncherBackendAPIHolder.getApi().getAuthMethod();
+                       if(this.authAvailability != null) {
+                           changeAuthAvailability(this.authAvailability);
                        }
                        if (this.authAvailability == null && !auth.isEmpty()) {
                            changeAuthAvailability(auth.get(0));
@@ -153,11 +145,10 @@ public class LoginScene extends FxScene {
         if (!shouldAutoAuth) return;
 
         boolean hasOAuthToken = hasOAuthToken();
-        boolean hasSavedPassword = application.runtimeSettings.password != null;
 
-        if (hasOAuthToken || hasSavedPassword) {
+        if (hasOAuthToken) {
             authFlow.tryAutoLogin().thenAccept(success -> {
-                if (!success && hasSavedPassword) {
+                if (!success) {
                     contextHelper.runInFxThread(authFlow::loginWithGui);
                 }
             });
@@ -214,18 +205,7 @@ public class LoginScene extends FxScene {
     public void onSuccessLogin(AuthFlow.SuccessAuth successAuth) {
         var user = successAuth.user();
         application.authService.setUser(user);
-        boolean savePassword = savePasswordCheckBox.isSelected();
 
-        if (savePassword) {
-            application.runtimeSettings.login = successAuth.recentLogin();
-            application.runtimeSettings.password = null;
-            application.runtimeSettings.lastAuth = authAvailability.getName(); // сохраняем провайдер
-        } else {
-            // Галочки нет — очищаем всё включая провайдер
-            application.runtimeSettings.login = null;
-            application.runtimeSettings.password = null;
-            application.runtimeSettings.lastAuth = null;
-        }
         if (user != null
                 && user.getAssets() != null) {
             try {
@@ -271,11 +251,6 @@ public class LoginScene extends FxScene {
                            application.setMainScene(application.gui.serverMenuScene);
                        });
                    }, null);
-    }
-
-    public void clearPassword() {
-        application.runtimeSettings.password = null;
-        application.runtimeSettings.login = null;
     }
 
     public AuthFlow getAuthFlow() {

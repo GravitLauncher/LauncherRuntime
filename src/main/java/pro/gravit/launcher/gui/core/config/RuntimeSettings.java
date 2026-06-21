@@ -16,13 +16,7 @@ public class RuntimeSettings extends UserSettings {
     public static final LAUNCHER_LOCALE DEFAULT_LOCALE = LAUNCHER_LOCALE.RUSSIAN;
     public transient Path updatesDir;
     @LauncherNetworkAPI
-    public String login;
-    @LauncherNetworkAPI
-    public AuthMethodPassword password;
-    @LauncherNetworkAPI
     public boolean autoAuth;
-    @LauncherNetworkAPI
-    public String lastAuth;
     @LauncherNetworkAPI
     public String updatesDirPath;
     @LauncherNetworkAPI

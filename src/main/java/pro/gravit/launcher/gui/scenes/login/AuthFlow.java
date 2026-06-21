@@ -190,7 +190,7 @@ public class AuthFlow {
         }
 
         // Пробуем тихую авторизацию только если токен есть И провайдер совпадает с сохранённым
-        if (hasOAuthToken() && isSameAuthProvider()) {
+        if (hasOAuthToken()) {
             tryAutoLogin().thenAccept(success -> {
                 if (!success) {
                     accessor.runInFxThread(() -> start().thenAccept((result) -> {
@@ -208,12 +208,6 @@ public class AuthFlow {
                 onSuccessAuth.accept(result);
             }
         });
-    }
-
-    private boolean isSameAuthProvider() {
-        String lastAuth = accessor.getApplication().runtimeSettings.lastAuth;
-        if (lastAuth == null || authAvailability == null) return false;
-        return lastAuth.equals(authAvailability.getName());
     }
 
     private boolean hasOAuthToken() {

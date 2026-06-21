@@ -110,12 +110,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
             login.textProperty().addListener(l -> accessor.getAuthButton().setState(login.getText().isEmpty()
                                                                                             ? AuthButton.AuthButtonState.UNACTIVE
                                                                                             : AuthButton.AuthButtonState.ACTIVE));
-            if (application.runtimeSettings.login != null) {
-                login.setText(application.runtimeSettings.login);
-                accessor.getAuthButton().setState(AuthButton.AuthButtonState.ACTIVE);
-            } else {
-                accessor.getAuthButton().setState(AuthButton.AuthButtonState.UNACTIVE);
-            }
+            accessor.getAuthButton().setState(AuthButton.AuthButtonState.UNACTIVE);
         }
 
         @Override

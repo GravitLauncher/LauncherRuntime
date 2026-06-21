@@ -63,11 +63,6 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
         overlay.future = new CompletableFuture<>();
         String login = overlay.login.getText();
         AuthMethodPassword password;
-        if (overlay.password.getText().isEmpty() && overlay.password.getPromptText().equals(application.getTranslation(
-                "runtime.scenes.login.password.saved"))) {
-            password = application.runtimeSettings.password;
-            return CompletableFuture.completedFuture(new AuthFlow.LoginAndPasswordResult(login, password));
-        }
         return overlay.future;
     }
 
@@ -120,17 +115,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
             login.textProperty().addListener(l -> accessor.getAuthButton().setState(login.getText().isEmpty()
                                                                                             ? AuthButton.AuthButtonState.UNACTIVE
                                                                                             : AuthButton.AuthButtonState.ACTIVE));
-
-            if (application.runtimeSettings.login != null) {
-                login.setText(application.runtimeSettings.login);
-                accessor.getAuthButton().setState(AuthButton.AuthButtonState.ACTIVE);
-            } else {
-                accessor.getAuthButton().setState(AuthButton.AuthButtonState.UNACTIVE);
-            }
-            if (application.runtimeSettings.password != null) {
-                password.getStyleClass().add("hasSaved");
-                password.setPromptText(application.getTranslation("runtime.scenes.login.password.saved"));
-            }
+            accessor.getAuthButton().setState(AuthButton.AuthButtonState.UNACTIVE);
         }
 
         @Override

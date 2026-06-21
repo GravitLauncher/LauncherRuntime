@@ -50,7 +50,6 @@ public class BasicUserControls extends FxComponent {
                        (event) -> {
                            // Exit to main menu
                            ContextHelper.runInFxThreadStatic(() -> {
-                               application.gui.loginScene.clearPassword();
                                application.gui.loginScene.reset();
                                try {
                                    application.authService.exit();
