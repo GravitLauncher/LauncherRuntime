@@ -74,7 +74,7 @@ public class JavaSelector {
             if (settings.isRecommended(object)) {
                 postfix = "[RECOMMENDED]";
             }
-            return "Java %d %s".formatted(object.getMajorVersion(), postfix);
+            return "Java %d %s %s".formatted(object.getMajorVersion(), object.getArchitecture(), postfix);
         }
 
         @Override
