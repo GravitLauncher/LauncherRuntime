@@ -44,7 +44,9 @@ public class FXMLFactory {
         try (InputStream inputStream = IOHelper.newInput(JavaFXApplication.getResourceURL(url))) {
             T result = loader.load(inputStream);
             long endTime = System.currentTimeMillis();
-            logger.debug("Fxml load {} time: c: {} | l: {} | total: {}", url, loaderInstanceTime - startTime, endTime - loaderInstanceTime, endTime - startTime);
+            logger.debug("Fxml load url={} thread={} createMs={} loadMs={} totalMs={}", url,
+                    Thread.currentThread().getName(), loaderInstanceTime - startTime,
+                    endTime - loaderInstanceTime, endTime - startTime);
             return result;
         }
     }

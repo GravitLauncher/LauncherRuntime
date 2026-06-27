@@ -5,10 +5,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.util.StringConverter;
+import pro.gravit.launcher.core.api.features.ProfileFeatureAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
-import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
@@ -17,7 +17,6 @@ import pro.gravit.launcher.gui.scenes.settings.components.JavaSelector;
 import java.text.MessageFormat;
 
 public class SettingsScene extends BaseSettingsScene implements SceneSupportUserBlock {
-
     private final static long MAX_JAVA_MEMORY_X64 = 32 * 1024;
     private final static long MAX_JAVA_MEMORY_X32 = 1536;
     private Label ramLabel;
@@ -25,6 +24,8 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
     private LauncherBackendAPI.ClientProfileSettings profileSettings;
     private JavaSelector javaSelector;
     private UserBlock userBlock;
+    private boolean ignoreRamSliderChanges;
+    private Long cachedMaxMemoryMbs;
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -44,6 +45,14 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
         ramSlider.setMinorTickCount(1);
         ramSlider.setMajorTickUnit(1024);
         ramSlider.setBlockIncrement(1024);
+        ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (profileSettings == null || ignoreRamSliderChanges) {
+                return;
+            }
+            profileSettings.setReservedMemoryBytes(LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL,
+                    (long) newValue.intValue() << 20);
+            updateRamLabel();
+        });
         ramSlider.setLabelFormatter(new StringConverter<>() {
             @Override
             public String toString(Double object) {
@@ -63,36 +72,50 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
                 errorHandle(exception);
             }
         }));
-        reset();
+        isResetOnShow = true;
     }
 
     @Override
     public void reset() {
+        ProfileFeatureAPI.ClientProfile profile = application.profileService.getCurrentProfile();
+        if (profile == null) {
+            return;
+        }
+        applySceneState(profile, true);
+    }
+
+    private void applySceneState(ProfileFeatureAPI.ClientProfile profile, boolean refreshStaticBlocks) {
         super.reset();
-        var profile = application.profileService.getCurrentProfile();
+
         profileSettings = LauncherBackendAPIHolder.getApi().makeClientProfileSettings(profile);
-        javaSelector = new JavaSelector(componentList, profileSettings, profile);
-        ramSlider.setValue(getReservedMemoryMbs());
-        ramSlider.setMax(profileSettings.getMaxMemoryBytes(LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL) >> 20);
-        ramSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            profileSettings.setReservedMemoryBytes(LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL,
-                                                   (long) newValue.intValue() << 20);
-            updateRamLabel();
-        });
+
+        if (javaSelector == null) {
+            javaSelector = new JavaSelector(componentList);
+        }
+        javaSelector.reset(profileSettings, profile);
+
+        ignoreRamSliderChanges = true;
+        try {
+            ramSlider.setMax(getCachedMaxMemoryMbs());
+            ramSlider.setValue(getReservedMemoryMbs());
+        } finally {
+            ignoreRamSliderChanges = false;
+        }
         updateRamLabel();
+
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        ServerButton serverButton = ServerButton.createServerButton(application, profile);
-        serverButton.addTo(serverButtonContainer);
-        serverButton.enableSaveButton(null, (e) -> {
+        application.serverButtonCacheService.attachDetailButton(profile, serverButtonContainer, null, e -> {
             try {
                 LauncherBackendAPIHolder.getApi().saveClientProfileSettings(profileSettings);
                 switchToBackScene();
             } catch (Exception exception) {
                 errorHandle(exception);
             }
-        });
-        serverButton.enableResetButton(null, (e) -> reset());
+        }, null, e -> {
+            applySceneState(profile, false);
+        }, "settings");
+
         for(var flag : profileSettings.getAvailableFlags()) {
             add(flag.name(), profileSettings.hasFlag(flag), (value) -> {
                 if(value) {
@@ -102,11 +125,22 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
                 }
             }, false);
         }
-        userBlock.reset();
+
+        if (refreshStaticBlocks) {
+            userBlock.reset();
+        }
     }
 
     private long getReservedMemoryMbs() {
         return profileSettings.getReservedMemoryBytes(LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL) >> 20;
+    }
+
+    private long getCachedMaxMemoryMbs() {
+        if (cachedMaxMemoryMbs == null) {
+            cachedMaxMemoryMbs = profileSettings.getMaxMemoryBytes(
+                    LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL) >> 20;
+        }
+        return cachedMaxMemoryMbs;
     }
 
     @Override

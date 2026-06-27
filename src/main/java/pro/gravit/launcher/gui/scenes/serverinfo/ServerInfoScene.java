@@ -43,7 +43,6 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
             try {
                 if (application.profileService.getCurrentProfile() == null) return;
                 switchScene(application.gui.optionsScene);
-                application.gui.optionsScene.reset();
             } catch (Exception ex) {
                 errorHandle(ex);
             }
@@ -51,12 +50,11 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
         LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.settingsScene);
-                application.gui.settingsScene.reset();
             } catch (Exception exception) {
                 errorHandle(exception);
             }
         });
-        reset();
+        isResetOnShow = true;
     }
 
     @Override
@@ -69,10 +67,8 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
         });
         Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        serverButton = ServerButton.createServerButton(application, profile);
-        serverButton.addTo(serverButtonContainer);
-        serverButton.enableSaveButton(application.getTranslation("runtime.scenes.serverinfo.serverButton.game"),
-                                      (e) -> runClient());
+        serverButton = application.serverButtonCacheService.attachServerInfoButton(profile, serverButtonContainer,
+                application.getTranslation("runtime.scenes.serverinfo.serverButton.game"), e -> runClient());
         this.userBlock.reset();
     }
 

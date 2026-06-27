@@ -1,41 +1,38 @@
 package pro.gravit.launcher.gui.core.service;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ObservableValue;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class PingService {
-    private final Map<UUID, CompletableFuture<PingServerReport>> reports = new ConcurrentHashMap<>();
+    private final Map<UUID, ObjectProperty<PingServerReport>> reports = new ConcurrentHashMap<>();
 
-    public CompletableFuture<PingServerReport> getPingReport(UUID serverName) {
-        CompletableFuture<PingServerReport> report = reports.computeIfAbsent(serverName,
-                                                                             k -> new CompletableFuture<>());
-        return report;
+    public ObservableValue<PingServerReport> getPingReport(UUID serverName) {
+        return getPingReportProperty(serverName);
+    }
+
+    public ObjectProperty<PingServerReport> getPingReportProperty(UUID serverName) {
+        return reports.computeIfAbsent(serverName, k -> new SimpleObjectProperty<>());
     }
 
     public void addReports(Map<UUID, PingServerReport> map) {
         map.forEach((k, v) -> {
-            CompletableFuture<PingServerReport> report = getPingReport(k);
-            report.complete(v);
+            getPingReportProperty(k).set(v);
         });
     }
 
     public void addReport(UUID name, LauncherBackendAPI.ServerPingInfo result) {
-        CompletableFuture<PingServerReport> report = getPingReport(name);
         PingServerReport value = new PingServerReport(name, result.getMaxOnline(), result.getOnline());
-        report.complete(value);
+        getPingReportProperty(name).set(value);
     }
 
     public void clear() {
-        reports.forEach((k, v) -> {
-            if (!v.isDone()) {
-                v.completeExceptionally(new InterruptedException());
-            }
-        });
-        reports.clear();
+        reports.values().forEach(report -> report.set(null));
     }
 
     public static class PingServerReport {

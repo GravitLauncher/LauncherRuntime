@@ -64,12 +64,15 @@ public class JavaFXApplication extends Application {
     public SkinManager skinManager;
     public FXMLFactory fxmlFactory;
     public PingService pingService;
+    public ServerButtonStateService serverButtonStateService;
+    public ServerButtonCacheService serverButtonCacheService;
     public BackendCallbackService backendCallbackService;
     private PrimaryStage mainStage;
     private boolean debugMode;
     private ResourceBundle resources;
     private static volatile LauncherBackendAPI.ResourceLayer resourceLayer;
     private AtomicBoolean isFirstStart = new AtomicBoolean();
+    private final AtomicReference<UiActionTrace> pendingUiAction = new AtomicReference<>();
 
     public JavaFXApplication() {
         INSTANCE.set(this);
@@ -107,6 +110,8 @@ public class JavaFXApplication extends Application {
         messageManager = new MessageManager(this);
         skinManager = new SkinManager(this);
         pingService = new PingService();
+        serverButtonStateService = new ServerButtonStateService(this, pingService);
+        serverButtonCacheService = new ServerButtonCacheService(this);
         LauncherBackendAPIHolder.getApi().setCallback(backendCallbackService);
         registerCommands();
     }
@@ -176,6 +181,12 @@ public class JavaFXApplication extends Application {
         String themeDir = runtimeSettings.theme == null ? RuntimeSettings.LAUNCHER_THEME.COMMON.name :
                 runtimeSettings.theme.name;
         resourceLayer = LauncherBackendAPIHolder.getApi().makeResourceLayer(List.of(Path.of("themes/"+themeDir)));
+        if (serverButtonStateService != null) {
+            serverButtonStateService.clear();
+        }
+        if (serverButtonCacheService != null) {
+            serverButtonCacheService.clear();
+        }
     }
 
     private CommandCategory runtimeCategory;
@@ -257,5 +268,45 @@ public class JavaFXApplication extends Application {
             logger.error("", e);
             return false;
         }
+    }
+
+    public void beginUiAction(String action, String sourceScene, String targetScene, String state) {
+        UiActionTrace trace = new UiActionTrace(action, sourceScene, targetScene, state, System.nanoTime());
+        pendingUiAction.set(trace);
+        logger.info("UiAction start action={} sourceScene={} targetScene={} state={} thread={}",
+                action, sourceScene, targetScene, state, Thread.currentThread().getName());
+    }
+
+    public void logUiActionPhase(String phase, String details) {
+        UiActionTrace trace = pendingUiAction.get();
+        if (trace == null) {
+            return;
+        }
+        logger.info("UiAction phase action={} sourceScene={} targetScene={} phase={} elapsedMs={} details={}",
+                trace.action(), trace.sourceScene(), trace.targetScene(), phase,
+                formatMs(System.nanoTime() - trace.startedAtNanos()), details);
+    }
+
+    public void finishUiActionForScene(String sceneName, String details) {
+        UiActionTrace trace = pendingUiAction.get();
+        if (trace == null) {
+            return;
+        }
+        if (trace.targetScene() != null && !trace.targetScene().equals(sceneName)) {
+            return;
+        }
+        if (pendingUiAction.compareAndSet(trace, null)) {
+            logger.info("UiAction finish action={} sourceScene={} targetScene={} displayedScene={} elapsedMs={} details={}",
+                    trace.action(), trace.sourceScene(), trace.targetScene(), sceneName,
+                    formatMs(System.nanoTime() - trace.startedAtNanos()), details);
+        }
+    }
+
+    private static String formatMs(long nanos) {
+        return String.format("%.3f", nanos / 1_000_000.0);
+    }
+
+    private record UiActionTrace(String action, String sourceScene, String targetScene, String state,
+                                 long startedAtNanos) {
     }
 }

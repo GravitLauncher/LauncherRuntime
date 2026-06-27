@@ -6,19 +6,22 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.gravit.launcher.core.api.features.ProfileFeatureAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
-import pro.gravit.launcher.gui.components.ServerButton;
 import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxScene;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
-import pro.gravit.utils.helper.CommonHelper;
 
 import java.util.*;
 
 public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
+    private static final Logger logger =
+            LoggerFactory.getLogger(ServerMenuScene.class);
+
     private UserBlock userBlock;
 
     public ServerMenuScene(JavaFXApplication application) {
@@ -41,57 +44,61 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
             double offset = (widthContent * 0.15) / (scrollPane.getContent().getBoundsInLocal().getWidth() - widthContent) * Math.signum(e.getDeltaY());
             scrollPane.setHvalue(scrollPane.getHvalue() - offset);
         });
-        reset();
         isResetOnShow = true;
-    }
-
-    static class ServerButtonCache {
-        public ServerButton serverButton;
-        public int position;
     }
 
     @Override
     public void reset() {
-        Map<ProfileFeatureAPI.ClientProfile, ServerButtonCache> serverButtonCacheMap = new LinkedHashMap<>();
-        
-        List<ProfileFeatureAPI.ClientProfile> profiles = new ArrayList<>(application.profileService.getProfiles());
-        profiles.sort(Comparator.comparing(ProfileFeatureAPI.ClientProfile::getName));
-        int position = 0;
-        for (var profile : profiles) {
-            ServerButtonCache cache = new ServerButtonCache();
-            cache.serverButton = ServerButton.createServerButton(application, profile);
-            cache.position = position;
-            serverButtonCacheMap.put(profile, cache);
-            position++;
-        }
+        List<ProfileFeatureAPI.ClientProfile> profiles = application.profileService.getProfiles() == null
+                ? new ArrayList<>()
+                : new ArrayList<>(application.profileService.getProfiles());
+        profiles.sort(Comparator.comparing(ProfileFeatureAPI.ClientProfile::getName,
+                Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
+        application.serverButtonCacheService.syncProfiles(profiles);
         ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
         HBox serverList = (HBox) scrollPane.getContent();
         serverList.setSpacing(20);
         serverList.getChildren().clear();
-        application.pingService.clear();
-        serverButtonCacheMap.forEach((profile, serverButtonCache) -> {
-            EventHandler<? super MouseEvent> handle = (event) -> {
-                if (!event.getButton().equals(MouseButton.PRIMARY)) return;
-                changeServer(profile);
-                try {
-                    switchScene(application.gui.serverInfoScene);
-                    application.gui.serverInfoScene.reset();
-                } catch (Exception e) {
-                    errorHandle(e);
-                }
-            };
-            serverButtonCache.serverButton.addTo(serverList, serverButtonCache.position);
-            serverButtonCache.serverButton.setOnMouseClicked(handle);
-        });
-        for (ProfileFeatureAPI.ClientProfile profile : profiles) {
-            LauncherBackendAPIHolder.getApi().pingProfileServers(profile).thenAccept((result) -> {
-                contextHelper.runInFxThread(
-                        () -> application.pingService.addReport(profile.getUUID(), result));
-            });
+        int createdButtons = 0;
+        int reusedButtons = 0;
+        for (int index = 0; index < profiles.size(); index++) {
+            ProfileFeatureAPI.ClientProfile profile = profiles.get(index);
+            if (application.serverButtonCacheService.contains(profile.getUUID())) {
+                reusedButtons++;
+            } else {
+                createdButtons++;
+            }
+            application.serverButtonCacheService.attachMenuButton(profile, serverList, index,
+                    createServerButtonClickHandler(profile));
         }
-        CommonHelper.newThread("ServerPinger", true, () -> {
-        }).start();
+        refreshServerPings(profiles);
+        logger.debug("ServerMenu reset profileCount={} createdButtons={} reusedButtons={} currentProfile={}",
+                profiles.size(), createdButtons, reusedButtons,
+                application.profileService.getCurrentProfile() == null
+                        ? "null"
+                        : application.profileService.getCurrentProfile().getName());
         userBlock.reset();
+    }
+
+    private EventHandler<MouseEvent> createServerButtonClickHandler(ProfileFeatureAPI.ClientProfile profile) {
+        return event -> {
+            if (!event.getButton().equals(MouseButton.PRIMARY)) {
+                return;
+            }
+            changeServer(profile);
+            try {
+                switchScene(application.gui.serverInfoScene);
+            } catch (Exception e) {
+                errorHandle(e);
+            }
+        };
+    }
+
+    private void refreshServerPings(List<ProfileFeatureAPI.ClientProfile> profiles) {
+        for (ProfileFeatureAPI.ClientProfile profile : profiles) {
+            LauncherBackendAPIHolder.getApi().pingProfileServers(profile).thenAccept(result ->
+                    contextHelper.runInFxThread(() -> application.pingService.addReport(profile.getUUID(), result)));
+        }
     }
 
     @Override

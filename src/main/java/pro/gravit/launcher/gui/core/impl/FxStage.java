@@ -1,5 +1,6 @@
 package pro.gravit.launcher.gui.core.impl;
 
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javafx.geometry.Point2D;
@@ -93,6 +94,8 @@ public abstract class FxStage {
     }
 
     public void setScene(FxComponent visualComponent, boolean addToFlow) throws Exception {
+        long startNanos = System.nanoTime();
+        String oldSceneName = this.visualComponent == null ? "null" : this.visualComponent.getName();
         if (visualComponent == null) {
             if(!stackPane.getChildren().isEmpty()) {
                 stackPane.getChildren().set(scenePosition.get(), new Pane());
@@ -102,12 +105,16 @@ public abstract class FxStage {
             sceneFlow.add(visualComponent.getName());
         }
         visualComponent.currentStage = this;
+        long initStartedAt = System.nanoTime();
         if (!visualComponent.isInit()) {
             visualComponent.init();
         }
+        long initFinishedAt = System.nanoTime();
+        long resetStartedAt = initFinishedAt;
         if (visualComponent.isResetOnShow) {
             visualComponent.reset();
         }
+        long resetFinishedAt = System.nanoTime();
         if (stackPane.getChildren().isEmpty()) {
             stackPane.getChildren().add(visualComponent.getFxmlRoot());
         } else {
@@ -119,8 +126,23 @@ public abstract class FxStage {
             stackPane.getChildren().set(scenePosition.get(), visualComponent.getFxmlRoot());
         }
         stage.sizeToScene();
+        long mountedAt = System.nanoTime();
         visualComponent.postInit();
+        long postInitFinishedAt = System.nanoTime();
         this.visualComponent = visualComponent;
+        logger.info("Scene set oldScene={} newScene={} addToFlow={} initMs={} resetMs={} mountMs={} postInitMs={} totalMs={} thread={}",
+                oldSceneName, visualComponent.getName(), addToFlow,
+                formatMs(initFinishedAt - initStartedAt),
+                formatMs(resetFinishedAt - resetStartedAt),
+                formatMs(mountedAt - resetFinishedAt),
+                formatMs(postInitFinishedAt - mountedAt),
+                formatMs(postInitFinishedAt - startNanos),
+                Thread.currentThread().getName());
+        application.logUiActionPhase("scene-mounted",
+                "oldScene=%s newScene=%s resetOnShow=%s".formatted(oldSceneName, visualComponent.getName(),
+                        visualComponent.isResetOnShow));
+        Platform.runLater(() -> application.finishUiActionForScene(visualComponent.getName(),
+                "stageWidth=%.1f stageHeight=%.1f".formatted(stage.getWidth(), stage.getHeight())));
     }
 
     public UIComponent back() throws Exception {
@@ -231,5 +253,9 @@ public abstract class FxStage {
         Pane layout = (Pane) stackPane.getChildren().get(scenePosition.get());
         layout.setEffect(null);
         disablePane.setVisible(false);
+    }
+
+    private static String formatMs(long nanos) {
+        return String.format("%.3f", nanos / 1_000_000.0);
     }
 }

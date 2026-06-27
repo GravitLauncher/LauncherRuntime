@@ -1,53 +1,42 @@
 package pro.gravit.launcher.gui.components;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import pro.gravit.launcher.core.api.features.ProfileFeatureAPI;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
+import pro.gravit.launcher.gui.core.service.ServerButtonState;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxComponent;
 import pro.gravit.launcher.gui.core.utils.JavaFxUtils;
-
-import java.net.URL;
-import java.util.concurrent.atomic.AtomicLong;
 
 public class ServerButton extends FxComponent {
 
     private static final Logger logger =
             LoggerFactory.getLogger(ServerButton.class);
 
-    private static final String SERVER_BUTTON_FXML = "components/serverButton.fxml";
-    private static final String SERVER_BUTTON_CUSTOM_FXML = "components/serverButton/%s.fxml";
-    private static final String SERVER_BUTTON_DEFAULT_IMAGE = "images/servers/example.png";
-    private static final String SERVER_BUTTON_CUSTOM_IMAGE = "images/servers/%s.png";
-    public ProfileFeatureAPI.ClientProfile profile;
+    private final ProfileFeatureAPI.ClientProfile profile;
+    private final ServerButtonState state;
     private Button saveButton;
     private Button resetButton;
     private Region serverLogo;
 
     protected ServerButton(JavaFXApplication application, ProfileFeatureAPI.ClientProfile profile) {
-        super(getServerButtonFxml(application, profile), application);
+        super(application.serverButtonStateService.getState(profile).getFxmlPath(), application);
         this.profile = profile;
+        this.state = application.serverButtonStateService.getState(profile);
     }
 
     public static ServerButton createServerButton(JavaFXApplication application, ProfileFeatureAPI.ClientProfile profile) {
         return new ServerButton(application, profile);
-    }
-
-    private static String getServerButtonFxml(JavaFXApplication application, ProfileFeatureAPI.ClientProfile profile) {
-        String customFxml = String.format(SERVER_BUTTON_CUSTOM_FXML, profile.getUUID().toString());
-        URL fxml = application.tryResource(customFxml);
-        if(fxml != null) {
-            return customFxml;
-        }
-        return SERVER_BUTTON_FXML;
     }
 
     @Override
@@ -57,37 +46,39 @@ public class ServerButton extends FxComponent {
 
     @Override
     protected void doInit() {
-        LookupHelper.<Labeled>lookup(layout, "#nameServer").setText(profile.getName());
-        LookupHelper.<Labeled>lookup(layout, "#genreServer").setText(profile.getMinecraftVersion());
+        long startTime = System.nanoTime();
+        LookupHelper.<Labeled>lookup(layout, "#nameServer").textProperty().bind(state.nameProperty());
+        LookupHelper.<Labeled>lookup(layout, "#genreServer").textProperty().bind(state.minecraftVersionProperty());
         this.serverLogo = LookupHelper.lookup(layout, "#serverLogo");
-        URL logo = application.tryResource(String.format(SERVER_BUTTON_CUSTOM_IMAGE, profile.getUUID().toString()));
-        if(logo == null) {
-            logo = application.tryResource(SERVER_BUTTON_DEFAULT_IMAGE);
-        }
-        if(logo != null) {
-            this.serverLogo.setBackground(new Background(new BackgroundImage(new Image(logo.toString()),
-                                                                             BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
-                                                                             BackgroundPosition.CENTER, new BackgroundSize(0.0, 0.0, true, true, false, true))));
-            JavaFxUtils.setRadius(this.serverLogo, 20.0);
-        }
-        AtomicLong currentOnline = new AtomicLong(0);
-        AtomicLong maxOnline = new AtomicLong(0);
-        Runnable update = () -> contextHelper.runInFxThread(() -> {
-            if (currentOnline.get() == 0 && maxOnline.get() == 0) {
-                LookupHelper.<Labeled>lookup(layout, "#online").setText("?");
-            } else {
-                LookupHelper.<Labeled>lookup(layout, "#online").setText(String.valueOf(currentOnline.get()));
+        this.serverLogo.backgroundProperty().bind(Bindings.createObjectBinding(() -> {
+            Image logo = state.logoProperty().get();
+            if (logo == null) {
+                return null;
             }
-        });
-        application.pingService.getPingReport(profile.getUUID()).thenAccept((report) -> {
-            if (report != null) {
-                currentOnline.addAndGet(report.playersOnline);
-                maxOnline.addAndGet(report.maxPlayers);
-            }
-            update.run();
-        });
+            return new Background(new BackgroundImage(logo, BackgroundRepeat.NO_REPEAT, BackgroundRepeat.NO_REPEAT,
+                    BackgroundPosition.CENTER, new BackgroundSize(0.0, 0.0, true, true, false, true)));
+        }, state.logoProperty()));
+        JavaFxUtils.setRadius(this.serverLogo, 20.0);
+        LookupHelper.<Labeled>lookup(layout, "#online").textProperty().bind(state.onlineTextProperty());
         saveButton = LookupHelper.lookup(layout, "#save");
         resetButton = LookupHelper.lookup(layout, "#reset");
+        layout.cursorProperty().bind(state.cursorProperty());
+        layout.setOnMouseClicked(state.mouseClickedHandlerProperty().get());
+        state.mouseClickedHandlerProperty().addListener((observable, oldValue, newValue) -> layout.setOnMouseClicked(newValue));
+        saveButton.visibleProperty().bind(state.saveVisibleProperty());
+        saveButton.managedProperty().bind(state.saveVisibleProperty());
+        saveButton.textProperty().bind(state.saveTextProperty());
+        saveButton.setOnAction(state.saveActionProperty().get());
+        state.saveActionProperty().addListener((observable, oldValue, newValue) -> saveButton.setOnAction(newValue));
+        resetButton.visibleProperty().bind(state.resetVisibleProperty());
+        resetButton.managedProperty().bind(state.resetVisibleProperty());
+        resetButton.textProperty().bind(state.resetTextProperty());
+        resetButton.setOnAction(state.resetActionProperty().get());
+        state.resetActionProperty().addListener((observable, oldValue, newValue) -> resetButton.setOnAction(newValue));
+        double totalMs = (System.nanoTime() - startTime) / 1_000_000.0;
+        logger.debug("ServerButton init profile='{}' uuid={} fxml={} image={} totalMs={}",
+                state.getName(), profile.getUUID(), state.getFxmlPath(), state.getImagePath(),
+                String.format("%.3f", totalMs));
     }
 
     @Override
@@ -95,20 +86,13 @@ public class ServerButton extends FxComponent {
 
     }
 
-    public void setOnMouseClicked(EventHandler<? super MouseEvent> eventHandler) {
-        layout.setOnMouseClicked(eventHandler);
+    public void configureMenuMode(EventHandler<MouseEvent> eventHandler) {
+        state.configureMenuMode(eventHandler);
     }
 
-    public void enableSaveButton(String text, EventHandler<ActionEvent> eventHandler) {
-        saveButton.setVisible(true);
-        if (text != null) saveButton.setText(text);
-        saveButton.setOnAction(eventHandler);
-    }
-
-    public void enableResetButton(String text, EventHandler<ActionEvent> eventHandler) {
-        resetButton.setVisible(true);
-        if (text != null) resetButton.setText(text);
-        resetButton.setOnAction(eventHandler);
+    public void configureDetailMode(String saveText, EventHandler<ActionEvent> saveHandler,
+            String resetText, EventHandler<ActionEvent> resetHandler) {
+        state.configureDetailMode(saveText, saveHandler, resetText, resetHandler);
     }
 
     public void addTo(Pane pane) {
@@ -119,7 +103,10 @@ public class ServerButton extends FxComponent {
                 logger.error("", e);
             }
         }
+        detachFromParent();
+        resetLayoutState();
         pane.getChildren().add(layout);
+        pane.requestLayout();
     }
 
     public void addTo(Pane pane, int position) {
@@ -130,7 +117,40 @@ public class ServerButton extends FxComponent {
                 logger.error("", e);
             }
         }
+        detachFromParent();
+        resetLayoutState();
         pane.getChildren().add(position, layout);
+        pane.requestLayout();
+    }
+
+    private void detachFromParent() {
+        if (layout == null) {
+            return;
+        }
+        Parent parent = layout.getParent();
+        if (parent instanceof Pane oldPane) {
+            oldPane.getChildren().remove(layout);
+        }
+    }
+
+    private void resetLayoutState() {
+        if (layout == null) {
+            return;
+        }
+        layout.setLayoutX(0.0);
+        layout.setLayoutY(0.0);
+        layout.setTranslateX(0.0);
+        layout.setTranslateY(0.0);
+        layout.setManaged(true);
+        HBox.setHgrow(layout, null);
+        VBox.setVgrow(layout, null);
+        FlowPane.setMargin(layout, null);
+        HBox.setMargin(layout, null);
+        VBox.setMargin(layout, null);
+        AnchorPane.setTopAnchor(layout, null);
+        AnchorPane.setRightAnchor(layout, null);
+        AnchorPane.setBottomAnchor(layout, null);
+        AnchorPane.setLeftAnchor(layout, null);
     }
 
     @Override
