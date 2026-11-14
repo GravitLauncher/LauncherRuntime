@@ -41,6 +41,7 @@ final class LogOutputController {
     };
     private boolean following = true;
     private boolean followQueued;
+    private long interactionRevision;
     private boolean dragging;
     private double pointerY;
     private final AnimationTimer dragScroll = new AnimationTimer() {
@@ -68,6 +69,7 @@ final class LogOutputController {
             if (oldItems != null) oldItems.removeListener(contentListener);
             if (newItems != null) newItems.addListener(contentListener);
             following = true;
+            interactionRevision++;
             anchor = -1;
             queueFollow();
         });
@@ -97,12 +99,22 @@ final class LogOutputController {
                 if (output.getSelectionModel().isEmpty()) resumeAtBottom();
                 event.consume();
             } else if (isScrollBar(event.getTarget())) {
-                Platform.runLater(this::resumeAtBottom);
+                resumeAfterInput();
             }
         });
-        output.addEventFilter(ScrollEvent.SCROLL, event -> {
-            if (event.getDeltaY() > 0) following = false;
-            else if (event.getDeltaY() < 0) Platform.runLater(this::resumeAtBottom);
+        output.addEventFilter(ScrollEvent.ANY, event -> {
+            if (event.getEventType() == ScrollEvent.SCROLL_STARTED) {
+                pauseFollowing();
+            } else if (event.getEventType() == ScrollEvent.SCROLL) {
+                // Some wheel/touchpad events carry only text-line deltas.
+                double delta = event.getDeltaY() != 0 ? event.getDeltaY() : event.getTextDeltaY();
+                if (delta != 0) {
+                    pauseFollowing();
+                    if (delta < 0) resumeAfterInput();
+                }
+            } else if (event.getEventType() == ScrollEvent.SCROLL_FINISHED) {
+                resumeAfterInput();
+            }
         });
         output.addEventFilter(KeyEvent.KEY_PRESSED, event -> {
             if (event.isShortcutDown() && event.getCode() == KeyCode.C) {
@@ -119,9 +131,11 @@ final class LogOutputController {
             } else if (event.getCode() == KeyCode.HOME || event.getCode() == KeyCode.PAGE_UP
                     || event.getCode() == KeyCode.UP || (event.getCode() == KeyCode.END && event.isShiftDown())
                     || (event.isShortcutDown() && event.getCode() == KeyCode.A)) {
-                following = false;
-            } else if (event.getCode() == KeyCode.PAGE_DOWN || event.getCode() == KeyCode.DOWN) {
-                Platform.runLater(this::resumeAtBottom);
+                pauseFollowing();
+            } else if (event.getCode() == KeyCode.PAGE_DOWN || event.getCode() == KeyCode.DOWN
+                    || event.getCode() == KeyCode.SPACE) {
+                pauseFollowing();
+                if (!event.isShiftDown()) resumeAfterInput();
             }
         });
         queueFollow();
@@ -130,7 +144,7 @@ final class LogOutputController {
     private void pressed(MouseEvent event) {
         if (event.getButton() != MouseButton.PRIMARY) return;
         if (isScrollBar(event.getTarget())) {
-            following = false;
+            pauseFollowing();
             return;
         }
         Node node = event.getTarget() instanceof Node target ? target : null;
@@ -143,7 +157,7 @@ final class LogOutputController {
             return;
         }
         output.requestFocus();
-        following = false;
+        pauseFollowing();
         int index = cell.getIndex();
         if (event.isShiftDown() && anchor >= 0) {
             selectRange(index);
@@ -222,7 +236,7 @@ final class LogOutputController {
             while (node != null && !(node instanceof ListCell<?>)) node = node.getParent();
             if (node instanceof ListCell<?> cell && !cell.isEmpty()
                     && !output.getSelectionModel().isSelected(cell.getIndex())) {
-                following = false;
+                pauseFollowing();
                 anchor = cell.getIndex();
                 output.getSelectionModel().clearAndSelect(anchor);
             }
@@ -235,7 +249,20 @@ final class LogOutputController {
         Clipboard.getSystemClipboard().setContent(content);
     }
 
+    private void pauseFollowing() {
+        following = false;
+        interactionRevision++;
+    }
+
+    private void resumeAfterInput() {
+        long revision = interactionRevision;
+        Platform.runLater(() -> {
+            if (interactionRevision == revision) resumeAtBottom();
+        });
+    }
+
     void followLatest() {
+        interactionRevision++;
         dragging = false;
         dragScroll.stop();
         output.getSelectionModel().clearSelection();
@@ -264,7 +291,7 @@ final class LogOutputController {
     boolean isFollowing() { return following; }
 
     void dispose() {
-        following = false;
+        pauseFollowing();
         dragging = false;
         dragScroll.stop();
         output.getItems().removeListener(contentListener);
@@ -279,29 +306,25 @@ final class LogOutputController {
         if (last != null && last.getIndex() == output.getItems().size() - 1
                 && flow.sceneToLocal(last.localToScene(last.getBoundsInLocal())).getMaxY()
                 <= flow.getViewportLength() + 1) return;
-        // Startup CSS and layout can reset a scroll performed by runLater before the first pulse.
-        // Reconcile the tail after layout, including when a hidden view first becomes visible.
+        // Following is persistent: late CSS, wrapping, and virtualized size corrections can move the tail.
+        // User input pauses following before those layout passes, so this does not override manual scrolling.
         output.scrollTo(output.getItems().size() - 1);
         output.layout();
         flow.setPosition(1);
         flow.layout();
+        Platform.requestNextPulse();
     }
 
     void queueFollow() {
-        if (!following || followQueued) return;
+        if (!following) return;
+        if (followQueued) return;
         followQueued = true;
         Platform.runLater(() -> {
             followQueued = false;
             if (following && !dragging && !output.getItems().isEmpty() && output.getScene() != null) {
                 output.applyCss();
-                output.scrollTo(output.getItems().size() - 1);
                 output.layout();
-                VirtualFlow<?> flow = flow();
-                if (flow != null) {
-                    // A final row can be taller than the viewport: align its bottom, not its top.
-                    flow.setPosition(1);
-                    flow.layout();
-                }
+                followAfterLayout();
             }
         });
     }

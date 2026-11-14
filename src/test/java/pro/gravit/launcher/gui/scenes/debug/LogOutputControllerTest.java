@@ -16,6 +16,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.PickResult;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.StackPane;
 import org.junit.jupiter.api.Test;
 import pro.gravit.launcher.gui.core.ui.FxTestThread;
@@ -23,6 +24,125 @@ import pro.gravit.launcher.gui.core.ui.FxTestThread;
 import static org.junit.jupiter.api.Assertions.*;
 
 class LogOutputControllerTest {
+    @Test
+    void followingRemainsActiveAfterTheInitialScrollHasSettled() throws Exception {
+        CompletableFuture<Void> verified = new CompletableFuture<>();
+        Stage stage = FxTestThread.call(() -> {
+            ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
+            monitor.append("message\n".repeat(200));
+            ListView<ProcessLogOutput.LogLine> output = new ListView<>();
+            LogOutputController controller = DebugScene.configureOutput(output);
+            output.setItems(monitor.getLines());
+            Scene scene = new Scene(new StackPane(output), 400, 300);
+            Stage window = new Stage();
+            window.setScene(scene);
+            scene.addPostLayoutPulseListener(new Runnable() {
+                private int pulse;
+
+                @Override
+                public void run() {
+                    try {
+                        pulse++;
+                        VirtualFlow<?> flow = (VirtualFlow<?>) output.lookup(".virtual-flow");
+                        if (pulse == 3) {
+                            assertTrue(controller.isFollowing());
+                            // Reproduce a later viewport adjustment without any user scroll input.
+                            flow.setPosition(0.5);
+                            flow.layout();
+                        } else if (pulse == 5) {
+                            assertTrue(controller.isFollowing());
+                            assertEquals(1, flow.getPosition(), 0.000001,
+                                    "Following must survive viewport adjustments after its first settled scroll");
+                            monitor.append("new wrapped line ".repeat(300));
+                        } else if (pulse == 6) {
+                            monitor.append("\nlatest line\n");
+                        } else if (pulse >= 8) {
+                            assertTrue(controller.isFollowing());
+                            assertEquals(output.getItems().size() - 1, flow.getLastVisibleCell().getIndex());
+                            assertEquals(1, flow.getPosition(), 0.000001);
+                            scene.removePostLayoutPulseListener(this);
+                            verified.complete(null);
+                        }
+                        Platform.requestNextPulse();
+                    } catch (Throwable failure) {
+                        scene.removePostLayoutPulseListener(this);
+                        verified.completeExceptionally(failure);
+                    }
+                }
+            });
+            window.show();
+            Platform.requestNextPulse();
+            return window;
+        });
+        try {
+            verified.get(15, TimeUnit.SECONDS);
+        } finally {
+            FxTestThread.run(() -> { stage.setScene(null); stage.close(); });
+        }
+    }
+
+    @Test
+    void scrollingUpStaysPausedAcrossOutputAndLayoutPulses() throws Exception {
+        CompletableFuture<Void> verified = new CompletableFuture<>();
+        Stage stage = FxTestThread.call(() -> {
+            ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
+            monitor.append("message\n".repeat(200));
+            ListView<ProcessLogOutput.LogLine> output = new ListView<>();
+            LogOutputController controller = DebugScene.configureOutput(output);
+            output.setItems(monitor.getLines());
+            Scene scene = new Scene(new StackPane(output), 400, 300);
+            Stage window = new Stage();
+            window.setScene(scene);
+            scene.addPostLayoutPulseListener(new Runnable() {
+                private int pulse;
+
+                @Override
+                public void run() {
+                    try {
+                        pulse++;
+                        VirtualFlow<?> flow = (VirtualFlow<?>) output.lookup(".virtual-flow");
+                        if (pulse == 1) {
+                            assertTrue(controller.isFollowing());
+                            // Queue a resume, then scroll up before that callback executes.
+                            flow.fireEvent(lineScroll(flow, -1));
+                            flow.fireEvent(lineScroll(flow, 5));
+                            assertFalse(controller.isFollowing());
+                            assertTrue(flow.getPosition() < 0.999);
+                            monitor.append("new output while reading history\n");
+                        } else if (pulse == 3) {
+                            assertFalse(controller.isFollowing(), "An old callback must not resume following");
+                            assertTrue(flow.getPosition() < 0.999, "Layout and new output must not pull the view back down");
+                            flow.fireEvent(lineScroll(flow, -10000));
+                        } else if (pulse >= 5) {
+                            assertTrue(controller.isFollowing(), "Scrolling back to the bottom resumes following");
+                            scene.removePostLayoutPulseListener(this);
+                            verified.complete(null);
+                        }
+                        Platform.requestNextPulse();
+                    } catch (Throwable failure) {
+                        scene.removePostLayoutPulseListener(this);
+                        verified.completeExceptionally(failure);
+                    }
+                }
+            });
+            window.show();
+            Platform.requestNextPulse();
+            return window;
+        });
+        try {
+            verified.get(15, TimeUnit.SECONDS);
+        } finally {
+            FxTestThread.run(() -> { stage.setScene(null); stage.close(); });
+        }
+    }
+
+    private static ScrollEvent lineScroll(javafx.scene.Node target, double lines) {
+        return new ScrollEvent(ScrollEvent.SCROLL, 20, 20, 20, 20,
+                false, false, false, false, false, false, 0, 0, 0, 0,
+                ScrollEvent.HorizontalTextScrollUnits.NONE, 0,
+                ScrollEvent.VerticalTextScrollUnits.LINES, lines, 0, new PickResult(target, 20, 20));
+    }
+
     @Test
     void firstStartupFollowsOutputAcrossRealLayoutPulsesWithoutSelection() throws Exception {
         CompletableFuture<Void> verified = new CompletableFuture<>();
@@ -105,7 +225,9 @@ class LogOutputControllerTest {
             menu.getItems().get(0).fire();
             assertEquals("first" + System.lineSeparator() + "second", Clipboard.getSystemClipboard().getString());
             menu.getItems().get(1).fire();
-            assertEquals(monitor.getText(), Clipboard.getSystemClipboard().getString());
+            // Native clipboard services may normalize CRLF to LF when returning text.
+            assertEquals(monitor.getText().replace("\r\n", "\n"),
+                    Clipboard.getSystemClipboard().getString().replace("\r\n", "\n"));
             var third = flow.getVisibleCell(2);
             third.fireEvent(new ContextMenuEvent(ContextMenuEvent.CONTEXT_MENU_REQUESTED,
                     1, 1, 1, 1, false, new PickResult(third, 1, 1)));
