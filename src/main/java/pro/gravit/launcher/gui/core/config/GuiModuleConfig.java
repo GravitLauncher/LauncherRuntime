@@ -7,10 +7,6 @@ public class GuiModuleConfig {
     public String createAccountURL;
     @LauncherInject(value = "modules.javaruntime.forgotpassurl")
     public String forgotPassURL;
-    @LauncherInject(value = "modules.javaruntime.lazy")
-    public boolean lazy;
-    @LauncherInject(value = "modules.javaruntime.disableofflinemode")
-    public boolean disableOfflineMode;
     @LauncherInject(value = "modules.javaruntime.disabledebugbydefault")
     public boolean disableDebugByDefault;
     @LauncherInject(value = "modules.javaruntime.disabledebugpermissions")
@@ -22,18 +18,13 @@ public class GuiModuleConfig {
     @LauncherInject(value = "modules.javaruntime.locale")
     public String locale;
 
-    @LauncherInject(value = "modules.javaruntime.downloadthreads")
-    public int downloadThreads = 4;
 
     public static Object getDefault() {
         GuiModuleConfig config = new GuiModuleConfig();
         config.createAccountURL = "https://gravitlauncher.com/createAccount.php";
         config.forgotPassURL = "https://gravitlauncher.com/fogotPass.php";
-        config.lazy = false;
-        config.disableOfflineMode = false;
         config.autoAuth = false;
         config.locale = "RUSSIAN";
-        config.downloadThreads = 4;
         return config;
     }
 }

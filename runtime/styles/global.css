@@ -301,3 +301,13 @@ Separator:vertical .line {
     -fx-border-color: transparent;
     -fx-background-insets: 2;
 }
+
+.server-card {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.registration-link {
+    -fx-padding: 0;
+    -fx-text-fill: -fx-colors-text-secondary;
+}

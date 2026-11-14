@@ -9,8 +9,6 @@ import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.gui.JavaRuntimeModule;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.core.impl.ContextHelper;
-import pro.gravit.launcher.gui.scenes.login.AuthFlow;
-import pro.gravit.launcher.gui.scenes.login.LoginScene;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -34,19 +32,24 @@ public class BackendCallbackService extends LauncherBackendAPI.MainCallback {
 
     @Override
     public void onProfiles(List<ProfileFeatureAPI.ClientProfile> profiles) {
-        application.profileService.setProfiles(profiles);
+        ContextHelper.runInFxThreadStatic(() -> application.profileService.setProfiles(profiles));
     }
 
     @Override
     public void onAuthorize(SelfUser selfUser) {
         ContextHelper.runInFxThreadStatic(() -> {
             application.authService.setUser(selfUser);
-            if(application.getMainStage().getVisualComponent() instanceof LoginScene loginScene) {
-                if(loginScene.getAuthFlow().isLoginStarted) {
-                    return;
-                }
-                loginScene.onSuccessLogin(new AuthFlow.SuccessAuth(selfUser, selfUser.getUsername(), null));
-            }
+
+        });
+    }
+
+    @Override
+    public void onExit() {
+        ContextHelper.runInFxThreadStatic(() -> {
+            application.authService.exit();
+            application.profileService.clear();
+            application.skinManager.clear();
+            application.pingService.clear();
         });
     }
 

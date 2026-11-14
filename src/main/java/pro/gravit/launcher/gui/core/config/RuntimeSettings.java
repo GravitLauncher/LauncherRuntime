@@ -1,15 +1,11 @@
 package pro.gravit.launcher.gui.core.config;
 
-import pro.gravit.launcher.base.profiles.ClientProfile;
 import pro.gravit.launcher.core.LauncherNetworkAPI;
-import pro.gravit.launcher.core.api.method.AuthMethodPassword;
 import pro.gravit.launcher.core.backend.UserSettings;
-import pro.gravit.launcher.gui.core.utils.SystemTheme;
 import pro.gravit.launcher.runtime.client.DirBridge;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
 import java.util.UUID;
 
 public class RuntimeSettings extends UserSettings {
@@ -26,8 +22,6 @@ public class RuntimeSettings extends UserSettings {
     @LauncherNetworkAPI
     public volatile LAUNCHER_THEME theme = LAUNCHER_THEME.COMMON;
     @LauncherNetworkAPI
-    public List<ClientProfile> profiles;
-    @LauncherNetworkAPI
     public GlobalSettings globalSettings = GlobalSettings.makeGlobalSettings(new GuiModuleConfig());
 
     public static RuntimeSettings getDefault(GuiModuleConfig config) {
@@ -42,7 +36,12 @@ public class RuntimeSettings extends UserSettings {
     }
 
     public void apply() {
-        if (updatesDirPath != null) updatesDir = Paths.get(updatesDirPath);
+        if (updatesDirPath != null) {
+            try { updatesDir = Paths.get(updatesDirPath); }
+            catch (java.nio.file.InvalidPathException error) { updatesDir = DirBridge.defaultUpdatesDir; updatesDirPath = null; }
+        }
+        if (globalSettings == null) globalSettings = GlobalSettings.makeGlobalSettings(new GuiModuleConfig());
+        if (locale == null) locale = DEFAULT_LOCALE;
     }
 
     public enum LAUNCHER_LOCALE {

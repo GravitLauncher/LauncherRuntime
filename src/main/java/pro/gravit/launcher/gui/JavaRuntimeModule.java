@@ -7,12 +7,9 @@ import pro.gravit.launcher.base.modules.LauncherInitContext;
 import pro.gravit.launcher.base.modules.LauncherModule;
 import pro.gravit.launcher.base.modules.LauncherModuleInfo;
 import pro.gravit.launcher.client.events.ClientExitPhase;
-import pro.gravit.launcher.client.events.ClientUnlockConsoleEvent;
-import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.core.StdJavaRuntimeProvider;
 import pro.gravit.launcher.runtime.LauncherEngine;
-import pro.gravit.launcher.runtime.client.events.ClientEngineInitPhase;
 import pro.gravit.launcher.runtime.client.events.ClientPreGuiPhase;
 import pro.gravit.launcher.runtime.gui.RuntimeProvider;
 import pro.gravit.utils.Version;
@@ -29,7 +26,6 @@ public class JavaRuntimeModule extends LauncherModule {
             LoggerFactory.getLogger(JavaRuntimeModule.class);
 
     public final static String RUNTIME_NAME = "stdruntime";
-    static LauncherEngine engine;
     private RuntimeProvider provider;
     public static AtomicBoolean SHUTDOWN_STARTED = new AtomicBoolean(false);
 
@@ -94,9 +90,7 @@ public class JavaRuntimeModule extends LauncherModule {
     @Override
     public void init(LauncherInitContext initContext) {
         registerEvent(this::preGuiPhase, ClientPreGuiPhase.class);
-        registerEvent(this::engineInitPhase, ClientEngineInitPhase.class);
         registerEvent(this::exitPhase, ClientExitPhase.class);
-        registerEvent(this::consoleUnlock, ClientUnlockConsoleEvent.class);
     }
 
     private void preGuiPhase(ClientPreGuiPhase phase) {
@@ -120,20 +114,8 @@ public class JavaRuntimeModule extends LauncherModule {
         phase.runtimeProvider = provider;
     }
 
-    private void consoleUnlock(ClientUnlockConsoleEvent event) {
-        if (engine.runtimeProvider instanceof StdJavaRuntimeProvider stdJavaRuntimeProvider) {
-            stdJavaRuntimeProvider.registerPrivateCommands();
-        }
-    }
-
-    private void engineInitPhase(ClientEngineInitPhase initPhase) {
-        JavaRuntimeModule.engine = initPhase.engine;
-    }
-
     private void exitPhase(ClientExitPhase exitPhase) {
-        boolean isAlreadyShutdown = SHUTDOWN_STARTED.getAndSet(true);
-        if(!isAlreadyShutdown && LauncherBackendAPIHolder.getApi() != null) {
-            LauncherBackendAPIHolder.getApi().shutdown();
-        }
+        SHUTDOWN_STARTED.set(true);
+        // LauncherBackendModule owns backend shutdown on ClientExitPhase.
     }
 }

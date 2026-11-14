@@ -22,4 +22,6 @@ public interface UIComponent {
     void onShow();
 
     void onHide();
+
+    default void dispose() { }
 }

@@ -16,19 +16,23 @@ public class PingService {
         return getPingReportProperty(serverName);
     }
 
-    public ObjectProperty<PingServerReport> getPingReportProperty(UUID serverName) {
+    public javafx.beans.property.ReadOnlyObjectProperty<PingServerReport> getPingReportProperty(UUID serverName) {
+        return writableReport(serverName);
+    }
+
+    private ObjectProperty<PingServerReport> writableReport(UUID serverName) {
         return reports.computeIfAbsent(serverName, k -> new SimpleObjectProperty<>());
     }
 
     public void addReports(Map<UUID, PingServerReport> map) {
         map.forEach((k, v) -> {
-            getPingReportProperty(k).set(v);
+            writableReport(k).set(v);
         });
     }
 
     public void addReport(UUID name, LauncherBackendAPI.ServerPingInfo result) {
         PingServerReport value = new PingServerReport(name, result.getMaxOnline(), result.getOnline());
-        getPingReportProperty(name).set(value);
+        writableReport(name).set(value);
     }
 
     public void clear() {

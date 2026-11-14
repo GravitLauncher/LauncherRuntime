@@ -32,8 +32,7 @@ public class ProcessingOverlay extends FxOverlay {
 
     @Override
     protected void doInit() {
-        // spinner = LookupHelper.lookup(pane, "#spinner"); //TODO: DrLeonardo?
-        description = LookupHelper.lookup(layout, "#description");
+        description = LookupHelper.lookup(layout, Labeled.class, "#description");
     }
 
     @Override
@@ -57,22 +56,40 @@ public class ProcessingOverlay extends FxOverlay {
 
     public final <T> void processRequest(FxStage stage, String message, CompletableFuture<T> request,
             Consumer<T> onSuccess, Consumer<Throwable> onException, EventHandler<ActionEvent> onError) {
-        try {
-            ContextHelper.runInFxThreadStatic(() -> show(stage, (e) -> {
-                description.setText(message);
-                request.thenAccept((result) -> {
-                    logger.trace("RequestFuture complete normally");
-                    onSuccess.accept(result);
-                    ContextHelper.runInFxThreadStatic(() -> hide(0, null));
-                }).exceptionally((error) -> {
-                    if (onException != null) onException.accept(error);
-                    else ContextHelper.runInFxThreadStatic(() -> errorHandle(error.getCause()));
-                    ContextHelper.runInFxThreadStatic(() -> hide(1500, onError));
-                    return null;
+        ContextHelper.runInFxThreadStatic(() -> {
+            show(stage, null);
+            description.setText(message);
+            request.whenComplete((result, error) -> ContextHelper.runInFxThreadStatic(() -> {
+                hide(0, event -> {
+                    try {
+                        if (error == null) {
+                            if (onSuccess != null) onSuccess.accept(result);
+                        } else if (onException != null) {
+                            onException.accept(unwrap(error));
+                        } else {
+                            errorHandle(unwrap(error));
+                            if (onError != null) onError.handle(new ActionEvent());
+                        }
+                    } catch (Throwable callbackError) {
+                        errorHandle(callbackError);
+                        if (onError != null) onError.handle(new ActionEvent());
+                    }
                 });
             }));
-        } catch (Exception e) {
-            ContextHelper.runInFxThreadStatic(() -> errorHandle(e));
-        }
+        }).whenComplete((ignored, setupError) -> {
+            if (setupError == null) return;
+            ContextHelper.runInFxThreadStatic(() -> {
+                try {
+                    if (onException != null) onException.accept(unwrap(setupError));
+                    else errorHandle(unwrap(setupError));
+                } finally { if (onError != null) onError.handle(new ActionEvent()); }
+            });
+        });
+    }
+
+    private static Throwable unwrap(Throwable error) {
+        while ((error instanceof java.util.concurrent.CompletionException || error instanceof java.util.concurrent.ExecutionException)
+                && error.getCause() != null) error = error.getCause();
+        return error;
     }
 }

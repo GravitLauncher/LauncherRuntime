@@ -2,7 +2,6 @@ package pro.gravit.launcher.gui.scenes.options;
 
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import pro.gravit.launcher.core.api.features.ProfileFeatureAPI;
@@ -91,16 +90,6 @@ public class OptionsTab {
         vBox.getChildren().add(checkBox);
         vBox.getChildren().add(label);
         VBox.setMargin(vBox, new Insets(0, 0, 0, 15 * padding));
-        vBox.setOnMouseClicked((e) -> {
-            if (e.getButton() == MouseButton.PRIMARY) {
-                checkBox.setSelected(!checkBox.isSelected());
-                onChanged.accept(checkBox.isSelected());
-            }
-        });
-        vBox.setOnTouchPressed((e) -> {
-            checkBox.setSelected(!checkBox.isSelected());
-            onChanged.accept(checkBox.isSelected());
-        });
         vBox.getStyleClass().add("optional-container");
         checkBox.setSelected(value);
         checkBox.setText(name);
@@ -137,6 +126,7 @@ public class OptionsTab {
     }
 
     public void clear() {
+        watchers.clear();
         tabPane.getTabs().clear();
         tabs.clear();
     }

@@ -25,12 +25,18 @@ public class InfoDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if (isInit()) textDescription.setText(text);
+        if (isInit()) textHeader.setText(header);
     }
 
     public void setText(String text) {
         this.text = text;
-        if (isInit()) textHeader.setText(header);
+        if (isInit()) textDescription.setText(text);
+    }
+
+    @Override public void dismiss() throws Throwable {
+        if (isClosed()) return;
+        close();
+        onClose.run();
     }
 
     @Override
@@ -40,11 +46,11 @@ public class InfoDialog extends AbstractDialog {
 
     @Override
     protected void doInit() {
-        textHeader = LookupHelper.lookup(layout, "#headingDialog");
-        textDescription = LookupHelper.lookup(layout, "#textDialog");
+        textHeader = LookupHelper.lookup(layout, Label.class, "#headingDialog");
+        textDescription = LookupHelper.lookup(layout, Label.class, "#textDialog");
         textHeader.setText(header);
         textDescription.setText(text);
-        LookupHelper.<Button>lookup(layout, "#close").setOnAction((e) -> {
+        LookupHelper.lookup(layout, Button.class, "#close").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {
@@ -52,7 +58,7 @@ public class InfoDialog extends AbstractDialog {
             }
             onClose.run();
         });
-        LookupHelper.<Button>lookup(layout, "#apply").setOnAction((e) -> {
+        LookupHelper.lookup(layout, Button.class, "#apply").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {

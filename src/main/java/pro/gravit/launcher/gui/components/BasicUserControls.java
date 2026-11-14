@@ -4,7 +4,6 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
-import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxComponent;
 import pro.gravit.launcher.gui.core.impl.ContextHelper;
 
@@ -21,12 +20,20 @@ public class BasicUserControls extends FxComponent {
 
     @Override
     protected void doInit() {
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#controls", "#exit")
-                    .ifPresent((b) -> b.setOnAction((e) -> onExit()));
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#controls", "#minimize")
-                    .ifPresent((b) -> b.setOnAction((e) -> onMinimize()));
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#controls", "#deauth").ifPresent(b -> b.setOnAction(
-                (e) -> onDeauth()));
+        var nodes = new pro.gravit.launcher.gui.core.ui.ViewNodes(layout, "window header");
+        bind(nodes, "#exit", this::onExit);
+        bind(nodes, "#minimize", this::onMinimize);
+        bind(nodes, "#deauth", this::onDeauth);
+    }
+
+    private void bind(pro.gravit.launcher.gui.core.ui.ViewNodes nodes, String selector, Runnable operation) {
+        nodes.optional(ButtonBase.class, "#controls", selector).ifPresent(button -> {
+            var action = new pro.gravit.launcher.gui.core.ui.UiAction(button.getText(), () -> {
+                operation.run(); return java.util.concurrent.CompletableFuture.completedFuture(null);
+            }, this::errorHandle);
+            action.attach(scope, button);
+            if (button.getTooltip() != null) button.setAccessibleText(button.getTooltip().getText());
+        });
     }
 
     protected void onExit() {

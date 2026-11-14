@@ -15,8 +15,9 @@ public class AuthButton extends FxComponent {
 
     @Override
     protected void doInit() {
-        button = LookupHelper.lookup(layout, "#authButton");
+        button = LookupHelper.lookup(layout, Button.class, "#authButton");
         originalText = button.getText();
+        button.setDefaultButton(true);
     }
 
     @Override
@@ -66,10 +67,11 @@ public class AuthButton extends FxComponent {
         }
         button.getStyleClass().add(state.getStyleClass());
         if(state == AuthButtonState.ERROR) {
-            button.setText("ERROR");
+            button.setText(application.getTranslation("runtime.error", "Error"));
         } else if(this.state == AuthButtonState.ERROR) {
             button.setText(originalText);
         }
+        button.pseudoClassStateChanged(javafx.css.PseudoClass.getPseudoClass("error"), state == AuthButtonState.ERROR);
         this.state = state;
     }
 

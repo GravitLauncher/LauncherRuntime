@@ -7,21 +7,15 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.core.api.method.AuthMethod;
-import pro.gravit.launcher.core.api.model.Texture;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
-import pro.gravit.launcher.core.backend.UserSettings;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.core.impl.UIComponent;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxScene;
-import pro.gravit.launcher.runtime.backend.BackendSettings;
 
-import java.net.URI;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
@@ -36,6 +30,7 @@ public class LoginScene extends FxScene {
     private CheckBox autoenter;
     private Pane content;
     private UIComponent contentComponent;
+    private final java.util.Set<UIComponent> ownedContent = new java.util.HashSet<>();
     private AuthButton authButton;
     private ComboBox<AuthMethod> authList;
     private AuthMethod authAvailability;
@@ -49,7 +44,7 @@ public class LoginScene extends FxScene {
 
     @Override
     public void doInit() {
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+        LookupHelper.lookup(header, ButtonBase.class, "#controls", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.globalSettingsScene);
             } catch (Exception exception) {
@@ -58,41 +53,20 @@ public class LoginScene extends FxScene {
         });
         authButton = use(layout, AuthButton::new);
         authButton.setOnAction((e) -> contextHelper.runCallback(authFlow::loginWithGui));
-        //savePasswordCheckBox = LookupHelper.lookup(layout, "#savePassword");
-        autoenter = LookupHelper.lookup(layout, "#autoenter");
+        autoenter = LookupHelper.lookup(layout, CheckBox.class, "#autoenter");
         autoenter.setSelected(application.runtimeSettings.autoAuth);
         autoenter.setOnAction((event) -> application.runtimeSettings.autoAuth = autoenter.isSelected());
 
-        // Показываем галочку сохранения если есть логин или OAuth токен
-        /*savePasswordCheckBox.setSelected(application.runtimeSettings.login != null || hasOAuthToken());
-        savePasswordCheckBox.setOnAction((event) -> {
-            if (!savePasswordCheckBox.isSelected()) {
-                application.runtimeSettings.login = null;
-                application.runtimeSettings.password = null;
-                application.runtimeSettings.lastAuth = null;
-                // Вызываем userExit только если пользователь реально авторизован
-                if (LauncherBackendAPIHolder.getApi().getSelfUser() != null) {
-                    LauncherBackendAPIHolder.getApi().userExit();
-                } else {
-                    // Просто очищаем токен локально без запроса к серверу
-                    UserSettings settings = LauncherBackendAPIHolder.getApi().getUserSettings("backend", (a) -> null);
-                    if (settings instanceof BackendSettings backendSettings) {
-                        backendSettings.auth = null;
-                    }
-                }
-            }
-        });*/
-
-        content = LookupHelper.lookup(layout, "#content");
+        content = LookupHelper.lookup(layout, Pane.class, "#content");
         if (application.guiModuleConfig.createAccountURL != null) {
-            LookupHelper.<Text>lookup(header, "#createAccount")
-                        .setOnMouseClicked((e) -> application.openURL(application.guiModuleConfig.createAccountURL));
+            LookupHelper.lookup(header, ButtonBase.class, "#createAccount")
+                        .setOnAction((e) -> application.openURL(application.guiModuleConfig.createAccountURL));
         }
         if (application.guiModuleConfig.forgotPassURL != null) {
-            LookupHelper.<Text>lookup(header, "#forgotPass")
-                        .setOnMouseClicked((e) -> application.openURL(application.guiModuleConfig.forgotPassURL));
+            LookupHelper.lookup(header, ButtonBase.class, "#forgotPass")
+                        .setOnAction((e) -> application.openURL(application.guiModuleConfig.forgotPassURL));
         }
-        authList = LookupHelper.lookup(layout, "#authList");
+        authList = LookupHelper.lookup(layout, ComboBox.class, "#authList");
         authList.setConverter(new AuthAvailabilityStringConverter());
         authList.setOnAction((e) -> changeAuthAvailability(authList.getSelectionModel().getSelectedItem()));
         authFlow.prepare();
@@ -144,32 +118,19 @@ public class LoginScene extends FxScene {
                 || application.runtimeSettings.autoAuth;
         if (!shouldAutoAuth) return;
 
-        boolean hasOAuthToken = hasOAuthToken();
-
-        if (hasOAuthToken) {
-            authFlow.tryAutoLogin().thenAccept(success -> {
-                if (!success) {
-                    contextHelper.runInFxThread(authFlow::loginWithGui);
-                }
-            });
-        }
-    }
-
-    private boolean hasOAuthToken() {
-        UserSettings settings = LauncherBackendAPIHolder.getApi().getUserSettings("backend", (a) -> null);
-        if (settings instanceof BackendSettings backendSettings) {
-            return backendSettings.auth != null && backendSettings.auth.accessToken != null;
-        }
-        return false;
+        authFlow.tryAutoLogin().thenAccept(success -> {
+            if (!success) contextHelper.runInFxThread(authFlow::loginWithGui);
+        });
     }
 
     public void changeAuthAvailability(AuthMethod authAvailability) {
-        boolean isChanged = this.authAvailability != authAvailability; //TODO: FIX
+        if (authAvailability == null) return;
+        if (this.authAvailability == authAvailability && application.authService.getAuthAvailability() != null) return;
         LauncherBackendAPIHolder.getApi().selectAuthMethod(authAvailability);
         this.authAvailability = authAvailability;
         this.application.authService.setAuthAvailability(authAvailability);
-        this.authList.selectionModelProperty().get().select(authAvailability);
         authFlow.init(authAvailability);
+        this.authList.selectionModelProperty().get().select(authAvailability);
         logger.trace("Selected auth: {}", authAvailability.getName());
     }
 
@@ -181,7 +142,11 @@ public class LoginScene extends FxScene {
     public <T> void processing(CompletableFuture<T> request, String text, Consumer<T> onSuccess,
             Consumer<String> onError) {
         processRequest(text, request, onSuccess, onError == null ? null :
-                               (thr) -> onError.accept(thr.getCause().getMessage()),
+                               (thr) -> {
+                                   Throwable cause = thr;
+                                   while (cause.getCause() != null && (cause instanceof java.util.concurrent.CompletionException || cause instanceof java.util.concurrent.ExecutionException)) cause = cause.getCause();
+                                   onError.accept(cause.getMessage() == null ? cause.toString() : cause.getMessage());
+                               },
                        null);
     }
 
@@ -197,6 +162,15 @@ public class LoginScene extends FxScene {
         authFlow.reset();
     }
 
+    @Override public void onHide() {
+        if (authFlow.isLoginStarted) authFlow.reset();
+        super.onHide();
+    }
+    @Override public void dispose() {
+        authFlow.reset();
+        super.dispose();
+    }
+
     @Override
     public String getName() {
         return "login";
@@ -206,21 +180,7 @@ public class LoginScene extends FxScene {
         var user = successAuth.user();
         application.authService.setUser(user);
 
-        if (user != null
-                && user.getAssets() != null) {
-            try {
-                Texture skin = user.getAssets().get("SKIN");
-                Texture avatar = user.getAssets().get("AVATAR");
-                if(skin != null || avatar != null) {
-                    application.skinManager.addSkinWithAvatar(user.getUsername(),
-                                                              skin != null ? new URI(skin.getUrl()) : null,
-                                                              avatar != null ? new URI(avatar.getUrl()) : null);
-                    application.skinManager.getSkin(user.getUsername()); //Cache skin
-                }
-            } catch (Exception e) {
-                logger.error("", e);
-            }
-        }
+        if (user != null) application.skinManager.load(user);
         contextHelper.runInFxThread(() -> {
             if(application.gui.welcomeOverlay.isInit()) {
                 application.gui.welcomeOverlay.reset();
@@ -232,25 +192,13 @@ public class LoginScene extends FxScene {
 
     public void onGetProfiles() {
         processing(LauncherBackendAPIHolder.getApi().fetchProfiles(), application.getTranslation("runtime.overlay.processing.text.profiles"),
-                   (profiles) -> {/*
-                       application.profilesService.setProfilesResult(profiles);
-                       application.runtimeSettings.profiles = profiles.profiles;*/
-                       contextHelper.runInFxThread(() -> {
-                           /*
-                           if (application.gui.optionsScene != null) {
-                               try {
-                                   application.profilesService.loadAll();
-                               } catch (Throwable ex) {
-                                   errorHandle(ex);
-                               }
-                           }*/
+                   (profiles) -> contextHelper.runInFxThread(() -> {
                            if (application.getCurrentScene() instanceof LoginScene loginScene) {
                                loginScene.authFlow.isLoginStarted = false;
                            }
                            application.profileService.setProfiles(profiles);
                            application.setMainScene(application.gui.serverMenuScene);
-                       });
-                   }, null);
+                   }), null);
     }
 
     public AuthFlow getAuthFlow() {
@@ -274,6 +222,7 @@ public class LoginScene extends FxScene {
         public void showContent(UIComponent component) throws Exception {
             component.init();
             component.postInit();
+            if (ownedContent.add(component)) scope.add(component::dispose);
             if (contentComponent != null) {
                 content.getChildren().clear();
             }
@@ -286,11 +235,11 @@ public class LoginScene extends FxScene {
         }
 
         public void setState(AuthButton.AuthButtonState state) {
-            authButton.setState(state);
+            if (authButton != null) authButton.setState(state);
         }
 
         public boolean isEmptyContent() {
-            return content.getChildren().isEmpty();
+            return content == null || content.getChildren().isEmpty();
         }
 
         public void clearContent() {

@@ -24,6 +24,7 @@ public class PrimaryStage extends FxStage {
         primaryStage.setTitle(title);
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(true);
+        stage.setMinWidth(760); stage.setMinHeight(480);
         scene.setFill(Color.TRANSPARENT);
         // Icons
         try {
@@ -36,13 +37,11 @@ public class PrimaryStage extends FxStage {
     }
 
     public void pushBackground(UIComponent component) {
-        scenePosition.incrementAndGet();
-        addBefore(visualComponent.getLayout(), component.getLayout());
+        backgroundContainer.getChildren().setAll(component.getLayout());
     }
 
     public void pullBackground(UIComponent component) {
-        scenePosition.decrementAndGet();
-        pull(component.getLayout());
+        backgroundContainer.getChildren().remove(component.getLayout());
     }
 
     @Override

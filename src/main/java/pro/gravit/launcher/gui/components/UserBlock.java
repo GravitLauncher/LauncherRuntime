@@ -34,9 +34,10 @@ public class UserBlock extends FxComponent {
 
     @Override
     protected void doInit() {
-        avatar = LookupHelper.lookup(layout, "#avatar");
+        avatar = LookupHelper.lookup(layout, ImageView.class, "#avatar");
+        avatar.setSmooth(false);
         originalAvatarImage = avatar.getImage();
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#avatar").ifPresent((h) -> {
+        LookupHelper.lookupIfPossible(layout, ImageView.class, "#avatar").ifPresent((h) -> {
             try {
                 JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
                 h.setImage(originalAvatarImage);
@@ -44,19 +45,27 @@ public class UserBlock extends FxComponent {
                 logger.warn("Skin head error");
             }
         });
+        var nodes = new pro.gravit.launcher.gui.core.ui.ViewNodes(layout, "components/userBlock.fxml");
+        nodes.optional(Label.class, "#nickname").ifPresent(label -> {
+            label.textProperty().bind(application.authService.username);
+            scope.add(() -> label.textProperty().unbind());
+        });
+        scope.subscribe(application.skinManager.avatarProperty().subscribe(image -> {
+            avatar.setImage(originalAvatarImage);
+            if (image != null) resetAvatar();
+        }));
         reset();
     }
 
     public void reset() {
-        LookupHelper.<Label>lookupIfPossible(layout, "#nickname")
-                    .ifPresent((e) -> e.textProperty().bind(application.authService.username));
-        LookupHelper.<Label>lookupIfPossible(layout, "#role")
+
+        LookupHelper.lookupIfPossible(layout, Label.class, "#role")
                     .ifPresent((e) -> e.setText(application.authService.getMainRole()));
         avatar.setImage(originalAvatarImage);
         resetAvatar();
         TextureUploadExtension extension = LauncherBackendAPIHolder.getApi().getExtension(TextureUploadExtension.class);
         if(extension != null) {
-            LookupHelper.<Button>lookupIfPossible(layout, "#customization").ifPresent((h) -> {
+            LookupHelper.lookupIfPossible(layout, Button.class, "#customization").ifPresent((h) -> {
                 h.setVisible(true);
                 h.setOnAction((a) -> application.gui.processingOverlay.processRequest(currentStage,
                         application.getTranslation("runtime.overlay.processing.text.uploadassetinfo"),

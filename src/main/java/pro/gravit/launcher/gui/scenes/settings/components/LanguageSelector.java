@@ -21,7 +21,7 @@ public class LanguageSelector {
 
     public LanguageSelector(JavaFXApplication application, Pane layout) {
         this.application = application;
-        comboBox = LookupHelper.lookup(layout, "#languageCombo");
+        comboBox = LookupHelper.lookup(layout, ComboBox.class, "#languageCombo");
         comboBox.getItems().clear();
         comboBox.setConverter(new ThemeConverter());
         for(var e : RuntimeSettings.LAUNCHER_LOCALE.values()) {
@@ -34,9 +34,18 @@ public class LanguageSelector {
             if (locale == null) return;
             if(locale == application.runtimeSettings.locale) return;
             try {
-                application.updateLocaleResources(locale.name);
+                if (application.isOperationBusy()) { comboBox.setValue(application.runtimeSettings.locale); return; }
+                var oldResources = application.captureResources();
+                var previous = application.runtimeSettings.locale;
                 application.runtimeSettings.locale = locale;
-                application.gui.reload();
+                try {
+                    application.gui.reload();
+                } catch (Exception error) {
+                    application.runtimeSettings.locale = previous;
+                    application.restoreResources(oldResources);
+                    comboBox.setValue(previous);
+                    throw error;
+                }
             } catch (Exception ex) {
                 logger.error("", ex);
             }

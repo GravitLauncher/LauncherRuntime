@@ -19,7 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class JavaSelector {
+public class JavaSelector implements AutoCloseable {
+    private Runnable selectionChanged = () -> { };
+    public void setOnSelectionChanged(Runnable callback) { selectionChanged = callback; }
+    public LauncherBackendAPI.Java getSelectedJava() { return comboBox.getValue(); }
+    @Override public void close() { requestVersion.incrementAndGet(); profileSettings = null; comboBox.setOnAction(null); }
 
     private static final Logger logger =
             LoggerFactory.getLogger(JavaSelector.class);
@@ -30,7 +34,7 @@ public class JavaSelector {
     private boolean suppressSelectionEvents;
 
     public JavaSelector(Pane layout) {
-        comboBox = LookupHelper.lookup(layout, "#javaCombo");
+        comboBox = LookupHelper.lookup(layout, ComboBox.class, "#javaCombo");
         comboBox.getItems().clear();
         comboBox.setOnAction(e -> onSelectionChanged());
     }
@@ -63,6 +67,7 @@ public class JavaSelector {
                         suppressSelectionEvents = false;
                     }
                     comboBox.setDisable(false);
+                    selectionChanged.run();
                 }));
     }
 
@@ -95,6 +100,7 @@ public class JavaSelector {
         profileSettings.setSelectedJava(version);
         logger.info("Select Java {}", version.getPath().toAbsolutePath());
         updateTooltip(version);
+        selectionChanged.run();
     }
 
     private void updateTooltip(LauncherBackendAPI.Java version) {

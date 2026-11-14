@@ -42,20 +42,7 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
 
     @Override
     public CompletableFuture<Void> show(AuthPasswordDetails details) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        try {
-            //accessor.showOverlay(overlay, (e) -> future.complete(null));
-            ContextHelper.runInFxThreadStatic(() -> {
-                accessor.showContent(overlay);
-                future.complete(null);
-            }).exceptionally((th) -> {
-                logger.error("", th);
-                return null;
-            });
-        } catch (Exception e) {
-            accessor.errorHandle(e);
-        }
-        return future;
+        return ContextHelper.runInFxThreadStatic(() -> accessor.showContent(overlay));
     }
 
     @Override
@@ -68,12 +55,12 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
 
     @Override
     public void onAuthClicked() {
-        overlay.future.complete(overlay.getResult());
+        if (overlay.future != null) overlay.future.complete(overlay.getResult());
     }
 
     @Override
     public void onUserCancel() {
-        overlay.future.completeExceptionally(LoginAndPasswordOverlay.USER_AUTH_CANCELED_EXCEPTION);
+        if (overlay.future != null) overlay.future.completeExceptionally(LoginAndPasswordOverlay.USER_AUTH_CANCELED_EXCEPTION);
     }
 
     @Override
@@ -109,8 +96,8 @@ public class LoginAndPasswordAuthMethod extends AbstractAuthMethod<AuthPasswordD
 
         @Override
         protected void doInit() {
-            login = LookupHelper.lookup(layout, "#login");
-            password = LookupHelper.lookup(layout, "#password");
+            login = LookupHelper.lookup(layout, TextField.class, "#login");
+            password = LookupHelper.lookup(layout, TextField.class, "#password");
 
             login.textProperty().addListener(l -> accessor.getAuthButton().setState(login.getText().isEmpty()
                                                                                             ? AuthButton.AuthButtonState.UNACTIVE

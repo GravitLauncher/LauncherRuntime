@@ -28,12 +28,18 @@ public class ApplyDialog extends AbstractDialog {
 
     public void setHeader(String header) {
         this.header = header;
-        if (isInit()) textDescription.setText(text);
+        if (isInit()) textHeader.setText(header);
     }
 
     public void setText(String text) {
         this.text = text;
-        if (isInit()) textHeader.setText(header);
+        if (isInit()) textDescription.setText(text);
+    }
+
+    @Override public void dismiss() throws Throwable {
+        if (isClosed()) return;
+        close();
+        onClose.run();
     }
 
     @Override
@@ -43,11 +49,11 @@ public class ApplyDialog extends AbstractDialog {
 
     @Override
     protected void doInit() {
-        textHeader = LookupHelper.lookup(layout, "#headingDialog");
-        textDescription = LookupHelper.lookup(layout, "#textDialog");
+        textHeader = LookupHelper.lookup(layout, Label.class, "#headingDialog");
+        textDescription = LookupHelper.lookup(layout, Label.class, "#textDialog");
         textHeader.setText(header);
         textDescription.setText(text);
-        LookupHelper.<Button>lookup(layout, "#close").setOnAction((e) -> {
+        LookupHelper.lookup(layout, Button.class, "#close").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {
@@ -55,7 +61,7 @@ public class ApplyDialog extends AbstractDialog {
             }
             onClose.run();
         });
-        LookupHelper.<Button>lookup(layout, "#apply").setOnAction((e) -> {
+        LookupHelper.lookup(layout, Button.class, "#apply").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {
@@ -63,7 +69,7 @@ public class ApplyDialog extends AbstractDialog {
             }
             onAccept.run();
         });
-        LookupHelper.<Button>lookup(layout, "#deny").setOnAction((e) -> {
+        LookupHelper.lookup(layout, Button.class, "#deny").setOnAction((e) -> {
             try {
                 close();
             } catch (Throwable throwable) {

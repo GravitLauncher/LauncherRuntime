@@ -25,7 +25,8 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
     private JavaSelector javaSelector;
     private UserBlock userBlock;
     private boolean ignoreRamSliderChanges;
-    private Long cachedMaxMemoryMbs;
+    private long maxMemoryMbs = MAX_JAVA_MEMORY_X64;
+
 
     public SettingsScene(JavaFXApplication application) {
         super("scenes/settings/settings.fxml", application);
@@ -36,8 +37,8 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
         super.doInit();
         this.userBlock = use(layout, UserBlock::new);
 
-        ramSlider = LookupHelper.lookup(componentList, "#ramSlider");
-        ramLabel = LookupHelper.lookup(componentList, "#ramLabel");
+        ramSlider = LookupHelper.lookup(componentList, Slider.class, "#ramSlider");
+        ramLabel = LookupHelper.lookup(componentList, Label.class, "#ramLabel");
 
         ramSlider.setSnapToTicks(true);
         ramSlider.setShowTickMarks(true);
@@ -64,7 +65,7 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
                 return null;
             }
         });
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#back").ifPresent(a -> a.setOnAction((e) -> {
+        LookupHelper.lookupIfPossible(layout, ButtonBase.class, "#back").ifPresent(a -> a.setOnAction((e) -> {
             try {
                 profileSettings = null;
                 switchToBackScene();
@@ -91,21 +92,32 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
 
         if (javaSelector == null) {
             javaSelector = new JavaSelector(componentList);
+            javaSelector.setOnSelectionChanged(() -> ramSlider.setMax(getMaxMemoryMbs()));
+            scope.add(javaSelector::close);
         }
         javaSelector.reset(profileSettings, profile);
+        var draft = profileSettings;
+        java.util.concurrent.CompletableFuture.supplyAsync(() ->
+                draft.getMaxMemoryBytes(LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL) >> 20,
+                application.workers).whenComplete((maximum, error) -> contextHelper.runInFxThread(() -> {
+                    if (disposed || profileSettings != draft) return;
+                    if (error != null) { errorHandle(error); return; }
+                    maxMemoryMbs = maximum;
+                    ramSlider.setMax(getMaxMemoryMbs());
+                }));
 
         ignoreRamSliderChanges = true;
         try {
-            ramSlider.setMax(getCachedMaxMemoryMbs());
+            ramSlider.setMax(getMaxMemoryMbs());
             ramSlider.setValue(getReservedMemoryMbs());
         } finally {
             ignoreRamSliderChanges = false;
         }
         updateRamLabel();
 
-        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+        Pane serverButtonContainer = LookupHelper.lookup(layout, Pane.class, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        application.serverButtonCacheService.attachDetailButton(profile, serverButtonContainer, null, e -> {
+        application.serverCardService.attachDetailButton(profile, serverButtonContainer, null, e -> {
             try {
                 LauncherBackendAPIHolder.getApi().saveClientProfileSettings(profileSettings);
                 switchToBackScene();
@@ -135,12 +147,11 @@ public class SettingsScene extends BaseSettingsScene implements SceneSupportUser
         return profileSettings.getReservedMemoryBytes(LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL) >> 20;
     }
 
-    private long getCachedMaxMemoryMbs() {
-        if (cachedMaxMemoryMbs == null) {
-            cachedMaxMemoryMbs = profileSettings.getMaxMemoryBytes(
-                    LauncherBackendAPI.ClientProfileSettings.MemoryClass.TOTAL) >> 20;
-        }
-        return cachedMaxMemoryMbs;
+    private long getMaxMemoryMbs() {
+        long max = maxMemoryMbs;
+        var java = javaSelector == null ? null : javaSelector.getSelectedJava();
+        if (java != null && ("x86".equalsIgnoreCase(java.getArchitecture()) || "arm32".equalsIgnoreCase(java.getArchitecture()))) max = Math.min(max, MAX_JAVA_MEMORY_X32);
+        return Math.min(max, MAX_JAVA_MEMORY_X64);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package pro.gravit.launcher.gui.core.impl;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.util.Duration;
 
@@ -36,16 +35,16 @@ public class ContextHelper {
 
     public static<T> CompletableFuture<T> runAfterTimeoutStatic(Duration duration, GuiExceptionCallback<T> callback) {
         CompletableFuture<T> result = new CompletableFuture<>();
-        Timeline timeline = new Timeline(new KeyFrame(duration, (x) -> {
-            Platform.runLater(() -> {
-                try {
-                    result.complete(callback.call());
-                } catch (Throwable throwable) {
-                    result.completeExceptionally(throwable);
-                }
+        runInFxThreadStatic(() -> {
+            PauseTransition timer = new PauseTransition(duration);
+            timer.setOnFinished(event -> {
+                if (result.isCancelled()) return;
+                try { result.complete(callback.call()); }
+                catch (Throwable error) { result.completeExceptionally(error); }
             });
-        }));
-        timeline.play();
+            result.whenComplete((v, e) -> { if (result.isCancelled()) Platform.runLater(timer::stop); });
+            timer.play();
+        }).whenComplete((v, e) -> { if (e != null) result.completeExceptionally(e); });
         return result;
     }
 
@@ -89,24 +88,15 @@ public class ContextHelper {
     }
 
     public final <T> CompletableFuture<T> runInFxThread(GuiExceptionCallback<T> callback) {
-        return runInFxThreadStatic(callback).exceptionally((t) -> {
-            errorHandling(t);
-            return null;
-        });
+        return runInFxThreadStatic(callback).whenComplete((value, error) -> { if (error != null) errorHandling(error); });
     }
 
     public final <T> CompletableFuture<T> runAfterTimeout(Duration duration, GuiExceptionCallback<T> callback) {
-        return runAfterTimeoutStatic(duration, callback).exceptionally((t) -> {
-            errorHandling(t);
-            return null;
-        });
+        return runAfterTimeoutStatic(duration, callback).whenComplete((value, error) -> { if (error != null) errorHandling(error); });
     }
 
     public final CompletableFuture<Void> runInFxThread(GuiExceptionRunnable callback) {
-        return runInFxThreadStatic(callback).exceptionally((t) -> {
-            errorHandling(t);
-            return null;
-        });
+        return runInFxThreadStatic(callback).whenComplete((value, error) -> { if (error != null) errorHandling(error); });
     }
 
     final void errorHandling(Throwable e) {

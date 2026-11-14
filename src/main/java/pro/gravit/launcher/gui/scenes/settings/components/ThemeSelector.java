@@ -21,7 +21,7 @@ public class ThemeSelector {
 
     public ThemeSelector(JavaFXApplication application, Pane layout) {
         this.application = application;
-        comboBox = LookupHelper.lookup(layout, "#themeCombo");
+        comboBox = LookupHelper.lookup(layout, ComboBox.class, "#themeCombo");
         comboBox.getItems().clear();
         comboBox.setConverter(new ThemeConverter());
         for(var e : RuntimeSettings.LAUNCHER_THEME.values()) {
@@ -33,10 +33,14 @@ public class ThemeSelector {
             RuntimeSettings.LAUNCHER_THEME theme = comboBox.getValue();
             if (theme == null || (theme == RuntimeSettings.LAUNCHER_THEME.COMMON && application.runtimeSettings.theme == null)) return;
             if(theme == application.runtimeSettings.theme) return;
+            if (application.isOperationBusy()) { comboBox.setValue(application.runtimeSettings.theme); return; }
+            var previous = application.runtimeSettings.theme;
             application.runtimeSettings.theme = theme;
             try {
                 application.gui.reload();
             } catch (Exception ex) {
+                application.runtimeSettings.theme = previous;
+                comboBox.setValue(previous);
                 logger.error("", ex);
             }
         });

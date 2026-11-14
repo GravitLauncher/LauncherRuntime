@@ -37,16 +37,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
     @Override
     public CompletableFuture<Void> show(AuthTotpDetails details) {
         overlay.maxLength = 6;
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        try {
-            ContextHelper.runInFxThreadStatic(() -> {
-                accessor.showContent(overlay);
-                future.complete(null);
-            });
-        } catch (Exception e) {
-            accessor.errorHandle(e);
-        }
-        return future;
+        return ContextHelper.runInFxThreadStatic(() -> accessor.showContent(overlay));
     }
 
     @Override
@@ -63,7 +54,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
 
     @Override
     public void onUserCancel() {
-        overlay.future.completeExceptionally(TotpOverlay.USER_AUTH_CANCELED_EXCEPTION);
+        if (overlay.future != null) overlay.future.completeExceptionally(TotpOverlay.USER_AUTH_CANCELED_EXCEPTION);
     }
 
     @Override
@@ -94,7 +85,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
 
         @Override
         protected void doInit() {
-            totpField = LookupHelper.lookup(layout, "#totp");
+            totpField = LookupHelper.lookup(layout, TextField.class, "#totp");
             totpField.textProperty().addListener((obj, oldValue, value) -> {
                 if(value != null && value.length() == maxLength) {
                     complete();
@@ -115,7 +106,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         public void complete() {
             String code = getCode();
             if (code == null || code.isEmpty()) return;
-            future.complete(new AuthFlow.LoginAndPasswordResult(null, new AuthTotpPassword(code)));
+            if (future != null) future.complete(new AuthFlow.LoginAndPasswordResult(null, new AuthTotpPassword(code)));
         }
 
         public void requestFocus() {

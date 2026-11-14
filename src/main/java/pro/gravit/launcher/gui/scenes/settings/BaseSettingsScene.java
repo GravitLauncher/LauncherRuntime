@@ -22,8 +22,8 @@ public abstract class BaseSettingsScene extends FxScene {
 
     @Override
     protected void doInit() {
-        componentList = (Pane) LookupHelper.<ScrollPane>lookup(layout, "#settingslist").getContent();
-        settingsList = LookupHelper.lookup(componentList, "#settings-list");
+        componentList = (Pane) LookupHelper.lookup(layout, ScrollPane.class, "#settingslist").getContent();
+        settingsList = LookupHelper.lookup(componentList, Pane.class, "#settings-list");
     }
 
     @Override
@@ -69,6 +69,8 @@ public abstract class BaseSettingsScene extends FxScene {
         label.setWrapText(true);
         vBox.getChildren().add(header);
         vBox.getChildren().add(label);
+        checkBox.setAccessibleText(name);
+        header.setLabelFor(checkBox);
         hBox.getChildren().add(checkBox);
         hBox.getChildren().add(vBox);
         settingsList.getChildren().add(hBox);

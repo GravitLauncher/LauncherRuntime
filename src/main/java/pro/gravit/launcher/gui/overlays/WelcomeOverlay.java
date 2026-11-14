@@ -6,10 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
-import pro.gravit.launcher.gui.DesignConstants;
 import pro.gravit.launcher.gui.core.impl.FxOverlay;
-import pro.gravit.launcher.gui.helper.LookupHelper;
-import pro.gravit.launcher.gui.core.utils.JavaFxUtils;
 
 public class WelcomeOverlay extends FxOverlay {
 
@@ -28,29 +25,22 @@ public class WelcomeOverlay extends FxOverlay {
 
     @Override
     protected void doInit() {
-        reset();
+        var nodes = new pro.gravit.launcher.gui.core.ui.ViewNodes(layout, "overlay/welcome/welcome.fxml");
+        nodes.optional(Label.class, "#playerName").ifPresent(label -> {
+            label.textProperty().bind(application.authService.username);
+            scope.add(() -> label.textProperty().unbind());
+        });
+        nodes.optional(ImageView.class, "#playerHead").ifPresent(view -> {
+            originalImage = view.getImage();
+            view.setSmooth(false);
+            scope.subscribe(application.skinManager.avatarProperty().subscribe(image -> view.setImage(image == null
+                    ? originalImage : application.skinManager.getScaledFxSkinHead(application.authService.getUsername(),
+                    (int) view.getFitWidth(), (int) view.getFitHeight()))));
+        });
     }
 
     @Override
     public void reset() {
-        LookupHelper.<Label>lookupIfPossible(layout, "#playerName")
-                    .ifPresent((e) -> e.textProperty().bind(application.authService.username));
-        LookupHelper.<ImageView>lookupIfPossible(layout, "#playerHead").ifPresent((h) -> {
-            try {
-                JavaFxUtils.setStaticRadius(h, DesignConstants.AVATAR_IMAGE_RADIUS);
-                Image image = application.skinManager.getScaledFxSkinHead(
-                        application.authService.getUsername(), (int) h.getFitWidth(), (int) h.getFitHeight());
-                if (image != null) {
-                    if(originalImage == null) {
-                        originalImage = h.getImage();
-                    }
-                    h.setImage(image);
-                } else if(originalImage != null) {
-                    h.setImage(originalImage);
-                }
-            } catch (Throwable e) {
-                logger.warn("Skin head error");
-            }
-        });
+        // State is supplied by the user and avatar bindings.
     }
 }

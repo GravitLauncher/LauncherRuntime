@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.image.Image?>
@@ -58,11 +59,11 @@
             <!-- Ссылки -->
             <Pane id="links">
                 <Rectangle height="28.0" layoutX="72.0" layoutY="2.0" strokeType="INSIDE" width="1.0" x="0.5" />
-                <Text id="forgotPass" layoutY="13.0" text="%runtime.scenes.login.forgotPass" textAlignment="RIGHT" wrappingWidth="65.0" />
+                <Hyperlink id="forgotPass" styleClass="registration-link" text="%runtime.scenes.login.forgotPass" textAlignment="RIGHT" maxWidth="100.0" wrapText="true" />
             </Pane>
             <FlowPane id="registerPane" alignment="CENTER" prefHeight="32.0" prefWrapLength="0.0">
                 <Text styleClass="textLogin" text="%runtime.scenes.login.textLogin" />
-                <Text id="createAccount" text="%runtime.scenes.login.createAccount" />
+                <Hyperlink id="createAccount" styleClass="registration-link" text="%runtime.scenes.login.createAccount" />
             </FlowPane>
 
             <fx:include source="../../components/buttons/settings.fxml" />

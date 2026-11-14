@@ -9,7 +9,6 @@ import pro.gravit.launcher.gui.overlays.UploadAssetOverlay;
 import pro.gravit.launcher.gui.overlays.WelcomeOverlay;
 import pro.gravit.launcher.gui.scenes.console.ConsoleScene;
 import pro.gravit.launcher.gui.scenes.debug.DebugScene;
-import pro.gravit.launcher.gui.scenes.internal.BrowserScene;
 import pro.gravit.launcher.gui.scenes.login.LoginScene;
 import pro.gravit.launcher.gui.scenes.options.OptionsScene;
 import pro.gravit.launcher.gui.scenes.serverinfo.ServerInfoScene;
@@ -19,11 +18,10 @@ import pro.gravit.launcher.gui.scenes.settings.SettingsScene;
 import pro.gravit.launcher.gui.scenes.update.UpdateScene;
 import pro.gravit.launcher.gui.stage.ConsoleStage;
 
-import java.lang.invoke.MethodHandles;
-import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 public class GuiObjectsContainer {
 
@@ -47,7 +45,6 @@ public class GuiObjectsContainer {
     public ConsoleScene consoleScene;
 
     public ConsoleStage consoleStage;
-    public BrowserScene browserScene;
     public FxSceneBackground background;
 
     public GuiObjectsContainer(JavaFXApplication application) {
@@ -55,22 +52,21 @@ public class GuiObjectsContainer {
     }
 
     public void init() {
-        background = registerComponent(FxSceneBackground.class);
-        loginScene = registerComponent(LoginScene.class);
-        processingOverlay = registerComponent(ProcessingOverlay.class);
-        welcomeOverlay = registerComponent(WelcomeOverlay.class);
-        uploadAssetOverlay = registerComponent(UploadAssetOverlay.class);
+        background = registerComponent(FxSceneBackground::new);
+        loginScene = registerComponent(LoginScene::new);
+        processingOverlay = registerComponent(ProcessingOverlay::new);
+        welcomeOverlay = registerComponent(WelcomeOverlay::new);
+        uploadAssetOverlay = registerComponent(UploadAssetOverlay::new);
 
-        serverMenuScene = registerComponent(ServerMenuScene.class);
-        serverInfoScene = registerComponent(ServerInfoScene.class);
-        optionsScene = registerComponent(OptionsScene.class);
-        settingsScene = registerComponent(SettingsScene.class);
-        globalSettingsScene = registerComponent(GlobalSettingsScene.class);
-        consoleScene = registerComponent(ConsoleScene.class);
+        serverMenuScene = registerComponent(ServerMenuScene::new);
+        serverInfoScene = registerComponent(ServerInfoScene::new);
+        optionsScene = registerComponent(OptionsScene::new);
+        settingsScene = registerComponent(SettingsScene::new);
+        globalSettingsScene = registerComponent(GlobalSettingsScene::new);
+        consoleScene = registerComponent(ConsoleScene::new);
 
-        updateScene = registerComponent(UpdateScene.class);
-        debugScene = registerComponent(DebugScene.class);
-        browserScene = registerComponent(BrowserScene.class);
+        updateScene = registerComponent(UpdateScene::new);
+        debugScene = registerComponent(DebugScene::new);
     }
 
     public Collection<FxComponent> getComponents() {
@@ -78,33 +74,59 @@ public class GuiObjectsContainer {
     }
 
     public void reload() throws Exception {
-        String sceneName = application.getCurrentScene().getName();
-        ContextHelper.runInFxThreadStatic(() -> {
-            application.getMainStage().setScene(null, false);
-            application.getMainStage().pullBackground(background);
+        pro.gravit.launcher.gui.core.ui.FxDispatcher.checkThread();
+        if (application.isOperationBusy()) throw new IllegalStateException("Finish the current operation before reloading");
+        FxComponent previousScene = application.getCurrentScene();
+        String sceneName = previousScene == null ? "login" : previousScene.getName();
+        GuiObjectsContainer previous = application.gui;
+        var oldResources = application.captureResources();
+        GuiObjectsContainer replacement = new GuiObjectsContainer(application);
+        try {
             application.resetDirectory();
-            components.clear();
+            application.updateLocaleResources(application.runtimeSettings.locale.name);
+            application.gui = replacement;
+            replacement.init();
+            FxComponent next = replacement.getByName(sceneName);
+            if (next == null) throw new IllegalStateException("Unknown route " + sceneName);
+            next.currentStage = application.getMainStage();
+            next.init();
+            replacement.background.init();
+            application.getMainStage().setScene(next, false);
             application.getMainStage().resetStyles();
-            init();
-            application.getMainStage().pushBackground(background);
-            for (FxComponent s : components.values()) {
-                if (sceneName.equals(s.getName())) {
-                    application.getMainStage().setScene(s, false);
-                }
-            }
-        }).get();
+            application.getMainStage().pushBackground(replacement.background);
+        } catch (Exception | Error failure) {
+            var failedResources = application.captureResources();
+            application.gui = previous;
+            application.restoreResources(oldResources);
+            try {
+                application.getMainStage().setScene(previousScene, false);
+                application.getMainStage().resetStyles();
+                application.getMainStage().pushBackground(previous.background);
+            } catch (Exception | Error rollbackFailure) { failure.addSuppressed(rollbackFailure); }
+            try { replacement.dispose(); } catch (RuntimeException cleanupFailure) { failure.addSuppressed(cleanupFailure); }
+            if (failedResources.layer() != oldResources.layer()) application.releaseResources(failedResources);
+            throw failure;
+        }
+        try { previous.dispose(); }
+        catch (RuntimeException error) { logger.warn("Old UI cleanup failed", error); }
+        application.releaseResources(oldResources);
+    }
+
+    public void dispose() {
+        if (consoleStage != null) consoleStage.close();
+        var cleanup = new pro.gravit.launcher.gui.core.ui.UiScope();
+        for (FxComponent component : java.util.List.copyOf(components.values())) cleanup.add(component::dispose);
+        components.clear();
+        cleanup.close();
     }
 
     public FxComponent getByName(String name) {
         return components.get(name);
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends FxComponent> T registerComponent(Class<T> clazz) {
+    public <T extends FxComponent> T registerComponent(Function<JavaFXApplication, T> constructor) {
         try {
-            T instance = (T) MethodHandles
-                    .publicLookup().findConstructor(clazz, MethodType.methodType(void.class, JavaFXApplication.class))
-                    .invokeWithArguments(application);
+            T instance = constructor.apply(application);
             components.put(instance.getName(), instance);
             return instance;
         } catch (Throwable e) {

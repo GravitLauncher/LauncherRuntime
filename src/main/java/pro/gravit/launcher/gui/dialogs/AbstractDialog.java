@@ -41,7 +41,15 @@ public abstract class AbstractDialog extends FxComponent {
         onClose.add(callback);
     }
 
+    private boolean closed;
+
+    public boolean isClosed() { return closed; }
+
+    public void dismiss() throws Throwable { close(); }
+
     public void close() throws Throwable {
+        if (closed) return;
+        closed = true;
         for (ContextHelper.GuiExceptionRunnable callback : onClose) {
             callback.call();
         }

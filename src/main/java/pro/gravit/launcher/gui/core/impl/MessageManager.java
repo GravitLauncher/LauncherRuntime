@@ -1,6 +1,5 @@
 package pro.gravit.launcher.gui.core.impl;
 
-import javafx.scene.layout.Pane;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.dialogs.AbstractDialog;
 import pro.gravit.launcher.gui.dialogs.ApplyDialog;
@@ -19,29 +18,39 @@ public class MessageManager {
         this.application = application;
     }
 
+    public void registerPublicApi() {
+        pro.gravit.launcher.client.api.DialogService.setDialogImpl(new pro.gravit.launcher.client.api.DialogService.DialogServiceImplementation() {
+            public void showDialog(String header, String text, Runnable accept, Runnable close) { MessageManager.this.showDialog(header, text, accept, close, true); }
+            public void showApplyDialog(String header, String text, Runnable accept, Runnable deny) { MessageManager.this.showApplyDialog(header, text, accept, deny, true); }
+            public void showApplyDialog(String header, String text, Runnable accept, Runnable deny, Runnable close) { MessageManager.this.showApplyDialog(header, text, accept, deny, close, true); }
+            public void showTextDialog(String header, java.util.function.Consumer<String> accept, Runnable close) {
+                ContextHelper.runInFxThreadStatic(() -> {
+                    javafx.scene.control.TextInputDialog dialog = new javafx.scene.control.TextInputDialog();
+                    dialog.setTitle(header); dialog.setHeaderText(header);
+                    dialog.initOwner(application.getMainStage().getStage());
+                    dialog.setOnHidden(event -> {
+                        if (dialog.getResult() == null) close.run(); else accept.accept(dialog.getResult());
+                    });
+                    dialog.show();
+                });
+            }
+        });
+        pro.gravit.launcher.client.api.DialogService.setNotificationImpl((type, header, message) -> createNotification(header, message));
+    }
+
     public void createNotification(String head, String message) {
-        createNotification(head, message, application.getCurrentScene() != null);
+        ContextHelper.runInFxThreadStatic(() -> createNotification(head, message, application.getCurrentScene() != null));
     }
 
     public void initDialogInScene(FxScene scene, AbstractDialog dialog) {
-        Pane dialogRoot = (Pane) dialog.getFxmlRootPrivate();
-        if (!dialog.isInit()) {
-            try {
-                dialog.currentStage = scene.currentStage;
-                dialog.init();
-            } catch (Exception e) {
-                scene.errorHandle(e);
-            }
-        }
-        dialog.setOnClose(() -> {
-            scene.currentStage.pull(dialogRoot);
-            scene.currentStage.enable();
-        });
-        scene.disable();
-        scene.currentStage.push(dialogRoot);
+        showAbstractDialog(dialog, dialog.getName(), true);
     }
 
     public void createNotification(String head, String message, boolean isLauncher) {
+        if (!javafx.application.Platform.isFxApplicationThread()) {
+            ContextHelper.runInFxThreadStatic(() -> createNotification(head, message, isLauncher));
+            return;
+        }
         NotificationDialog dialog = new NotificationDialog(application, head, message);
         if (isLauncher) {
             FxStage stage = application.getMainStage();
@@ -50,7 +59,7 @@ public class MessageManager {
             ContextHelper.runInFxThreadStatic(() -> {
                 dialog.init();
                 stage.pushNotification(dialog.getFxmlRootPrivate());
-                dialog.setOnClose(() -> stage.pullNotification(dialog.getFxmlRootPrivate()));
+                dialog.setOnClose(() -> { stage.pullNotification(dialog.getFxmlRootPrivate()); dialog.dispose(); });
                 ContextHelper.runAfterTimeoutStatic(Duration.seconds(3), () -> {
                     dialog.close();
                     return null;
@@ -68,6 +77,7 @@ public class MessageManager {
                 dialog.setOnClose(() -> {
                     stage.get().close();
                     stage.get().stage.setScene(null);
+                    dialog.dispose();
                 });
                 stage.set(new DialogStage(application, head, dialog));
                 stage.get().stage.sizeToScene();
@@ -99,22 +109,24 @@ public class MessageManager {
         showAbstractDialog(dialog, header, isLauncher);
     }
 
-    public void showAbstractDialog(AbstractDialog dialog, String header, boolean isLauncher) {
-        if (isLauncher) {
-            FxScene scene = application.getCurrentScene();
-            if (scene == null)
-                throw new NullPointerException("Try show launcher dialog in application.getCurrentScene() == null");
-            ContextHelper.runInFxThreadStatic(() -> initDialogInScene(scene, dialog));
-        } else {
-            AtomicReference<DialogStage> stage = new AtomicReference<>(null);
-            ContextHelper.runInFxThreadStatic(() -> {
-                stage.set(new DialogStage(application, header, dialog));
-                stage.get().show();
+    public void showAbstractDialog(AbstractDialog content, String header, boolean isLauncher) {
+        ContextHelper.runInFxThreadStatic(() -> {
+            content.init();
+            javafx.scene.control.Dialog<Void> dialog = new javafx.scene.control.Dialog<>();
+            dialog.setTitle(header);
+            if (application.getMainStage() != null) dialog.getDialogPane().getStylesheets().setAll(application.getMainStage().getScene().getStylesheets());
+            if (application.getMainStage() != null) dialog.initOwner(application.getMainStage().getStage());
+            dialog.initModality(javafx.stage.Modality.WINDOW_MODAL);
+            dialog.getDialogPane().setContent(content.getLayout());
+            dialog.getDialogPane().getButtonTypes().add(javafx.scene.control.ButtonType.CLOSE);
+            var closeButton = dialog.getDialogPane().lookupButton(javafx.scene.control.ButtonType.CLOSE);
+            closeButton.setVisible(false); closeButton.setManaged(false);
+            content.setOnClose(dialog::close);
+            dialog.setOnHidden(event -> {
+                try { content.dismiss(); } catch (Throwable error) { content.errorHandle(error); }
+                finally { content.dispose(); }
             });
-            dialog.setOnClose(() -> {
-                stage.get().close();
-                stage.get().stage.setScene(null);
-            });
-        }
+            dialog.show();
+        });
     }
 }

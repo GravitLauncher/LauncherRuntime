@@ -4,10 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
-import pro.gravit.launcher.core.backend.LauncherBackendAPI;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxScene;
+import pro.gravit.launcher.gui.core.ui.FxDispatcher;
 
 import java.util.concurrent.CompletionException;
 
@@ -24,6 +26,7 @@ public class UpdateScene extends FxScene {
     private Label speedtext;
     private Label speederr;
     private Pane speedon;
+    private final EventHandler<ActionEvent> cancelHandler = event -> onCancelAction();
 
     private VisualDownloader downloader;
 
@@ -34,50 +37,71 @@ public class UpdateScene extends FxScene {
 
     @Override
     protected void doInit() {
-        progressBar = LookupHelper.lookup(layout, "#progress");
-        speed = LookupHelper.lookup(layout, "#speed");
-        speederr = LookupHelper.lookup(layout, "#speedErr");
-        speedon = LookupHelper.lookup(layout, "#speedOn");
-        speedtext = LookupHelper.lookup(layout, "#speed-text");
-        cancel = LookupHelper.lookup(layout, "#cancel");
-        volume = LookupHelper.lookup(layout, "#volume");
-        logOutput = LookupHelper.lookup(layout, "#outputUpdate");
-        downloader = new VisualDownloader(application, progressBar, speed, volume,
-                                          (log) -> contextHelper.runInFxThread(() -> addLog(log)));
-        LookupHelper.<ButtonBase>lookup(layout, "#cancel").setOnAction((e) -> {
-            downloader.cancel();
-            try {
-                switchToBackScene();
-            } catch (Exception exception) {
-                errorHandle(exception);
-            }
-            /*if (downloadStatus == DownloadStatus.DOWNLOAD && downloader.isDownload()) {
-                downloader.cancel();
-            } else if(downloadStatus == DownloadStatus.ERROR || downloadStatus == DownloadStatus.COMPLETE) {
-                try {
-                    switchToBackScene();
-                } catch (Exception exception) {
-                    errorHandle(exception);
-                }
-            }*/
+        progressBar = LookupHelper.lookup(layout, ProgressBar.class, "#progress");
+        speed = LookupHelper.lookup(layout, Label.class, "#speed");
+        speederr = LookupHelper.lookup(layout, Label.class, "#speedErr");
+        speedon = LookupHelper.lookup(layout, Pane.class, "#speedOn");
+        speedtext = LookupHelper.lookup(layout, Label.class, "#speed-text");
+        cancel = LookupHelper.lookup(layout, Button.class, "#cancel");
+        volume = LookupHelper.lookup(layout, Label.class, "#volume");
+        logOutput = LookupHelper.lookup(layout, TextArea.class, "#outputUpdate");
+        cancel.addEventHandler(ActionEvent.ACTION, cancelHandler);
+        cancel.setDisable(true);
+        scope.add(() -> {
+            cancel.removeEventHandler(ActionEvent.ACTION, cancelHandler);
+            unbindDownloader();
+            if (downloader != null) downloader.invalidate();
         });
     }
 
-    public LauncherBackendAPI.DownloadCallback makeDownloadCallback() {
+    public VisualDownloader makeDownloadCallback() {
+        FxDispatcher.checkThread();
+        if (downloader != null) downloader.invalidate();
+        unbindDownloader();
+        downloader = new VisualDownloader(application, this::addLog);
+        bindDownloader(downloader);
         return downloader;
     }
 
+    private void bindDownloader(VisualDownloader session) {
+        progressBar.progressProperty().bind(session.progressProperty());
+        speed.textProperty().bind(session.speedProperty());
+        volume.textProperty().bind(session.volumeProperty());
+        cancel.disableProperty().bind(session.canCancelProperty().not().and(session.activeProperty()));
+    }
+
+    private void unbindDownloader() {
+        if (progressBar != null) progressBar.progressProperty().unbind();
+        if (speed != null) speed.textProperty().unbind();
+        if (volume != null) volume.textProperty().unbind();
+        if (cancel != null) cancel.disableProperty().unbind();
+    }
+
+    private void onCancelAction() {
+        if (downloader != null && downloader.isActive()) {
+            if (!downloader.canCancelProperty().get()) return;
+            downloader.cancel();
+        }
+        try {
+            switchToBackScene();
+        } catch (Exception exception) {
+            errorHandle(exception);
+        }
+    }
+
     public void addLog(String string) {
+        if (!javafx.application.Platform.isFxApplicationThread()) {
+            contextHelper.runInFxThread(() -> addLog(string));
+            return;
+        }
         logger.info("Update event {}", string);
         logOutput.appendText(string.concat("\n"));
     }
 
     @Override
     public void reset() {
-        progressBar.progressProperty().setValue(0);
+        makeDownloadCallback();
         logOutput.setText("");
-        volume.setText("");
-        speed.setText("0");
         progressBar.getStyleClass().removeAll("progress");
         speederr.setVisible(false);
         speedon.setVisible(true);
@@ -89,6 +113,7 @@ public class UpdateScene extends FxScene {
             e = e.getCause();
         }
         addLog("Exception %s: %s".formatted(e.getClass(), e.getMessage() == null ? "" : e.getMessage()));
+        if (downloader != null) downloader.finish();
         progressBar.getStyleClass().add("progressError");
         speederr.setVisible(true);
         speedon.setVisible(false);

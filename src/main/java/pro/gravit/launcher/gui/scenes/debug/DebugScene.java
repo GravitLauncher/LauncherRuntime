@@ -3,6 +3,9 @@ package pro.gravit.launcher.gui.scenes.debug;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.application.Platform;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.gui.components.BasicUserControls;
@@ -25,18 +28,32 @@ public class DebugScene extends FxScene {
 
     @Override
     protected void doInit() {
-        output = LookupHelper.lookup(layout, "#output");
-        processLogOutput = new ProcessLogOutput(output, !application.runtimeSettings.globalSettings.debugAllClients);
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
+        if (output != null) output.textProperty().unbind();
+        output = LookupHelper.lookup(layout, TextArea.class, "#output");
+        if (processLogOutput == null) {
+            processLogOutput = new ProcessLogOutput(!application.runtimeSettings.globalSettings.debugAllClients);
+        }
+        output.textProperty().bind(processLogOutput.textProperty());
+        output.textProperty().addListener((observable, previousText, currentText) -> {
+            if (currentText == null) return;
+            TextArea currentOutput = output;
+            currentOutput.positionCaret(currentText.length());
+            Platform.runLater(() -> {
+                if (output == currentOutput) currentOutput.setScrollTop(Double.MAX_VALUE);
+            });
+        });
+        LookupHelper.lookupIfPossible(header, ButtonBase.class, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
             processLogOutput.terminate();
         }));
 
-        LookupHelper.<Label>lookupIfPossible(layout, "#version")
+        LookupHelper.lookupIfPossible(layout, Label.class, "#version")
                     .ifPresent((v) -> v.setText(JavaRuntimeModule.getMiniLauncherInfo()));
-        LookupHelper.<ButtonBase>lookupIfPossible(header, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> processLogOutput.copyToClipboard()));
-        LookupHelper.<ButtonBase>lookup(header, "#back").setOnAction((e) -> {
-            processLogOutput.detach();
-            processLogOutput = new ProcessLogOutput(output, !application.runtimeSettings.globalSettings.debugAllClients);
+        LookupHelper.lookupIfPossible(header, ButtonBase.class, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
+            ClipboardContent content = new ClipboardContent();
+            content.putString(output.getText());
+            Clipboard.getSystemClipboard().setContent(content);
+        }));
+        LookupHelper.lookup(header, ButtonBase.class, "#back").setOnAction((e) -> {
             try {
                 switchToBackScene();
             } catch (Exception ex) {
@@ -49,24 +66,35 @@ public class DebugScene extends FxScene {
 
     @Override
     public void reset() {
-        processLogOutput.clear();
+        // Keep output available when returning to a running or recently finished process.
     }
 
     public void run(LauncherBackendAPI.ReadyProfile readyProfile) {
+        if (processLogOutput == null || processLogOutput.isRunning()) return;
+        processLogOutput = new ProcessLogOutput(!application.runtimeSettings.globalSettings.debugAllClients);
+        output.textProperty().unbind();
+        output.textProperty().bind(processLogOutput.textProperty());
+        processLogOutput.clear();
+        processLogOutput.markStarting();
         try {
             readyProfile.run(processLogOutput);
         } catch (Throwable e) {
+            processLogOutput.markLaunchFailed();
             errorHandle(e);
         }
     }
 
+    public boolean isRunning() {
+        return processLogOutput != null && processLogOutput.isRunning();
+    }
+
     public void append(String text) {
-        processLogOutput.append(text);
+        if (processLogOutput != null) processLogOutput.append(text);
     }
 
     @Override
     public void errorHandle(Throwable e) {
-        if (!(e instanceof EOFException)) {
+        if (!(e instanceof EOFException) && processLogOutput != null) {
             processLogOutput.append(e.toString());
         }
     }
@@ -84,7 +112,7 @@ public class DebugScene extends FxScene {
 
         @Override
         protected void onExit() {
-            if(processLogOutput == null || processLogOutput.isReadyToExit.get()) {
+            if(processLogOutput == null || processLogOutput.isReadyToExit()) {
                 super.onExit();
             }
             else {

@@ -6,6 +6,7 @@ import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Hyperlink;
 import javafx.stage.DirectoryChooser;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
+import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.gui.core.config.RuntimeSettings;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.scenes.settings.components.LanguageSelector;
@@ -39,7 +40,7 @@ public class GlobalSettingsScene extends BaseSettingsScene {
         super.doInit();
         themeSelector = new ThemeSelector(application, componentList);
         languageSelector = new LanguageSelector(application, componentList);
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#console").setOnAction((e) -> {
+        LookupHelper.lookup(header, ButtonBase.class, "#controls", "#console").setOnAction((e) -> {
             try {
                 if (application.gui.consoleStage == null) application.gui.consoleStage = new ConsoleStage(application);
                 if (application.gui.consoleStage.isNullScene())
@@ -49,55 +50,53 @@ public class GlobalSettingsScene extends BaseSettingsScene {
                 errorHandle(ex);
             }
         });
-        Hyperlink updateDirLink = LookupHelper.lookup(componentList, "#folder", "#path");
+        Hyperlink updateDirLink = LookupHelper.lookup(componentList, Hyperlink.class, "#folder", "#path");
         String directoryUpdates = DirBridge.dirUpdates.toAbsolutePath().toString();
         updateDirLink.setText(directoryUpdates);
         if (updateDirLink.getTooltip() != null) {
             updateDirLink.getTooltip().setText(directoryUpdates);
         }
         updateDirLink.setOnAction((e) -> application.openURL(directoryUpdates));
-        LookupHelper.<ButtonBase>lookup(componentList, "#changeDir").setOnAction((e) -> {
+        LookupHelper.lookup(componentList, ButtonBase.class, "#changeDir").setOnAction((e) -> {
             DirectoryChooser directoryChooser = new DirectoryChooser();
             directoryChooser.setTitle(application.getTranslation("runtime.scenes.settings.dirTitle"));
             directoryChooser.setInitialDirectory(DirBridge.dir.toFile());
             File choose = directoryChooser.showDialog(application.getMainStage().getStage());
             if (choose == null) return;
             Path newDir = choose.toPath().toAbsolutePath();
-            try {
-                DirBridge.move(newDir);
-            } catch (IOException ex) {
-                errorHandle(ex);
+            if (application.isOperationBusy()) {
+                errorHandle(application.getTranslation("runtime.operation.busy", "Finish the current operation first."));
+                return;
             }
-            application.runtimeSettings.updatesDirPath = newDir.toString();
-            application.runtimeSettings.updatesDir = newDir;
-            String oldDir = DirBridge.dirUpdates.toString();
-            DirBridge.dirUpdates = newDir;
-            // TODO changeDir Java update
-            /*for (ClientProfile profile : application.profilesService.getProfiles()) {
-                RuntimeSettings.ProfileSettings settings = application.getProfileSettings(profile);
-                if (settings.javaPath != null && settings.javaPath.startsWith(oldDir)) {
-                    settings.javaPath = newDir.toString().concat(settings.javaPath.substring(oldDir.length()));
-                }
-            }
-            application.javaService.update();*/
-            updateDirLink.setText(application.runtimeSettings.updatesDirPath);
+            application.beginOperation();
+            LauncherBackendAPIHolder.getApi().relocateUpdatesDirectory(newDir).whenComplete((value, error) ->
+                contextHelper.runInFxThread(() -> {
+                    application.endOperation();
+                    if (error != null) { errorHandle(error); return; }
+                    application.runtimeSettings.updatesDirPath = newDir.toString();
+                    application.runtimeSettings.updatesDir = newDir;
+                    updateDirLink.setText(newDir.toString());
+                    if (updateDirLink.getTooltip() != null) updateDirLink.getTooltip().setText(newDir.toString());
+                }));
         });
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#deleteDir").ifPresent(a -> a.setOnAction(
+        LookupHelper.lookupIfPossible(layout, ButtonBase.class, "#deleteDir").ifPresent(a -> a.setOnAction(
                 (e) -> application.messageManager.showApplyDialog(
                         application.getTranslation("runtime.scenes.settings.deletedir.header"),
                         application.getTranslation("runtime.scenes.settings.deletedir.description"), () -> {
-                            logger.debug("Delete dir: {}", DirBridge.dirUpdates);
-                            try {
-                                IOHelper.deleteDir(DirBridge.dirUpdates, false);
-                            } catch (IOException ex) {
-                                logger.error("", ex);
-                                application.messageManager.createNotification(
-                                        application.getTranslation("runtime.scenes.settings.deletedir.fail.header"),
-                                        application.getTranslation(
-                                                "runtime.scenes.settings.deletedir.fail.description"));
+                            if (application.isOperationBusy()) {
+                                errorHandle(application.getTranslation("runtime.operation.busy", "Finish the current operation first."));
+                                return;
                             }
+                            application.beginOperation();
+                            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                                try { IOHelper.deleteDir(DirBridge.dirUpdates, false); }
+                                catch (IOException error) { throw new java.util.concurrent.CompletionException(error); }
+                            }, application.workers).whenComplete((value, error) -> contextHelper.runInFxThread(() -> {
+                                application.endOperation();
+                                if (error != null) errorHandle(error);
+                            }));
                         }, () -> {}, true)));
-        LookupHelper.<ButtonBase>lookupIfPossible(layout, "#back").ifPresent(a -> a.setOnAction((e) -> {
+        LookupHelper.lookupIfPossible(layout, ButtonBase.class, "#back").ifPresent(a -> a.setOnAction((e) -> {
             try {
                 switchToBackScene();
             } catch (Exception exception) {

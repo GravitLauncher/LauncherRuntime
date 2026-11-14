@@ -3,11 +3,9 @@ package pro.gravit.launcher.gui.components;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Labeled;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,6 +26,7 @@ public class ServerButton extends FxComponent {
     private Button saveButton;
     private Button resetButton;
     private Region serverLogo;
+    private Button activation;
 
     protected ServerButton(JavaFXApplication application, ProfileFeatureAPI.ClientProfile profile) {
         super(application.serverButtonStateService.getState(profile).getFxmlPath(), application);
@@ -47,9 +46,9 @@ public class ServerButton extends FxComponent {
     @Override
     protected void doInit() {
         long startTime = System.nanoTime();
-        LookupHelper.<Labeled>lookup(layout, "#nameServer").textProperty().bind(state.nameProperty());
-        LookupHelper.<Labeled>lookup(layout, "#genreServer").textProperty().bind(state.minecraftVersionProperty());
-        this.serverLogo = LookupHelper.lookup(layout, "#serverLogo");
+        LookupHelper.lookup(layout, Labeled.class, "#nameServer").textProperty().bind(state.nameProperty());
+        LookupHelper.lookup(layout, Labeled.class, "#genreServer").textProperty().bind(state.minecraftVersionProperty());
+        this.serverLogo = LookupHelper.lookup(layout, Region.class, "#serverLogo");
         this.serverLogo.backgroundProperty().bind(Bindings.createObjectBinding(() -> {
             Image logo = state.logoProperty().get();
             if (logo == null) {
@@ -59,22 +58,9 @@ public class ServerButton extends FxComponent {
                     BackgroundPosition.CENTER, new BackgroundSize(0.0, 0.0, true, true, false, true)));
         }, state.logoProperty()));
         JavaFxUtils.setRadius(this.serverLogo, 20.0);
-        LookupHelper.<Labeled>lookup(layout, "#online").textProperty().bind(state.onlineTextProperty());
-        saveButton = LookupHelper.lookup(layout, "#save");
-        resetButton = LookupHelper.lookup(layout, "#reset");
-        layout.cursorProperty().bind(state.cursorProperty());
-        layout.setOnMouseClicked(state.mouseClickedHandlerProperty().get());
-        state.mouseClickedHandlerProperty().addListener((observable, oldValue, newValue) -> layout.setOnMouseClicked(newValue));
-        saveButton.visibleProperty().bind(state.saveVisibleProperty());
-        saveButton.managedProperty().bind(state.saveVisibleProperty());
-        saveButton.textProperty().bind(state.saveTextProperty());
-        saveButton.setOnAction(state.saveActionProperty().get());
-        state.saveActionProperty().addListener((observable, oldValue, newValue) -> saveButton.setOnAction(newValue));
-        resetButton.visibleProperty().bind(state.resetVisibleProperty());
-        resetButton.managedProperty().bind(state.resetVisibleProperty());
-        resetButton.textProperty().bind(state.resetTextProperty());
-        resetButton.setOnAction(state.resetActionProperty().get());
-        state.resetActionProperty().addListener((observable, oldValue, newValue) -> resetButton.setOnAction(newValue));
+        LookupHelper.lookup(layout, Labeled.class, "#online").textProperty().bind(state.onlineTextProperty());
+        saveButton = LookupHelper.lookup(layout, Button.class, "#save");
+        resetButton = LookupHelper.lookup(layout, Button.class, "#reset");
         double totalMs = (System.nanoTime() - startTime) / 1_000_000.0;
         logger.debug("ServerButton init profile='{}' uuid={} fxml={} image={} totalMs={}",
                 state.getName(), profile.getUUID(), state.getFxmlPath(), state.getImagePath(),
@@ -86,71 +72,66 @@ public class ServerButton extends FxComponent {
 
     }
 
-    public void configureMenuMode(EventHandler<MouseEvent> eventHandler) {
-        state.configureMenuMode(eventHandler);
+    public void configureMenuMode(EventHandler<ActionEvent> eventHandler) {
+        ensureInitialized();
+        saveButton.setVisible(false); saveButton.setManaged(false);
+        resetButton.setVisible(false); resetButton.setManaged(false);
+        if (activation == null) {
+            activation = new Button();
+            activation.setGraphic(layout);
+            activation.getStyleClass().add("server-card");
+            activation.accessibleTextProperty().bind(state.nameProperty());
+            scope.add(() -> activation.accessibleTextProperty().unbind());
+        }
+        activation.setOnAction(eventHandler);
     }
 
     public void configureDetailMode(String saveText, EventHandler<ActionEvent> saveHandler,
             String resetText, EventHandler<ActionEvent> resetHandler) {
-        state.configureDetailMode(saveText, saveHandler, resetText, resetHandler);
+        ensureInitialized();
+        layout.setOnMouseClicked(null); layout.setOnKeyPressed(null);
+        layout.setFocusTraversable(false); layout.setCursor(javafx.scene.Cursor.DEFAULT);
+        saveButton.setText(saveText); saveButton.setOnAction(saveHandler);
+        saveButton.setVisible(saveHandler != null); saveButton.setManaged(saveHandler != null);
+        resetButton.setText(resetText); resetButton.setOnAction(resetHandler);
+        resetButton.setVisible(resetHandler != null); resetButton.setManaged(resetHandler != null);
     }
 
-    public void addTo(Pane pane) {
-        if (!isInit()) {
-            try {
-                init();
-            } catch (Exception e) {
-                logger.error("", e);
-            }
-        }
-        detachFromParent();
-        resetLayoutState();
-        pane.getChildren().add(layout);
-        pane.requestLayout();
-    }
+    public void addTo(Pane pane) { addTo(pane, 0); }
 
     public void addTo(Pane pane, int position) {
+        ensureInitialized();
+        javafx.scene.Node node = activation == null ? layout : activation;
+        node.setUserData(profile.getUUID());
+        if (node.getParent() == pane) {
+            if (pane.getChildren().indexOf(node) == position) return;
+            pane.getChildren().remove(node);
+        } else if (node.getParent() != null) throw new IllegalStateException("Server cards belong to a single screen");
+        pane.getChildren().add(Math.min(position, pane.getChildren().size()), node);
+    }
+
+    private void ensureInitialized() {
         if (!isInit()) {
-            try {
-                init();
-            } catch (Exception e) {
-                logger.error("", e);
-            }
+            try { init(); } catch (Exception e) { throw new IllegalStateException("Unable to load server card", e); }
         }
-        detachFromParent();
-        resetLayoutState();
-        pane.getChildren().add(position, layout);
-        pane.requestLayout();
     }
 
     private void detachFromParent() {
-        if (layout == null) {
-            return;
-        }
-        Parent parent = layout.getParent();
-        if (parent instanceof Pane oldPane) {
-            oldPane.getChildren().remove(layout);
-        }
+        if (layout.getParent() != null) throw new IllegalStateException("Server cards belong to a single screen");
     }
 
-    private void resetLayoutState() {
-        if (layout == null) {
-            return;
+    private void resetLayoutState() { }
+
+    @Override
+    public void dispose() {
+        if (isInit()) {
+            layout.lookupAll("*").forEach(node -> {
+                if (node instanceof Labeled labeled) labeled.textProperty().unbind();
+            });
+            serverLogo.backgroundProperty().unbind();
+            layout.setOnMouseClicked(null); layout.setOnKeyPressed(null);
         }
-        layout.setLayoutX(0.0);
-        layout.setLayoutY(0.0);
-        layout.setTranslateX(0.0);
-        layout.setTranslateY(0.0);
-        layout.setManaged(true);
-        HBox.setHgrow(layout, null);
-        VBox.setVgrow(layout, null);
-        FlowPane.setMargin(layout, null);
-        HBox.setMargin(layout, null);
-        VBox.setMargin(layout, null);
-        AnchorPane.setTopAnchor(layout, null);
-        AnchorPane.setRightAnchor(layout, null);
-        AnchorPane.setBottomAnchor(layout, null);
-        AnchorPane.setLeftAnchor(layout, null);
+        super.dispose();
     }
 
     @Override

@@ -23,20 +23,20 @@ public class OptionsScene extends FxScene implements SceneSupportUserBlock {
     @Override
     protected void doInit() {
         this.userBlock = use(layout, UserBlock::new);
-        optionsTab = new OptionsTab(application, LookupHelper.lookup(layout, "#tabPane"));
+        optionsTab = new OptionsTab(application, LookupHelper.lookup(layout, javafx.scene.control.TabPane.class, "#tabPane"));
         isResetOnShow = true;
     }
 
     @Override
     public void reset() {
-        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+        Pane serverButtonContainer = LookupHelper.lookup(layout, Pane.class, "#serverButton");
         serverButtonContainer.getChildren().clear();
         ProfileFeatureAPI.ClientProfile profile = application.profileService.getCurrentProfile();
         if (profile == null) {
             return;
         }
         reloadProfileSettings(profile);
-        application.serverButtonCacheService.attachDetailButton(profile, serverButtonContainer, null, e -> {
+        application.serverCardService.attachDetailButton(profile, serverButtonContainer, null, e -> {
             try {
                 LauncherBackendAPIHolder.getApi().saveClientProfileSettings(profileSettings);
                 switchScene(application.gui.serverInfoScene);
@@ -46,7 +46,7 @@ public class OptionsScene extends FxScene implements SceneSupportUserBlock {
         }, null, e -> {
             reloadProfileSettings(profile);
         }, "options");
-        LookupHelper.<Button>lookupIfPossible(layout, "#back").ifPresent(x -> x.setOnAction((e) -> {
+        LookupHelper.lookupIfPossible(layout, Button.class, "#back").ifPresent(x -> x.setOnAction((e) -> {
             try {
                 switchToBackScene();
             } catch (Exception exception) {

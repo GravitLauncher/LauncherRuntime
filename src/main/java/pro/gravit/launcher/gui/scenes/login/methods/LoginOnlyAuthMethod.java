@@ -40,19 +40,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
 
     @Override
     public CompletableFuture<Void> show(AuthLoginOnlyDetails details) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
-        try {
-            ContextHelper.runInFxThreadStatic(() -> {
-                accessor.showContent(overlay);
-                future.complete(null);
-            }).exceptionally((th) -> {
-                logger.error("", th);
-                return null;
-            });
-        } catch (Exception e) {
-            accessor.errorHandle(e);
-        }
-        return future;
+        return ContextHelper.runInFxThreadStatic(() -> accessor.showContent(overlay));
     }
 
     @Override
@@ -67,12 +55,12 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
 
     @Override
     public void onAuthClicked() {
-        overlay.future.complete(overlay.getResult());
+        if (overlay.future != null) overlay.future.complete(overlay.getResult());
     }
 
     @Override
     public void onUserCancel() {
-        overlay.future.completeExceptionally(LoginOnlyOverlay.USER_AUTH_CANCELED_EXCEPTION);
+        if (overlay.future != null) overlay.future.completeExceptionally(LoginOnlyOverlay.USER_AUTH_CANCELED_EXCEPTION);
     }
 
     @Override
@@ -106,7 +94,7 @@ public class LoginOnlyAuthMethod extends AbstractAuthMethod<AuthLoginOnlyDetails
 
         @Override
         protected void doInit() {
-            login = LookupHelper.lookup(layout, "#login");
+            login = LookupHelper.lookup(layout, TextField.class, "#login");
             login.textProperty().addListener(l -> accessor.getAuthButton().setState(login.getText().isEmpty()
                                                                                             ? AuthButton.AuthButtonState.UNACTIVE
                                                                                             : AuthButton.AuthButtonState.ACTIVE));

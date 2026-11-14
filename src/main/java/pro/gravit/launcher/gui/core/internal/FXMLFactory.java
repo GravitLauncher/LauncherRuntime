@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
 
 public class FXMLFactory {
 
@@ -20,29 +18,19 @@ public class FXMLFactory {
             LoggerFactory.getLogger(FXMLFactory.class);
 
     private final ResourceBundle resources;
-    private final ExecutorService executorService;
 
-    public FXMLFactory(ResourceBundle resources, ExecutorService executorService) {
+    public FXMLFactory(ResourceBundle resources) {
         this.resources = resources;
-        this.executorService = executorService;
-    }
-
-    public <T extends Node> CompletableFuture<T> getAsync(String url) {
-        return CompletableFuture.supplyAsync(() -> {
-            try {
-                return get(url);
-            } catch (IOException e) {
-                throw new FXMLLoadException(e);
-            }
-        }, executorService);
     }
 
     public <T extends Node> T get(String url) throws IOException {
+        pro.gravit.launcher.gui.core.ui.FxDispatcher.checkThread();
         long startTime = System.currentTimeMillis();
         FXMLLoader loader = newLoaderInstance(JavaFXApplication.getResourceURL(url));
         long loaderInstanceTime = System.currentTimeMillis();
         try (InputStream inputStream = IOHelper.newInput(JavaFXApplication.getResourceURL(url))) {
             T result = loader.load(inputStream);
+            result.getProperties().put("runtime.fxmlResource", url);
             long endTime = System.currentTimeMillis();
             logger.debug("Fxml load url={} thread={} createMs={} loadMs={} totalMs={}", url,
                     Thread.currentThread().getName(), loaderInstanceTime - startTime,
@@ -59,8 +47,7 @@ public class FXMLFactory {
                 loader.setResources(resources);
             }
         } catch (Exception e) {
-            logger.error("", e);
-            return null;
+            throw new FXMLLoadException("Unable to create FXML loader for " + url, e);
         }
         loader.setCharset(IOHelper.UNICODE_CHARSET);
         loader.setClassLoader(FXMLFactory.class.getClassLoader());

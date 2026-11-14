@@ -1,35 +1,24 @@
 package pro.gravit.launcher.gui.helper;
 
 import javafx.scene.Node;
-import javafx.scene.Parent;
 
 import java.util.Optional;
 
 public class LookupHelper {
-    @SuppressWarnings("unchecked")
-    public static <T extends Node> T lookup(Node node, String... names) {
-        Node current = node;
-        if (current == null) throw new NullPointerException();
-        for (int i = 0; i < names.length; ++i) {
-            current = current.lookup(names[i]);
-            if (current == null) throw new LookupException(names, i);
-        }
-        return (T) current;
+    public static <T extends Node> T lookup(Node root, Class<T> type, String... selectors) {
+        return new pro.gravit.launcher.gui.core.ui.ViewNodes(root, describe(root)).require(type, selectors);
     }
 
-    @SuppressWarnings("unchecked")
-    public static <T extends Node> Optional<T> lookupIfPossible(Node node, String... names) {
-        Node current = node;
-        if (current == null) {
-            return Optional.empty();
+    public static <T extends Node> Optional<T> lookupIfPossible(Node root, Class<T> type, String... selectors) {
+        return new pro.gravit.launcher.gui.core.ui.ViewNodes(root, describe(root)).optional(type, selectors);
+    }
+
+    private static String describe(Node root) {
+        for (Node current = root; current != null; current = current.getParent()) {
+            Object resource = current.getProperties().get("runtime.fxmlResource");
+            if (resource != null) return resource.toString();
         }
-        for (String name : names) {
-            current = current.lookup(name);
-            if (current == null) {
-                return Optional.empty();
-            }
-        }
-        return Optional.of((T) current);
+        return root == null ? "absent component" : root.getClass().getSimpleName() + "#" + root.getId();
     }
 
     public static class Point2D {
@@ -46,12 +35,11 @@ public class LookupHelper {
     public static <T extends Node> Point2D getAbsoluteCords(Node child, Node parent) {
         Point2D point2D = new Point2D(0, 0);
         // Node current = child //Crash in runtime
-        Parent current = (Parent) child;
-        while (current != parent) {
+        Node current = child;
+        while (current != null && current != parent) {
             point2D.x += current.getLayoutX();
             point2D.y += current.getLayoutY();
             current = current.getParent();
-            if (current == null) break;
         }
         return point2D;
     }

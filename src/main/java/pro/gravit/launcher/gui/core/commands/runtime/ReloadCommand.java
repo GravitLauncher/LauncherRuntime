@@ -22,6 +22,6 @@ public class ReloadCommand extends Command {
 
     @Override
     public void invoke(String... args) throws Exception {
-        application.gui.reload();
+        pro.gravit.launcher.gui.core.impl.ContextHelper.runInFxThreadStatic(() -> application.gui.reload()).get();
     }
 }

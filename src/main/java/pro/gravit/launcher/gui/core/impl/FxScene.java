@@ -8,7 +8,6 @@ import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.base.LauncherConfig;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.components.BasicUserControls;
-import pro.gravit.launcher.gui.core.utils.JavaFxUtils;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 
 import java.util.concurrent.CompletableFuture;
@@ -31,8 +30,9 @@ public abstract class FxScene extends FxComponent {
     }
 
     public void init() throws Exception {
+        if (isInit()) return;
         layout = (Pane) getFxmlRoot();
-        header = (Pane) LookupHelper.lookupIfPossible(layout, "#header").orElse(null);
+        header = (Pane) LookupHelper.lookupIfPossible(layout, Pane.class, "#header").orElse(null);
         sceneBaseInit();
         super.init();
     }
@@ -41,7 +41,7 @@ public abstract class FxScene extends FxComponent {
 
     protected void sceneBaseInit() {
         basicUserControls = use(header, _basicUserControlConstructor);
-        currentStage.enableMouseDrag(layout);
+        currentStage.enableMouseDrag(header);
     }
 
     public void disable() {
@@ -59,7 +59,8 @@ public abstract class FxScene extends FxComponent {
     }
 
     public static void runLater(double delay, EventHandler<ActionEvent> callback) {
-        JavaFxUtils.fade(null, delay, 0.0, 1.0, callback);
+        var timer = new javafx.animation.PauseTransition(javafx.util.Duration.millis(delay));
+        timer.setOnFinished(callback); timer.play();
     }
 
     public class SceneAccessor {

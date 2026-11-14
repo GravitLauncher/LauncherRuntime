@@ -19,7 +19,7 @@
     </AnchorPane>
     <VBox alignment="CENTER" spacing="24.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="30.0">
         <children>
-            <ImageView id="playerHead" fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView id="playerHead" fitHeight="42.0" fitWidth="42.0" pickOnBounds="true" preserveRatio="true" smooth="false">
                 <Image url="@../../images/icons/default.png" />
             </ImageView>
             <VBox alignment="CENTER">

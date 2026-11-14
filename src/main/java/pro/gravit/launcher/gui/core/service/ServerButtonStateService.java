@@ -42,13 +42,18 @@ public class ServerButtonStateService {
     }
 
     public void clear() {
+        states.values().forEach(ServerButtonState::close);
         states.clear();
         fxmlPathCache.clear();
         imageCache.clear();
     }
 
     public void pruneProfiles(Set<UUID> activeProfileIds) {
-        states.keySet().removeIf(profileId -> !activeProfileIds.contains(profileId));
+        states.entrySet().removeIf(entry -> {
+            if (activeProfileIds.contains(entry.getKey())) return false;
+            entry.getValue().close();
+            return true;
+        });
         fxmlPathCache.keySet().removeIf(profileId -> !activeProfileIds.contains(profileId));
     }
 
@@ -75,7 +80,7 @@ public class ServerButtonStateService {
             if (resource == null) {
                 return Optional.empty();
             }
-            return Optional.of(new Image(resource.toString()));
+            return Optional.of(new Image(resource.toString(), true));
         }).orElse(null);
     }
 

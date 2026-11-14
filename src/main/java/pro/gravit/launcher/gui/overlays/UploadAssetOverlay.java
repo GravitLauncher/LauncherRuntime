@@ -10,13 +10,11 @@ import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.core.backend.extensions.TextureUploadExtension;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.helper.LookupHelper;
-import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
 import pro.gravit.utils.helper.IOHelper;
 import pro.gravit.utils.helper.SecurityHelper;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,13 +37,13 @@ public class UploadAssetOverlay extends CenterOverlay {
 
     @Override
     protected void doInit() {
-        uploadSkin = LookupHelper.lookup(layout, "#uploadskin");
-        uploadCape = LookupHelper.lookup(layout, "#uploadcape");
-        useSlim = LookupHelper.lookup(layout, "#useslim");
+        uploadSkin = LookupHelper.lookup(layout, Button.class, "#uploadskin");
+        uploadCape = LookupHelper.lookup(layout, Button.class, "#uploadcape");
+        useSlim = LookupHelper.lookup(layout, CheckBox.class, "#useslim");
         uploadSkin.setOnAction((a) -> uploadAsset("SKIN", requireManualSlimSkinSelection.get() ?
                 new AssetOptions(useSlim.isSelected()) : null));
         uploadCape.setOnAction((a) -> uploadAsset("CAPE", null));
-        LookupHelper.<Button>lookupIfPossible(layout, "#close").ifPresent((b) -> b.setOnAction((e) -> hide(0, null)));
+        LookupHelper.lookupIfPossible(layout, Button.class, "#close").ifPresent((b) -> b.setOnAction((e) -> hide(0, null)));
     }
 
     public void onAssetUploadInfo(TextureUploadFeatureAPI.TextureUploadInfo event) {
@@ -67,24 +65,27 @@ public class UploadAssetOverlay extends CenterOverlay {
             return;
         }
         try {
-            byte[] skinBytes = IOHelper.read(file.toPath());
+            if (file.length() > 8 * 1024 * 1024) throw new IOException("Texture exceeds 8 MiB");
             TextureUploadExtension textureUploadExtension = LauncherBackendAPIHolder.getApi().getExtension(
                     TextureUploadExtension.class);
-            textureUploadExtension.uploadTexture(name, skinBytes, options == null ? null : new TextureUploadFeatureAPI.UploadSettings(options.modelSlim())).thenAccept((texture) -> {
-                URI skinUrl = URI.create(texture.getUrl());
-                if("SKIN".equals(name)) {
-                    application.skinManager.addOrReplaceSkin(application.authService.getUsername(), skinUrl);
-                    for(var scene : application.gui.getComponents()) {
-                        if(scene.isInit() && scene instanceof SceneSupportUserBlock supportUserBlock) {
-                            supportUserBlock.getUserBlock().resetAvatar();
-                        }
-                    }
-                }
+            if (textureUploadExtension == null) throw new IOException("Texture upload unavailable");
+            uploadSkin.setDisable(true); uploadCape.setDisable(true);
+            java.util.concurrent.CompletableFuture.supplyAsync(() -> {
+                try { return IOHelper.read(file.toPath()); }
+                catch (IOException error) { throw new java.util.concurrent.CompletionException(error); }
+            }, application.workers).thenCompose(bytes -> textureUploadExtension.uploadTexture(name, bytes,
+                    options == null ? null : new TextureUploadFeatureAPI.UploadSettings(options.modelSlim()))).thenAccept((texture) -> {
+                contextHelper.runInFxThread(() -> {
+                    if ("SKIN".equals(name)) application.skinManager.loadSkin(application.authService.getUsername(), texture);
+                });
                 contextHelper.runInFxThread(() -> {
                     application.messageManager.createNotification(application.getTranslation("runtime.overlay.uploadasset.success.header"), application.getTranslation("runtime.overlay.uploadasset.success.description"));
                     hide(0, null);
                 });
-            }).handle(this::errorHandle);
+            }).whenComplete((value, error) -> contextHelper.runInFxThread(() -> {
+                uploadSkin.setDisable(false); uploadCape.setDisable(false);
+                if (error != null) errorHandle(error);
+            }));
         } catch (IOException e) {
             errorHandle(e);
         }

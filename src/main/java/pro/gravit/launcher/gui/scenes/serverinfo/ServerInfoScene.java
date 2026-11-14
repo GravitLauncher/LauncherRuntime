@@ -15,6 +15,7 @@ import pro.gravit.launcher.gui.components.UserBlock;
 import pro.gravit.launcher.gui.helper.LookupHelper;
 import pro.gravit.launcher.gui.core.impl.FxScene;
 import pro.gravit.launcher.gui.scenes.interfaces.SceneSupportUserBlock;
+import pro.gravit.launcher.gui.scenes.update.VisualDownloader;
 
 public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
 
@@ -23,6 +24,7 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
 
     private ServerButton serverButton;
     private UserBlock userBlock;
+    private long launchAttempt;
 
     public ServerInfoScene(JavaFXApplication application) {
         super("scenes/serverinfo/serverinfo.fxml", application);
@@ -31,7 +33,7 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
     @Override
     protected void doInit() {
         this.userBlock = use(layout, UserBlock::new);
-        LookupHelper.<Button>lookup(layout, "#back").setOnAction((e) -> {
+        LookupHelper.lookup(layout, Button.class, "#back").setOnAction((e) -> {
             try {
                 switchToBackScene();
             } catch (Exception exception) {
@@ -39,7 +41,7 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
             }
         });
 
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#clientSettings").setOnAction((e) -> {
+        LookupHelper.lookup(header, ButtonBase.class, "#controls", "#clientSettings").setOnAction((e) -> {
             try {
                 if (application.profileService.getCurrentProfile() == null) return;
                 switchScene(application.gui.optionsScene);
@@ -47,7 +49,7 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
                 errorHandle(ex);
             }
         });
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+        LookupHelper.lookup(header, ButtonBase.class, "#controls", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.settingsScene);
             } catch (Exception exception) {
@@ -59,68 +61,54 @@ public class ServerInfoScene extends FxScene implements SceneSupportUserBlock {
 
     @Override
     public void reset() {
+        launchAttempt++;
         ProfileFeatureAPI.ClientProfile profile = application.profileService.getCurrentProfile();
-        LookupHelper.<Label>lookupIfPossible(layout, "#serverName").ifPresent((e) -> e.setText(profile.getName()));
-        LookupHelper.<ScrollPane>lookupIfPossible(layout, "#serverDescriptionPane").ifPresent((e) -> {
+        LookupHelper.lookupIfPossible(layout, Label.class, "#serverName").ifPresent((e) -> e.setText(profile.getName()));
+        LookupHelper.lookupIfPossible(layout, ScrollPane.class, "#serverDescriptionPane").ifPresent((e) -> {
             var label = (Label) e.getContent();
             label.setText(profile.getDescription());
         });
-        Pane serverButtonContainer = LookupHelper.lookup(layout, "#serverButton");
+        Pane serverButtonContainer = LookupHelper.lookup(layout, Pane.class, "#serverButton");
         serverButtonContainer.getChildren().clear();
-        serverButton = application.serverButtonCacheService.attachServerInfoButton(profile, serverButtonContainer,
+        serverButton = application.serverCardService.attachServerInfoButton(profile, serverButtonContainer,
                 application.getTranslation("runtime.scenes.serverinfo.serverButton.game"), e -> runClient());
         this.userBlock.reset();
     }
 
     private void runClient() {
+        if (application.isOperationBusy()) {
+            errorHandle(application.getTranslation("runtime.operation.busy", "Finish the current operation first."));
+            return;
+        }
         var profile = application.profileService.getCurrentProfile();
+        if (profile == null) return;
+        long attempt = ++launchAttempt;
         contextHelper.runInFxThread(() -> {
             switchScene(application.gui.updateScene);
-            var downloadProfile = LauncherBackendAPIHolder.getApi().downloadProfile(profile,
-                                                                                   LauncherBackendAPIHolder.getApi().makeClientProfileSettings(profile),
-                                                                                   application.gui.updateScene.makeDownloadCallback());
-            downloadProfile.thenAccept((readyProfile) -> {
-                contextHelper.runInFxThread(() -> {
-                    switchScene(application.gui.debugScene);
-                    application.gui.debugScene.run(readyProfile);
-                }).handle((success, error) -> {
-                    if(error != null) {
-                        errorHandle(error);
-                    }
-                    return null;
-                });
-        }).exceptionally(e -> {
-                contextHelper.runInFxThread(() -> {
-                    errorHandle(e);
-                });
-                return null;
-            });
-
-        });
-        /*application.launchService.launchClient().thenAccept((clientInstance -> {
-            if (application.runtimeSettings.globalSettings.debugAllClients || clientInstance.getSettings().debug) {
-                contextHelper.runInFxThread(() -> {
+            application.beginOperation();
+            try {
+                VisualDownloader downloadSession = application.gui.updateScene.makeDownloadCallback();
+                var downloadProfile = LauncherBackendAPIHolder.getApi().downloadProfile(profile,
+                        LauncherBackendAPIHolder.getApi().makeClientProfileSettings(profile), downloadSession);
+                downloadProfile.whenComplete((readyProfile, error) -> contextHelper.runInFxThread(() -> {
                     try {
+                        downloadSession.finish();
+                        if (error != null) {
+                            if (!downloadSession.isCancelled() && attempt == launchAttempt) application.gui.updateScene.errorHandle(error);
+                            return;
+                        }
+                        if (downloadSession.isCancelled() || attempt != launchAttempt) return;
                         switchScene(application.gui.debugScene);
-                        application.gui.debugScene.onClientInstance(clientInstance);
-                    } catch (Exception ex) {
-                        errorHandle(ex);
+                        application.gui.debugScene.run(readyProfile);
+                    } finally {
+                        application.endOperation();
                     }
-                });
-            } else {
-                clientInstance.start();
-                clientInstance.getOnWriteParamsFuture().thenAccept((ok) -> {
-                    logger.info("Params write successful. Exit...");
-                    Platform.exit();
-                }).exceptionally((ex) -> {
-                    contextHelper.runInFxThread(() -> errorHandle(ex));
-                    return null;
-                });
+                }));
+            } catch (Throwable error) {
+                application.endOperation();
+                application.gui.updateScene.errorHandle(error);
             }
-        })).exceptionally((ex) -> {
-            contextHelper.runInFxThread(() -> errorHandle(ex));
-            return null;
-        });*/
+        });
     }
 
     @Override

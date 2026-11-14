@@ -11,7 +11,6 @@ import pro.gravit.launcher.base.LauncherConfig;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
-import pro.gravit.launcher.core.backend.UserSettings;
 import pro.gravit.launcher.gui.JavaRuntimeModule;
 import pro.gravit.launcher.gui.core.commands.RuntimeCommand;
 import pro.gravit.launcher.gui.core.commands.VersionCommand;
@@ -54,6 +53,7 @@ public class JavaFXApplication extends Application {
     private static final AtomicReference<JavaFXApplication> INSTANCE = new AtomicReference<>();
     public final LauncherConfig config = Launcher.getConfig();
     public final ExecutorService workers = Executors.newWorkStealingPool(4);
+    private final pro.gravit.launcher.gui.core.ui.UiScope applicationScope = new pro.gravit.launcher.gui.core.ui.UiScope();
     public RuntimeSettings runtimeSettings;
     public GuiObjectsContainer gui;
     public AuthService authService;
@@ -64,7 +64,7 @@ public class JavaFXApplication extends Application {
     public FXMLFactory fxmlFactory;
     public PingService pingService;
     public ServerButtonStateService serverButtonStateService;
-    public ServerButtonCacheService serverButtonCacheService;
+    public ServerCardService serverCardService;
     public BackendCallbackService backendCallbackService;
     private PrimaryStage mainStage;
     private boolean debugMode;
@@ -82,7 +82,7 @@ public class JavaFXApplication extends Application {
     }
 
     public FxScene getCurrentScene() {
-        return (FxScene) mainStage.getVisualComponent();
+        return mainStage == null ? null : (FxScene) mainStage.getVisualComponent();
     }
 
     public PrimaryStage getMainStage() {
@@ -91,27 +91,27 @@ public class JavaFXApplication extends Application {
 
     @Override
     public void init() throws Exception {
-        UserSettings.providers.register(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.class);
-        backendCallbackService = new BackendCallbackService(this);
-        backendCallbackService.initDataCallback = LauncherBackendAPIHolder.getApi().init();
         guiModuleConfig = new GuiModuleConfig();
-        runtimeSettings = (RuntimeSettings) LauncherBackendAPIHolder.getApi().getUserSettings("stdruntime", (a) -> {
-            isFirstStart.set(true);
-            return RuntimeSettings.getDefault(guiModuleConfig);
-        });
-        runtimeSettings.apply();
-        System.setProperty("prism.vsync", String.valueOf(runtimeSettings.globalSettings.prismVSync));
-        DirBridge.dirUpdates = runtimeSettings.updatesDir == null
-                ? DirBridge.defaultUpdatesDir
-                : runtimeSettings.updatesDir;
         authService = new AuthService(this);
         profileService = new ProfileService(this);
         messageManager = new MessageManager(this);
         skinManager = new SkinManager(this);
         pingService = new PingService();
         serverButtonStateService = new ServerButtonStateService(this, pingService);
-        serverButtonCacheService = new ServerButtonCacheService(this);
-        LauncherBackendAPIHolder.getApi().setCallback(backendCallbackService);
+        serverCardService = new ServerCardService(this);
+        var backend = LauncherBackendAPIHolder.getApi();
+        backend.registerUserSettings(JavaRuntimeModule.RUNTIME_NAME, RuntimeSettings.class);
+        backendCallbackService = new BackendCallbackService(this);
+        backend.setCallback(backendCallbackService);
+        backendCallbackService.initDataCallback = backend.init();
+        if (backendCallbackService.initDataCallback.isCompletedExceptionally()) backendCallbackService.initDataCallback.join();
+        runtimeSettings = (RuntimeSettings) backend.getUserSettings(JavaRuntimeModule.RUNTIME_NAME, name -> {
+            isFirstStart.set(true);
+            return RuntimeSettings.getDefault(guiModuleConfig);
+        });
+        runtimeSettings.apply();
+        System.setProperty("prism.vsync", String.valueOf(runtimeSettings.globalSettings.prismVSync));
+        DirBridge.dirUpdates = runtimeSettings.updatesDir == null ? DirBridge.defaultUpdatesDir : runtimeSettings.updatesDir;
         registerCommands();
     }
 
@@ -136,15 +136,8 @@ public class JavaFXApplication extends Application {
                 logger.error("", e);
             }
             Platform.exit();
+            return;
         }
-        /*if (offlineService.isOfflineMode()) {
-            if (!offlineService.isAvailableOfflineMode() && !debugMode) {
-                messageManager.showDialog(getTranslation("runtime.offline.dialog.header"),
-                                          getTranslation("runtime.offline.dialog.text"),
-                                          Platform::exit, Platform::exit, false);
-                return;
-            }
-        }*/
         try {
             mainStage = new PrimaryStage(this, stage, "%s Launcher".formatted(config.projectName));
             // Overlay loading
@@ -155,11 +148,12 @@ public class JavaFXApplication extends Application {
             gui.background.init();
             mainStage.pushBackground(gui.background);
             mainStage.show();
-            /*if (offlineService.isOfflineMode()) {
-                messageManager.createNotification(getTranslation("runtime.offline.notification.header"),
-                                                  getTranslation("runtime.offline.notification.text"));
-            }*/
-            //
+            messageManager.registerPublicApi();
+            pro.gravit.launcher.gui.core.ui.ModuleEvents.listen(applicationScope,
+                    LauncherEngine.modulesManager.getEventBus(),
+                    pro.gravit.launcher.client.events.ClientUnlockConsoleEvent.class,
+                    event -> registerPrivateCommands(), error -> logger.error("Console unlock failed", error));
+                //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
         } catch (Throwable e) {
             logger.error("", e);
@@ -172,19 +166,40 @@ public class JavaFXApplication extends Application {
         try (InputStream input = getResource("runtime_%s.properties".formatted(locale))) {
             resources = new PropertyResourceBundle(input);
         }
-        fxmlFactory = new FXMLFactory(resources, workers);
+        fxmlFactory = new FXMLFactory(resources);
     }
 
     public void resetDirectory() {
         String themeDir = runtimeSettings.theme == null ? RuntimeSettings.LAUNCHER_THEME.COMMON.name :
                 runtimeSettings.theme.name;
-        resourceLayer = LauncherBackendAPIHolder.getApi().makeResourceLayer(List.of(Path.of("themes/"+themeDir)));
-        if (serverButtonStateService != null) {
-            serverButtonStateService.clear();
-        }
-        if (serverButtonCacheService != null) {
-            serverButtonCacheService.clear();
-        }
+        resourceLayer = LauncherBackendAPIHolder.getApi().makeResourceLayer(themeDir == null ? List.of() : List.of(Path.of("themes/" + themeDir)));
+        serverButtonStateService = new ServerButtonStateService(this, pingService);
+        serverCardService = new ServerCardService(this);
+    }
+
+    public record ResourceState(LauncherBackendAPI.ResourceLayer layer, ResourceBundle resources, FXMLFactory factory, ServerButtonStateService states, ServerCardService cards) { }
+
+    public ResourceState captureResources() { return new ResourceState(resourceLayer, resources, fxmlFactory, serverButtonStateService, serverCardService); }
+    public void restoreResources(ResourceState state) {
+        resourceLayer = state.layer(); resources = state.resources(); fxmlFactory = state.factory();
+        serverButtonStateService = state.states(); serverCardService = state.cards();
+    }
+    public void releaseResources(ResourceState state) {
+        if (state.cards() != null) state.cards().clear();
+        if (state.states() != null) state.states().clear();
+        if (state.layer() == null) return;
+        try { state.layer().close(); }
+        catch (Exception error) { logger.warn("Resource layer cleanup failed", error); }
+    }
+    private final javafx.beans.property.ReadOnlyIntegerWrapper operations = new javafx.beans.property.ReadOnlyIntegerWrapper();
+    public javafx.beans.value.ObservableValue<Boolean> operationBusyProperty() { return operations.map(count -> count.intValue() > 0); }
+    public boolean isOperationBusy() { return operations.get() > 0 || (gui != null && gui.debugScene.isRunning()); }
+    public void beginOperation() { pro.gravit.launcher.gui.core.ui.FxDispatcher.checkThread(); operations.set(operations.get() + 1); }
+    public void endOperation() { pro.gravit.launcher.gui.core.ui.FxDispatcher.checkThread(); operations.set(Math.max(0, operations.get() - 1)); }
+
+    private void comDialogCleanup() {
+        pro.gravit.launcher.client.api.DialogService.setDialogImpl(null);
+        pro.gravit.launcher.client.api.DialogService.setNotificationImpl(null);
     }
 
     private CommandCategory runtimeCategory;
@@ -207,6 +222,13 @@ public class JavaFXApplication extends Application {
     @Override
     public void stop() {
         logger.debug("JavaFX method stop invoked");
+        applicationScope.close();
+        if (gui != null) gui.dispose();
+        if (serverCardService != null) serverCardService.clear();
+        if (serverButtonStateService != null) serverButtonStateService.clear();
+        comDialogCleanup();
+        workers.shutdownNow();
+        releaseResources(captureResources());
         LauncherEngine.modulesManager.invokeEvent(new ClientExitPhase(0));
     }
 
@@ -260,7 +282,16 @@ public class JavaFXApplication extends Application {
 
     public boolean openURL(String url) {
         try {
-            getHostServices().showDocument(url);
+            if (pro.gravit.utils.helper.JVMHelper.OS_TYPE != pro.gravit.utils.helper.JVMHelper.OS.MUSTDIE) {
+                var clipboard = new javafx.scene.input.ClipboardContent();
+                clipboard.putString(url);
+                javafx.scene.input.Clipboard.getSystemClipboard().setContent(clipboard);
+                messageManager.createNotification(getTranslation("runtime.linkCopied", "Link or path copied"), "");
+                return true;
+            }
+            java.net.URI uri = java.net.URI.create(url);
+            if (uri.getScheme() == null) uri = Path.of(url).toUri();
+            getHostServices().showDocument(uri.toString());
             return true;
         } catch (Throwable e) {
             logger.error("", e);

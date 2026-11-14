@@ -3,8 +3,6 @@ package pro.gravit.launcher.gui.scenes.servermenu;
 import javafx.event.EventHandler;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.input.MouseButton;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +21,9 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
             LoggerFactory.getLogger(ServerMenuScene.class);
 
     private UserBlock userBlock;
+    private ScrollPane servers;
+    private HBox serverList;
+    private long pingGeneration;
 
     public ServerMenuScene(JavaFXApplication application) {
         super("scenes/servermenu/servermenu.fxml", application);
@@ -31,16 +32,19 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
     @Override
     public void doInit() {
         this.userBlock = use(layout, UserBlock::new);
-        LookupHelper.<ButtonBase>lookup(header, "#controls", "#settings").setOnAction((e) -> {
+        LookupHelper.lookup(header, ButtonBase.class, "#controls", "#settings").setOnAction((e) -> {
             try {
                 switchScene(application.gui.globalSettingsScene);
             } catch (Exception exception) {
                 errorHandle(exception);
             }
         });
-        ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
+        ScrollPane scrollPane = LookupHelper.lookup(layout, ScrollPane.class, "#servers");
+        servers = scrollPane;
+        serverList = (HBox) scrollPane.getContent();
         scrollPane.setOnScroll(e -> {
             double widthContent = scrollPane.getWidth();
+            if (scrollPane.getContent().getBoundsInLocal().getWidth() <= widthContent) return;
             double offset = (widthContent * 0.15) / (scrollPane.getContent().getBoundsInLocal().getWidth() - widthContent) * Math.signum(e.getDeltaY());
             scrollPane.setHvalue(scrollPane.getHvalue() - offset);
         });
@@ -54,21 +58,22 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
                 : new ArrayList<>(application.profileService.getProfiles());
         profiles.sort(Comparator.comparing(ProfileFeatureAPI.ClientProfile::getName,
                 Comparator.nullsLast(String.CASE_INSENSITIVE_ORDER)));
-        application.serverButtonCacheService.syncProfiles(profiles);
-        ScrollPane scrollPane = LookupHelper.lookup(layout, "#servers");
+        application.serverCardService.syncProfiles(profiles);
+        ScrollPane scrollPane = LookupHelper.lookup(layout, ScrollPane.class, "#servers");
         HBox serverList = (HBox) scrollPane.getContent();
         serverList.setSpacing(20);
-        serverList.getChildren().clear();
+        var desiredIds = profiles.stream().map(ProfileFeatureAPI.ClientProfile::getUUID).collect(java.util.stream.Collectors.toSet());
+        serverList.getChildren().removeIf(node -> !desiredIds.contains(node.getUserData()));
         int createdButtons = 0;
         int reusedButtons = 0;
         for (int index = 0; index < profiles.size(); index++) {
             ProfileFeatureAPI.ClientProfile profile = profiles.get(index);
-            if (application.serverButtonCacheService.contains(profile.getUUID())) {
+            if (application.serverCardService.contains(profile.getUUID())) {
                 reusedButtons++;
             } else {
                 createdButtons++;
             }
-            application.serverButtonCacheService.attachMenuButton(profile, serverList, index,
+            application.serverCardService.attachMenuButton(profile, serverList, index,
                     createServerButtonClickHandler(profile));
         }
         refreshServerPings(profiles);
@@ -80,11 +85,8 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
         userBlock.reset();
     }
 
-    private EventHandler<MouseEvent> createServerButtonClickHandler(ProfileFeatureAPI.ClientProfile profile) {
+    private EventHandler<javafx.event.ActionEvent> createServerButtonClickHandler(ProfileFeatureAPI.ClientProfile profile) {
         return event -> {
-            if (!event.getButton().equals(MouseButton.PRIMARY)) {
-                return;
-            }
             changeServer(profile);
             try {
                 switchScene(application.gui.serverInfoScene);
@@ -95,11 +97,24 @@ public class ServerMenuScene extends FxScene implements SceneSupportUserBlock {
     }
 
     private void refreshServerPings(List<ProfileFeatureAPI.ClientProfile> profiles) {
+        long request = ++pingGeneration;
         for (ProfileFeatureAPI.ClientProfile profile : profiles) {
-            LauncherBackendAPIHolder.getApi().pingProfileServers(profile).thenAccept(result ->
-                    contextHelper.runInFxThread(() -> application.pingService.addReport(profile.getUUID(), result)));
+            LauncherBackendAPIHolder.getApi().pingProfileServers(profile).whenComplete((result, error) ->
+                    contextHelper.runInFxThread(() -> {
+                        if (request != pingGeneration) return;
+                        if (error == null) application.pingService.addReport(profile.getUUID(), result);
+                    }));
         }
     }
+
+    @Override public void onShow() {
+        super.onShow();
+        visibleScope.subscribe(javafx.util.Subscription.EMPTY);
+        javafx.collections.ListChangeListener<ProfileFeatureAPI.ClientProfile> listener = change -> reset();
+        application.profileService.getProfiles().addListener(listener);
+        visibleScope.add(() -> application.profileService.getProfiles().removeListener(listener));
+    }
+    @Override public void onHide() { pingGeneration++; super.onHide(); }
 
     @Override
     public UserBlock getUserBlock() {
