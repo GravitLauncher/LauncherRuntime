@@ -1,7 +1,6 @@
 package pro.gravit.launcher.gui.scenes.login.methods;
 
 import javafx.scene.control.TextField;
-import pro.gravit.launcher.base.request.auth.password.AuthTOTPPassword;
 import pro.gravit.launcher.core.api.method.details.AuthTotpDetails;
 import pro.gravit.launcher.core.api.method.password.AuthTotpPassword;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
@@ -116,9 +115,7 @@ public class TotpAuthMethod extends AbstractAuthMethod<AuthTotpDetails> {
         public void complete() {
             String code = getCode();
             if (code == null || code.isEmpty()) return;
-            AuthTOTPPassword totpPassword = new AuthTOTPPassword();
-            totpPassword.totp = code;
-            future.complete(new AuthFlow.LoginAndPasswordResult(null, totpPassword));
+            future.complete(new AuthFlow.LoginAndPasswordResult(null, new AuthTotpPassword(code)));
         }
 
         public void requestFocus() {

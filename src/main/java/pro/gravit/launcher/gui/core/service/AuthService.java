@@ -4,8 +4,6 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ObservableValue;
 import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.base.LauncherConfig;
-import pro.gravit.launcher.base.request.auth.password.AuthAESPassword;
-import pro.gravit.launcher.base.request.auth.password.AuthPlainPassword;
 import pro.gravit.launcher.core.api.method.AuthMethod;
 import pro.gravit.launcher.core.api.method.AuthMethodPassword;
 import pro.gravit.launcher.core.api.model.SelfUser;
@@ -21,16 +19,6 @@ public class AuthService {
 
     public AuthService(JavaFXApplication application) {
         this.application = application;
-    }
-
-    public AuthMethodPassword makePassword(String plainPassword) {
-        if (config.passwordEncryptKey != null) {
-            try {
-                return new AuthAESPassword(encryptAESPassword(plainPassword));
-            } catch (Exception ignored) {
-            }
-        }
-        return new AuthPlainPassword(plainPassword);
     }
 
     private byte[] encryptAESPassword(String password) throws Exception {

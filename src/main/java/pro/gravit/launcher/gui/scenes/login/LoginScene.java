@@ -10,7 +10,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import javafx.util.StringConverter;
-import pro.gravit.launcher.base.events.request.GetAvailabilityAuthRequestEvent;
+import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.core.api.method.AuthMethod;
 import pro.gravit.launcher.core.api.model.Texture;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
@@ -264,7 +264,7 @@ public class LoginScene extends FxScene {
         }
 
         @Override
-        public GetAvailabilityAuthRequestEvent.AuthAvailability fromString(String string) {
+        public AuthMethod fromString(String string) {
             return null;
         }
     }

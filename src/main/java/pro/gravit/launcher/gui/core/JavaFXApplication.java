@@ -8,7 +8,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import pro.gravit.launcher.base.Launcher;
 import pro.gravit.launcher.base.LauncherConfig;
-import pro.gravit.launcher.base.request.auth.AuthRequest;
 import pro.gravit.launcher.client.events.ClientExitPhase;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
@@ -162,7 +161,6 @@ public class JavaFXApplication extends Application {
             }*/
             //
             LauncherEngine.modulesManager.invokeEvent(new ClientGuiPhase(StdJavaRuntimeProvider.getInstance()));
-            AuthRequest.registerProviders();
         } catch (Throwable e) {
             logger.error("", e);
             JavaRuntimeModule.errorHandleAlert(e);

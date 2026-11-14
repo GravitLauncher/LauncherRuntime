@@ -2,7 +2,6 @@ package pro.gravit.launcher.gui.scenes.login;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pro.gravit.launcher.base.events.request.AuthRequestEvent;
 import pro.gravit.launcher.base.request.RequestException;
 import pro.gravit.launcher.core.api.method.AuthMethod;
 import pro.gravit.launcher.core.api.method.AuthMethodDetails;
@@ -12,6 +11,7 @@ import pro.gravit.launcher.core.api.method.password.AuthChainPassword;
 import pro.gravit.launcher.core.api.model.SelfUser;
 import pro.gravit.launcher.core.backend.LauncherBackendAPIHolder;
 import pro.gravit.launcher.core.backend.UserSettings;
+import pro.gravit.launcher.gui.core.utils.AuthConstants;
 import pro.gravit.launcher.gui.scenes.login.methods.*;
 import pro.gravit.launcher.runtime.backend.BackendSettings;
 
@@ -155,16 +155,16 @@ public class AuthFlow {
         logger.info("Auth with {} password ***** authId {}", login, authId);
         accessor.processing(LauncherBackendAPIHolder.getApi().authorize(login, password), application.getTranslation("runtime.overlay.processing.text.auth"),
                             (event) -> result.complete(new SuccessAuth(event, login, password)), (error) -> {
-                    if (error.equals(AuthRequestEvent.OAUTH_TOKEN_INVALID)) {
+                    if (error.equals(AuthConstants.OAUTH_TOKEN_INVALID)) {
                         result.completeExceptionally(new RequestException(error));
-                    } else if (error.equals(AuthRequestEvent.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
+                    } else if (error.equals(AuthConstants.TWO_FACTOR_NEED_ERROR_MESSAGE)) {
                         authFlow.clear();
                         authFlow.add(1);
                         accessor.runInFxThread(() -> start(result, login, password));
-                    } else if (error.startsWith(AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
+                    } else if (error.startsWith(AuthConstants.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX)) {
                         List<Integer> newAuthFlow = new ArrayList<>();
                         for (String s : error.substring(
-                                AuthRequestEvent.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length() + 1).split("\\.")) {
+                                AuthConstants.ONE_FACTOR_NEED_ERROR_MESSAGE_PREFIX.length() + 1).split("\\.")) {
                             newAuthFlow.add(Integer.parseInt(s));
                         }
                         //AuthMethodPassword recentPassword = makeResentPassword(newAuthFlow, password);

@@ -4,8 +4,8 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 tasks.jar {
@@ -20,8 +20,8 @@ tasks.jar {
 }
 
 javafx {
-    version = "22"
-    modules("javafx.fxml", "javafx.controls", "javafx.web")
+    version = "25.0.5"
+    modules("javafx.fxml", "javafx.controls", "javafx.web", "javafx.base")
 }
 
 repositories {
@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     compileOnly("org.slf4j:slf4j-api:2.0.9")
-    implementation("com.gravitlauncher.launcher:launcher-runtime:5.7.13")
+    implementation("com.gravitlauncher.launcher:launcher-runtime:5.8.0-SNAPSHOT")
     runtimeOnly("org.slf4j:slf4j-simple:2.0.18")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
