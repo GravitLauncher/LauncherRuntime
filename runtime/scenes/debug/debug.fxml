@@ -5,7 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -29,10 +29,10 @@
    </AnchorPane>
 
    <StackPane id="output-detail" layoutX="20.0" layoutY="98.0" prefHeight="381.0" prefWidth="860.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="110.0">
-      <TextArea id="output" editable="false" layoutX="7.0" layoutY="6.0" wrapText="true">
+      <ListView id="output" layoutX="7.0" layoutY="6.0">
          <padding>
             <Insets bottom="15.0" left="20.0" right="20.0" top="15.0" />
          </padding>
-      </TextArea>
+      </ListView>
    </StackPane>
 </AnchorPane>

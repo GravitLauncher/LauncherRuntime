@@ -15,6 +15,8 @@
     -fx-glass-hover: rgba(101, 101, 101, 0.28);
     -fx-colors-text-secondary: #c3d2da;
     -fx-bg2: #5b5b5e;
+    -fx-log-warn: #f2d35e;
+    -fx-log-debug: #f0a04b;
     -fx-red: #DB4D4D;
     -fx-red-hover: #BA2E35;
     -fx-gray: #323232;

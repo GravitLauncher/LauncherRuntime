@@ -4,6 +4,8 @@ import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import pro.gravit.launcher.core.backend.LauncherBackendAPI;
 import pro.gravit.launcher.gui.core.JavaFXApplication;
 import pro.gravit.launcher.gui.core.ui.FxDispatcher;
@@ -14,12 +16,28 @@ import java.nio.charset.CoderResult;
 import java.nio.charset.CodingErrorAction;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
 /** Thread-safe process monitor with bounded log storage and FX-observable state. */
 public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     static final int MAX_LENGTH = 1024 * 256;
+    private static final Pattern TIMESTAMP_PREFIX = Pattern.compile(
+            "^(?:\\d{4}-\\d{2}-\\d{2}[ T])?\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d+)?\\s+");
+    private static final Pattern EXCEPTION_LINE = Pattern.compile(
+            "^(?:Exception in thread \"[^\"]+\" )?[\\w$.]*(?:Exception|Error|Throwable)(?::.*)?$");
+    private static final Pattern STACK_FRAME = Pattern.compile(
+            "^\\s*(?:at \\S+\\(.*\\)(?:\\s+[^\\r\\n]*)?"
+                    + "|(?:Caused by:|Suppressed:).*|\\.\\.\\. \\d+ (?:more|common frames omitted))\\s*$");
+    public enum Severity { NORMAL, WARN, ERROR, DEBUG }
+    public record LogLine(String text, Severity severity) { }
+
+    private final ObservableList<LogLine> lines = FXCollections.observableArrayList();
+    private final ObservableList<LogLine> readOnlyLines = FXCollections.unmodifiableObservableList(lines);
     private final StringBuilder buffer = new StringBuilder();
     private final Object bufferLock = new Object();
     private final AtomicLong revision = new AtomicLong();
@@ -38,6 +56,9 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
         this.exitWhenStarted = exitWhenStarted;
     }
 
+    /** Observable log lines; access and observe on the FX thread. */
+    public ObservableList<LogLine> getLines() { return readOnlyLines; }
+
     public ReadOnlyStringProperty textProperty() { return text.getReadOnlyProperty(); }
     public ReadOnlyBooleanProperty runningProperty() { return running.getReadOnlyProperty(); }
     public ReadOnlyBooleanProperty readyToExitProperty() { return ready.getReadOnlyProperty(); }
@@ -55,8 +76,16 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     }
 
     public void append(String value) {
+        append(value, false);
+    }
+
+    private void append(String value, boolean startNewLine) {
         if (value == null || value.isEmpty()) return;
         synchronized (bufferLock) {
+            if (startNewLine && !buffer.isEmpty()) {
+                char last = buffer.charAt(buffer.length() - 1);
+                if (last != '\n' && last != '\r') buffer.append(System.lineSeparator());
+            }
             if (value.length() >= MAX_LENGTH) {
                 buffer.setLength(0);
                 buffer.append(value, value.length() - MAX_LENGTH, value.length());
@@ -65,6 +94,7 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
                 if (excess > 0) buffer.delete(0, excess);
                 buffer.append(value);
             }
+            if (!buffer.isEmpty() && Character.isLowSurrogate(buffer.charAt(0))) buffer.deleteCharAt(0);
             revision.incrementAndGet();
         }
         queueTextUpdate();
@@ -79,10 +109,84 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
                 snapshot = buffer.toString();
                 shownRevision = revision.get();
             }
+            List<LogLine> updated = parseLines(snapshot);
+            int unchanged = 0;
+            while (unchanged < lines.size() && unchanged < updated.size()
+                    && lines.get(unchanged).equals(updated.get(unchanged))) unchanged++;
+            // Preserve selection and cells for complete lines while the tail grows.
+            if (unchanged < lines.size()) lines.subList(unchanged, lines.size()).clear();
+            if (unchanged < updated.size()) lines.addAll(updated.subList(unchanged, updated.size()));
             text.set(snapshot);
             textUpdateQueued.set(false);
             if (revision.get() != shownRevision) queueTextUpdate();
         });
+    }
+
+    static List<LogLine> parseLines(String value) {
+        List<LogLine> result = new ArrayList<>();
+        int start = 0;
+        for (int i = 0; i < value.length(); i++) {
+            char ch = value.charAt(i);
+            if (ch != '\n' && ch != '\r') continue;
+            result.add(logLine(value.substring(start, i)));
+            if (ch == '\r' && i + 1 < value.length() && value.charAt(i + 1) == '\n') i++;
+            start = i + 1;
+        }
+        if (start < value.length()) result.add(logLine(value.substring(start)));
+        return result;
+    }
+
+    private static LogLine logLine(String value) {
+        Matcher timestamp = TIMESTAMP_PREFIX.matcher(value);
+        int offset = timestamp.find() ? timestamp.end() : 0;
+        Severity severity = Severity.NORMAL;
+        boolean levelFound = false;
+        while (offset < value.length() && value.charAt(offset) == '[') {
+            int end = value.indexOf(']', offset + 1);
+            if (end < 0) break;
+            String field = value.substring(offset + 1, end);
+            String level = field.substring(field.lastIndexOf('/') + 1);
+            if (!levelFound && isLevel(level)) {
+                severity = severity(level);
+                levelFound = true;
+            }
+            offset = end + 1;
+            while (offset < value.length() && Character.isWhitespace(value.charAt(offset))) offset++;
+        }
+        if (!levelFound) {
+            int end = offset;
+            while (end < value.length() && Character.isUpperCase(value.charAt(end))) end++;
+            if (end == value.length() || Character.isWhitespace(value.charAt(end)) || value.charAt(end) == ':') {
+                String level = value.substring(offset, end);
+                if (isLevel(level)) {
+                    severity = severity(level);
+                    offset = end;
+                }
+            }
+        }
+        while (offset < value.length() && Character.isWhitespace(value.charAt(offset))) offset++;
+        if (offset < value.length() && (value.charAt(offset) == ':' || value.charAt(offset) == '-')) offset++;
+        String message = value.substring(offset).stripLeading();
+        if (EXCEPTION_LINE.matcher(message).matches() || STACK_FRAME.matcher(message).matches()) {
+            severity = Severity.ERROR;
+        }
+        return new LogLine(value, severity);
+    }
+
+    private static boolean isLevel(String value) {
+        return switch (value) {
+            case "WARN", "ERROR", "DEBUG", "INFO", "TRACE", "FATAL" -> true;
+            default -> false;
+        };
+    }
+
+    private static Severity severity(String field) {
+        return switch (field) {
+            case "WARN" -> Severity.WARN;
+            case "ERROR" -> Severity.ERROR;
+            case "DEBUG" -> Severity.DEBUG;
+            default -> Severity.NORMAL;
+        };
     }
 
     private void updateRunning(boolean value) {
@@ -126,7 +230,7 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
         super.onFinished(code);
         append(stdoutDecoder.finish());
         append(stderrDecoder.finish());
-        append("Process finished with exit code " + code + System.lineSeparator());
+        append("Process finished with exit code " + code + System.lineSeparator(), true);
         updateRunning(false);
     }
 

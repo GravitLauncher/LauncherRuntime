@@ -1,9 +1,11 @@
 package pro.gravit.launcher.gui.scenes.debug;
 
+import javafx.beans.binding.Bindings;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.application.Platform;
+import javafx.scene.control.ListView;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.OverrunStyle;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
@@ -18,7 +20,8 @@ import java.io.EOFException;
 
 public class DebugScene extends FxScene {
     private volatile ProcessLogOutput processLogOutput;
-    private TextArea output;
+    private ListView<ProcessLogOutput.LogLine> output;
+    private LogOutputController outputController;
 
     public DebugScene(JavaFXApplication application) {
         super("scenes/debug/debug.fxml", application);
@@ -28,20 +31,14 @@ public class DebugScene extends FxScene {
 
     @Override
     protected void doInit() {
-        if (output != null) output.textProperty().unbind();
-        output = LookupHelper.lookup(layout, TextArea.class, "#output");
+        if (outputController != null) outputController.dispose();
+        output = LookupHelper.lookup(layout, ListView.class, "#output");
+        outputController = configureOutput(output);
+        outputController.installContextMenu(application::getTranslation, () -> processLogOutput.getText());
         if (processLogOutput == null) {
             processLogOutput = new ProcessLogOutput(!application.runtimeSettings.globalSettings.debugAllClients);
         }
-        output.textProperty().bind(processLogOutput.textProperty());
-        output.textProperty().addListener((observable, previousText, currentText) -> {
-            if (currentText == null) return;
-            TextArea currentOutput = output;
-            currentOutput.positionCaret(currentText.length());
-            Platform.runLater(() -> {
-                if (output == currentOutput) currentOutput.setScrollTop(Double.MAX_VALUE);
-            });
-        });
+        bindOutput();
         LookupHelper.lookupIfPossible(header, ButtonBase.class, "#controls", "#kill").ifPresent((x) -> x.setOnAction((e) -> {
             processLogOutput.terminate();
         }));
@@ -50,7 +47,7 @@ public class DebugScene extends FxScene {
                     .ifPresent((v) -> v.setText(JavaRuntimeModule.getMiniLauncherInfo()));
         LookupHelper.lookupIfPossible(header, ButtonBase.class, "#controls", "#copy").ifPresent((x) -> x.setOnAction((e) -> {
             ClipboardContent content = new ClipboardContent();
-            content.putString(output.getText());
+            content.putString(processLogOutput.getText());
             Clipboard.getSystemClipboard().setContent(content);
         }));
         LookupHelper.lookup(header, ButtonBase.class, "#back").setOnAction((e) -> {
@@ -72,8 +69,7 @@ public class DebugScene extends FxScene {
     public void run(LauncherBackendAPI.ReadyProfile readyProfile) {
         if (processLogOutput == null || processLogOutput.isRunning()) return;
         processLogOutput = new ProcessLogOutput(!application.runtimeSettings.globalSettings.debugAllClients);
-        output.textProperty().unbind();
-        output.textProperty().bind(processLogOutput.textProperty());
+        bindOutput();
         processLogOutput.clear();
         processLogOutput.markStarting();
         try {
@@ -102,6 +98,84 @@ public class DebugScene extends FxScene {
     @Override
     public String getName() {
         return "debug";
+    }
+
+    static LogOutputController configureOutput(ListView<ProcessLogOutput.LogLine> output) {
+        output.setCellFactory(view -> new LogCell());
+        return new LogOutputController(output);
+    }
+
+    static String selectedText(ListView<ProcessLogOutput.LogLine> output) {
+        StringBuilder result = new StringBuilder();
+        boolean first = true;
+        for (int index : output.getSelectionModel().getSelectedIndices()) {
+            if (!first) result.append(System.lineSeparator());
+            result.append(output.getItems().get(index).text());
+            first = false;
+        }
+        return result.toString();
+    }
+
+    private void bindOutput() {
+        output.setItems(processLogOutput.getLines());
+    }
+
+    static final class LogCell extends ListCell<ProcessLogOutput.LogLine> {
+        private final Label message = new Label();
+
+        LogCell() {
+            getStyleClass().add("log-line");
+            setPrefWidth(0);
+            message.setWrapText(true);
+            message.setTextOverrun(OverrunStyle.CLIP);
+            message.setMinHeight(USE_PREF_SIZE);
+            message.setMinWidth(0);
+            prefHeightProperty().bind(Bindings.createDoubleBinding(
+                    () -> message.prefHeight(contentWidth()) + snappedTopInset() + snappedBottomInset(),
+                    widthProperty(), insetsProperty(), message.textProperty(), message.fontProperty()));
+            setMinHeight(USE_PREF_SIZE);
+        }
+
+        private double contentWidth() {
+            double width = getWidth();
+            if (width <= 0 && getListView() != null) {
+                // VirtualFlow measures new cells before assigning their viewport width.
+                width = getListView().getWidth() - 20;
+            }
+            return Math.max(1, width - snappedLeftInset() - snappedRightInset());
+        }
+
+        @Override
+        protected void layoutChildren() {
+            super.layoutChildren();
+            if (getGraphic() != null) {
+                // Measure and lay out at exactly the same width so wrapped text fits its row.
+                double width = contentWidth();
+                message.resizeRelocate(snappedLeftInset(), snappedTopInset(), width, message.prefHeight(width));
+            }
+        }
+
+        @Override
+        protected void updateItem(ProcessLogOutput.LogLine item, boolean empty) {
+            super.updateItem(item, empty);
+            getStyleClass().removeAll("log-warn", "log-error", "log-debug");
+            setText(null);
+            if (empty || item == null) {
+                message.setText(null);
+                setGraphic(null);
+                return;
+            }
+            String style = switch (item.severity()) {
+                case WARN -> "log-warn";
+                case ERROR -> "log-error";
+                case DEBUG -> "log-debug";
+                case NORMAL -> null;
+            };
+            if (style != null) getStyleClass().add(style);
+            // Keep empty lines at the same height as other log lines.
+            message.setText(item.text().isEmpty() ? " " : item.text());
+            setGraphic(message);
+        }
     }
 
     private class DebugBasicUserControls extends BasicUserControls {
