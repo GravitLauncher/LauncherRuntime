@@ -31,7 +31,7 @@ class ProcessLogOutputTest {
 
     @Test
     void bufferRetainsAtMostTheMostRecentMaximumLength() throws Exception {
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> monitor.append("a".repeat(ProcessLogOutput.MAX_LENGTH + 25)));
 
         assertEquals(ProcessLogOutput.MAX_LENGTH, monitor.getText().length());
@@ -63,7 +63,7 @@ class ProcessLogOutputTest {
 
     @Test
     void reclassifiesSplitTagsAndKeepsPlainText() throws Exception {
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> {
             monitor.append("[WA");
             assertEquals(ProcessLogOutput.Severity.NORMAL, monitor.getLines().getFirst().severity());
@@ -82,7 +82,7 @@ class ProcessLogOutputTest {
 
     @Test
     void treatsBothStreamsEquallyAndFlushesFinalLine() throws Exception {
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> {
             byte[] warning = "[WARN] warning\n".getBytes(StandardCharsets.UTF_8);
             byte[] debug = "[DEBUG] details\n".getBytes(StandardCharsets.UTF_8);
@@ -103,7 +103,7 @@ class ProcessLogOutputTest {
 
     @Test
     void trimmingKeepsStyledLinesConsistentWithRetainedText() throws Exception {
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> {
             monitor.append("[ERROR] old\n" + "x".repeat(ProcessLogOutput.MAX_LENGTH));
             monitor.append("\n[WARN] retained");
@@ -121,7 +121,7 @@ class ProcessLogOutputTest {
         java.io.StringWriter trace = new java.io.StringWriter();
         failure.printStackTrace(new java.io.PrintWriter(trace));
         byte[] bytes = trace.toString().getBytes(StandardCharsets.UTF_8);
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> {
             for (int i = 0; i < bytes.length; i += 7) {
                 monitor.onErrorOutput(bytes, i, Math.min(7, bytes.length - i));
@@ -143,7 +143,7 @@ class ProcessLogOutputTest {
                 + "2026-11-14 12:30:45 INFO: Caused by: java.io.IOException: cause\n"
                 + "[12:30:45] [main/INFO]: \tSuppressed: java.lang.IllegalStateException: suppressed\n"
                 + "[12:30:45] [main/INFO]: \t... 12 common frames omitted\n";
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> {
             for (int i = 0; i < trace.length(); i += 11) {
                 monitor.append(trace.substring(i, Math.min(i + 11, trace.length())));
@@ -157,7 +157,7 @@ class ProcessLogOutputTest {
 
     @Test
     void retentionDoesNotSplitSurrogatePairsOrLimitIndividualLines() throws Exception {
-        ProcessLogOutput monitor = new ProcessLogOutput(false);
+        ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
         FxTestThread.run(() -> {
             monitor.append("😀" + "x".repeat(ProcessLogOutput.MAX_LENGTH - 1));
             assertTrue(monitor.getText().length() <= ProcessLogOutput.MAX_LENGTH);
@@ -168,8 +168,8 @@ class ProcessLogOutputTest {
                     line("a.".repeat(10000) + " ordinary message").severity());
             monitor.clear();
             monitor.append("\n".repeat(ProcessLogOutput.MAX_LENGTH + 10));
-            assertEquals(ProcessLogOutput.MAX_LENGTH, monitor.getText().length());
-            assertEquals(ProcessLogOutput.MAX_LENGTH, monitor.getLines().size());
+            assertEquals(ProcessLogOutput.MAX_LINES, monitor.getText().length());
+            assertEquals(ProcessLogOutput.MAX_LINES, monitor.getLines().size());
         });
     }
 

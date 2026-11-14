@@ -27,7 +27,7 @@ class LogOutputControllerTest {
     void firstStartupFollowsOutputAcrossRealLayoutPulsesWithoutSelection() throws Exception {
         CompletableFuture<Void> verified = new CompletableFuture<>();
         Stage stage = FxTestThread.call(() -> {
-            ProcessLogOutput monitor = new ProcessLogOutput(false);
+            ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
             ListView<ProcessLogOutput.LogLine> output = new ListView<>();
             LogOutputController controller = DebugScene.configureOutput(output);
             output.setItems(monitor.getLines());
@@ -82,7 +82,7 @@ class LogOutputControllerTest {
     @Test
     void contextMenuCopiesSelectionOrFullTextAndResetsFollowing() throws Exception {
         FxTestThread.run(() -> {
-            ProcessLogOutput monitor = new ProcessLogOutput(false);
+            ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
             monitor.append("first\r\nsecond\r\nthird\r\n");
             ListView<ProcessLogOutput.LogLine> output = new ListView<>();
             LogOutputController controller = DebugScene.configureOutput(output);
@@ -160,7 +160,7 @@ class LogOutputControllerTest {
     @Test
     void followsBottomOfTallRowsAndResumesAfterScrollingBackDown() throws Exception {
         Fixture fixture = FxTestThread.call(() -> {
-            ProcessLogOutput monitor = new ProcessLogOutput(false);
+            ProcessLogOutput monitor = new ProcessLogOutput(false, Runnable::run, Runnable::run);
             monitor.append("short\n".repeat(100) + "long final row ".repeat(200));
             ListView<ProcessLogOutput.LogLine> output = new ListView<>();
             LogOutputController controller = DebugScene.configureOutput(output);

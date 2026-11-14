@@ -121,6 +121,7 @@ public class DebugScene extends FxScene {
     }
 
     static final class LogCell extends ListCell<ProcessLogOutput.LogLine> {
+        static final int MAX_PREVIEW_LENGTH = 8192;
         private final Label message = new Label();
 
         LogCell() {
@@ -130,8 +131,10 @@ public class DebugScene extends FxScene {
             message.setTextOverrun(OverrunStyle.CLIP);
             message.setMinHeight(USE_PREF_SIZE);
             message.setMinWidth(0);
+            // VirtualFlow also measures empty filler cells; a cleared label must not yield a zero-height row.
             prefHeightProperty().bind(Bindings.createDoubleBinding(
-                    () -> message.prefHeight(contentWidth()) + snappedTopInset() + snappedBottomInset(),
+                    () -> Math.ceil(Math.max(Math.max(1, message.getFont().getSize()),
+                            message.prefHeight(contentWidth())) + snappedTopInset() + snappedBottomInset()),
                     widthProperty(), insetsProperty(), message.textProperty(), message.fontProperty()));
             setMinHeight(USE_PREF_SIZE);
         }
@@ -173,7 +176,13 @@ public class DebugScene extends FxScene {
             };
             if (style != null) getStyleClass().add(style);
             // Keep empty lines at the same height as other log lines.
-            message.setText(item.text().isEmpty() ? " " : item.text());
+            String preview = item.text();
+            if (preview.length() > MAX_PREVIEW_LENGTH) {
+                int end = MAX_PREVIEW_LENGTH;
+                if (Character.isHighSurrogate(preview.charAt(end - 1))) end--;
+                preview = preview.substring(0, end) + "…";
+            }
+            message.setText(preview.isEmpty() ? " " : preview);
             setGraphic(message);
         }
     }

@@ -1,5 +1,6 @@
 package pro.gravit.launcher.gui.scenes.debug;
 
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyBooleanWrapper;
 import javafx.beans.property.ReadOnlyStringProperty;
@@ -21,26 +22,40 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 /** Thread-safe process monitor with bounded log storage and FX-observable state. */
 public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     static final int MAX_LENGTH = 1024 * 256;
+    static final int MAX_LINES = 10_000;
+    static final int MAX_DECODE_BYTES = 8192;
+    private static final ScheduledExecutorService UPDATES = Executors.newSingleThreadScheduledExecutor(task -> {
+        Thread thread = new Thread(task, "process-log-updates");
+        thread.setDaemon(true);
+        return thread;
+    });
     private static final Pattern TIMESTAMP_PREFIX = Pattern.compile(
             "^(?:\\d{4}-\\d{2}-\\d{2}[ T])?\\d{2}:\\d{2}:\\d{2}(?:[.,]\\d+)?\\s+");
     private static final Pattern EXCEPTION_LINE = Pattern.compile(
             "^(?:Exception in thread \"[^\"]+\" )?[\\w$.]*(?:Exception|Error|Throwable)(?::.*)?$");
-    private static final Pattern STACK_FRAME = Pattern.compile(
-            "^\\s*(?:at \\S+\\(.*\\)(?:\\s+[^\\r\\n]*)?"
-                    + "|(?:Caused by:|Suppressed:).*|\\.\\.\\. \\d+ (?:more|common frames omitted))\\s*$");
+    private static final Pattern OMITTED_FRAMES = Pattern.compile(
+            "^\\.\\.\\. \\d+ (?:more|common frames omitted)\\s*$");
     public enum Severity { NORMAL, WARN, ERROR, DEBUG }
     public record LogLine(String text, Severity severity) { }
 
     private final ObservableList<LogLine> lines = FXCollections.observableArrayList();
     private final ObservableList<LogLine> readOnlyLines = FXCollections.unmodifiableObservableList(lines);
-    private final StringBuilder buffer = new StringBuilder();
+    private final char[] buffer = new char[MAX_LENGTH];
+    private int bufferStart;
+    private int bufferLength;
+    private long revision;
+    private long clearGeneration;
+    private final Consumer<Runnable> prepareUpdate;
+    private final Consumer<Runnable> publishUpdate;
     private final Object bufferLock = new Object();
-    private final AtomicLong revision = new AtomicLong();
     private final AtomicBoolean textUpdateQueued = new AtomicBoolean();
     private final AtomicBoolean isRunning = new AtomicBoolean();
     private final AtomicBoolean readyToExit = new AtomicBoolean();
@@ -53,7 +68,13 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     private volatile Runnable terminateProcessCallback;
 
     public ProcessLogOutput(boolean exitWhenStarted) {
+        this(exitWhenStarted, task -> UPDATES.schedule(task, 100, TimeUnit.MILLISECONDS), Platform::runLater);
+    }
+
+    ProcessLogOutput(boolean exitWhenStarted, Consumer<Runnable> prepareUpdate, Consumer<Runnable> publishUpdate) {
         this.exitWhenStarted = exitWhenStarted;
+        this.prepareUpdate = prepareUpdate;
+        this.publishUpdate = publishUpdate;
     }
 
     /** Observable log lines; access and observe on the FX thread. */
@@ -64,13 +85,17 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     public ReadOnlyBooleanProperty readyToExitProperty() { return ready.getReadOnlyProperty(); }
 
     public String getText() {
-        synchronized (bufferLock) { return buffer.toString(); }
+        String snapshot;
+        synchronized (bufferLock) { snapshot = snapshotLocked(); }
+        return retainedText(snapshot);
     }
 
     public void clear() {
         synchronized (bufferLock) {
-            buffer.setLength(0);
-            revision.incrementAndGet();
+            bufferStart = 0;
+            bufferLength = 0;
+            clearGeneration++;
+            revision++;
         }
         queueTextUpdate();
     }
@@ -82,47 +107,108 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     private void append(String value, boolean startNewLine) {
         if (value == null || value.isEmpty()) return;
         synchronized (bufferLock) {
-            if (startNewLine && !buffer.isEmpty()) {
-                char last = buffer.charAt(buffer.length() - 1);
-                if (last != '\n' && last != '\r') buffer.append(System.lineSeparator());
+            if (startNewLine && bufferLength > 0) {
+                char last = buffer[(bufferStart + bufferLength - 1) % MAX_LENGTH];
+                if (last != '\n' && last != '\r') appendLocked(System.lineSeparator());
             }
-            if (value.length() >= MAX_LENGTH) {
-                buffer.setLength(0);
-                buffer.append(value, value.length() - MAX_LENGTH, value.length());
-            } else {
-                int excess = buffer.length() + value.length() - MAX_LENGTH;
-                if (excess > 0) buffer.delete(0, excess);
-                buffer.append(value);
-            }
-            if (!buffer.isEmpty() && Character.isLowSurrogate(buffer.charAt(0))) buffer.deleteCharAt(0);
-            revision.incrementAndGet();
+            appendLocked(value);
+            revision++;
         }
         queueTextUpdate();
     }
 
+    private void appendLocked(String value) {
+        int offset = Math.max(0, value.length() - MAX_LENGTH);
+        int length = value.length() - offset;
+        int discarded = Math.max(0, bufferLength + length - MAX_LENGTH);
+        bufferStart = (bufferStart + discarded) % MAX_LENGTH;
+        bufferLength -= discarded;
+        int end = (bufferStart + bufferLength) % MAX_LENGTH;
+        int first = Math.min(length, MAX_LENGTH - end);
+        value.getChars(offset, offset + first, buffer, end);
+        value.getChars(offset + first, value.length(), buffer, 0);
+        bufferLength += length;
+        if (bufferLength > 0 && Character.isLowSurrogate(buffer[bufferStart])) {
+            bufferStart = (bufferStart + 1) % MAX_LENGTH;
+            bufferLength--;
+        }
+    }
+
+    private String snapshotLocked() {
+        char[] snapshot = new char[bufferLength];
+        int first = Math.min(bufferLength, MAX_LENGTH - bufferStart);
+        System.arraycopy(buffer, bufferStart, snapshot, 0, first);
+        System.arraycopy(buffer, 0, snapshot, first, bufferLength - first);
+        return new String(snapshot);
+    }
+
+    private static String retainedText(String value) {
+        int count = value.isEmpty() || value.endsWith("\n") || value.endsWith("\r") ? 0 : 1;
+        for (int i = value.length() - 1; i >= 0; i--) {
+            char ch = value.charAt(i);
+            if (ch != '\n' && ch != '\r') continue;
+            int next = i + 1;
+            if (ch == '\n' && i > 0 && value.charAt(i - 1) == '\r') i--;
+            if (++count > MAX_LINES) return value.substring(next);
+        }
+        return value;
+    }
+
     private void queueTextUpdate() {
         if (!textUpdateQueued.compareAndSet(false, true)) return;
-        FxDispatcher.INSTANCE.run(() -> {
-            long shownRevision;
-            String snapshot;
-            synchronized (bufferLock) {
-                snapshot = buffer.toString();
-                shownRevision = revision.get();
-            }
-            List<LogLine> updated = parseLines(snapshot);
-            int unchanged = 0;
-            while (unchanged < lines.size() && unchanged < updated.size()
-                    && lines.get(unchanged).equals(updated.get(unchanged))) unchanged++;
-            // Preserve selection and cells for complete lines while the tail grows.
-            if (unchanged < lines.size()) lines.subList(unchanged, lines.size()).clear();
-            if (unchanged < updated.size()) lines.addAll(updated.subList(unchanged, updated.size()));
-            text.set(snapshot);
+        try {
+            prepareUpdate.accept(this::prepareTextUpdate);
+        } catch (RuntimeException failure) {
             textUpdateQueued.set(false);
-            if (revision.get() != shownRevision) queueTextUpdate();
-        });
+            throw failure;
+        }
+    }
+
+    private void prepareTextUpdate() {
+        long shownRevision;
+        long shownGeneration;
+        String snapshot;
+        synchronized (bufferLock) {
+            snapshot = snapshotLocked();
+            shownRevision = revision;
+            shownGeneration = clearGeneration;
+        }
+        snapshot = retainedText(snapshot);
+        List<LogLine> updated = parseRetainedLines(snapshot);
+        String shownText = snapshot;
+        try {
+            publishUpdate.accept(() -> {
+                try {
+                    // A clear invalidates pending snapshots rather than briefly resurrecting old output.
+                    boolean cleared;
+                    synchronized (bufferLock) { cleared = clearGeneration != shownGeneration; }
+                    if (!cleared) {
+                        int unchanged = 0;
+                        while (unchanged < lines.size() && unchanged < updated.size()
+                                && lines.get(unchanged).equals(updated.get(unchanged))) unchanged++;
+                        if (unchanged < lines.size()) lines.subList(unchanged, lines.size()).clear();
+                        if (unchanged < updated.size()) lines.addAll(updated.subList(unchanged, updated.size()));
+                        text.set(shownText);
+                    }
+                } finally {
+                    textUpdateQueued.set(false);
+                    boolean changed;
+                    synchronized (bufferLock) { changed = revision != shownRevision; }
+                    // Production scheduling is delayed and never recurses on the FX thread.
+                    if (changed) queueTextUpdate();
+                }
+            });
+        } catch (RuntimeException failure) {
+            textUpdateQueued.set(false);
+            throw failure;
+        }
     }
 
     static List<LogLine> parseLines(String value) {
+        return parseRetainedLines(retainedText(value));
+    }
+
+    private static List<LogLine> parseRetainedLines(String value) {
         List<LogLine> result = new ArrayList<>();
         int start = 0;
         for (int i = 0; i < value.length(); i++) {
@@ -167,10 +253,20 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
         while (offset < value.length() && Character.isWhitespace(value.charAt(offset))) offset++;
         if (offset < value.length() && (value.charAt(offset) == ':' || value.charAt(offset) == '-')) offset++;
         String message = value.substring(offset).stripLeading();
-        if (EXCEPTION_LINE.matcher(message).matches() || STACK_FRAME.matcher(message).matches()) {
+        if (EXCEPTION_LINE.matcher(message).matches() || isStackFrame(message)) {
             severity = Severity.ERROR;
         }
         return new LogLine(value, severity);
+    }
+
+    private static boolean isStackFrame(String message) {
+        if (message.startsWith("Caused by:") || message.startsWith("Suppressed:")) return true;
+        if (message.startsWith("at ")) {
+            int source = message.indexOf('(', 3);
+            return source > 3 && !Character.isWhitespace(message.charAt(source - 1))
+                    && message.indexOf(')', source + 1) >= 0;
+        }
+        return message.startsWith("...") && OMITTED_FRAMES.matcher(message).matches();
     }
 
     private static boolean isLevel(String value) {
@@ -237,13 +333,22 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
     @Override
     public void onNormalOutput(byte[] buf, int offset, int size) {
         super.onNormalOutput(buf, offset, size);
-        append(stdoutDecoder.decode(buf, offset, size));
+        appendDecoded(stdoutDecoder, buf, offset, size);
     }
 
     @Override
     public void onErrorOutput(byte[] buf, int offset, int size) {
         super.onErrorOutput(buf, offset, size);
-        append(stderrDecoder.decode(buf, offset, size));
+        appendDecoded(stderrDecoder, buf, offset, size);
+    }
+
+    private void appendDecoded(StreamDecoder decoder, byte[] bytes, int offset, int size) {
+        Objects.checkFromIndexSize(offset, size, bytes.length);
+        for (int end = offset + size; offset < end;) {
+            int length = Math.min(MAX_DECODE_BYTES, end - offset);
+            append(decoder.decode(bytes, offset, length));
+            offset += length;
+        }
     }
 
     @Override
@@ -263,16 +368,22 @@ public class ProcessLogOutput extends LauncherBackendAPI.RunCallback {
         private final java.nio.charset.CharsetDecoder decoder = StandardCharsets.UTF_8.newDecoder()
                 .onMalformedInput(CodingErrorAction.REPLACE)
                 .onUnmappableCharacter(CodingErrorAction.REPLACE);
-        private ByteBuffer pending = ByteBuffer.allocate(8);
+        private final ByteBuffer pending = ByteBuffer.allocate(8);
+        private ByteBuffer input = ByteBuffer.allocate(MAX_DECODE_BYTES + 8);
+        private CharBuffer chars = CharBuffer.allocate(MAX_DECODE_BYTES + 8);
         private boolean finished;
 
         synchronized String decode(byte[] bytes, int offset, int length) {
             Objects.checkFromIndexSize(offset, length, bytes.length);
             if (finished) throw new IllegalStateException("Decoder has already been finished");
-            ByteBuffer input = ByteBuffer.allocate(pending.position() + length);
+            int required = pending.position() + length;
+            if (input.capacity() < required) input = ByteBuffer.allocate(required);
+            input.clear();
             pending.flip();
             input.put(pending).put(bytes, offset, length).flip();
-            CharBuffer chars = CharBuffer.allocate(Math.max(16, (int) (input.remaining() * decoder.maxCharsPerByte()) + 2));
+            int requiredChars = Math.max(16, (int) (input.remaining() * decoder.maxCharsPerByte()) + 2);
+            if (chars.capacity() < requiredChars) chars = CharBuffer.allocate(requiredChars);
+            chars.clear();
             CoderResult result = decoder.decode(input, chars, false);
             if (result.isError()) throw new IllegalStateException("Unable to decode process output", codingFailure(result));
             pending.clear();
