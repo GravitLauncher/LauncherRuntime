@@ -15,7 +15,8 @@ tasks.jar {
         attributes(
             "Module-Main-Class" to "pro.gravit.launcher.gui.JavaRuntimeModule",
             "Module-Config-Class" to "pro.gravit.launcher.gui.core.config.GuiModuleConfig",
-            "Module-Config-Name" to "JavaRuntime"
+            "Module-Config-Name" to "JavaRuntime",
+            "Required-Modern-Java" to "true"
         )
     }
 }
