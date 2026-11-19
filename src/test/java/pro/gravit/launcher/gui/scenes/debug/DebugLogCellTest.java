@@ -38,49 +38,35 @@ class DebugLogCellTest {
     }
 
     @Test
-    void changingLogSizesAndScrollingDoNotEmitVirtualFlowSizeWarnings() throws Exception {
-        java.util.List<String> warnings = new java.util.concurrent.CopyOnWriteArrayList<>();
-        java.util.logging.Logger logger = java.util.logging.Logger.getLogger("javafx.scene.control");
-        java.util.logging.Handler handler = new java.util.logging.Handler() {
-            @Override public void publish(java.util.logging.LogRecord record) {
-                if (record.getMessage().contains("index exceeds maxCellCount")) warnings.add(record.getMessage());
+    void scrollingAfterLogSizeChangesRendersOnlyRowsInTheViewport() throws Exception {
+        FxTestThread.run(() -> {
+            ListView<ProcessLogOutput.LogLine> output = new ListView<>();
+            output.setId("output");
+            LogOutputController controller = DebugScene.configureOutput(output);
+            StackPane root = new StackPane(output);
+            Scene scene = new Scene(root, 400, 300);
+            scene.getStylesheets().addAll(
+                    Path.of("runtime/themes/dark/styles/variables.css").toUri().toString(),
+                    Path.of("runtime/scenes/debug/debug.css").toUri().toString());
+            root.applyCss();
+            for (int count : new int[] {1, 10, 1000, 0, 20, 10000, 2}) {
+                var rows = new java.util.ArrayList<ProcessLogOutput.LogLine>();
+                for (int i = 0; i < count; i++) rows.add(new ProcessLogOutput.LogLine(
+                        i % 3 == 0 ? "" : i % 3 == 1 ? "wrapped ".repeat(100) : "short",
+                        ProcessLogOutput.Severity.NORMAL));
+                output.getItems().setAll(rows);
+                root.layout();
+                output.scrollTo(Math.max(0, count - 1));
+                output.layout();
+                var visible = output.lookupAll(".log-line").stream()
+                        .map(node -> (DebugScene.LogCell) node)
+                        .filter(cell -> cell.isVisible() && !cell.isEmpty())
+                        .toList();
+                assertEquals(count - 1, visible.stream().mapToInt(DebugScene.LogCell::getIndex).max().orElse(-1));
+                assertTrue(visible.size() < 50, "Large logs should still render only a viewport of rows");
             }
-            @Override public void flush() { }
-            @Override public void close() { }
-        };
-        logger.addHandler(handler);
-        try {
-            FxTestThread.run(() -> {
-                ListView<ProcessLogOutput.LogLine> output = new ListView<>();
-                output.setId("output");
-                LogOutputController controller = DebugScene.configureOutput(output);
-                StackPane root = new StackPane(output);
-                Scene scene = new Scene(root, 400, 300);
-                scene.getStylesheets().addAll(
-                        Path.of("runtime/themes/dark/styles/variables.css").toUri().toString(),
-                        Path.of("runtime/scenes/debug/debug.css").toUri().toString());
-                root.applyCss();
-                for (int count : new int[] {1, 10, 1000, 0, 20, 10000, 2}) {
-                    var rows = new java.util.ArrayList<ProcessLogOutput.LogLine>();
-                    for (int i = 0; i < count; i++) rows.add(new ProcessLogOutput.LogLine(
-                            i % 3 == 0 ? "" : i % 3 == 1 ? "wrapped ".repeat(100) : "short",
-                            ProcessLogOutput.Severity.NORMAL));
-                    output.getItems().setAll(rows);
-                    root.layout();
-                    output.scrollTo(Math.max(0, count - 1));
-                    output.layout();
-                    var flow = (javafx.scene.control.skin.VirtualFlow<?>) output.lookup(".virtual-flow");
-                    flow.setPosition(1);
-                    flow.layout();
-                    root.requestLayout();
-                    root.layout();
-                }
-                controller.dispose();
-            });
-            assertTrue(warnings.isEmpty(), "VirtualFlow warnings: " + warnings);
-        } finally {
-            logger.removeHandler(handler);
-        }
+            controller.dispose();
+        });
     }
 
     @Test

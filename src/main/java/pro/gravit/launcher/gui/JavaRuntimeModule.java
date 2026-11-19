@@ -82,9 +82,10 @@ public class JavaRuntimeModule extends LauncherModule {
     }
 
     public static String getMiniLauncherInfo() {
-        return "Launcher %s | Java %d(%s) x%d | %s x%d"
+        return "Launcher %s | Java %d(%s) x%d | JavaFX %s | %s x%d"
                 .formatted(Version.getVersion().toString(), JVMHelper.JVM_VERSION, System.getProperty("java.version"),
-                           JVMHelper.JVM_BITS, JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
+                           JVMHelper.JVM_BITS, System.getProperty("javafx.runtime.version", "unknown"),
+                           JVMHelper.OS_TYPE.name(), JVMHelper.OS_BITS);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package pro.gravit.launcher.gui.scenes.debug;
 
-import javafx.beans.binding.Bindings;
 import javafx.scene.control.ButtonBase;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -21,7 +20,6 @@ import java.io.EOFException;
 public class DebugScene extends FxScene {
     private volatile ProcessLogOutput processLogOutput;
     private ListView<ProcessLogOutput.LogLine> output;
-    private LogOutputController outputController;
 
     public DebugScene(JavaFXApplication application) {
         super("scenes/debug/debug.fxml", application);
@@ -31,9 +29,9 @@ public class DebugScene extends FxScene {
 
     @Override
     protected void doInit() {
-        if (outputController != null) outputController.dispose();
         output = LookupHelper.lookup(layout, ListView.class, "#output");
-        outputController = configureOutput(output);
+        LogOutputController outputController = configureOutput(output);
+        scope.add(outputController::dispose);
         outputController.installContextMenu(application::getTranslation, () -> processLogOutput.getText());
         if (processLogOutput == null) {
             processLogOutput = new ProcessLogOutput(!application.runtimeSettings.globalSettings.debugAllClients);
@@ -101,8 +99,9 @@ public class DebugScene extends FxScene {
     }
 
     static LogOutputController configureOutput(ListView<ProcessLogOutput.LogLine> output) {
-        output.setCellFactory(view -> new LogCell());
-        return new LogOutputController(output);
+        LogViewportSkin viewport = new LogViewportSkin(output);
+        output.setSkin(viewport);
+        return new LogOutputController(output, viewport);
     }
 
     static String selectedText(ListView<ProcessLogOutput.LogLine> output) {
@@ -131,21 +130,31 @@ public class DebugScene extends FxScene {
             message.setTextOverrun(OverrunStyle.CLIP);
             message.setMinHeight(USE_PREF_SIZE);
             message.setMinWidth(0);
-            // VirtualFlow also measures empty filler cells; a cleared label must not yield a zero-height row.
-            prefHeightProperty().bind(Bindings.createDoubleBinding(
-                    () -> Math.ceil(Math.max(Math.max(1, message.getFont().getSize()),
-                            message.prefHeight(contentWidth())) + snappedTopInset() + snappedBottomInset()),
-                    widthProperty(), insetsProperty(), message.textProperty(), message.fontProperty()));
             setMinHeight(USE_PREF_SIZE);
         }
 
-        private double contentWidth() {
-            double width = getWidth();
-            if (width <= 0 && getListView() != null) {
-                // VirtualFlow measures new cells before assigning their viewport width.
-                width = getListView().getWidth() - 20;
-            }
+        private double contentWidth(double width) {
             return Math.max(1, width - snappedLeftInset() - snappedRightInset());
+        }
+
+        @Override
+        protected double computePrefHeight(double width) {
+            double height = message.prefHeight(contentWidth(width >= 0 ? width : getWidth()));
+            return Math.ceil(Math.max(Math.max(1, message.getFont().getSize()), height)
+                    + snappedTopInset() + snappedBottomInset());
+        }
+
+        void prepareMeasurement(Runnable invalidate) {
+            setManaged(false);
+            setVisible(false);
+            setGraphic(message);
+            insetsProperty().addListener(observable -> invalidate.run());
+            message.fontProperty().addListener(observable -> invalidate.run());
+        }
+
+        double measure(String text, double width) {
+            message.setText(preview(text));
+            return computePrefHeight(width);
         }
 
         @Override
@@ -153,7 +162,7 @@ public class DebugScene extends FxScene {
             super.layoutChildren();
             if (getGraphic() != null) {
                 // Measure and lay out at exactly the same width so wrapped text fits its row.
-                double width = contentWidth();
+                double width = contentWidth(getWidth());
                 message.resizeRelocate(snappedLeftInset(), snappedTopInset(), width, message.prefHeight(width));
             }
         }
@@ -175,15 +184,16 @@ public class DebugScene extends FxScene {
                 case NORMAL -> null;
             };
             if (style != null) getStyleClass().add(style);
-            // Keep empty lines at the same height as other log lines.
-            String preview = item.text();
-            if (preview.length() > MAX_PREVIEW_LENGTH) {
-                int end = MAX_PREVIEW_LENGTH;
-                if (Character.isHighSurrogate(preview.charAt(end - 1))) end--;
-                preview = preview.substring(0, end) + "…";
-            }
-            message.setText(preview.isEmpty() ? " " : preview);
+            message.setText(preview(item.text()));
             setGraphic(message);
+        }
+
+        private static String preview(String text) {
+            if (text.isEmpty()) return " ";
+            if (text.length() <= MAX_PREVIEW_LENGTH) return text;
+            int end = MAX_PREVIEW_LENGTH;
+            if (Character.isHighSurrogate(text.charAt(end - 1))) end--;
+            return text.substring(0, end) + "…";
         }
     }
 

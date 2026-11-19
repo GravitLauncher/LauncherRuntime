@@ -22,7 +22,7 @@ tasks.jar {
 }
 
 javafx {
-    version = "25.0.5"
+    version = "27.0.1.1"
     modules("javafx.fxml", "javafx.controls", "javafx.web", "javafx.base")
 }
 
